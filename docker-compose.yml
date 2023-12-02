@@ -1,10 +1,11 @@
 version: '3.8'
+
 services:
   db:
     image: postgres:15.3-alpine
     restart: always
     environment:
-      - POSTGRES_DB=juulia
+      - POSTGRES_DB=juuliadb
       - POSTGRES_USER=juulia
       - POSTGRES_PASSWORD=testpassword
     ports:
@@ -14,9 +15,19 @@ services:
     networks:
       - juulia
 
+  redis:
+    image: redis:latest
+    command: ["redis-server", "/etc/redis/redis.conf"]
+    ports:
+      - 6380:6379
+    volumes:
+      - redis_data:/data
+      - ./redis.conf:/etc/redis/redis.conf
+
 volumes:
   db:
     driver: local
+  redis_data:
 
 networks:
   juulia:
