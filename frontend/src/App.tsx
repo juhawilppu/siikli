@@ -1,23 +1,33 @@
 import './App.css'
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 import { useEffect, useState } from 'react'
 
 function App() {
 
   const [users, setUsers] = useState<{name:string}[]>([])
-  const [u,setU]=useState('')
-  
+  const [title,setTitle]=useState('')
+  const [content,setContent]=useState('')
+
   useEffect(() => {
-    axios.get('http://localhost:3000/users').then(response => {
+    axios.get('http://localhost:3000/posts').then(response => {
       setUsers(response.data)
     })
 
   },[])
 
-  const f = async () => {
-    axios.post('http://localhost:3000/users', {
-      name:u, email:u
-    })
+  const save = async () => {
+    try {
+      await axios.post('http://localhost:3000/posts', {
+        title, content
+      })
+    } catch (error: unknown) {
+      console.log(error)
+      console.log('k')
+      if (error instanceof AxiosError && error.response?.status === 429) {
+        console.log('ko')
+        alert('Rate limit reached, try again later')
+      }
+    }
   }
 
   return (
@@ -27,9 +37,12 @@ function App() {
         {users.map((user) => (
           <div>{user.name}</div>
         ))}
-        <input value={u} onChange={e=>setU(e.target.value)}></input>
-        <button onClick={() => f()}>
-Save
+        <h2>Title</h2>
+        <input value={title} onChange={e => setTitle(e.target.value)} />
+        <h2>Content</h2>
+        <textarea value={content} onChange={e=>setContent(e.target.value)} /> <br />
+        <button onClick={save}>
+          Save
         </button>
       </div>
     </>
