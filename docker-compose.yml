@@ -1,0 +1,23 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:15.3-alpine
+    restart: always
+    environment:
+      - POSTGRES_DB=juulia
+      - POSTGRES_USER=juulia
+      - POSTGRES_PASSWORD=testpassword
+    ports:
+      - '5439:5432'
+    volumes:
+      - db:/var/lib/postgresql/data
+    networks:
+      - juulia
+
+volumes:
+  db:
+    driver: local
+
+networks:
+  juulia:
+    driver: bridge
