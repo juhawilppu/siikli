@@ -1,24 +1,29 @@
-import './App.css'
 import axios, { AxiosError } from 'axios'
 import { useEffect, useState } from 'react'
+import './App.css'
+
+axios.defaults.baseURL = 'http://localhost:3000/api'
 
 function App() {
-
-  const [users, setUsers] = useState<{name:string}[]>([])
-  const [title,setTitle]=useState('')
-  const [content,setContent]=useState('')
+  const [posts, setPosts] = useState<{ title: string; content: string }[]>([])
+  const [title, setTitle] = useState('')
+  const [content, setContent] = useState('')
 
   useEffect(() => {
-    axios.get('http://localhost:3000/posts').then(response => {
-      setUsers(response.data)
-    })
+    axios.get('/auth/current-user')
+  })
 
-  },[])
+  useEffect(() => {
+    axios.get('/posts').then((response) => {
+      setPosts(response.data)
+    })
+  }, [])
 
   const save = async () => {
     try {
-      await axios.post('http://localhost:3000/posts', {
-        title, content
+      await axios.post('/posts', {
+        title,
+        content,
       })
     } catch (error: unknown) {
       console.log(error)
@@ -33,17 +38,22 @@ function App() {
   return (
     <>
       <h1>Juulia Stack</h1>
-      <div className="card">
-        {users.map((user) => (
-          <div>{user.name}</div>
+      <div className='card'>
+        {posts.map((post) => (
+          <div style={{ border: '1px solid black' }}>
+            <div>{post.title}</div>
+            <div>{post.content}</div>
+          </div>
         ))}
         <h2>Title</h2>
-        <input value={title} onChange={e => setTitle(e.target.value)} />
+        <input value={title} onChange={(e) => setTitle(e.target.value)} />
         <h2>Content</h2>
-        <textarea value={content} onChange={e=>setContent(e.target.value)} /> <br />
-        <button onClick={save}>
-          Save
-        </button>
+        <textarea
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+        />{' '}
+        <br />
+        <button onClick={save}>Save</button>
       </div>
     </>
   )

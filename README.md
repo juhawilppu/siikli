@@ -24,6 +24,9 @@ Juulia Stack is a production-grade web development starter project designed to k
 
    ```bash
    cd juulia-stack
+   cd frontend
+   npm install
+   cd ...
    npm install
    ```
 
