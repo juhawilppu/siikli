@@ -26,10 +26,7 @@ function App() {
         content,
       })
     } catch (error: unknown) {
-      console.log(error)
-      console.log('k')
       if (error instanceof AxiosError && error.response?.status === 429) {
-        console.log('ko')
         alert('Rate limit reached, try again later')
       }
     }

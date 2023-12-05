@@ -1,4 +1,3 @@
-import bodyParser from 'body-parser'
 import cookieSession from 'cookie-session'
 import cors from 'cors'
 import express from 'express'
@@ -9,15 +8,13 @@ import { postsRoute } from './api/posts'
 
 const app = express()
 
-//if (process.env.NODE_ENV !== 'production') {
-app.use(cors())
-//}
+if (process.env.NODE_ENV !== 'production') {
+  app.use(cors())
+}
 
+app.use(express.json({ limit: '200kb' }))
 app.use(authRoute)
 app.use(postsRoute)
-app.use(bodyParser.json({ limit: '20mb', type: 'application/json' }))
-app.use(bodyParser.urlencoded({ limit: '20mb', extended: true }))
-//dotenv.config();
 
 const cookieEncryptionKey = process.env.COOKIE_ENCRYPTION_KEY
 
@@ -33,11 +30,8 @@ app.use(
   })
 )
 
-app.use(express.json())
-
 app.use(passport.initialize())
 app.use(passport.session())
-app.use(bodyParser.json())
 
 if (process.env.NODE_ENV === 'production') {
   // Express will serve the client main.js etc.
