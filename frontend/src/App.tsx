@@ -1,3 +1,4 @@
+import { Alert, Button, Card, CardContent, TextField } from '@mui/material'
 import axios, { AxiosError } from 'axios'
 import { useEffect, useState } from 'react'
 import './App.css'
@@ -8,6 +9,7 @@ function App() {
   const [posts, setPosts] = useState<{ title: string; content: string }[]>([])
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
+  const [isMessageSent, setIsMessageSent] = useState(false)
 
   useEffect(() => {
     axios.get('/auth/current-user')
@@ -25,6 +27,9 @@ function App() {
         title,
         content,
       })
+      setTitle('')
+      setContent('')
+      setIsMessageSent(true)
     } catch (error: unknown) {
       if (error instanceof AxiosError && error.response?.status === 429) {
         alert('Rate limit reached, try again later')
@@ -36,21 +41,34 @@ function App() {
     <>
       <h1>Juulia Stack</h1>
       <div className='card'>
+        {isMessageSent && <Alert severity='success'>Message sent!</Alert>}
         {posts.map((post) => (
-          <div style={{ border: '1px solid black' }}>
-            <div>{post.title}</div>
-            <div>{post.content}</div>
-          </div>
+          <Card>
+            <CardContent>
+              <h3>{post.title}</h3>
+              <div>{post.content}</div>
+            </CardContent>
+          </Card>
         ))}
-        <h2>Title</h2>
-        <input value={title} onChange={(e) => setTitle(e.target.value)} />
-        <h2>Content</h2>
-        <textarea
+        <TextField
+          variant='outlined'
+          label='Title'
+          type='text'
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+        />
+        <TextField
+          variant='outlined'
+          label='Content'
+          type='text'
+          rows={10}
           value={content}
           onChange={(e) => setContent(e.target.value)}
-        />{' '}
+        />
         <br />
-        <button onClick={save}>Save</button>
+        <Button variant='contained' onClick={save}>
+          Save
+        </Button>
       </div>
     </>
   )
