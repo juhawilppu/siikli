@@ -1,4 +1,15 @@
-import { Alert, Button, Card, CardContent, TextField } from '@mui/material'
+import MenuIcon from '@mui/icons-material/Menu'
+import {
+  Alert,
+  AppBar,
+  Button,
+  Card,
+  CardContent,
+  IconButton,
+  TextField,
+  Toolbar,
+  Typography,
+} from '@mui/material'
 import axios, { AxiosError } from 'axios'
 import { useEffect, useState } from 'react'
 import './App.css'
@@ -39,36 +50,59 @@ function App() {
 
   return (
     <>
-      <h1>Juulia Stack</h1>
-      <div className='card'>
-        {isMessageSent && <Alert severity='success'>Message sent!</Alert>}
-        {posts.map((post) => (
-          <Card>
-            <CardContent>
-              <h3>{post.title}</h3>
-              <div>{post.content}</div>
-            </CardContent>
-          </Card>
-        ))}
-        <TextField
-          variant='outlined'
-          label='Title'
-          type='text'
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
-        <TextField
-          variant='outlined'
-          label='Content'
-          type='text'
-          rows={10}
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-        />
-        <br />
-        <Button variant='contained' onClick={save}>
-          Save
-        </Button>
+      <AppBar position='static'>
+        <Toolbar>
+          <IconButton
+            size='large'
+            edge='start'
+            color='inherit'
+            aria-label='menu'
+            sx={{ mr: 2 }}
+          >
+            <MenuIcon />
+          </IconButton>
+          <Typography variant='h6' component='div' sx={{ flexGrow: 1 }}>
+            Messages
+          </Typography>
+          <Button color='inherit'>Login</Button>
+        </Toolbar>
+      </AppBar>
+      <div className='content-wrapper'>
+        <div className='content'>
+          <h1>Juulia Stack</h1>
+          <div className='card'>
+            {isMessageSent && <Alert severity='success'>Message sent!</Alert>}
+            {posts.map((post) => (
+              <Card>
+                <CardContent>
+                  <h3>{post.title}</h3>
+                  <div>{post.content}</div>
+                </CardContent>
+              </Card>
+            ))}
+            <h2>Send new message</h2>
+            <TextField
+              variant='outlined'
+              label='Title'
+              type='text'
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+            />
+            <br />
+            <TextField
+              variant='outlined'
+              label='Content'
+              type='text'
+              rows={10}
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+            />
+            <br />
+            <Button variant='contained' onClick={save}>
+              Save
+            </Button>
+          </div>
+        </div>
       </div>
     </>
   )
