@@ -17,6 +17,8 @@ interface Profile {
 const init = () => {
   passport.serializeUser((user: User, done: any) => {
     console.log('ser')
+    console.log(user)
+    console.log(done)
     done(null, user.id)
   })
 
@@ -39,14 +41,12 @@ const init = () => {
         clientID: clientID,
         clientSecret: clientSecret,
         callbackURL: 'http://localhost:5173/auth/google/callback',
-        proxy: true,
       },
-      async (url: string, profile: Profile, something: any, done: any) => {
+      async (issuer: any, profile: any, cb: any) => {
         console.log('GoogleStrategy')
-        console.log(url)
+        console.log(issuer)
         console.log(profile)
-        console.log(something)
-        console.log(done)
+        console.log(cb)
         const existingUser = await prisma.user.findFirst({
           where: { externalId: profile.id },
         })
@@ -54,7 +54,8 @@ const init = () => {
 
         if (existingUser) {
           // We already have saved this customer to db
-          done(null, existingUser)
+          console.log('done1')
+          cb(null, existingUser)
         } else {
           // New user. Save it to db.
           const user = await prisma.user.create({
@@ -64,7 +65,8 @@ const init = () => {
               email: profile.emails[0].value,
             },
           })
-          done(null, user)
+          console.log('done2')
+          cb(null, user)
         }
       }
     )

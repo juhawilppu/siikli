@@ -7,13 +7,7 @@ export const authRoute = express.Router()
 authRoute.get(
   '/auth/google',
   passport.authenticate('google', {
-    scope: [
-      'email',
-      'profile',
-      'https://www.googleapis.com/auth/userinfo.email',
-      'https://www.googleapis.com/auth/userinfo.profile',
-      'openid',
-    ],
+    scope: ['email', 'profile'],
   })
 )
 
