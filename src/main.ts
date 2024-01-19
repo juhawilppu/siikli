@@ -2,6 +2,7 @@ import cookieParser from 'cookie-parser'
 import cors from 'cors'
 import express from 'express'
 import session from 'express-session'
+import helmet from 'helmet'
 import passport from 'passport'
 import { exit } from 'process'
 import { authRoute } from './api/auth'
@@ -9,11 +10,27 @@ import { postsRoute } from './api/posts'
 import passportConfig from './passportConfig'
 
 const app = express()
+app.use(helmet())
+app.disable('x-powered-by')
+
 passportConfig()
 
 if (process.env.NODE_ENV !== 'production') {
   app.use(cors())
 }
+
+app.use('/api/', (req, res, next) => {
+  res.set('Cache-Control', 'no-cache, no-store, must-revalidate')
+  res.set('Pragma', 'no-cache')
+  res.set('Expires', '0')
+  next()
+})
+app.use('/auth/', (req, res, next) => {
+  res.set('Cache-Control', 'no-cache, no-store, must-revalidate')
+  res.set('Pragma', 'no-cache')
+  res.set('Expires', '0')
+  next()
+})
 
 app.use(express.json({ limit: '200kb' }))
 app.use(postsRoute)
@@ -26,12 +43,23 @@ if (!cookieEncryptionKey || cookieEncryptionKey.length < 32) {
 }
 
 app.use(cookieParser()) // For parsing cookies
+app.set('trust proxy', 1) // trust first proxy
+
+const expiryDate = new Date(Date.now() + 60 * 60 * 1000) // 1 hour
+
 app.use(
   session({
     secret: 'your secret', // Replace with a real secret key
+    name: 'siikli-session',
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: false }, // Use secure cookies in production
+    cookie: {
+      secure: false,
+      httpOnly: false,
+      domain: 'localhost',
+      path: '/',
+      expires: expiryDate,
+    },
   })
 )
 app.use(express.urlencoded({ extended: false })) // For parsing application/x-www-form-urlencoded
@@ -50,6 +78,17 @@ if (process.env.NODE_ENV === 'production') {
     res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'))
   })
 }
+
+// custom 404
+app.use((req, res, next) => {
+  res.status(404).send("Sorry can't find that!")
+})
+
+// custom error handler
+app.use((err: any, req: any, res: any, next: any) => {
+  console.error(err.stack)
+  res.status(500).send('Something went wrong')
+})
 
 const server = app.listen(3000, () => {
   console.log(`🚀 Server ready at: http://localhost:3000`)

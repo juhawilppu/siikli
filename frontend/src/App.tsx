@@ -10,9 +10,20 @@ import {
   Toolbar,
   Typography,
 } from '@mui/material'
+import { styled } from '@mui/material/styles'
 import axios, { AxiosError } from 'axios'
 import { useEffect, useState } from 'react'
 import './App.css'
+
+const WhiteButton = styled(Button)({
+  backgroundColor: 'transparent', // Custom color
+  color: 'white',
+  padding: '10px 20px',
+  '&:hover': {
+    backgroundColor: '#0069D9', // Darken color on hover
+  },
+  // Add more styles as needed
+})
 
 axios.defaults.baseURL = 'http://localhost:5173/api'
 
@@ -21,9 +32,12 @@ function App() {
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
   const [isMessageSent, setIsMessageSent] = useState(false)
+  const [user, setUser] = useState()
 
   useEffect(() => {
-    axios.get('/auth/current-user')
+    axios.get('/auth/current-user').then((response) => {
+      setUser(response.data.username)
+    })
   })
 
   useEffect(() => {
@@ -64,9 +78,19 @@ function App() {
           <Typography variant='h6' component='div' sx={{ flexGrow: 1 }}>
             Messages
           </Typography>
-          <Button href='/auth/google' color='primary' id='login'>
-            Kirjaudu sisään
-          </Button>
+          {user && (
+            <>
+              <div>{user}</div>{' '}
+              <WhiteButton href='/auth/logout' id='logout'>
+                Kirjaudu ulos
+              </WhiteButton>
+            </>
+          )}
+          {!user && (
+            <WhiteButton href='/auth/google' id='login'>
+              Kirjaudu sisään
+            </WhiteButton>
+          )}
         </Toolbar>
       </AppBar>
       <div className='content-wrapper'>

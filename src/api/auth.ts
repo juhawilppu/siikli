@@ -21,13 +21,17 @@ authRoute.get(
 )
 
 authRoute.get('/auth/logout', (req, res) => {
-  //req.logout()
-  res.redirect('/')
+  console.log('logout here')
+  req.logout((err) => {
+    console.log('err', err)
+    res.redirect('/')
+  })
 })
 
 authRoute.get('/api/auth/current-user', (req, res) => {
   if (req.user) {
-    res.send({ username: req.user }).status(200)
+    const user = req.user as any
+    res.send({ username: user.username }).status(200)
   } else {
     res.status(201).end()
   }
