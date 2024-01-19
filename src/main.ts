@@ -1,3 +1,4 @@
+import cookieParser from 'cookie-parser'
 import cors from 'cors'
 import express from 'express'
 import session from 'express-session'
@@ -8,6 +9,7 @@ import { postsRoute } from './api/posts'
 import passportConfig from './passportConfig'
 
 const app = express()
+passportConfig()
 
 if (process.env.NODE_ENV !== 'production') {
   app.use(cors())
@@ -23,18 +25,20 @@ if (!cookieEncryptionKey || cookieEncryptionKey.length < 32) {
   exit(1)
 }
 
+app.use(cookieParser()) // For parsing cookies
 app.use(
   session({
-    secret: cookieEncryptionKey,
+    secret: 'your secret', // Replace with a real secret key
     resave: false,
     saveUninitialized: true,
     cookie: { secure: false }, // Use secure cookies in production
   })
 )
-app.use(authRoute)
+app.use(express.urlencoded({ extended: false })) // For parsing application/x-www-form-urlencoded
+
 app.use(passport.initialize())
 app.use(passport.session())
-passportConfig()
+app.use(authRoute)
 
 if (process.env.NODE_ENV === 'production') {
   // Express will serve the client main.js etc.
