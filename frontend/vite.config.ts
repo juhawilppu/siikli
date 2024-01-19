@@ -9,14 +9,14 @@ export default defineConfig({
       // Proxying API requests to the first backend service
       '/api': {
         target: 'http://localhost:3000',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api\/service1/, ''),
+        changeOrigin: false,
+        rewrite: (path) => path,
       },
       // Proxying API requests to the second backend service
       '/auth/google': {
         target: 'http://localhost:3000',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api\/service2/, ''),
+        changeOrigin: false,
+        rewrite: (path) => path,
       },
     },
   },

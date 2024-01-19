@@ -4,6 +4,16 @@ const passport = require('passport')
 const GoogleStrategy = require('passport-google-oidc')
 const prisma = new PrismaClient()
 
+interface Profile {
+  id: string
+  displayName: string
+  name: {
+    familyName: string
+    givenName: string
+  }
+  emails: { value: string }[]
+}
+
 const init = () => {
   passport.serializeUser((user: User, done: any) => {
     console.log('ser')
@@ -29,15 +39,14 @@ const init = () => {
         clientID: clientID,
         clientSecret: clientSecret,
         callbackURL: 'http://localhost:5173/auth/google/callback',
+        proxy: true,
       },
-      async (
-        accessToken: string,
-        refreshToken: string,
-        profile: any,
-        done: any
-      ) => {
+      async (url: string, profile: Profile, something: any, done: any) => {
         console.log('GoogleStrategy')
+        console.log(url)
         console.log(profile)
+        console.log(something)
+        console.log(done)
         const existingUser = await prisma.user.findFirst({
           where: { externalId: profile.id },
         })
@@ -50,9 +59,9 @@ const init = () => {
           // New user. Save it to db.
           const user = await prisma.user.create({
             data: {
-              username: profile._json.email,
+              username: profile.displayName,
               externalId: profile.id,
-              email: profile._json.email,
+              email: profile.emails[0].value,
             },
           })
           done(null, user)
