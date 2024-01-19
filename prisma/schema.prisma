@@ -12,6 +12,8 @@ datasource db {
 
 model User {
   id    Int     @id @default(autoincrement())
+  externalId String @db.VarChar(128) @unique
+  username String @db.VarChar(128) @unique
   email String  @unique
   name  String?
   posts Post[]

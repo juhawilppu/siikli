@@ -14,7 +14,7 @@ import axios, { AxiosError } from 'axios'
 import { useEffect, useState } from 'react'
 import './App.css'
 
-axios.defaults.baseURL = 'http://localhost:3000/api'
+axios.defaults.baseURL = 'http://localhost:5173/api'
 
 function App() {
   const [posts, setPosts] = useState<{ title: string; content: string }[]>([])
@@ -64,7 +64,9 @@ function App() {
           <Typography variant='h6' component='div' sx={{ flexGrow: 1 }}>
             Messages
           </Typography>
-          <Button color='inherit'>Login</Button>
+          <Button href='/auth/google' color='primary' id='login'>
+            Kirjaudu sisään
+          </Button>
         </Toolbar>
       </AppBar>
       <div className='content-wrapper'>

@@ -5,21 +5,28 @@ import express from 'express'
 export const authRoute = express.Router()
 
 authRoute.get(
-  '/api/auth/google',
+  '/auth/google',
   passport.authenticate('google', {
-    scope: ['profile', 'email'],
+    scope: [
+      'email',
+      'profile',
+      'https://www.googleapis.com/auth/userinfo.email',
+      'https://www.googleapis.com/auth/userinfo.profile',
+      'openid',
+    ],
   })
 )
 
 authRoute.get(
-  '/api/auth/google/callback',
+  '/auth/google/callback',
   passport.authenticate('google'),
   (req, res) => {
+    console.log('callback here')
     res.redirect('/messages')
   }
 )
 
-authRoute.get('/api/auth/logout', (req, res) => {
+authRoute.get('/auth/logout', (req, res) => {
   //req.logout()
   res.redirect('/')
 })
