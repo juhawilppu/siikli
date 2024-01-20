@@ -3,6 +3,7 @@ import styled from 'styled-components'
 
 export const StyledLink = styled(Link)`
   text-decoration: none;
+  color: black;
 
   &:focus,
   &:hover,
@@ -10,5 +11,6 @@ export const StyledLink = styled(Link)`
   &:link,
   &:active {
     text-decoration: none;
+    color: black;
   }
 `
