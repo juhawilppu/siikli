@@ -19,8 +19,11 @@ const Order = () => {
   const [orderProducts, setOrderProducts] = useState()
   const [edit, setEdit] = useState(params.edit === 'edit')
 
+  console.log('params', params)
+  console.log('edit', edit)
+
   useEffect(() => {
-    if (params.orderId) {
+    if (params.orderId !== '0') {
       const orderId = params.orderId
 
       const orderPromise = axios.get(`/api/orders/${orderId}`)

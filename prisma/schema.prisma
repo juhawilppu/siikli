@@ -39,3 +39,21 @@ model Order {
   note_header String @db.VarChar(256)
   note_body String @db.VarChar(256)
 }
+
+model Customer {
+  customer_id Int @id @default(autoincrement())
+  chain String @db.VarChar(3)
+    name String @db.VarChar(50)
+        address String @db.VarChar(255)
+                compansation Float 
+                reference String 
+                companyName String
+                orderIndex Int
+                city String
+                email String
+                phone String
+                postalCode String @db.VarChar(5)
+                businessId String
+
+
+}

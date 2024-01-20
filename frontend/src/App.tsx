@@ -70,7 +70,7 @@ function App() {
         <Route path='/' element={<Customers />} />
         <Route path='/orders' element={<Orders />} />
         <Route path='/orders/:orderId' element={<Order />} />
-        <Route path='/orders/:orderId/edit' element={<Order />} />
+        <Route path='/orders/:orderId/:edit' element={<Order />} />
         <Route path='/sales_report' element={<SalesReport />} />
         <Route path='/packaging_list' element={<PackageList />} />
         <Route path='/invoices' element={<Customers />} />
@@ -131,7 +131,6 @@ function App() {
           paddingLeft: 200,
         }}
       >
-        Moi
         {routes}
       </div>
     </>
