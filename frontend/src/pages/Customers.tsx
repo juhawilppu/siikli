@@ -26,7 +26,7 @@ export const Customers = () => {
         käytetään pakkauslistoissa.
       </Ingress>
       {customers.map((customer: any) => (
-        <CustomerCard>
+        <CustomerCard key={customer.id}>
           <CustomerSection>{customer.order_index}</CustomerSection>
           <CustomerSection>
             <div>
