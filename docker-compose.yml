@@ -1,23 +1,25 @@
 version: '3.8'
 
 services:
-  db:
-    image: postgres:15.3-alpine
+  db_mysql:
+    image: mysql:8.0.28
+    platform: linux/amd64
     restart: always
     environment:
-      - POSTGRES_DB=juuliadb
-      - POSTGRES_USER=juulia
-      - POSTGRES_PASSWORD=testpassword
+      - MYSQL_DATABASE=siikli
+      - MYSQL_USER=juulia
+      - MYSQL_PASSWORD=testpassword
+      - MYSQL_ROOT_PASSWORD=rootpassword
     ports:
-      - '5439:5432'
+      - '3306:3306'
     volumes:
-      - db:/var/lib/postgresql/data
+      - db_mysql:/var/lib/mysql
     networks:
       - juulia
 
   redis:
     image: redis:latest
-    command: ["redis-server", "/etc/redis/redis.conf"]
+    command: ['redis-server', '/etc/redis/redis.conf']
     ports:
       - 6380:6379
     volumes:
@@ -25,7 +27,7 @@ services:
       - ./redis.conf:/etc/redis/redis.conf
 
 volumes:
-  db:
+  db_mysql:
     driver: local
   redis_data:
 

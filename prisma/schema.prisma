@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgres"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
@@ -16,44 +16,160 @@ model User {
   username String @db.VarChar(128) @unique
   email String  @unique
   name  String?
-  posts Post[]
 }
 
-model Post {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  title     String
-  content   String?
-  published Boolean  @default(false)
-  viewCount Int      @default(0)
-  author    User?    @relation(fields: [authorId], references: [id])
-  authorId  Int?
-}
+model Company {
+  id Int @id @default(autoincrement())
+  address1 String? @db.VarChar(256)
+  address2 String? @db.VarChar(256)
+  business_id String? @db.VarChar(256)
+  company_name String? @db.VarChar(256)
+  invoice_bank_name String? @db.VarChar(256)
+  invoice_bank_number String? @db.VarChar(256)
+  invoice_reference String? @db.VarChar(256) 
+  invoice_sum_row String? @db.VarChar(256)
 
-model Order {
-  order_id Int @id @default(autoincrement())
-  customer_id Int
-  delivery_date String
-  has_note Boolean @default(false)
-  note_header String @db.VarChar(256)
-  note_body String @db.VarChar(256)
+  @@map("company")
 }
 
 model Customer {
   customer_id Int @id @default(autoincrement())
   chain String @db.VarChar(3)
-    name String @db.VarChar(50)
-        address String @db.VarChar(255)
-                compansation Float 
-                reference String 
-                companyName String
-                orderIndex Int
-                city String
-                email String
-                phone String
-                postalCode String @db.VarChar(5)
-                businessId String
+  name String @db.VarChar(50)
+  address String? @db.VarChar(255)
+  address2 String? @db.VarChar(255)
+  compansation Float 
+  reference String? 
+  companyName String?
+  orderIndex Int?
+  city String?
+  email String?
+  phone String?
+  postal_code String? @db.VarChar(5)
+  business_id String?
+  customer_group String?
+  show_price_without_tax Boolean?
+
+  @@map("customers")
+}
+
+// Unused table. Needed for historical reasons.
+model DeliveryReport {
+  selected_package Int
+  product_id Int
+  amount Int
+  name String? @db.VarChar(255)
+  selected_package_type String @db.VarChar(255)
+  product_name String? @db.VarChar(255)
+
+  @@map("delivery_report")
+  @@id([selected_package, product_id])
+}
+
+model OrderProduct {
+  order_product_id Int @id @default(autoincrement())
+  order_id Int
+  product_id Int
+  amount Int
+  price Float
+  price0 Float
+  package_size Int
+  freetext String? @db.VarChar(500)
+  package_type String? @db.VarChar(3)
+
+  @@map("order_product")
+}
+
+model ProductSubtype {
+  id Int @id @default(autoincrement()) @map("subtype_index")
+  order_id Int
+  order_index Int
+  product_id Int
+  subtype String @db.VarChar(255)
+  type String @db.VarChar(255)
+
+  @@map("product_subtype")
+}
+
+model ProductType {
+  id Int @id @default(autoincrement()) @map("product_order_index")
+  order_index Int
+  type String @db.VarChar(255)
+
+  @@map("product_types")
+}
+
+model Product {
+  id Int @id @default(autoincrement()) @map("product_id")
+  name String @db.VarChar(50)
+  type String @db.VarChar(20)
+  variety String @db.VarChar(20)
+  info String? @db.VarChar(20)
+  price Float
+  price0 Float
+  order_index Int?
+  subtype String? @db.VarChar(255)
+  package_size String? @db.VarChar(255)
+  package_type String? @db.VarChar(255)
+  customer_group String? @db.VarChar(256)
+  active Boolean?
+
+  @@map("products")
+}
+
+model SaleRow {
+  price Float
+  package_size String @db.VarChar(255)
+  package_type String @db.VarChar(255)
+  product_name String @db.VarChar(255)
+  delivery_date String
+  customer_name String @db.VarChar(255)
+  chain String @db.VarChar(255)
+  amount Float
+
+  @@id([price, package_size, package_type, product_name, delivery_date, customer_name, chain, amount])
+
+  @@map("sale_row")
+}
+
+model Order {
+  id Int @id @default(autoincrement()) @map("order_id")
+  customer_id Int
+  delivery_date String
+  has_note Boolean @default(false)
+  note_header String @db.VarChar(256)
+  note_body String @db.VarChar(1000)
+
+  @@map("orders")
+}
+
+model WarehouseReportGroupedByCustomer {
+  product_id Int
+  package_type String @db.VarChar(255)
+  package_size Int
+  customer_id Int
+  amount Int?
+  customer_name String? @db.VarChar(255)
+  freetext String? @db.VarChar(255)
+  product_name String? @db.VarChar(255)
+  customer_order_index Int?
+  product_type String? @db.VarChar(255)
+  product_variety String? @db.VarChar(255)
+
+  @@id([product_id, package_type, package_size, customer_id])
+  @@map("warehouse_report_grouped_by_customer")
+}
 
 
+model WarehouseReportGroupedByProduct {
+  product_id Int
+  package_type String @db.VarChar(255)
+  package_size Int
+  amount Int?
+  product_name String? @db.VarChar(255)
+  product_type String? @db.VarChar(255)
+  product_variety String? @db.VarChar(255)
+
+  @@id([product_id, package_type, package_size])
+  @@map("warehouse_report_grouped_by_product")
 }
