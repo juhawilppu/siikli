@@ -10,6 +10,19 @@ export const Ingress = styled.div`
   margin-bottom: 20px;
 `
 
+export const SideBySide = styled.div`
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+`
+
+export const MainSave = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  gap: 20px;
+  margin-bottom: 20px;
+`
+
 export const CustomerCard = styled.div`
   border: 1px solid black;
   padding: 5px;

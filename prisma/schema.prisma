@@ -30,7 +30,7 @@ model Company {
 }
 
 model Customer {
-  customer_id            Int      @id @default(autoincrement())
+  id            Int      @id @default(autoincrement()) @map("customer_id")
   chain                  String   @db.VarChar(3)
   name                   String   @db.VarChar(50)
   address                String?  @db.VarChar(255)
@@ -104,7 +104,7 @@ model Order {
   note_header            String?  @db.VarChar(255)
   show_price_without_tax Boolean? @default(false)
   customer_group         String?  @db.VarChar(256)
-  customers              Customer @relation(fields: [customer_id], references: [customer_id], onDelete: NoAction, onUpdate: NoAction, map: "FKpxtb8awmi0dk6smoh2vp1litg")
+  customers              Customer @relation(fields: [customer_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FKpxtb8awmi0dk6smoh2vp1litg")
 
   @@index([customer_id], map: "customer_id")
   @@map("orders")
