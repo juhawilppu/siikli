@@ -6,6 +6,7 @@ import helmet from 'helmet'
 import passport from 'passport'
 import { exit } from 'process'
 import { authRoute } from './api/auth'
+import { ordersRoute } from './api/orders'
 import { postsRoute } from './api/posts'
 import passportConfig from './passportConfig'
 
@@ -34,6 +35,7 @@ app.use('/auth/', (req, res, next) => {
 
 app.use(express.json({ limit: '200kb' }))
 app.use(postsRoute)
+app.use(ordersRoute)
 
 const cookieEncryptionKey = process.env.COOKIE_ENCRYPTION_KEY
 

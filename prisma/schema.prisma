@@ -30,3 +30,12 @@ model Post {
   author    User?    @relation(fields: [authorId], references: [id])
   authorId  Int?
 }
+
+model Order {
+  order_id Int @id @default(autoincrement())
+  customer_id Int
+  delivery_date String
+  has_note Boolean @default(false)
+  note_header String @db.VarChar(256)
+  note_body String @db.VarChar(256)
+}

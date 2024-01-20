@@ -24,7 +24,7 @@ const SiikliDrawer = () => {
       sx={{ toolbar: (theme) => theme.mixins.toolbar }}
     >
       <Divider />
-      <List>
+      <List sx={{ marginTop: '60px' }}>
         <StyledLink to='/orders' id='drawer-orders'>
           <ListItem button>
             <ListItemIcon>
