@@ -5,6 +5,7 @@ import {
   Button,
   Card,
   CardContent,
+  CircularProgress,
   IconButton,
   TextField,
   Toolbar,
@@ -13,7 +14,20 @@ import {
 import { styled } from '@mui/material/styles'
 import axios, { AxiosError } from 'axios'
 import { useEffect, useState } from 'react'
+import { Navigate, Route, Routes } from 'react-router-dom'
 import './App.css'
+import { Landing } from './Landing'
+import SiikliDrawer from './SiikliDrawer'
+import { CustomerPage } from './pages/CustomerPage'
+import { Customers } from './pages/Customers'
+import { Order } from './pages/Order'
+import { Orders } from './pages/Orders'
+import { OwnCompany } from './pages/OwnCompany'
+import { PackageConfiguration } from './pages/PackageConfiguration'
+import { PackageList } from './pages/PackageList'
+import { ProductPage } from './pages/ProductPage'
+import { Products } from './pages/Products'
+import { SalesReport } from './pages/SalesReport'
 
 const WhiteButton = styled(Button)({
   backgroundColor: 'transparent', // Custom color
@@ -33,11 +47,15 @@ function App() {
   const [content, setContent] = useState('')
   const [isMessageSent, setIsMessageSent] = useState(false)
   const [user, setUser] = useState()
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    axios.get('/auth/current-user').then((response) => {
-      setUser(response.data.username)
-    })
+    axios
+      .get('/auth/current-user')
+      .then((response) => {
+        setUser(response.data.username)
+      })
+      .finally(() => setLoading(false))
   })
 
   useEffect(() => {
@@ -62,9 +80,49 @@ function App() {
     }
   }
 
+  let routes
+  if (loading) {
+    routes = (
+      <div style={{ marginTop: '100px' }}>
+        <CircularProgress />
+      </div>
+    )
+  } else if (user) {
+    routes = (
+      <Routes>
+        <Route path='/' element={<Landing />} />
+        <Route path='*' element={<Navigate to='/' replace />} />
+      </Routes>
+    )
+  } else {
+    routes = (
+      <Routes>
+        <Route path='/' element={<Customers />} />
+        <Route path='/orders' element={<Orders />} />
+        <Route path='/orders/:orderId' element={<Order />} />
+        <Route path='/orders/:orderId/:edit' element={<Order />} />
+        <Route path='/sales_report' element={<SalesReport />} />
+        <Route path='/packaging_list' element={<PackageList />} />
+        <Route path='/invoices' element={<Customers />} />
+        <Route path='/customers' element={<Customers />} />
+        <Route path='/customers/:customerId' element={<CustomerPage />} />
+        <Route path='/customers/:customerId/:edit' element={<CustomerPage />} />
+        <Route path='/products' element={<Products />} />
+        <Route path='/products/:productId' element={<ProductPage />} />
+        <Route path='/products/:productId/:edit' element={<ProductPage />} />
+        <Route
+          path='/package_configuration'
+          element={<PackageConfiguration />}
+        />
+        <Route path='/own_company' element={<OwnCompany />} />
+        <Route path='*' element={<Navigate to='/' replace />} />
+      </Routes>
+    )
+  }
+
   return (
     <>
-      <AppBar position='static'>
+      <AppBar position='fixed' style={{ zIndex: 9000 }}>
         <Toolbar>
           <IconButton
             size='large'
@@ -76,7 +134,7 @@ function App() {
             <MenuIcon />
           </IconButton>
           <Typography variant='h6' component='div' sx={{ flexGrow: 1 }}>
-            Messages
+            Siikli
           </Typography>
           {user && (
             <>
@@ -93,6 +151,18 @@ function App() {
           )}
         </Toolbar>
       </AppBar>
+      <SiikliDrawer />
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          marginTop: 80,
+          marginBottom: 100,
+          paddingLeft: 200,
+        }}
+      >
+        {routes}
+      </div>
       <div className='content-wrapper'>
         <div className='content'>
           <h1>Juulia Stack</h1>
