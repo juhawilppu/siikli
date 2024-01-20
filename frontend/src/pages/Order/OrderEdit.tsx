@@ -12,7 +12,7 @@ import {
   TextField,
   TextareaAutosize,
 } from '@mui/material'
-import { DesktopDatePicker, LocalizationProvider } from '@mui/x-date-pickers'
+import { DatePicker, LocalizationProvider, fiFI } from '@mui/x-date-pickers'
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
@@ -77,9 +77,16 @@ const OrderEdit = () => {
             ))}
           </Select>
         </FormControl>
-        <LocalizationProvider dateAdapter={AdapterMoment}>
-          <DesktopDatePicker
+        <LocalizationProvider
+          dateAdapter={AdapterMoment}
+          adapterLocale='fi'
+          localeText={
+            fiFI.components.MuiLocalizationProvider.defaultProps.localeText
+          }
+        >
+          <DatePicker
             format='DD.MM.YYYY'
+            views={['day', 'month', 'year']}
             label='Toimituspäivä'
             value={deliveryDate}
             onChange={handleDateChange}
