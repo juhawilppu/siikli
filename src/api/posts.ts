@@ -1,12 +1,10 @@
 import { PrismaClient } from '@prisma/client'
-import express, { Request, Response } from 'express'
-import { z } from 'zod'
-import { rateLimit } from '../../middlewares/rateLimit'
-import { validate } from '../../middlewares/validate'
+import express from 'express'
 
 export const postsRoute = express.Router()
 const prisma = new PrismaClient()
 
+/*
 postsRoute.get(`/api/posts`, async (req, res) => {
   const result = await prisma.post.findMany({})
   res.json(result)
@@ -43,3 +41,4 @@ postsRoute.post(
     res.json(result)
   }
 )
+*/
