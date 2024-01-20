@@ -31,25 +31,59 @@ export interface CustomerDto {
   name: string
 }
 
+export interface ProductDto {
+  id: number
+  chain: string
+  name: string
+  price: number
+}
+
+const packageSizes = [12, 20, 25, 120, 200, 250]
+const packageTypes = ['Ltk', 'SS', 'A', 'Ap', 'P', 'Pnt', 'PSS', 'HYV']
+
 const OrderEdit = () => {
   const [customers, setCustomers] = useState<CustomerDto[]>()
+  const [products, setProducts] = useState<ProductDto[]>()
   const [customerId, setCustomerId] = useState<number>(20)
   const [deliveryDate, setDeliveryDate] = useState<string | null>(null)
   const [hasNote, setHasNote] = useState(false)
   const [noteHeader, setNoteHeader] = useState<string | null>(null)
   const [noteBody, setNoteBody] = useState<string | null>(null)
-  const [rows, setRows] = useState<any[]>([])
+  const [rows, setRows] = useState<any[]>([{ productId: null, amount: null }])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    axios
-      .get('/customers')
-      .then((response) => setCustomers(response.data))
+    Promise.all([axios.get('/customers'), axios.get('/products')])
+      .then((responses) => {
+        setCustomers(responses[0].data)
+        setProducts(responses[1].data)
+      })
       .finally(() => setLoading(false))
   }, [])
 
   const handleCustomerChange = (event: SelectChangeEvent) => {
     setCustomerId(parseInt(event.target.value))
+  }
+
+  const handleRowChange = (row: any, field: string) => (event: any) => {
+    if (field === 'productId') {
+      setRows([
+        ...rows.filter((r) => r !== row),
+        {
+          ...row,
+          productId: event.target.value,
+          price: products?.find((p) => p.id === event.target.value).price,
+        },
+      ])
+    } else {
+      setRows([
+        ...rows.filter((r) => r !== row),
+        {
+          ...row,
+          [field]: event.target.value,
+        },
+      ])
+    }
   }
 
   const handleDateChange = (value: string | null) => {
@@ -58,7 +92,7 @@ const OrderEdit = () => {
     setDeliveryDate(value)
   }
 
-  if (loading || !customers) return <LinearProgress />
+  if (loading || !customers || !products) return <LinearProgress />
 
   return (
     <Page>
@@ -147,11 +181,85 @@ const OrderEdit = () => {
                     key={row.name}
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                   >
-                    <TableCell scope='row'>{row.name}</TableCell>
-                    <TableCell align='right'>{row.calories}</TableCell>
-                    <TableCell align='right'>{row.fat}</TableCell>
-                    <TableCell align='right'>{row.carbs}</TableCell>
-                    <TableCell align='right'>{row.protein}</TableCell>
+                    <TableCell scope='row'>
+                      <FormControl fullWidth>
+                        <InputLabel id='order-customer'>Tuote</InputLabel>
+                        <Select
+                          labelId='order-customer'
+                          id='order-customer'
+                          value={row.productId ? row.productId + '' : ''}
+                          label='Asiakas'
+                          onChange={handleRowChange(row, 'productId')}
+                        >
+                          {products.map((product) => (
+                            <MenuItem key={product.id} value={product.id}>
+                              {product.name}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    </TableCell>
+                    <TableCell align='right'>
+                      <TextField
+                        value={row.amount || ''}
+                        onChange={handleRowChange(row, 'amount')}
+                      ></TextField>
+                    </TableCell>
+                    <TableCell align='right'>
+                      <FormControl fullWidth>
+                        <InputLabel id='order-package-size'>
+                          Pakkauskoko
+                        </InputLabel>
+                        <Select
+                          labelId='order-package-size'
+                          id='order-package-size'
+                          value={row.packageSize ? row.packageSize + '' : ''}
+                          label='Pakkauskoko'
+                          onChange={handleRowChange(row, 'packageSize')}
+                        >
+                          {packageSizes.map((packageSize) => (
+                            <MenuItem key={packageSize} value={packageSize}>
+                              {packageSize}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    </TableCell>
+                    <TableCell align='right'>
+                      <FormControl fullWidth>
+                        <InputLabel id='order-package-size'>
+                          Pakkaustyyppi
+                        </InputLabel>
+                        <Select
+                          labelId='order-package-type'
+                          id='order-package-type'
+                          value={row.packageType ? row.packageType + '' : ''}
+                          label='Pakkaustyyppi'
+                          onChange={handleRowChange(row, 'packageType')}
+                        >
+                          {packageTypes.map((packageType) => (
+                            <MenuItem key={packageType} value={packageType}>
+                              {packageType}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    </TableCell>
+                    <TableCell align='right'>
+                      {row.amount / row.packageSize}
+                    </TableCell>
+                    <TableCell align='right'>
+                      <TextField
+                        value={row.price || ''}
+                        onChange={handleRowChange(row, 'price')}
+                      ></TextField>
+                    </TableCell>
+                    <TableCell align='right'>
+                      <TextField
+                        value={row.freetext || ''}
+                        onChange={handleRowChange(row, 'freetext')}
+                      ></TextField>
+                    </TableCell>
                   </TableRow>
                 ))}
                 {rows.length == 0 && (

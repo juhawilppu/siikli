@@ -8,7 +8,7 @@ productsRoute.get(`/api/products`, async (req, res) => {
   console.log('getting products')
   const result = await prisma.product.findMany({
     orderBy: {
-      order_index: 'asc',
+      name: 'asc',
     },
   })
   res.json(result)
