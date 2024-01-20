@@ -5,7 +5,11 @@ export const customersRoute = express.Router()
 const prisma = new PrismaClient()
 
 customersRoute.get(`/api/customers`, async (req, res) => {
-  console.log('getting orders')
-  const result = await prisma.order.findMany({})
+  console.log('getting customers')
+  const result = await prisma.customer.findMany({
+    orderBy: {
+      order_index: 'asc',
+    },
+  })
   res.json(result)
 })
