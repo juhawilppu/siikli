@@ -9,6 +9,7 @@ import { authRoute } from './api/auth'
 import { customersRoute } from './api/customers'
 import { ordersRoute } from './api/orders'
 import { postsRoute } from './api/posts'
+import productsRoute from './api/products'
 import passportConfig from './passportConfig'
 
 const app = express()
@@ -38,6 +39,7 @@ app.use(express.json({ limit: '200kb' }))
 app.use(postsRoute)
 app.use(ordersRoute)
 app.use(customersRoute)
+app.use(productsRoute)
 
 const cookieEncryptionKey = process.env.COOKIE_ENCRYPTION_KEY
 
