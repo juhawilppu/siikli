@@ -23,6 +23,13 @@ export const MainSave = styled.div`
   margin-bottom: 20px;
 `
 
+export const Columns = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-left: 50px;
+`
+
 export const CustomerCard = styled.div`
   border: 1px solid black;
   padding: 5px;
