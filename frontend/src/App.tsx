@@ -1,18 +1,14 @@
 import MenuIcon from '@mui/icons-material/Menu'
 import {
-  Alert,
   AppBar,
   Button,
-  Card,
-  CardContent,
   CircularProgress,
   IconButton,
-  TextField,
   Toolbar,
   Typography,
 } from '@mui/material'
 import { styled } from '@mui/material/styles'
-import axios, { AxiosError } from 'axios'
+import axios from 'axios'
 import { useEffect, useState } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import './App.css'
@@ -20,7 +16,7 @@ import { Landing } from './Landing'
 import SiikliDrawer from './SiikliDrawer'
 import { CustomerPage } from './pages/CustomerPage'
 import { Customers } from './pages/Customers'
-import { Order } from './pages/Order'
+import Order from './pages/Order/Order'
 import { Orders } from './pages/Orders'
 import { OwnCompany } from './pages/OwnCompany'
 import { PackageConfiguration } from './pages/PackageConfiguration'
@@ -42,10 +38,6 @@ const WhiteButton = styled(Button)({
 axios.defaults.baseURL = 'http://localhost:5173/api'
 
 function App() {
-  const [posts, setPosts] = useState<{ title: string; content: string }[]>([])
-  const [title, setTitle] = useState('')
-  const [content, setContent] = useState('')
-  const [isMessageSent, setIsMessageSent] = useState(false)
   const [user, setUser] = useState()
   const [loading, setLoading] = useState(true)
 
@@ -57,28 +49,6 @@ function App() {
       })
       .finally(() => setLoading(false))
   })
-
-  useEffect(() => {
-    axios.get('/posts').then((response) => {
-      setPosts(response.data)
-    })
-  }, [])
-
-  const save = async () => {
-    try {
-      await axios.post('/posts', {
-        title,
-        content,
-      })
-      setTitle('')
-      setContent('')
-      setIsMessageSent(true)
-    } catch (error: unknown) {
-      if (error instanceof AxiosError && error.response?.status === 429) {
-        alert('Rate limit reached, try again later')
-      }
-    }
-  }
 
   let routes
   if (loading) {
@@ -100,7 +70,7 @@ function App() {
         <Route path='/' element={<Customers />} />
         <Route path='/orders' element={<Orders />} />
         <Route path='/orders/:orderId' element={<Order />} />
-        <Route path='/orders/:orderId/:edit' element={<Order />} />
+        <Route path='/orders/:orderId/edit' element={<Order />} />
         <Route path='/sales_report' element={<SalesReport />} />
         <Route path='/packaging_list' element={<PackageList />} />
         <Route path='/invoices' element={<Customers />} />
@@ -161,44 +131,8 @@ function App() {
           paddingLeft: 200,
         }}
       >
+        Moi
         {routes}
-      </div>
-      <div className='content-wrapper'>
-        <div className='content'>
-          <h1>Juulia Stack</h1>
-          <div className='card'>
-            {isMessageSent && <Alert severity='success'>Message sent!</Alert>}
-            {posts.map((post) => (
-              <Card>
-                <CardContent>
-                  <h3>{post.title}</h3>
-                  <div>{post.content}</div>
-                </CardContent>
-              </Card>
-            ))}
-            <h2>Send new message</h2>
-            <TextField
-              variant='outlined'
-              label='Title'
-              type='text'
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-            />
-            <br />
-            <TextField
-              variant='outlined'
-              label='Content'
-              type='text'
-              rows={10}
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-            />
-            <br />
-            <Button variant='contained' onClick={save}>
-              Save
-            </Button>
-          </div>
-        </div>
       </div>
     </>
   )
