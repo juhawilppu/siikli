@@ -1,4 +1,4 @@
-import { SaveOutlined } from '@mui/icons-material'
+import { Add, SaveOutlined } from '@mui/icons-material'
 import {
   Button,
   Checkbox,
@@ -7,8 +7,15 @@ import {
   InputLabel,
   LinearProgress,
   MenuItem,
+  Paper,
   Select,
   SelectChangeEvent,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
   TextField,
   TextareaAutosize,
 } from '@mui/material'
@@ -26,11 +33,12 @@ export interface CustomerDto {
 
 const OrderEdit = () => {
   const [customers, setCustomers] = useState<CustomerDto[]>()
-  const [customerId, setCustomerId] = useState<number>()
+  const [customerId, setCustomerId] = useState<number>(20)
   const [deliveryDate, setDeliveryDate] = useState<string | null>(null)
   const [hasNote, setHasNote] = useState(false)
   const [noteHeader, setNoteHeader] = useState<string | null>(null)
   const [noteBody, setNoteBody] = useState<string | null>(null)
+  const [rows, setRows] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -86,7 +94,6 @@ const OrderEdit = () => {
         >
           <DatePicker
             format='DD.MM.YYYY'
-            views={['day', 'month', 'year']}
             label='Toimituspäivä'
             value={deliveryDate}
             onChange={handleDateChange}
@@ -116,7 +123,53 @@ const OrderEdit = () => {
           ></TextareaAutosize>
         </Columns>
       )}
-      <div>Sinun täytyy valita asiakas ennen kuin voit syöttää tuotteet.</div>
+      {!customerId && (
+        <div>Sinun täytyy valita asiakas ennen kuin voit syöttää tuotteet.</div>
+      )}
+      {customerId && (
+        <>
+          <TableContainer component={Paper}>
+            <Table sx={{ minWidth: 650 }} aria-label='simple table'>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Tuote</TableCell>
+                  <TableCell align='right'>Määrä (kg)</TableCell>
+                  <TableCell align='right'>Pakkauskoko</TableCell>
+                  <TableCell align='right'>Tyyppi</TableCell>
+                  <TableCell align='right'>Kappaletta</TableCell>
+                  <TableCell align='right'>Hinta (€/kg), ALV 14 %</TableCell>
+                  <TableCell align='right'>Lisätietoa</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {rows.map((row) => (
+                  <TableRow
+                    key={row.name}
+                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                  >
+                    <TableCell scope='row'>{row.name}</TableCell>
+                    <TableCell align='right'>{row.calories}</TableCell>
+                    <TableCell align='right'>{row.fat}</TableCell>
+                    <TableCell align='right'>{row.carbs}</TableCell>
+                    <TableCell align='right'>{row.protein}</TableCell>
+                  </TableRow>
+                ))}
+                {rows.length == 0 && (
+                  <TableRow>
+                    <TableCell colSpan={6} align='center'>
+                      Ei tuotteita.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <SideBySide>
+            <p>Vain tuotteet joiden asiakasryhmä on tyhjä</p>
+            <Button startIcon={<Add />}>Lisää tuote</Button>
+          </SideBySide>
+        </>
+      )}
     </Page>
   )
 }
