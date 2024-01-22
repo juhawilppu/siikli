@@ -22,8 +22,10 @@ import {
 import { DatePicker, LocalizationProvider, fiFI } from '@mui/x-date-pickers'
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
 import axios from 'axios'
+import moment, { Moment } from 'moment'
 import { useEffect, useState } from 'react'
 import { Columns, MainSave, Page, SideBySide } from '../../components'
+import { ProductOrderDto } from '../../types/types'
 
 export interface CustomerDto {
   id: number
@@ -45,12 +47,23 @@ const OrderEdit = () => {
   const [customers, setCustomers] = useState<CustomerDto[]>()
   const [products, setProducts] = useState<ProductDto[]>()
   const [customerId, setCustomerId] = useState<number>(20)
-  const [deliveryDate, setDeliveryDate] = useState<string | null>(null)
+  const [deliveryDate, setDeliveryDate] = useState<Moment | null>(moment())
   const [hasNote, setHasNote] = useState(false)
   const [noteHeader, setNoteHeader] = useState<string | null>(null)
   const [noteBody, setNoteBody] = useState<string | null>(null)
-  const [rows, setRows] = useState<any[]>([{ productId: null, amount: null }])
+  const [rows, setRows] = useState<ProductOrderDto[]>([
+    {
+      productId: 96,
+      amount: 200,
+      packageSize: 12,
+      packageType: 'A',
+      price: 0.4,
+      freetext: 'moi',
+    },
+  ])
   const [loading, setLoading] = useState(true)
+
+  console.log(deliveryDate)
 
   useEffect(() => {
     Promise.all([axios.get('/customers'), axios.get('/products')])
@@ -66,13 +79,28 @@ const OrderEdit = () => {
   }
 
   const handleRowChange = (row: any, field: string) => (event: any) => {
-    if (field === 'productId') {
+    if (!products) {
+      return
+    }
+    if (field === 'amount') {
       setRows([
         ...rows.filter((r) => r !== row),
         {
           ...row,
-          productId: event.target.value,
-          price: products?.find((p) => p.id === event.target.value).price,
+          amount: parseInt(event.target.value),
+        },
+      ])
+    } else if (field === 'productId') {
+      const product = products.find((p) => p.id === event.target.value)
+      if (!product) {
+        return
+      }
+      setRows([
+        ...rows.filter((r) => r !== row),
+        {
+          ...row,
+          productId: product.id,
+          price: product.price,
         },
       ])
     } else {
@@ -86,10 +114,21 @@ const OrderEdit = () => {
     }
   }
 
-  const handleDateChange = (value: string | null) => {
+  const handleDateChange = (value: Moment | null) => {
     console.log(value)
     //setDeliveryDate(moment(value, 'DD.MM.YYYY').toDate())
     setDeliveryDate(value)
+  }
+
+  const save = () => {
+    axios.post('/orders', {
+      deliveryDate: deliveryDate?.format('YYYY-MM-DD'),
+      customerId,
+      hasNote,
+      noteBody,
+      noteHeader,
+      rows,
+    })
   }
 
   if (loading || !customers || !products) return <LinearProgress />
@@ -98,7 +137,7 @@ const OrderEdit = () => {
     <Page>
       <h1>Uusi tilaus</h1>
       <MainSave>
-        <Button variant='contained' startIcon={<SaveOutlined />}>
+        <Button variant='contained' startIcon={<SaveOutlined />} onClick={save}>
           Tallenna
         </Button>
       </MainSave>
@@ -178,7 +217,7 @@ const OrderEdit = () => {
               <TableBody>
                 {rows.map((row) => (
                   <TableRow
-                    key={row.name}
+                    key={row.productId}
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                   >
                     <TableCell scope='row'>

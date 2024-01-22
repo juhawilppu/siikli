@@ -1,6 +1,7 @@
 import { LinearProgress } from '@mui/material'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
+import { GetOrderList } from '../types/types'
 
 export const Orders = () => {
   const [orders, setOrders] = useState<any[]>()
@@ -8,7 +9,7 @@ export const Orders = () => {
 
   useEffect(() => {
     axios
-      .get('/orders')
+      .get<GetOrderList[]>('/orders')
       .then((response) => setOrders(response.data))
       .finally(() => setLoading(false))
   }, [])
@@ -22,9 +23,24 @@ export const Orders = () => {
   return (
     <>
       <h1>Tilaukset</h1>
-      {orders.map(() => (
-        <div>moi</div>
-      ))}
+      <table>
+        <thead>
+          <th>Toimituspäivä</th>
+          <th>Asiakas</th>
+          <th></th>
+        </thead>
+        <tbody>
+          {orders.map((order) => (
+            <tr>
+              <td>{order.delivery_date}</td>
+              <td>
+                {order.customer.chain} {order.customer.name}
+              </td>
+              <td>Avaa</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </>
   )
 }
