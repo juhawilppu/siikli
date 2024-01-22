@@ -31,7 +31,7 @@ ordersRoute.get(`/api/orders`, async (req, res) => {
   const mapped = result.map((o) => {
     return {
       id: o.id,
-      deliveryDate: moment(o.delivery_date, 'YYYY-MM-DD').toString(),
+      deliveryDate: moment(o.delivery_date).format('YYYY-MM-DD'),
       customer: {
         id: o.customer_id,
         chain: o.customer.chain,
@@ -39,7 +39,7 @@ ordersRoute.get(`/api/orders`, async (req, res) => {
       },
     } as GetOrderList
   })
-  res.json(result)
+  res.json(mapped)
 })
 
 ordersRoute.post(`/api/orders`, async (req, res) => {
