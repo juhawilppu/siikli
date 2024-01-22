@@ -8,25 +8,32 @@ const prisma = new PrismaClient()
 
 ordersRoute.get(`/api/orders`, async (req, res) => {
   console.log('getting orders')
+
+  if (!req.query.startDate || !req.query.endDate) {
+    return res.status(400)
+  }
+
   const result = await prisma.order.findMany({
     include: {
       customer: true,
     },
     orderBy: [
       {
-        delivery_date: 'desc',
+        delivery_date: 'asc',
       },
+
       {
         customer: {
-          chain: 'asc',
-        },
-      },
-      {
-        customer: {
-          name: 'asc',
+          order_index: 'asc',
         },
       },
     ],
+    where: {
+      delivery_date: {
+        gte: moment(req.query.startDate as string, 'YYYY-MM-DD').toDate(),
+        lte: moment(req.query.endDate as string, 'YYYY-MM-DD').toDate(),
+      },
+    },
   })
   const mapped = result.map((o) => {
     return {
