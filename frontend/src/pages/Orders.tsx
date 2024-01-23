@@ -4,6 +4,7 @@ import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
 import axios from 'axios'
 import moment, { Moment } from 'moment'
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { Page, SideBySide } from '../components'
 import { GetOrderList } from '../types/types'
 
@@ -91,7 +92,9 @@ export const Orders = () => {
                 <td>
                   {order.customer.chain} {order.customer.name}
                 </td>
-                <td>Avaa</td>
+                <td>
+                  <Link to={`/orders/${order.id}`}>Avaa</Link>
+                </td>
               </tr>
             ))}
           </tbody>
