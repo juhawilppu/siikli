@@ -7,6 +7,7 @@ import {
   Toolbar,
   Typography,
 } from '@mui/material'
+import CssBaseline from '@mui/material/CssBaseline'
 import { styled } from '@mui/material/styles'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
@@ -14,6 +15,7 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import './App.css'
 import { Landing } from './Landing'
 import SiikliDrawer from './SiikliDrawer'
+import { PageContent } from './components'
 import { CustomerPage } from './pages/CustomerPage'
 import { Customers } from './pages/Customers'
 import Order from './pages/Order/Order'
@@ -92,6 +94,7 @@ function App() {
 
   return (
     <>
+      <CssBaseline />
       <AppBar position='fixed' style={{ zIndex: 9000 }}>
         <Toolbar>
           <IconButton
@@ -122,17 +125,7 @@ function App() {
         </Toolbar>
       </AppBar>
       <SiikliDrawer />
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          marginTop: 80,
-          marginBottom: 100,
-          paddingLeft: 200,
-        }}
-      >
-        {routes}
-      </div>
+      <PageContent>{routes}</PageContent>
     </>
   )
 }

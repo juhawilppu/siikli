@@ -1,8 +1,14 @@
 import styled from 'styled-components'
 
 export const Page = styled.div`
-  width: calc(100% - 105px);
-  margin-left: 70px;
+  width: 100%;
+`
+
+export const PageContent = styled.div`
+  width: calc(100% - 240px - 20px);
+  margin-left: 240px;
+  margin-top: 80px;
+  display: flex;
 `
 
 export const Ingress = styled.div`

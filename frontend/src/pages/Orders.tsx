@@ -26,6 +26,7 @@ export const Orders = () => {
   }
 
   useEffect(() => {
+    setLoading(true)
     axios
       .get<GetOrderList[]>('/orders', {
         params: {
@@ -35,13 +36,7 @@ export const Orders = () => {
       })
       .then((response) => setOrders(response.data))
       .finally(() => setLoading(false))
-  }, [])
-
-  if (loading) return <LinearProgress />
-
-  if (!orders) {
-    return <div>Ei tilauksia</div>
-  }
+  }, [startDate, endDate])
 
   return (
     <Page>
@@ -76,28 +71,32 @@ export const Orders = () => {
           />
         </LocalizationProvider>
       </SideBySide>
-      <table>
-        <thead>
-          <tr>
-            <th>Toimituspäivä</th>
-            <th>Asiakas</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {orders.map((order) => (
-            <tr key={order.id}>
-              <td>
-                {moment(order.deliveryDate, 'YYYY-MM-DD').format('D.M.YYYY')}
-              </td>
-              <td>
-                {order.customer.chain} {order.customer.name}
-              </td>
-              <td>Avaa</td>
+      {loading && <LinearProgress />}
+      {!loading && orders && orders.length == 0 && <div>Ei tilauksia</div>}
+      {!loading && orders && orders.length > 0 && (
+        <table>
+          <thead>
+            <tr>
+              <th>Toimituspäivä</th>
+              <th>Asiakas</th>
+              <th></th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {orders.map((order) => (
+              <tr key={order.id}>
+                <td>
+                  {moment(order.deliveryDate, 'YYYY-MM-DD').format('D.M.YYYY')}
+                </td>
+                <td>
+                  {order.customer.chain} {order.customer.name}
+                </td>
+                <td>Avaa</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
     </Page>
   )
 }
