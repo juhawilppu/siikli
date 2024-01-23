@@ -16,10 +16,11 @@ ordersRoute.get(`/api/orders`, async (req, res) => {
   const result = await prisma.order.findMany({
     include: {
       customer: true,
+      products: true,
     },
     orderBy: [
       {
-        delivery_date: 'asc',
+        deliveryDate: 'asc',
       },
 
       {
@@ -29,7 +30,7 @@ ordersRoute.get(`/api/orders`, async (req, res) => {
       },
     ],
     where: {
-      delivery_date: {
+      deliveryDate: {
         gte: moment(req.query.startDate as string, 'YYYY-MM-DD').toDate(),
         lte: moment(req.query.endDate as string, 'YYYY-MM-DD').toDate(),
       },
@@ -38,15 +39,40 @@ ordersRoute.get(`/api/orders`, async (req, res) => {
   const mapped = result.map((o) => {
     return {
       id: o.id,
-      deliveryDate: moment(o.delivery_date).format('YYYY-MM-DD'),
+      deliveryDate: moment(o.deliveryDate).format('YYYY-MM-DD'),
       customer: {
-        id: o.customer_id,
+        id: o.customerId,
         chain: o.customer.chain,
         name: o.customer.name,
       },
     } as GetOrderList
   })
   res.json(mapped)
+})
+
+ordersRoute.get(`/api/orders/:id`, async (req, res) => {
+  console.log('getting order ' + req.params.id)
+
+  const result = await prisma.order.findFirst({
+    include: {
+      customer: true,
+      products: true,
+    },
+    orderBy: [
+      {
+        deliveryDate: 'asc',
+      },
+      {
+        customer: {
+          order_index: 'asc',
+        },
+      },
+    ],
+    where: {
+      id: parseInt(req.params.id),
+    },
+  })
+  res.json(result)
 })
 
 ordersRoute.post(`/api/orders`, async (req, res) => {
@@ -56,11 +82,11 @@ ordersRoute.post(`/api/orders`, async (req, res) => {
 
   const result = await prisma.order.create({
     data: {
-      delivery_date: moment(data.deliveryDate, 'YYYY-MM-DD').toDate(),
-      has_note: data.hasNote,
-      note_header: data.hasNote ? data.noteHeader : undefined,
-      note_body: data.hasNote ? data.noteBody : undefined,
-      show_price_without_tax: false,
+      deliveryDate: moment(data.deliveryDate, 'YYYY-MM-DD').toDate(),
+      hasNote: data.hasNote,
+      noteHeader: data.hasNote ? data.noteHeader : undefined,
+      noteBody: data.hasNote ? data.noteBody : undefined,
+      showPriceWithoutTax: false,
       customer: {
         connect: {
           id: data.customerId,
@@ -71,14 +97,14 @@ ordersRoute.post(`/api/orders`, async (req, res) => {
   const result2 = await prisma.orderProduct.createMany({
     data: data.rows.map((r) => {
       return {
-        order_id: result.id,
-        product_id: r.productId,
+        orderId: result.id,
+        productId: r.productId,
 
         amount: r.amount,
         price: r.price,
         freetext: r.freetext,
-        package_size: r.packageSize,
-        package_type: r.packageType,
+        packageSize: r.packageSize,
+        packageType: r.packageType,
       }
     }),
   })

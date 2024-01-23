@@ -8,11 +8,11 @@ datasource db {
 }
 
 model User {
-  id    Int     @id @default(autoincrement())
-  externalId String @db.VarChar(128) @unique
-  username String @db.VarChar(128) @unique
-  email String  @unique
-  name  String?
+  id         Int     @id @default(autoincrement())
+  externalId String  @unique @db.VarChar(128)
+  username   String  @unique @db.VarChar(128)
+  email      String  @unique
+  name       String?
 }
 
 model Company {
@@ -30,7 +30,7 @@ model Company {
 }
 
 model Customer {
-  id            Int      @id @default(autoincrement()) @map("customer_id")
+  id                     Int      @id @default(autoincrement()) @map("customer_id")
   chain                  String   @db.VarChar(3)
   name                   String   @db.VarChar(50)
   address                String?  @db.VarChar(255)
@@ -52,18 +52,19 @@ model Customer {
 }
 
 model OrderProduct {
-  order_product_id Int     @id @default(autoincrement())
-  order_id         Int
-  product_id       Int
+  id Int           @id @default(autoincrement()) @map("order_product_id")
+  orderId          Int @map("order_id")
+  productId        Int @map("product_id")
   amount           Int
   price            Float   @db.Float
-  package_size     Int
+  packageSize      Int @map("package_size")
   freetext         String? @db.VarChar(500)
-  package_type     String? @db.VarChar(3)
+  packageType      String? @db.VarChar(3) @map("package_type")
   price0           Float   @default(0) @db.Float
-  products         Product @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FKo6helt0ucmegaeachjpx40xhe")
+  products         Product @relation(fields: [productId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FKo6helt0ucmegaeachjpx40xhe")
+  order            Order   @relation(fields: [orderId], references: [id])
 
-  @@index([product_id], map: "FKo6helt0ucmegaeachjpx40xhe")
+  @@index([productId], map: "FKo6helt0ucmegaeachjpx40xhe")
   @@map("order_product")
 }
 
@@ -96,17 +97,18 @@ model Product {
 }
 
 model Order {
-  id                     Int      @id @unique(map: "order_id") @default(autoincrement()) @map("order_id")
-  customer_id            Int
-  delivery_date          DateTime @db.Date
-  has_note               Boolean  @db.Bit(1)
-  note_body              String?  @db.VarChar(1000)
-  note_header            String?  @db.VarChar(255)
-  show_price_without_tax Boolean? @default(false)
-  customer_group         String?  @db.VarChar(256)
-  customer              Customer @relation(fields: [customer_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FKpxtb8awmi0dk6smoh2vp1litg")
+  id                  Int            @id @unique(map: "order_id") @default(autoincrement()) @map("order_id")
+  customerId          Int            @map("customer_id")
+  deliveryDate        DateTime       @map("delivery_date") @db.Date
+  hasNote             Boolean        @map("has_note") @db.Bit(1)
+  noteBody            String?        @map("note_body") @db.VarChar(1000)
+  noteHeader          String?        @map("note_header") @db.VarChar(255)
+  showPriceWithoutTax Boolean?       @default(false) @map("show_price_without_tax")
+  customerGroup       String?        @map("customer_group") @db.VarChar(256)
+  customer            Customer       @relation(fields: [customerId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FKpxtb8awmi0dk6smoh2vp1litg")
+  products            OrderProduct[]
 
-  @@index([customer_id], map: "customer_id")
+  @@index([customerId], map: "customer_id")
   @@map("orders")
 }
 
