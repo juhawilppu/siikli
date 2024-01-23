@@ -24,7 +24,7 @@ import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
 import axios from 'axios'
 import moment, { Moment } from 'moment'
 import { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { Columns, MainSave, Page, SideBySide } from '../../components'
 import { ProductOrderDto } from '../../types/types'
 
@@ -64,6 +64,7 @@ const OrderEdit = () => {
   ])
   const [loading, setLoading] = useState(true)
   const { orderId } = useParams()
+  const navigate = useNavigate()
 
   console.log(deliveryDate)
   console.log(orderId)
@@ -139,22 +140,34 @@ const OrderEdit = () => {
     setDeliveryDate(value)
   }
 
-  const save = () => {
-    axios.post('/orders', {
-      deliveryDate: deliveryDate?.format('YYYY-MM-DD'),
-      customerId,
-      hasNote,
-      noteBody,
-      noteHeader,
-      rows,
-    })
+  const save = async () => {
+    if (orderId) {
+      await axios.post(`/orders/${orderId}`, {
+        deliveryDate: deliveryDate?.format('YYYY-MM-DD'),
+        customerId,
+        hasNote,
+        noteBody,
+        noteHeader,
+        rows,
+      })
+    } else {
+      const response = await axios.post('/orders', {
+        deliveryDate: deliveryDate?.format('YYYY-MM-DD'),
+        customerId,
+        hasNote,
+        noteBody,
+        noteHeader,
+        rows,
+      })
+      navigate(`/orders/${response.data.id}`)
+    }
   }
 
   if (loading || !customers || !products) return <LinearProgress />
 
   return (
     <Page>
-      <h1>Uusi tilaus</h1>
+      <h1>{orderId ? 'Tilaus' : 'Uusi tilaus'}</h1>
       <MainSave>
         <Button variant='contained' startIcon={<SaveOutlined />} onClick={save}>
           Tallenna

@@ -71,8 +71,8 @@ function App() {
       <Routes>
         <Route path='/' element={<Customers />} />
         <Route path='/orders' element={<Orders />} />
+        <Route path='/orders/new' element={<Order />} />
         <Route path='/orders/:orderId' element={<Order />} />
-        <Route path='/orders/:orderId/:edit' element={<Order />} />
         <Route path='/sales_report' element={<SalesReport />} />
         <Route path='/packaging_list' element={<PackageList />} />
         <Route path='/invoices' element={<Customers />} />

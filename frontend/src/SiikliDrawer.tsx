@@ -39,7 +39,7 @@ const SiikliDrawer = () => {
           </ListItem>
         </NavLink>
         <NavLink
-          to='/orders/0/edit'
+          to='/orders/new'
           id='drawer-new-order'
           className={({ isActive }) => (isActive ? 'active' : 'inactive')}
         >

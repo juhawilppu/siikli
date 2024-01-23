@@ -1,7 +1,11 @@
 import { PrismaClient } from '@prisma/client'
 import express from 'express'
 import moment from 'moment'
-import { GetOrderList, PostOrderDto } from '../../frontend/src/types/types'
+import {
+  GetOrderList,
+  PostOrderDto,
+  PostOrderIdDto,
+} from '../../frontend/src/types/types'
 
 export const ordersRoute = express.Router()
 const prisma = new PrismaClient()
@@ -50,9 +54,7 @@ ordersRoute.get(`/api/orders`, async (req, res) => {
   res.json(mapped)
 })
 
-ordersRoute.get(`/api/orders/:id`, async (req, res) => {
-  console.log('getting order ' + req.params.id)
-
+const getOrder = async (id: number) => {
   const result = await prisma.order.findFirst({
     include: {
       customer: true,
@@ -69,10 +71,15 @@ ordersRoute.get(`/api/orders/:id`, async (req, res) => {
       },
     ],
     where: {
-      id: parseInt(req.params.id),
+      id: id,
     },
   })
-  res.json(result)
+  return result
+}
+
+ordersRoute.get(`/api/orders/:id`, async (req, res) => {
+  console.log('getting order ' + req.params.id)
+  res.json(await getOrder(parseInt(req.params.id as string)))
 })
 
 ordersRoute.post(`/api/orders`, async (req, res) => {
@@ -108,5 +115,70 @@ ordersRoute.post(`/api/orders`, async (req, res) => {
       }
     }),
   })
+
   res.json({ ...result, rows: result2 })
+})
+
+ordersRoute.post(`/api/orders/:id`, async (req, res) => {
+  console.log('getting orders')
+
+  const data = req.body as PostOrderIdDto
+
+  const result = await prisma.order.update({
+    data: {
+      deliveryDate: moment(data.deliveryDate, 'YYYY-MM-DD').toDate(),
+      hasNote: data.hasNote,
+      noteHeader: data.hasNote ? data.noteHeader : undefined,
+      noteBody: data.hasNote ? data.noteBody : undefined,
+      showPriceWithoutTax: false,
+      customer: {
+        connect: {
+          id: data.customerId,
+        },
+      },
+    },
+    where: {
+      id: parseInt(req.params.id as string),
+    },
+  })
+  console.log(data.rows)
+  const toCreate = data.rows.filter((r) => !r.id)
+  if (toCreate.length > 0) {
+    await prisma.orderProduct.createMany({
+      data: toCreate.map((r) => {
+        return {
+          orderId: result.id,
+          productId: r.productId,
+          amount: r.amount,
+          price: r.price,
+          freetext: r.freetext,
+          packageSize: r.packageSize,
+          packageType: r.packageType,
+        }
+      }),
+    })
+  }
+  const toUpdate = data.rows.filter((r) => r.id)
+  if (toUpdate.length > 0) {
+    const promises = toUpdate.map((r) => {
+      console.log(r)
+      return prisma.orderProduct.update({
+        data: {
+          orderId: result.id,
+          productId: r.productId,
+          amount: r.amount,
+          price: r.price,
+          freetext: r.freetext,
+          packageSize: r.packageSize,
+          packageType: r.packageType,
+        },
+        where: {
+          id: r.id as number,
+        },
+      })
+    })
+    await Promise.all(promises)
+  }
+
+  res.json(await getOrder(parseInt(req.params.id as string)))
 })
