@@ -26,19 +26,7 @@ export default defineConfig({
       // Proxying API requests to the second backend service
       '/auth': {
         target: 'http://localhost:3000',
-        changeOrigin: true,
-        configure: (proxy) => {
-          // Apply middleware to the proxy to modify the proxied requests
-          proxy.on('proxyReq', (proxyReq) => {
-            // Set headers to prevent caching
-            proxyReq.setHeader(
-              'Cache-Control',
-              'no-cache, no-store, must-revalidate'
-            )
-            proxyReq.setHeader('Pragma', 'no-cache')
-            proxyReq.setHeader('Expires', '0')
-          })
-        },
+        changeOrigin: false,
       },
     },
   },

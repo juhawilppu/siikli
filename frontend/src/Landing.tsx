@@ -1,1 +1,5 @@
-export const Landing = () => <div>moi</div>
+export const Landing = () => (
+  <div>
+    <h1>Tervetuloa Siikliin!</h1>
+  </div>
+)

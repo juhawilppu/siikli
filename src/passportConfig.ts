@@ -26,6 +26,8 @@ const init = () => {
     console.log('deser', id)
 
     const user = await prisma.user.findFirst({ where: { id } })
+    console.log('user from db')
+    console.log(user)
     done(null, user)
   })
 

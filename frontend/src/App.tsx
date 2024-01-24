@@ -59,7 +59,7 @@ function App() {
         <CircularProgress />
       </div>
     )
-  } else if (user) {
+  } else if (!user) {
     routes = (
       <Routes>
         <Route path='/' element={<Landing />} />

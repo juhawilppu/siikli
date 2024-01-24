@@ -6,11 +6,12 @@ import {
   PostOrderDto,
   PostOrderIdDto,
 } from '../../frontend/src/types/types'
+import { hasAccess } from '../../middlewares/hasAccess'
 
 export const ordersRoute = express.Router()
 const prisma = new PrismaClient()
 
-ordersRoute.get(`/api/orders`, async (req, res) => {
+ordersRoute.get(`/api/orders`, hasAccess, async (req, res) => {
   console.log('getting orders')
 
   if (!req.query.startDate || !req.query.endDate) {
