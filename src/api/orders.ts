@@ -6,13 +6,16 @@ import {
   PostOrderDto,
   PostOrderIdDto,
 } from '../../frontend/src/types/types'
-import { hasAccess } from '../../middlewares/hasAccess'
 
 export const ordersRoute = express.Router()
 const prisma = new PrismaClient()
 
-ordersRoute.get(`/api/orders`, hasAccess, async (req, res) => {
+ordersRoute.get(`/api/orders`, async (req, res) => {
   console.log('getting orders')
+
+  if (!req.user) {
+    return res.status(403)
+  }
 
   if (!req.query.startDate || !req.query.endDate) {
     return res.status(400)
@@ -39,6 +42,7 @@ ordersRoute.get(`/api/orders`, hasAccess, async (req, res) => {
         gte: moment(req.query.startDate as string, 'YYYY-MM-DD').toDate(),
         lte: moment(req.query.endDate as string, 'YYYY-MM-DD').toDate(),
       },
+      tenantId: parseTenantId(req),
     },
   })
   const mapped = result.map((o) => {
@@ -55,7 +59,7 @@ ordersRoute.get(`/api/orders`, hasAccess, async (req, res) => {
   res.json(mapped)
 })
 
-const getOrder = async (id: number) => {
+const getOrder = async (id: number, tenantId: number) => {
   const result = await prisma.order.findFirst({
     include: {
       customer: true,
@@ -73,6 +77,7 @@ const getOrder = async (id: number) => {
     ],
     where: {
       id: id,
+      tenantId: tenantId,
     },
   })
   return result
@@ -80,8 +85,12 @@ const getOrder = async (id: number) => {
 
 ordersRoute.get(`/api/orders/:id`, async (req, res) => {
   console.log('getting order ' + req.params.id)
-  res.json(await getOrder(parseInt(req.params.id as string)))
+  res.json(
+    await getOrder(parseInt(req.params.id as string), parseTenantId(req))
+  )
 })
+
+export const parseTenantId = (req: any) => req.user.tenantId
 
 ordersRoute.post(`/api/orders`, async (req, res) => {
   console.log('getting orders')
@@ -98,6 +107,11 @@ ordersRoute.post(`/api/orders`, async (req, res) => {
       customer: {
         connect: {
           id: data.customerId,
+        },
+      },
+      tenant: {
+        connect: {
+          id: parseTenantId(req),
         },
       },
     },
@@ -135,6 +149,11 @@ ordersRoute.post(`/api/orders/:id`, async (req, res) => {
       customer: {
         connect: {
           id: data.customerId,
+        },
+      },
+      tenant: {
+        connect: {
+          id: parseTenantId(req),
         },
       },
     },
@@ -181,5 +200,7 @@ ordersRoute.post(`/api/orders/:id`, async (req, res) => {
     await Promise.all(promises)
   }
 
-  res.json(await getOrder(parseInt(req.params.id as string)))
+  res.json(
+    await getOrder(parseInt(req.params.id as string), parseTenantId(req))
+  )
 })

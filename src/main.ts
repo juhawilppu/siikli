@@ -37,11 +37,6 @@ app.use('/auth/', (req, res, next) => {
 })
 
 app.use(express.json({ limit: '200kb' }))
-app.use(postsRoute)
-app.use(ordersRoute)
-app.use(customersRoute)
-app.use(productsRoute)
-app.use(companiesRoute)
 
 const cookieEncryptionKey = process.env.COOKIE_ENCRYPTION_KEY
 
@@ -75,6 +70,11 @@ app.use(express.urlencoded({ extended: false })) // For parsing application/x-ww
 app.use(passport.initialize())
 app.use(passport.session())
 app.use(authRoute)
+app.use(postsRoute)
+app.use(ordersRoute)
+app.use(customersRoute)
+app.use(productsRoute)
+app.use(companiesRoute)
 
 if (process.env.NODE_ENV === 'production') {
   // Express will serve the client main.js etc.
