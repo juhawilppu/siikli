@@ -107,6 +107,7 @@ const SiikliDrawer = () => {
             <ListItemText primary='Asiakkaat' />
           </ListItem>
         </NavLink>
+        {/*
         <NavLink
           to='/package_configuration'
           className={({ isActive }) => (isActive ? 'active' : 'inactive')}
@@ -118,6 +119,7 @@ const SiikliDrawer = () => {
             <ListItemText primary='Pakkausasetukset' />
           </ListItem>
         </NavLink>
+  */}
         <NavLink
           to='/own_company'
           className={({ isActive }) => (isActive ? 'active' : 'inactive')}

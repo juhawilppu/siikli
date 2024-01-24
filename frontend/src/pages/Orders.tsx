@@ -1,8 +1,9 @@
-import { LinearProgress } from '@mui/material'
+import { Button, LinearProgress } from '@mui/material'
 import { DatePicker, LocalizationProvider, fiFI } from '@mui/x-date-pickers'
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
 import axios from 'axios'
 import moment, { Moment } from 'moment'
+import printJS from 'print-js'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Page, SideBySide } from '../components'
@@ -24,6 +25,17 @@ export const Orders = () => {
 
   const handleEndDateChange = (value: Moment | null) => {
     if (value) setEndDate(value)
+  }
+
+  const fetchCargo = () => {
+    printJS({
+      printable: `/api/orders/cargo_reports?startDate=${startDate.format(
+        'YYYY-MM-DD'
+      )}&endDate=${endDate.format('YYYY-MM-DD')}`,
+      type: 'pdf',
+      showModal: true,
+      modalMessage: 'Ladataan tiedostoa...',
+    })
   }
 
   useEffect(() => {
@@ -71,6 +83,8 @@ export const Orders = () => {
             onChange={handleEndDateChange}
           />
         </LocalizationProvider>
+        <Button onClick={fetchCargo}>Hae kuormakirjat</Button>
+        <Button>Tulosta kuormakirjat</Button>
       </SideBySide>
       {loading && <LinearProgress />}
       {!loading && orders && orders.length == 0 && <div>Ei tilauksia</div>}
