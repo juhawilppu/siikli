@@ -1,5 +1,15 @@
+import { Button } from '@mui/material'
+import google from '../public/google.webp'
+import { Page } from './components'
+
 export const Landing = () => (
-  <div>
+  <Page>
     <h1>Tervetuloa Siikliin!</h1>
-  </div>
+    <p>Aloita kirjautumalla sisään.</p>
+    <p>
+      <Button href='/auth/google'>
+        <img src={google} style={{ width: '200px' }}></img>
+      </Button>
+    </p>
+  </Page>
 )

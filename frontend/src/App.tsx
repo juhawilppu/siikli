@@ -124,7 +124,7 @@ function App() {
           )}
         </Toolbar>
       </AppBar>
-      <SiikliDrawer />
+      {user && <SiikliDrawer />}
       <PageContent>{routes}</PageContent>
     </>
   )
