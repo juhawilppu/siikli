@@ -83,8 +83,7 @@ export const Orders = () => {
             onChange={handleEndDateChange}
           />
         </LocalizationProvider>
-        <Button onClick={fetchCargo}>Hae kuormakirjat</Button>
-        <Button>Tulosta kuormakirjat</Button>
+        <Button onClick={fetchCargo}>Tulosta kuormakirjat</Button>
       </SideBySide>
       {loading && <LinearProgress />}
       {!loading && orders && orders.length == 0 && <div>Ei tilauksia</div>}
