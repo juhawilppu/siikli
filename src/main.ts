@@ -6,6 +6,7 @@ import helmet from 'helmet'
 import passport from 'passport'
 import { exit } from 'process'
 import { authRoute } from './api/auth'
+import companiesRoute from './api/companies'
 import { customersRoute } from './api/customers'
 import { ordersRoute } from './api/orders'
 import { postsRoute } from './api/posts'
@@ -40,6 +41,7 @@ app.use(postsRoute)
 app.use(ordersRoute)
 app.use(customersRoute)
 app.use(productsRoute)
+app.use(companiesRoute)
 
 const cookieEncryptionKey = process.env.COOKIE_ENCRYPTION_KEY
 

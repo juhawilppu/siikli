@@ -19,12 +19,12 @@ model Company {
   id                  Int     @id @default(autoincrement())
   address1            String? @db.VarChar(255)
   address2            String? @db.VarChar(255)
-  business_id         String? @db.VarChar(255)
-  company_name        String? @db.VarChar(255)
-  invoice_bank_name   String? @db.VarChar(255)
-  invoice_bank_number String? @db.VarChar(255)
-  invoice_reference   String? @db.VarChar(255)
-  invoice_sum_row     String? @db.VarChar(255)
+  businessId         String? @db.VarChar(255) @map("business_id")
+  companyName        String? @db.VarChar(255) @map("company_name")
+  invoiceBankName   String? @db.VarChar(255) @map("invoice_bank_name")
+  invoiceBankNumber String? @db.VarChar(255) @map("invoice_bank_number")
+  invoiceReference   String? @db.VarChar(255) @map("invoice_reference")
+  invoiceSumRow     String? @db.VarChar(255) @map("invoice_sum_row")
 
   @@map("company")
 }
