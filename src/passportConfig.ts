@@ -31,6 +31,9 @@ const init = () => {
     done(null, user)
   })
 
+  console.log('ok here')
+  console.log(process.env)
+
   const clientID = process.env.GOOGLE_CLIENT_ID
   const clientSecret = process.env.GOOGLE_CLIENT_SECRET
 

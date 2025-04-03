@@ -13,6 +13,9 @@ import { postsRoute } from './api/posts'
 import productsRoute from './api/products'
 import passportConfig from './passportConfig'
 
+import dotenv from 'dotenv'
+dotenv.config();
+
 const app = express()
 app.use(helmet())
 app.disable('x-powered-by')
@@ -37,6 +40,9 @@ app.use('/auth/', (req, res, next) => {
 })
 
 app.use(express.json({ limit: '200kb' }))
+
+console.log('starting')
+console.log(process.env)
 
 const cookieEncryptionKey = process.env.COOKIE_ENCRYPTION_KEY
 
