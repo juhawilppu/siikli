@@ -11,6 +11,7 @@ import { customersRoute } from './api/customers'
 import { ordersRoute } from './api/orders'
 import { postsRoute } from './api/posts'
 import productsRoute from './api/products'
+import salesReportRoute from './api/sales_report'
 import passportConfig from './passportConfig'
 
 import dotenv from 'dotenv'
@@ -98,6 +99,7 @@ app.use(ordersRoute)
 app.use(customersRoute)
 app.use(productsRoute)
 app.use(companiesRoute)
+app.use(salesReportRoute)
 
 if (process.env.NODE_ENV === 'production') {
   // Express will serve the client main.js etc.
