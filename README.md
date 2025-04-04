@@ -1,4 +1,4 @@
-# Juulia Stack 🚀
+# Siikli
 
 Juulia Stack is a production-grade web development starter project designed to kickstart your next web project with ease. It combines the power of React, Node, Express, Prisma, TypeScript, PostgreSQL, Redis, and Tailwind CSS to provide a robust foundation for building scalable and feature-rich web applications.
 
