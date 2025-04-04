@@ -346,7 +346,7 @@ const OrderEdit = () => {
           </TableContainer>
           <SideBySide>
             <p>Vain tuotteet joiden asiakasryhmä on tyhjä</p>
-            <Button startIcon={<Add />}>Lisää tuote</Button>
+            <Button startIcon={<Add />} onClick={() => setRows([...rows, {}])}>Lisää tuote</Button>
           </SideBySide>
         </>
       )}
