@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import axios from "axios";
 
 
 
@@ -28,6 +29,16 @@ export default function NewCustomerForm() {
         e.preventDefault();
         // handle submit logic here
         console.log("Customer data:", formData);
+        axios.post('/customers', {
+            chain: formData.chain,
+            name: formData.name,
+            additionalName: formData.additionalName,
+            address: formData.additionalName,
+            postalCode: formData.postalCode,
+            city: formData.city,
+            reference: formData.reference,
+            compensation: formData.compensation
+        })
     };
 
     return (
