@@ -18,6 +18,7 @@ import SiikliDrawer from './SiikliDrawer'
 import { PageContent } from './components'
 import { CustomerPage } from './pages/CustomerPage'
 import { Customers } from './pages/Customers'
+import { Invoices } from './pages/Invoices'
 import NewCustomerForm from './pages/NewCustomer'
 import NewProduct from './pages/NewProduct'
 import Order from './pages/Order/Order'
@@ -77,7 +78,7 @@ function App() {
         <Route path='/orders/:orderId' element={<Order />} />
         <Route path='/sales_report' element={<SalesReport />} />
         <Route path='/packaging_list' element={<PackageList />} />
-        <Route path='/invoices' element={<Customers />} />
+        <Route path='/invoices' element={<Invoices />} />
         <Route path='/customers' element={<Customers />} />
         <Route path='/customers/new' element={<NewCustomerForm />} />
         <Route path='/customers/:customerId' element={<CustomerPage />} />
