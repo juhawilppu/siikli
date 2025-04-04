@@ -1,3 +1,4 @@
+import { Button } from '@/components/ui/button'
 import { LinearProgress } from '@mui/material'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
@@ -30,9 +31,9 @@ export const Customers = () => {
       </Ingress>
       <div>
 
-        <button onClick={() => navigate(`/customers/new`)}>
-          Edit
-        </button>
+        <Button onClick={() => navigate(`/customers/new`)}>
+          Luo uusi asiakas
+        </Button>
 
       </div>
       {customers.map((customer: any) => (
@@ -58,7 +59,9 @@ export const Customers = () => {
           </CustomerSection>
           <CustomerSection>
             <div></div>
-            <button>Muokkaa</button>
+            <Button onClick={() => navigate(`/customers/${customer.id}`)}>
+              Muokkaa
+            </Button>
           </CustomerSection>
         </CustomerCard>
       ))}
