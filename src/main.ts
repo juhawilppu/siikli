@@ -15,6 +15,7 @@ import salesReportRoute from './api/sales_report'
 import passportConfig from './passportConfig'
 
 import dotenv from 'dotenv'
+import invoiceRoute from './api/invoices'
 dotenv.config();
 
 const app = express()
@@ -100,6 +101,7 @@ app.use(customersRoute)
 app.use(productsRoute)
 app.use(companiesRoute)
 app.use(salesReportRoute)
+app.use(invoiceRoute)
 
 if (process.env.NODE_ENV === 'production') {
   // Express will serve the client main.js etc.
