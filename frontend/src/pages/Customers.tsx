@@ -1,12 +1,15 @@
-import EditIcon from '@mui/icons-material/Edit'
-import { Button, LinearProgress } from '@mui/material'
+import { LinearProgress } from '@mui/material'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { CustomerCard, CustomerSection, Ingress, Page } from '../components'
+
 
 export const Customers = () => {
   const [customers, setCustomers] = useState<any>()
   const [loading, setLoading] = useState(true)
+  const navigate = useNavigate();
+
 
   useEffect(() => {
     axios
@@ -25,6 +28,13 @@ export const Customers = () => {
         Järjestä asiakkaat haluamaasi järjestykseen raahaamalla. Järjestystä
         käytetään pakkauslistoissa.
       </Ingress>
+      <div>
+
+        <button onClick={() => navigate(`/customers/new`)}>
+          Edit
+        </button>
+
+      </div>
       {customers.map((customer: any) => (
         <CustomerCard key={customer.id}>
           <CustomerSection>{customer.order_index}</CustomerSection>
@@ -48,7 +58,7 @@ export const Customers = () => {
           </CustomerSection>
           <CustomerSection>
             <div></div>
-            <Button startIcon={<EditIcon />}>Muokkaa</Button>
+            <button>Muokkaa</button>
           </CustomerSection>
         </CustomerCard>
       ))}
