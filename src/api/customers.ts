@@ -13,3 +13,17 @@ customersRoute.get(`/api/customers`, async (req, res) => {
   })
   res.json(result)
 })
+
+
+customersRoute.post(`/api/customers`, async (req, res) => {
+  console.log('creating customer')
+  console.log(req.body)
+  const result = await prisma.customer.create({
+    data: {
+      chain: req.body.chain,
+      name: req.body.name,
+      compensation: parseInt(req.body.compensation)
+    }
+  })
+  res.json(result)
+})
