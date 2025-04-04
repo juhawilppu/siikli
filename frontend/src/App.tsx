@@ -19,6 +19,7 @@ import { PageContent } from './components'
 import { CustomerPage } from './pages/CustomerPage'
 import { Customers } from './pages/Customers'
 import NewCustomerForm from './pages/NewCustomer'
+import NewProduct from './pages/NewProduct'
 import Order from './pages/Order/Order'
 import { Orders } from './pages/Orders'
 import { OwnCompany } from './pages/OwnCompany'
@@ -82,6 +83,7 @@ function App() {
         <Route path='/customers/:customerId' element={<CustomerPage />} />
         <Route path='/customers/:customerId/:edit' element={<CustomerPage />} />
         <Route path='/products' element={<Products />} />
+        <Route path='/products/new' element={<NewProduct />} />
         <Route path='/products/:productId' element={<ProductPage />} />
         <Route path='/products/:productId/:edit' element={<ProductPage />} />
         <Route
