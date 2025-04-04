@@ -56,6 +56,23 @@ app.set('trust proxy', 1) // trust first proxy
 
 const expiryDate = new Date(Date.now() + 60 * 60 * 1000) // 1 hour
 
+process.on("uncaughtException", (err) => {
+  console.error("Uncaught Exception:", err);
+  // You can decide whether to exit or not
+  // process.exit(1);
+});
+
+process.on("unhandledRejection", (reason, promise) => {
+  console.error("Unhandled Rejection:", reason);
+  // Same here, decide if you want to crash or just log
+  // process.exit(1);
+});
+
+app.use((err, req, res, next) => {
+  console.error("💥 Error handler caught:", err);
+  res.status(500).json({ message: "Something went wrong." });
+});
+
 app.use(
   session({
     secret: 'your secret', // Replace with a real secret key
