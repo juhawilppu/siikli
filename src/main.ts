@@ -4,7 +4,6 @@ import express from 'express'
 import session from 'express-session'
 import helmet from 'helmet'
 import passport from 'passport'
-import { exit } from 'process'
 import { authRoute } from './api/auth'
 import companiesRoute from './api/companies'
 import { customersRoute } from './api/customers'
@@ -46,17 +45,8 @@ app.use(express.json({ limit: '200kb' }))
 console.log('starting')
 console.log(process.env)
 
-const cookieEncryptionKey = process.env.COOKIE_ENCRYPTION_KEY
-
-if (!cookieEncryptionKey || cookieEncryptionKey.length < 32) {
-  console.error('COOKIE_ENCRYPTION_KEY missing or too weak')
-  exit(1)
-}
-
 app.use(cookieParser()) // For parsing cookies
 app.set('trust proxy', 1) // trust first proxy
-
-const expiryDate = new Date(Date.now() + 60 * 60 * 1000) // 1 hour
 
 process.on("uncaughtException", (err) => {
   console.error("Uncaught Exception:", err);
@@ -75,21 +65,27 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: "Something went wrong." });
 });
 
+const sessionSecret = process.env.SESSION_SECRET;
+if (!sessionSecret || sessionSecret.length < 32) {
+  throw new Error('SESSION_SECRET is missing or too short. It must be at least 32 characters.');
+}
+
 app.use(
   session({
-    secret: 'your secret', // Replace with a real secret key
+    secret: sessionSecret,
     name: 'siikli-session',
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
     cookie: {
-      secure: false,
-      httpOnly: false,
-      domain: 'localhost',
+      secure: process.env.NODE_ENV === 'production', // true in prod with HTTPS
+      httpOnly: true,
+      sameSite: 'lax',
       path: '/',
-      expires: expiryDate,
+      maxAge: 30 * 24 * 60 * 60 * 1000,
     },
   })
-)
+);
+
 app.use(express.urlencoded({ extended: false })) // For parsing application/x-www-form-urlencoded
 
 app.use(passport.initialize())
