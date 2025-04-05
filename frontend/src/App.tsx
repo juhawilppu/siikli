@@ -1,22 +1,20 @@
 import { Dashboard } from '@mui/icons-material'
-import MenuIcon from '@mui/icons-material/Menu'
 import {
-  AppBar,
-  Button,
-  CircularProgress,
-  IconButton,
-  Toolbar,
-  Typography,
+  CircularProgress
 } from '@mui/material'
-import CssBaseline from '@mui/material/CssBaseline'
-import { styled } from '@mui/material/styles'
 import axios from 'axios'
+import { Search } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import './App.css'
 import { Landing } from './Landing'
 import SiikliDrawer from './SiikliDrawer'
 import { PageContent } from './components'
+import { Avatar, AvatarFallback, AvatarImage } from './components/ui/avatar'
+import { Button } from './components/ui/button'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from './components/ui/dropdown-menu'
+import { Input } from './components/ui/input'
+import { SidebarInset, SidebarProvider, SidebarTrigger } from './components/ui/sidebar'
 import { CustomerPage } from './pages/CustomerPage'
 import { Customers } from './pages/Customers'
 import { Invoices } from './pages/Invoices'
@@ -31,21 +29,13 @@ import { ProductPage } from './pages/ProductPage'
 import { Products } from './pages/Products'
 import { SalesReport } from './pages/SalesReport'
 
-const WhiteButton = styled(Button)({
-  backgroundColor: 'transparent', // Custom color
-  color: 'white',
-  padding: '10px 20px',
-  '&:hover': {
-    backgroundColor: '#0069D9', // Darken color on hover
-  },
-  // Add more styles as needed
-})
 
 axios.defaults.baseURL = 'http://localhost:5173/api'
 
 function App() {
   const [user, setUser] = useState()
   const [loading, setLoading] = useState(true)
+  const [searchQuery, setSearchQuery] = useState('')
 
   useEffect(() => {
     axios
@@ -100,38 +90,53 @@ function App() {
 
   return (
     <>
-      <CssBaseline />
-      <AppBar position='fixed' style={{ zIndex: 9000 }}>
-        <Toolbar>
-          <IconButton
-            size='large'
-            edge='start'
-            color='inherit'
-            aria-label='menu'
-            sx={{ mr: 2 }}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography variant='h6' component='div' sx={{ flexGrow: 1 }}>
-            Siikli
-          </Typography>
-          {user && (
-            <>
-              <div>{user}</div>{' '}
-              <WhiteButton href='/auth/logout' id='logout'>
-                Kirjaudu ulos
-              </WhiteButton>
-            </>
-          )}
-          {!user && (
-            <WhiteButton href='/auth/google' id='login'>
-              Kirjaudu sisään
-            </WhiteButton>
-          )}
-        </Toolbar>
-      </AppBar>
-      {user && <SiikliDrawer />}
-      <PageContent>{routes}</PageContent>
+      <SidebarProvider>
+        {user && <SiikliDrawer />
+        }
+        <SidebarInset>
+          <div className="flex flex-col w-full">
+            {/* Top bar */}
+            <header className="flex h-14 items-center gap-4 border-b bg-background px-6">
+              <SidebarTrigger />
+              <div className="flex-1 flex items-center justify-between">
+                <div className="relative w-full max-w-md">
+                  <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    type="search"
+                    placeholder="Search orders, invoices, customers..."
+                    className="w-full pl-8 md:w-[300px] lg:w-[400px]"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                </div>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                      <Avatar className="h-8 w-8">
+                        <AvatarImage src="/placeholder-user.jpg" alt="User" />
+                        <AvatarFallback>MK</AvatarFallback>
+                      </Avatar>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem>Profile</DropdownMenuItem>
+                    <DropdownMenuItem>Settings</DropdownMenuItem>
+                    <DropdownMenuItem>Help</DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem>Log out</DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            </header>
+            <main className="flex-1 overflow-auto p-6">
+              <div className="space-y-6"></div>
+              <PageContent>{routes}</PageContent>
+            </main>
+          </div>
+        </SidebarInset>
+      </SidebarProvider>
     </>
   )
 }
