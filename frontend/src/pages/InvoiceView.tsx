@@ -1,13 +1,16 @@
 // NOTE: This is a simplified React translation of your Angular invoice layout.
 // Some logic (like page numbers, datepickers, etc.) will need additional handling or libraries.
 
+import { Customer } from "@/types/types";
+
 export interface CustomerInvoiceDto {
     longName: string,
     companyName: string,
     businessId: string,
     address: string,
     postalCode: string,
-    city: string
+    city: string,
+    showPriceWithoutTax: boolean
 }
 
 export interface InvoiceDto {
@@ -27,7 +30,7 @@ export function InvoiceView(
         isEditMode,
         onChange,
     }: {
-        customer: CustomerInvoiceDto,
+        customer: Customer,
         invoice: InvoiceDto,
         reportData: {
             totalPages: number,
@@ -69,7 +72,7 @@ export function InvoiceView(
                         </td>
                     </tr>
                     <tr>
-                        <td>{customer.longName}</td>
+                        <td>{customer.name}</td>
                         <td className="strong border-left">Laskun numero:</td>
                         <td>
                             {isEditMode ? (
@@ -80,7 +83,7 @@ export function InvoiceView(
                         </td>
                     </tr>
                     <tr>
-                        <td>{customer.companyName}</td>
+                        <td>{customer.company_name}</td>
                         <td className="strong border-left">Maksuehdot:</td>
                         <td>
                             {isEditMode ? (
@@ -91,7 +94,7 @@ export function InvoiceView(
                         </td>
                     </tr>
                     <tr>
-                        <td>{customer.businessId ? `Y-tunnus ${customer.businessId}` : customer.address}</td>
+                        <td>{customer.business_id ? `Y-tunnus ${customer.business_id}` : customer.address}</td>
                         <td className="strong border-left">Eräpäivä:</td>
                         <td>
                             {isEditMode ? (
@@ -102,7 +105,7 @@ export function InvoiceView(
                         </td>
                     </tr>
                     <tr>
-                        <td>{customer.businessId ? customer.address : `${customer.postalCode} ${customer.city}`}</td>
+                        <td>{customer.business_id ? customer.address : `${customer.postal_code} ${customer.city}`}</td>
                         <td className="strong border-left">Viivästyskorko:</td>
                         <td>
                             {isEditMode ? (
@@ -113,7 +116,7 @@ export function InvoiceView(
                         </td>
                     </tr>
                     <tr>
-                        <td>{customer.businessId && `${customer.postalCode} ${customer.city}`}</td>
+                        <td>{customer.business_id && `${customer.postal_code} ${customer.city}`}</td>
                         <td className="strong border-left">Huomautusaika:</td>
                         <td>
                             {isEditMode ? (

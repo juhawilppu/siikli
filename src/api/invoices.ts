@@ -1,4 +1,4 @@
-import { Customer, PrismaClient } from '@prisma/client'
+import { PrismaClient } from '@prisma/client'
 import express from 'express'
 
 const invoiceRoute = express.Router()
@@ -51,7 +51,9 @@ invoiceRoute.get(`/api/invoices`, async (req, res) => {
 
 })
 
+
 import { Order, OrderProduct } from '@prisma/client'
+import { Invoice } from '../../frontend/src/types/types'
 
 export function calculateInvoiceTotal(
     orders: (Order & { products: OrderProduct[] })[],
@@ -66,12 +68,5 @@ export function calculateInvoiceTotal(
     }
     return total;
 }
-
-export interface Invoice {
-    customer: Customer;
-    orders: (Order & { products: OrderProduct[] })[];
-    total: number;
-}
-
 
 export default invoiceRoute

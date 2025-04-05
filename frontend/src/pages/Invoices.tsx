@@ -1,3 +1,4 @@
+import { Invoice, Order, OrderProduct } from '@/types/types'
 import { Button, FormControl, InputLabel, LinearProgress, MenuItem, Select, SelectChangeEvent } from '@mui/material'
 import { DatePicker, fiFI, LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
@@ -5,16 +6,20 @@ import axios from 'axios'
 import moment, { Moment } from 'moment'
 import { useEffect, useState } from 'react'
 import { Ingress, Page, SideBySide } from '../components'
-import { CustomerInvoiceDto, InvoiceView } from './InvoiceView'
+import { InvoiceAppendix } from './InvoiceAppendix'
+import { InvoiceView } from './InvoiceView'
 import { CustomerDto } from './Order/Order'
+
+export interface FlatOrderItem extends OrderProduct {
+    deliveryDate: Date;
+    orderId: number;
+    orderNumber: number;
+    productName: string;
+}
 
 export const Invoices = () => {
     const [customers, setCustomers] = useState<any>()
-    const [invoice, setInvoice] = useState<{
-        customer: CustomerInvoiceDto,
-        orders: any[],
-        total: number
-    }>()
+    const [invoice, setInvoice] = useState<Invoice>()
     const [loading, setLoading] = useState(true)
     const [startDate, setStartDate] = useState<Moment>(
         moment().clone().weekday(1)
@@ -59,6 +64,18 @@ export const Invoices = () => {
 
     if (loading) return <LinearProgress />
     if (!customers) return <div>Ei tuotteita</div>
+
+    function flattenOrderProducts(orders: Order[]): FlatOrderItem[] {
+        return orders.flatMap(order =>
+            order.products.map(product => ({
+                ...product,
+                productName: 'siikli',
+                deliveryDate: new Date(order.deliveryDate),
+                orderId: order.id,
+                orderNumber: 100
+            }))
+        );
+    }
 
     return (
         <Page>
@@ -118,12 +135,12 @@ export const Invoices = () => {
             <Button onClick={print}>Tulosta</Button>
             <div>
                 {invoice && <InvoiceView customer={invoice.customer} invoice={{
-                    date: '5.5.2025',
-                    invoiceId: 'k',
-                    paymentCondition: 'k',
-                    dueDate: 'k',
-                    interestRate: '7',
-                    notificationPeriod: '7',
+                    date: '5.4.2025',
+                    invoiceId: '1001',
+                    paymentCondition: '14 pv',
+                    dueDate: '19.5.2025',
+                    interestRate: '7 %',
+                    notificationPeriod: '14',
                 }} reportData={
                     {
                         totalPages: 1,
@@ -132,6 +149,22 @@ export const Invoices = () => {
                         totalTax: 100
                     }
                 } isEditMode={true} onChange={() => { }}></InvoiceView>}
+                {invoice &&
+                    <InvoiceAppendix
+                        invoiceRows={flattenOrderProducts(invoice.orders)}
+                        customer={invoice.customer}
+                        reportData={
+                            {
+                                totalPages: 1,
+                                finalSumWithoutTax: 200,
+                                totalSumWithTax: 100,
+                                finalSumWithTax: 100,
+                                totalTax: 100
+                            }
+                        }
+                        showTotal={true}
+                        totalPages={1}
+                    />}
             </div>
         </Page>
     )
