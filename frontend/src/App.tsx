@@ -1,3 +1,4 @@
+import { Dashboard } from '@mui/icons-material'
 import MenuIcon from '@mui/icons-material/Menu'
 import {
   AppBar,
@@ -72,12 +73,12 @@ function App() {
   } else {
     routes = (
       <Routes>
-        <Route path='/' element={<Customers />} />
+        <Route path='/' element={<Dashboard />} />
         <Route path='/orders' element={<Orders />} />
         <Route path='/orders/new' element={<Order />} />
         <Route path='/orders/:orderId' element={<Order />} />
-        <Route path='/sales_report' element={<SalesReport />} />
-        <Route path='/packaging_list' element={<PackageList />} />
+        <Route path='/sales-report' element={<SalesReport />} />
+        <Route path='/packaging-list' element={<PackageList />} />
         <Route path='/invoices' element={<Invoices />} />
         <Route path='/customers' element={<Customers />} />
         <Route path='/customers/new' element={<NewCustomerForm />} />
@@ -91,7 +92,7 @@ function App() {
           path='/package_configuration'
           element={<PackageConfiguration />}
         />
-        <Route path='/own_company' element={<OwnCompany />} />
+        <Route path='/own-company' element={<OwnCompany />} />
         <Route path='*' element={<Navigate to='/' replace />} />
       </Routes>
     )
