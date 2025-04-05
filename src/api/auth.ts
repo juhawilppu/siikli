@@ -29,10 +29,11 @@ authRoute.get('/auth/logout', (req, res) => {
 })
 
 authRoute.get('/api/auth/current-user', (req, res) => {
+  console.log('auth/current-user here')
   if (req.user) {
     const user = req.user as any
-    res.send({ username: user.username }).status(200)
+    res.status(200).send({ username: user.username })
   } else {
-    res.status(201).end()
+    res.status(404).end()
   }
 })

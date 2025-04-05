@@ -16,14 +16,14 @@ interface Profile {
 
 const init = () => {
   passport.serializeUser((user: User, done: any) => {
-    console.log('ser')
+    console.log('serialize')
     console.log(user)
     console.log(done)
     done(null, user.id)
   })
 
   passport.deserializeUser(async (id: number, done: any) => {
-    console.log('deser', id)
+    console.log('deserialize', id)
 
     const user = await prisma.user.findFirst({ where: { id } })
     console.log('user from db')
@@ -31,15 +31,8 @@ const init = () => {
     done(null, user)
   })
 
-  console.log('ok here')
-  console.log(process.env)
-
   const clientID = process.env.GOOGLE_CLIENT_ID
   const clientSecret = process.env.GOOGLE_CLIENT_SECRET
-
-  console.log('passportConfig')
-  console.log(clientID)
-  console.log(clientSecret)
 
   passport.use(
     new GoogleStrategy(
