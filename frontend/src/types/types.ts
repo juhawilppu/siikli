@@ -90,3 +90,13 @@ export interface Invoice {
   orders: (Order & { products: OrderProduct[] })[];
   total: number;
 }
+
+export interface WarehouseReportRow {
+  customer_id: string;
+  product_variety: string;
+  product_type: string;
+  product_name: string;
+  package_size: number;
+  package_type: string;
+  amount: number;
+}

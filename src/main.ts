@@ -11,6 +11,7 @@ import { ordersRoute } from './api/orders'
 import { postsRoute } from './api/posts'
 import productsRoute from './api/products'
 import salesReportRoute from './api/sales_report'
+import warehouseRoute from './api/warehouse-report'
 import passportConfig from './passportConfig'
 
 import { RedisStore } from 'connect-redis'
@@ -103,6 +104,7 @@ async function startServer() {
   app.use(companiesRoute)
   app.use(salesReportRoute)
   app.use(invoiceRoute)
+  app.use(warehouseRoute)
 
   if (process.env.NODE_ENV === 'production') {
     // Express will serve the client main.js etc.
