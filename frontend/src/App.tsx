@@ -1,4 +1,3 @@
-import { Dashboard } from '@mui/icons-material'
 import {
   CircularProgress
 } from '@mui/material'
@@ -9,7 +8,6 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import './App.css'
 import { Landing } from './Landing'
 import SiikliDrawer from './SiikliDrawer'
-import { PageContent } from './components'
 import { Avatar, AvatarFallback, AvatarImage } from './components/ui/avatar'
 import { Button } from './components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from './components/ui/dropdown-menu'
@@ -17,6 +15,7 @@ import { Input } from './components/ui/input'
 import { SidebarInset, SidebarProvider, SidebarTrigger } from './components/ui/sidebar'
 import { CustomerPage } from './pages/CustomerPage'
 import { Customers } from './pages/Customers'
+import { Dashboard } from './pages/Dashboard'
 import { Invoices } from './pages/Invoices'
 import NewCustomerForm from './pages/NewCustomer'
 import NewProduct from './pages/NewProduct'
@@ -132,7 +131,7 @@ function App() {
             </header>
             <main className="flex-1 overflow-auto p-6">
               <div className="space-y-6"></div>
-              <PageContent>{routes}</PageContent>
+              {routes}
             </main>
           </div>
         </SidebarInset>
