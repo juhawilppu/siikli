@@ -1,5 +1,5 @@
 export interface ProductOrderDto {
-  productId: number
+  productId: string
   price: number
   amount: number
   packageSize: number
@@ -8,8 +8,8 @@ export interface ProductOrderDto {
 }
 
 export interface ProductOrderIdDto {
-  id: number | null
-  productId: number
+  id: string | null
+  productId: string
   price: number
   amount: number
   packageSize: number
@@ -19,7 +19,7 @@ export interface ProductOrderIdDto {
 
 export interface PostOrderDto {
   deliveryDate: string
-  customerId: number
+  customerId: string
   hasNote: boolean
   noteBody: string
   noteHeader: string
@@ -28,7 +28,7 @@ export interface PostOrderDto {
 
 export interface PostOrderIdDto {
   deliveryDate: string
-  customerId: number
+  customerId: string
   hasNote: boolean
   noteBody: string
   noteHeader: string
@@ -36,17 +36,17 @@ export interface PostOrderIdDto {
 }
 
 export interface GetOrderList {
-  id: number
+  id: string
   deliveryDate: string
   customer: {
-    id: number
+    id: string
     chain: string
     name: string
   }
 }
 
 export interface Customer {
-  id: number;
+  id: string;
   chain: string;
   name: string;
   business_id: string | null;
@@ -62,21 +62,21 @@ export interface Customer {
 
 export interface Order {
   customerGroup: string | null;
-  customerId: number;
+  customerId: string;
   deliveryDate: Date;
   hasNote: boolean;
-  id: number;
+  id: string;
   noteBody: string | null;
   noteHeader: string | null;
   products: OrderProduct[]
   showPriceWithoutTax: boolean | null;
-  tenantId: number;
+  tenantId: string;
 }
 
 export interface OrderProduct {
-  id: number;
-  orderId: number;
-  productId: number;
+  id: string;
+  orderId: string;
+  productId: string;
   amount: number;
   price: number;
   price0: number;
@@ -99,4 +99,20 @@ export interface WarehouseReportRow {
   package_size: number;
   package_type: string;
   amount: number;
+}
+
+export interface GetCompanySettings {
+  id: string;
+  name: string;
+  businessId: string;
+  streetAddress: string;
+  postalCode: string;
+  city: string;
+  invoiceBankName: string;
+  invoiceBankAccount: string;
+  invoiceReference: string;
+  invoiceSumRow: string;
+  phone: string;
+  email: string;
+  website: string;
 }

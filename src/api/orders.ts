@@ -291,7 +291,7 @@ ordersRoute.get(`/api/orders/cargo_reports`, async (req, res) => {
   })
 })
 
-const getOrder = async (id: number, tenantId: number) => {
+const getOrder = async (id: string, tenantId: string) => {
   const result = await prisma.order.findFirst({
     include: {
       customer: true,
@@ -318,7 +318,7 @@ const getOrder = async (id: number, tenantId: number) => {
 ordersRoute.get(`/api/orders/:id`, async (req, res) => {
   console.log('getting order ' + req.params.id)
   res.json(
-    await getOrder(parseInt(req.params.id as string), parseTenantId(req))
+    await getOrder(req.params.id, parseTenantId(req))
   )
 })
 
@@ -390,7 +390,7 @@ ordersRoute.post(`/api/orders/:id`, async (req, res) => {
       },
     },
     where: {
-      id: parseInt(req.params.id as string),
+      id: req.params.id as string,
     },
   })
   console.log(data.rows)
@@ -425,7 +425,7 @@ ordersRoute.post(`/api/orders/:id`, async (req, res) => {
           packageType: r.packageType,
         },
         where: {
-          id: r.id as number,
+          id: r.id as string,
         },
       })
     })
@@ -433,6 +433,6 @@ ordersRoute.post(`/api/orders/:id`, async (req, res) => {
   }
 
   res.json(
-    await getOrder(parseInt(req.params.id as string), parseTenantId(req))
+    await getOrder(req.params.id as string, parseTenantId(req))
   )
 })

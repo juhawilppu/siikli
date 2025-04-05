@@ -5,13 +5,13 @@ const prisma = new PrismaClient()
 async function main() {
     console.log('Running seed 🌱')
 
-    const companyId = await prisma.company.create({
+    const tenantId = await prisma.tenant.create({
         data: {
-            address1: 'Heikunantie 9 A 6',
+            name: 'Juha Wilppu Tmi',
             businessId: 'Y-1',
-            companyName: 'Juha Wilppu Tmi',
+            streetAddress: 'Heikunantie 9 A 6',
             invoiceBankName: 'Nordea',
-            invoiceBankNumber: '1',
+            invoiceBankAccount: '1',
             invoiceReference: 'k',
             invoiceSumRow: 'k'
         }

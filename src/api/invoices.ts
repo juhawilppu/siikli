@@ -6,7 +6,7 @@ const prisma = new PrismaClient()
 
 invoiceRoute.get(`/api/invoices`, async (req, res) => {
     try {
-        const customerId = Number(req.query.customerId);
+        const customerId = req.query.customerId as string;
         const startDate = new Date(req.query.startDate as string);
         const endDate = new Date(req.query.endDate as string);
         const usePrice0 = req.query.usePrice0 === 'true';

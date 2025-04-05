@@ -18,8 +18,10 @@ customersRoute.get(`/api/customers`, async (req, res) => {
 customersRoute.post(`/api/customers`, async (req, res) => {
   console.log('creating customer')
   console.log(req.body)
+  const tenant = await prisma.tenant.findFirstOrThrow()
   const result = await prisma.customer.create({
     data: {
+      tenantId: tenant.id,
       chain: req.body.chain,
       name: req.body.name,
       compensation: parseInt(req.body.compensation)

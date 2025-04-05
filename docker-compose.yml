@@ -1,21 +1,19 @@
 version: '3.8'
 
 services:
-  db_mysql:
-    image: mysql:8.0.28
-    platform: linux/amd64
+  db_postgres:
+    image: postgres:15
     restart: always
     environment:
-      - MYSQL_DATABASE=siikli
-      - MYSQL_USER=juulia
-      - MYSQL_PASSWORD=testpassword
-      - MYSQL_ROOT_PASSWORD=rootpassword
+      - POSTGRES_DB=siikli
+      - POSTGRES_USER=siikli
+      - POSTGRES_PASSWORD=testpassword
     ports:
-      - '3306:3306'
+      - '5432:5432'
     volumes:
-      - db_mysql:/var/lib/mysql
+      - db_postgres:/var/lib/postgresql/data
     networks:
-      - juulia
+      - siikli
 
   redis:
     image: redis:latest
@@ -27,10 +25,9 @@ services:
       - ./redis.conf:/etc/redis/redis.conf
 
 volumes:
-  db_mysql:
-    driver: local
+  db_postgres:
   redis_data:
 
 networks:
-  juulia:
+  siikli:
     driver: bridge

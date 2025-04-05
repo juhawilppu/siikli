@@ -1,5 +1,0 @@
--- AlterTable
-ALTER TABLE `User` ADD COLUMN `tenantId` INTEGER NOT NULL DEFAULT 1;
-
--- AddForeignKey
-ALTER TABLE `User` ADD CONSTRAINT `User_tenantId_fkey` FOREIGN KEY (`tenantId`) REFERENCES `company`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

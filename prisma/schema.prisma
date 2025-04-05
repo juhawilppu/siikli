@@ -3,39 +3,46 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgres"
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id         Int     @id @default(autoincrement())
-  externalId String  @unique @db.VarChar(128)
-  username   String  @unique @db.VarChar(128)
-  email      String  @unique
-  name       String?
-  tenantId  Int @default(1)
-  tenant Company @relation(fields: [tenantId], references: [id])
-}
-
-model Company {
-  id                  Int     @id @default(autoincrement())
-  address1            String? @db.VarChar(255)
-  address2            String? @db.VarChar(255)
+model Tenant {
+  id String @id @default(uuid()) @db.Uuid
+  name        String? @db.VarChar(255) @map("name")
+  streetAddress            String? @db.VarChar(255)  @map("street_address")
+  postalCode            String? @db.VarChar(255) @map("postal_code")
+  city            String? @db.VarChar(255)
+  phone            String? @db.VarChar(255)
+  email            String? @db.VarChar(255)
+  website            String? @db.VarChar(255)
   businessId         String? @db.VarChar(255) @map("business_id")
-  companyName        String? @db.VarChar(255) @map("company_name")
   invoiceBankName   String? @db.VarChar(255) @map("invoice_bank_name")
-  invoiceBankNumber String? @db.VarChar(255) @map("invoice_bank_number")
+  invoiceBankAccount String? @db.VarChar(255) @map("invoice_bank_account")
+  invoiceSwiftBic String? @db.VarChar(255) @map("invoice_swift_bic")
   invoiceReference   String? @db.VarChar(255) @map("invoice_reference")
   invoiceSumRow     String? @db.VarChar(255) @map("invoice_sum_row")
   customers            Customer[]
   orders               Order[]
   users               User[]
 
-  @@map("company")
+  @@map("tenant")
+}
+
+model User {
+  id String @id @default(uuid())
+  externalId String  @unique @db.VarChar(128)
+  username   String  @unique @db.VarChar(128)
+  email      String  @unique
+  name       String?
+  tenantId  String @db.Uuid
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+
+  @@map("user")
 }
 
 model Customer {
-  id                     Int      @id @default(autoincrement()) @map("customer_id")
+  id String @id @default(uuid()) @db.Uuid
   chain                  String   @db.VarChar(3)
   name                   String   @db.VarChar(50)
   address                String?  @db.VarChar(255)
@@ -52,84 +59,84 @@ model Customer {
   customer_group         String?  @db.VarChar(256)
   show_price_without_tax Boolean? @default(false)
   orders                 Order[]
-  tenantId               Int @default(1)
-  tenant                 Company @relation(fields: [tenantId], references: [id])
+  tenantId               String @db.Uuid
+  tenant                 Tenant @relation(fields: [tenantId], references: [id])
 
-  @@map("customers")
+  @@map("customer")
 }
 
 model OrderProduct {
-  id Int           @id @default(autoincrement()) @map("order_product_id")
-  orderId          Int @map("order_id")
-  productId        Int @map("product_id")
+  id String @id @default(uuid()) @db.Uuid
+  orderId          String @map("order_id") @db.Uuid
+  productId        String @map("product_id") @db.Uuid
   amount           Int
-  price            Float   @db.Float
+  price            Float
   packageSize      Int @map("package_size")
   freetext         String? @db.VarChar(500)
   packageType      String? @db.VarChar(3) @map("package_type")
-  price0           Float   @default(0) @db.Float
+  price0           Float   @default(0)
   products         Product @relation(fields: [productId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FKo6helt0ucmegaeachjpx40xhe")
   order            Order   @relation(fields: [orderId], references: [id])
 
-  @@index([productId], map: "FKo6helt0ucmegaeachjpx40xhe")
+  @@index([productId])
   @@map("order_product")
 }
 
 model ProductType {
-  id               Int               @id @default(autoincrement()) @map("product_order_index")
+  id String @id @default(uuid()) @db.Uuid
   order_index      Int
-  type             String?           @unique(map: "product_types_uniq") @db.VarChar(255)
+  type             String?           @db.VarChar(255)
   product_subtypes ProductSubtypes[]
 
-  @@map("product_types")
+  @@map("product_type")
 }
 
 model Product {
-  id             Int            @id @default(autoincrement()) @map("product_id")
+  id String @id @default(uuid()) @db.Uuid
   name           String         @db.VarChar(50)
   type           String         @db.VarChar(20)
   variety        String         @db.VarChar(20)
   info           String?        @db.VarChar(20)
-  price          Float          @db.Float
+  price          Float          
   order_index    Int?
   subtype        String?        @db.VarChar(255)
   package_size   String?        @db.VarChar(255)
   package_type   String?        @db.VarChar(255)
-  price0         Float          @default(0) @db.Float
+  price0         Float          @default(0)
   customer_group String?        @db.VarChar(256)
   active         Boolean?       @default(true)
   order_product  OrderProduct[]
 
-  @@map("products")
+  @@map("product")
 }
 
 model Order {
-  id                  Int            @id @unique(map: "order_id") @default(autoincrement()) @map("order_id")
-  customerId          Int            @map("customer_id")
+  id String @id @default(uuid()) @db.Uuid
+  customerId          String          @map("customer_id") @db.Uuid
   deliveryDate        DateTime       @map("delivery_date") @db.Date
-  hasNote             Boolean        @map("has_note") @db.Bit(1)
+  hasNote             Boolean        @map("has_note")
   noteBody            String?        @map("note_body") @db.VarChar(1000)
   noteHeader          String?        @map("note_header") @db.VarChar(255)
   showPriceWithoutTax Boolean?       @default(false) @map("show_price_without_tax")
   customerGroup       String?        @map("customer_group") @db.VarChar(256)
-  customer            Customer       @relation(fields: [customerId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FKpxtb8awmi0dk6smoh2vp1litg")
+  customer            Customer       @relation(fields: [customerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   products            OrderProduct[]
-  tenantId            Int @default(1)
-  tenant              Company @relation(fields: [tenantId], references: [id])
+  tenantId            String @db.Uuid
+  tenant              Tenant @relation(fields: [tenantId], references: [id])
 
   @@index([customerId], map: "customer_id")
-  @@map("orders")
+  @@map("order")
 }
 
 model ProductSubtypes {
-  subtype_index Int          @id @default(autoincrement())
+  id String @id @default(uuid()) @db.Uuid
   order_index   Int
   subtype       String?      @db.VarChar(255)
   type          String?      @db.VarChar(255)
-  order_id      Int?
-  product_types ProductType? @relation(fields: [order_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FKgyv4ku1m3s5hid3clootvtqcv")
+  order_id      String?      @db.Uuid
+  product_types ProductType? @relation(fields: [order_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@unique([type, subtype], map: "product_subtypes_uniq")
-  @@index([order_id], map: "FKgyv4ku1m3s5hid3clootvtqcv")
-  @@map("product_subtypes")
+  @@index([order_id])
+  @@map("product_subtype")
 }

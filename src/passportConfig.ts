@@ -22,7 +22,7 @@ const init = () => {
     done(null, user.id)
   })
 
-  passport.deserializeUser(async (id: number, done: any) => {
+  passport.deserializeUser(async (id: string, done: any) => {
     console.log('deserialize', id)
 
     const user = await prisma.user.findFirst({ where: { id } })
@@ -57,8 +57,10 @@ const init = () => {
           return cb(null, existingUser)
         } else {
           // New user. Save it to db.
+          const tenant = await prisma.tenant.findFirstOrThrow()
           const user = await prisma.user.create({
             data: {
+              tenantId: tenant.id,
               username: profile.displayName,
               externalId: profile.id,
               email: profile.emails[0].value,

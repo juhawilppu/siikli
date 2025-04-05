@@ -13,6 +13,7 @@ import { Button } from './components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from './components/ui/dropdown-menu'
 import { Input } from './components/ui/input'
 import { SidebarInset, SidebarProvider, SidebarTrigger } from './components/ui/sidebar'
+import CompanySettings from './pages/CompanySettings'
 import { CustomerPage } from './pages/CustomerPage'
 import { Customers } from './pages/Customers'
 import { Dashboard } from './pages/Dashboard'
@@ -21,7 +22,6 @@ import NewCustomerForm from './pages/NewCustomer'
 import NewProduct from './pages/NewProduct'
 import Order from './pages/Order/Order'
 import { Orders } from './pages/Orders'
-import { OwnCompany } from './pages/OwnCompany'
 import { PackageConfiguration } from './pages/PackageConfiguration'
 import { PackageList } from './pages/PackageList'
 import { ProductPage } from './pages/ProductPage'
@@ -86,7 +86,7 @@ function App() {
           path='/package_configuration'
           element={<PackageConfiguration />}
         />
-        <Route path='/own-company' element={<OwnCompany />} />
+        <Route path='/own-company' element={<CompanySettings />} />
         <Route path='*' element={<Navigate to='/' replace />} />
       </Routes>
     )

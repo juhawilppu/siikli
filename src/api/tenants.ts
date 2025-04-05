@@ -1,32 +1,33 @@
 import { PrismaClient } from '@prisma/client'
 import express from 'express'
+import { parseTenantId } from './orders'
 
 const companiesRoute = express.Router()
 const prisma = new PrismaClient()
 
-companiesRoute.get(`/api/companies/:id`, async (req, res) => {
-  const result = await prisma.company.findFirst({
+companiesRoute.get(`/api/tenants`, async (req, res) => {
+  const tenantId = parseTenantId(req)
+  const result = await prisma.tenant.findFirst({
     where: {
-      id: parseInt(req.params.id as string),
+      id: tenantId
     },
   })
   res.json(result)
 })
 
-companiesRoute.post(`/api/companies/:id`, async (req, res) => {
-  const result = await prisma.company.update({
+companiesRoute.post(`/api/tenants/:id`, async (req, res) => {
+  const result = await prisma.tenant.update({
     data: {
-      companyName: req.body.companyName,
+      name: req.body.companyName,
       businessId: req.body.businessId,
-      address1: req.body.address1,
-      address2: req.body.address2,
+      streetAddress: req.body.address1,
       invoiceBankName: req.body.invoiceBankName,
-      invoiceBankNumber: req.body.invoiceBankNumber,
+      invoiceBankAccount: req.body.invoiceBankNumber,
       invoiceReference: req.body.invoiceReference,
       invoiceSumRow: req.body.invoiceSumRow,
     },
     where: {
-      id: parseInt(req.params.id as string),
+      id: req.params.id as string
     },
   })
   res.json(result)

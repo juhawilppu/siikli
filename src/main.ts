@@ -5,12 +5,12 @@ import session from 'express-session'
 import helmet from 'helmet'
 import passport from 'passport'
 import { authRoute } from './api/auth'
-import companiesRoute from './api/companies'
 import { customersRoute } from './api/customers'
 import { ordersRoute } from './api/orders'
 import { postsRoute } from './api/posts'
 import productsRoute from './api/products'
 import salesReportRoute from './api/sales_report'
+import tenantsRoute from './api/tenants'
 import warehouseRoute from './api/warehouse-report'
 import passportConfig from './passportConfig'
 
@@ -101,7 +101,7 @@ async function startServer() {
   app.use(ordersRoute)
   app.use(customersRoute)
   app.use(productsRoute)
-  app.use(companiesRoute)
+  app.use(tenantsRoute)
   app.use(salesReportRoute)
   app.use(invoiceRoute)
   app.use(warehouseRoute)
