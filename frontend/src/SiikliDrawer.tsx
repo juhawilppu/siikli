@@ -1,5 +1,5 @@
 
-import { BarChart3, Box, FileText, Home, Package, Settings, Truck, Users, Warehouse } from "lucide-react";
+import { Boxes, Building2, ClipboardList, FileText, Home, LineChart, PlusCircle, Receipt, ShoppingBasket, Users } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarRail } from './components/ui/sidebar';
 
@@ -11,16 +11,16 @@ const SiikliDrawer = () => {
 
   const navItems = [
     { title: "Etusivu", href: '/', icon: Home },
-    { title: "Tilaukset", href: '/orders', icon: Package },
-    { title: "Uusi tilaus", href: '/orders/new', icon: Package },
+    { title: "Tilaukset", href: '/orders', icon: ClipboardList },
+    { title: "Uusi tilaus", href: '/orders/new', icon: PlusCircle },
     { title: "Pakkauslista", href: '/packaging-list', icon: FileText },
-    { title: "Laskutus", href: '/invoices', icon: Users },
-    { title: "Myyntiraportti", href: '/sales-report', icon: Box },
-    { title: "Tuotteet", href: '/products', icon: Truck },
-    { title: "Asiakkaat", href: '/customers', icon: Warehouse },
-    { title: "Pakkausasetukset", href: '/packaging-settings', icon: BarChart3 },
-    { title: "Oma yritys", href: '/own-company', icon: Settings },
-  ]
+    { title: "Laskutus", href: '/invoices', icon: Receipt },
+    { title: "Myyntiraportti", href: '/sales-report', icon: LineChart },
+    { title: "Tuotteet", href: '/products', icon: ShoppingBasket },
+    { title: "Asiakkaat", href: '/customers', icon: Users },
+    { title: "Pakkausasetukset", href: '/packaging-settings', icon: Boxes },
+    { title: "Oma yritys", href: '/own-company', icon: Building2 },
+  ];
 
   return (
     <Sidebar>
