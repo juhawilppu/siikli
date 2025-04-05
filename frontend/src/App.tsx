@@ -2,7 +2,7 @@ import {
   CircularProgress
 } from '@mui/material'
 import axios from 'axios'
-import { Search } from 'lucide-react'
+import { HelpCircle, LogOut, Search, Settings, User } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import './App.css'
@@ -35,6 +35,11 @@ function App() {
   const [user, setUser] = useState<{ username: string, initials: string }>()
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
+
+  const logout = async () => {
+    await axios.post('/auth/logout')
+    setUser(undefined)
+  }
 
   useEffect(() => {
     axios
@@ -118,13 +123,30 @@ function App() {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                    <DropdownMenuLabel>Oma tili</DropdownMenuLabel>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem>Profile</DropdownMenuItem>
-                    <DropdownMenuItem>Settings</DropdownMenuItem>
-                    <DropdownMenuItem>Help</DropdownMenuItem>
+
+                    <DropdownMenuItem>
+                      <User className="mr-2 h-4 w-4" />
+                      <span>Profiili</span>
+                    </DropdownMenuItem>
+
+                    <DropdownMenuItem>
+                      <Settings className="mr-2 h-4 w-4" />
+                      <span>Asetukset</span>
+                    </DropdownMenuItem>
+
+                    <DropdownMenuItem>
+                      <HelpCircle className="mr-2 h-4 w-4" />
+                      <span>Ohje</span>
+                    </DropdownMenuItem>
+
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem>Log out</DropdownMenuItem>
+
+                    <DropdownMenuItem onClick={logout}>
+                      <LogOut className="mr-2 h-4 w-4" />
+                      <span>Kirjaudu ulos</span>
+                    </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>

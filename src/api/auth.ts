@@ -20,7 +20,7 @@ authRoute.get(
   }
 )
 
-authRoute.get('/auth/logout', (req, res) => {
+authRoute.post('/api/auth/logout', (req, res) => {
   console.log('logout here')
   req.logout((err) => {
     console.log('err', err)
