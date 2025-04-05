@@ -3,7 +3,7 @@ import { LinearProgress } from '@mui/material'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { CustomerCard, CustomerSection, Ingress, Page } from '../components'
+import { CustomerCard, CustomerSection } from '../components'
 
 export const Products = () => {
   const [customers, setCustomers] = useState<any>()
@@ -21,12 +21,12 @@ export const Products = () => {
   if (!customers) return <div>Ei tuotteita</div>
 
   return (
-    <Page>
-      <h1>Tuotteet</h1>
-      <Ingress>
-        Hinnan muuttaminen ei muuta tuotteiden hintoja nykyisissä tilauksissa,
-        vain automaattisesti ehdotettavaa hintaa tulevissa tilauksissa.
-      </Ingress>
+    <>
+      <div>
+        <h1 className="text-2xl font-semibold tracking-tight">Tuotteet</h1>
+        <p className="text-muted-foreground">Hinnan muuttaminen ei muuta tuotteiden hintoja nykyisissä tilauksissa,
+          vain automaattisesti ehdotettavaa hintaa tulevissa tilauksissa.</p>
+      </div>
       <Button onClick={() => navigate(`/products/new`)}>
         Luo uusi tuote
       </Button>
@@ -35,6 +35,6 @@ export const Products = () => {
           <CustomerSection>{customer.name}</CustomerSection>
         </CustomerCard>
       ))}
-    </Page>
+    </>
   )
 }

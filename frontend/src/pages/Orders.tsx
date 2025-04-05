@@ -6,7 +6,7 @@ import moment, { Moment } from 'moment'
 import printJS from 'print-js'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Page, SideBySide } from '../components'
+import { SideBySide } from '../components'
 import { GetOrderList } from '../types/types'
 
 export const Orders = () => {
@@ -52,8 +52,11 @@ export const Orders = () => {
   }, [startDate, endDate])
 
   return (
-    <Page>
-      <h1>Tilaukset</h1>
+    <>
+      <div>
+        <h1 className="text-2xl font-semibold tracking-tight">Tilaukset</h1>
+        <p className="text-muted-foreground">Tämä sivu näyttää tilauksesi.</p>
+      </div>
       <SideBySide>
         <LocalizationProvider
           dateAdapter={AdapterMoment}
@@ -113,6 +116,6 @@ export const Orders = () => {
           </tbody>
         </table>
       )}
-    </Page>
+    </>
   )
 }

@@ -5,7 +5,7 @@ import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
 import axios from 'axios'
 import moment, { Moment } from 'moment'
 import { useState } from 'react'
-import { Ingress, Page, SideBySide } from '../components'
+import { SideBySide } from '../components'
 import { WarehouseReportByCustomer } from './WarehouseReportByCustomer'
 
 export const PackageList = () => {
@@ -29,11 +29,11 @@ export const PackageList = () => {
     }
 
     return (
-        <Page>
-            <h1>Pakkauslista</h1>
-            <Ingress>
-                Voit tulostaa pakkauslistat täältä.
-            </Ingress>
+        <>
+            <div>
+                <h1 className="text-2xl font-semibold tracking-tight">Pakkauslista</h1>
+                <p className="text-muted-foreground">Voit tulostaa pakkauslistan täältä.</p>
+            </div>
             <SideBySide>
                 <LocalizationProvider
                     dateAdapter={AdapterMoment}
@@ -53,6 +53,6 @@ export const PackageList = () => {
             <Button onClick={fetchData}>Hae tiedot</Button>
             {report && <WarehouseReportByCustomer
                 reportDate={date.toDate()} reportData={report} getSum={() => 0} />}
-        </Page>
+        </>
     )
 }

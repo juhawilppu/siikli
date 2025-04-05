@@ -3,7 +3,7 @@ import { LinearProgress } from '@mui/material'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { CustomerCard, CustomerSection, Ingress, Page } from '../components'
+import { CustomerCard, CustomerSection } from '../components'
 
 
 export const Customers = () => {
@@ -23,19 +23,17 @@ export const Customers = () => {
   if (!customers) return <div>Ei asiakkaita</div>
 
   return (
-    <Page>
-      <h1>Asiakkaat</h1>
-      <Ingress>
-        Järjestä asiakkaat haluamaasi järjestykseen raahaamalla. Järjestystä
-        käytetään pakkauslistoissa.
-      </Ingress>
+    <>
       <div>
-
-        <Button onClick={() => navigate(`/customers/new`)}>
-          Luo uusi asiakas
-        </Button>
-
+        <h1 className="text-2xl font-semibold tracking-tight">Asiakkaat</h1>
+        <p className="text-muted-foreground">Järjestä asiakkaat haluamaasi järjestykseen raahaamalla. Järjestystä
+          käytetään pakkauslistoissa.</p>
       </div>
+
+      <Button onClick={() => navigate(`/customers/new`)}>
+        Luo uusi asiakas
+      </Button>
+
       {customers.map((customer: any) => (
         <CustomerCard key={customer.id}>
           <CustomerSection>{customer.order_index}</CustomerSection>
@@ -65,6 +63,6 @@ export const Customers = () => {
           </CustomerSection>
         </CustomerCard>
       ))}
-    </Page>
+    </>
   )
 }

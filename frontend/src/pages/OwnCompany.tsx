@@ -2,7 +2,7 @@ import { SaveOutlined } from '@mui/icons-material'
 import { Button, TextField } from '@mui/material'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
-import { Columns, Page } from '../components'
+import { Columns } from '../components'
 
 export const OwnCompany = () => {
   const companyId = 1
@@ -48,8 +48,11 @@ export const OwnCompany = () => {
   if (loading) return <div></div>
 
   return (
-    <Page>
-      <h1>Yritys</h1>
+    <>
+      <div>
+        <h1 className="text-2xl font-semibold tracking-tight">Yritys</h1>
+        <p className="text-muted-foreground">Tällä sivulla voit muokata oman yrityksesi tietoja.</p>
+      </div>
       <Columns>
         <TextField
           id='outlined-basic'
@@ -111,6 +114,6 @@ export const OwnCompany = () => {
           Tallenna
         </Button>
       </Columns>
-    </Page>
+    </>
   )
 }

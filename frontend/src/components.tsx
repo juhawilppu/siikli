@@ -1,14 +1,5 @@
 import styled from 'styled-components'
 
-export const Page = styled.div`
-  width: 100%;
-`
-
-export const Ingress = styled.div`
-  color: gray;
-  margin-bottom: 20px;
-`
-
 export const SideBySide = styled.div`
   display: flex;
   justify-content: space-between;

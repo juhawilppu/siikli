@@ -3,7 +3,7 @@ import { DatePicker, fiFI, LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
 import moment, { Moment } from 'moment'
 import { useState } from 'react'
-import { Ingress, Page, SideBySide } from '../components'
+import { SideBySide } from '../components'
 
 export const SalesReport = () => {
     const [startDate, setStartDate] = useState<Moment>(
@@ -34,12 +34,11 @@ export const SalesReport = () => {
 
 
     return (
-        <Page>
-            <h1>Myyntiraportti</h1>
-            <Ingress>
-                Hinnan muuttaminen ei muuta tuotteiden hintoja nykyisissä tilauksissa,
-                vain automaattisesti ehdotettavaa hintaa tulevissa tilauksissa.
-            </Ingress>
+        <>
+            <div>
+                <h1 className="text-2xl font-semibold tracking-tight">Myyntiraportti</h1>
+                <p className="text-muted-foreground">Tällä sivulla voit tulostaa koko myyntikannan Exceliin.</p>
+            </div>
             <SideBySide>
                 <LocalizationProvider
                     dateAdapter={AdapterMoment}
@@ -71,6 +70,6 @@ export const SalesReport = () => {
                 </LocalizationProvider>
             </SideBySide>
             <Button onClick={getReport}>Tulosta</Button>
-        </Page>
+        </>
     )
 }

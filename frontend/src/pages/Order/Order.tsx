@@ -25,7 +25,7 @@ import axios from 'axios'
 import moment, { Moment } from 'moment'
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { Columns, MainSave, Page, SideBySide } from '../../components'
+import { Columns, MainSave, SideBySide } from '../../components'
 import { ProductOrderDto } from '../../types/types'
 
 export interface CustomerDto {
@@ -166,8 +166,11 @@ const OrderEdit = () => {
   if (loading || !customers || !products) return <LinearProgress />
 
   return (
-    <Page>
-      <h1>{orderId ? 'Tilaus' : 'Uusi tilaus'}</h1>
+    <>
+      <div>
+        <h1 className="text-2xl font-semibold tracking-tight">{orderId ? 'Tilaus' : 'Uusi tilaus'}</h1>
+        <p className="text-muted-foreground">Tällä sivulla voit tehdä uuden tilauksen.</p>
+      </div>
       <MainSave>
         <Button variant='contained' startIcon={<SaveOutlined />} onClick={save}>
           Tallenna
@@ -350,7 +353,7 @@ const OrderEdit = () => {
           </SideBySide>
         </>
       )}
-    </Page>
+    </>
   )
 }
 

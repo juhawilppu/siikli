@@ -1,9 +1,8 @@
 import { Button } from '@mui/material'
 import google from '../public/google.webp'
-import { Page } from './components'
 
 export const Landing = () => (
-  <Page>
+  <>
     <h1>Tervetuloa Siikliin!</h1>
     <p>Aloita kirjautumalla sisään.</p>
     <p>
@@ -11,5 +10,5 @@ export const Landing = () => (
         <img src={google} style={{ width: '200px' }}></img>
       </Button>
     </p>
-  </Page>
+  </>
 )

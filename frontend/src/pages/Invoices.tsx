@@ -5,7 +5,7 @@ import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
 import axios from 'axios'
 import moment, { Moment } from 'moment'
 import { useEffect, useState } from 'react'
-import { Ingress, Page, SideBySide } from '../components'
+import { SideBySide } from '../components'
 import { InvoiceAppendix } from './InvoiceAppendix'
 import { InvoiceView } from './InvoiceView'
 import { CustomerDto } from './Order/Order'
@@ -78,12 +78,11 @@ export const Invoices = () => {
     }
 
     return (
-        <Page>
-            <h1>Laskut</h1>
-            <Ingress>
-                Hinnan muuttaminen ei muuta tuotteiden hintoja nykyisissä tilauksissa,
-                vain automaattisesti ehdotettavaa hintaa tulevissa tilauksissa.
-            </Ingress>
+        <>
+            <div>
+                <h1 className="text-2xl font-semibold tracking-tight">Laskut</h1>
+                <p className="text-muted-foreground">Tällä sivulla voit tulostaa laskut.</p>
+            </div>
             <FormControl fullWidth>
                 <InputLabel id='order-customer'>Asiakas</InputLabel>
                 <Select
@@ -166,6 +165,6 @@ export const Invoices = () => {
                         totalPages={1}
                     />}
             </div>
-        </Page>
+        </>
     )
 }
