@@ -1,12 +1,16 @@
 
-import { BarChart3, Box, FileText, Home, Package, Settings, Truck, Users, Warehouse } from "lucide-react"
-import { NavLink } from "react-router-dom"
-import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarRail } from './components/ui/sidebar'
+import { BarChart3, Box, FileText, Home, Package, Settings, Truck, Users, Warehouse } from "lucide-react";
+import { NavLink, useLocation } from "react-router-dom";
+import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarRail } from './components/ui/sidebar';
 
 const SiikliDrawer = () => {
 
+  const location = useLocation();
+
+  const isActive = (href: string) => location.pathname === href
+
   const navItems = [
-    { title: "Etusivu", href: '/', icon: Home, active: true },
+    { title: "Etusivu", href: '/', icon: Home },
     { title: "Tilaukset", href: '/orders', icon: Package },
     { title: "Uusi tilaus", href: '/orders/new', icon: Package },
     { title: "Pakkauslista", href: '/packaging-list', icon: FileText },
@@ -32,7 +36,7 @@ const SiikliDrawer = () => {
               {navItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <NavLink to={item.href}>
-                    <SidebarMenuButton asChild isActive={item.active}>
+                    <SidebarMenuButton asChild isActive={isActive(item.href)}>
                       <a href="#">
                         <item.icon className="h-4 w-4" />
                         <span>{item.title}</span>
