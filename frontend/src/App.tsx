@@ -33,7 +33,7 @@ import { SalesReport } from './pages/SalesReport'
 axios.defaults.baseURL = 'http://localhost:5173/api'
 
 function App() {
-  const [user, setUser] = useState()
+  const [user, setUser] = useState<{ username: string, initials: string }>()
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
 
@@ -41,10 +41,10 @@ function App() {
     axios
       .get('/auth/current-user')
       .then((response) => {
-        setUser(response.data.username)
+        setUser(response.data)
       })
       .finally(() => setLoading(false))
-  })
+  }, [])
 
   let routes
   if (loading) {
@@ -114,7 +114,7 @@ function App() {
                     <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                       <Avatar className="h-8 w-8">
                         <AvatarImage src="/placeholder-user.jpg" alt="User" />
-                        <AvatarFallback>MK</AvatarFallback>
+                        <AvatarFallback>{user?.initials}</AvatarFallback>
                       </Avatar>
                     </Button>
                   </DropdownMenuTrigger>

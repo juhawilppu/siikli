@@ -32,7 +32,7 @@ authRoute.get('/api/auth/current-user', (req, res) => {
   console.log('auth/current-user here')
   if (req.user) {
     const user = req.user as any
-    res.status(200).send({ username: user.username })
+    res.status(200).send({ username: user.username, initials: 'JW' })
   } else {
     res.status(404).end()
   }
