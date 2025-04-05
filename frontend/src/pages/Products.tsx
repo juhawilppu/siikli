@@ -31,7 +31,7 @@ export const Products = () => {
         Luo uusi tuote
       </Button>
       {customers.map((customer: any) => (
-        <CustomerCard>
+        <CustomerCard key={customer.id}>
           <CustomerSection>{customer.name}</CustomerSection>
         </CustomerCard>
       ))}
