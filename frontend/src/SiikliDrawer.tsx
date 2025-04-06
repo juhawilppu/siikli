@@ -26,7 +26,7 @@ const SiikliDrawer = () => {
     <Sidebar>
       <SidebarHeader>
         <div className="flex h-14 items-center px-4">
-          <span className="font-semibold text-xl">Siikli</span>
+          <span className="text-primary font-semibold text-xl">Siikli</span>
         </div>
       </SidebarHeader>
       <SidebarContent>
