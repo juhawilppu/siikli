@@ -128,8 +128,8 @@ async function startServer() {
     res.status(500).send('Something went wrong')
   })
 
-  const server = app.listen(3000, () => {
-    console.log(`🚀 Server ready at: http://localhost:3000`)
+  const server = app.listen(3033, () => {
+    console.log(`🚀 Server ready at: http://localhost:3033`)
     console.log(
       `⭐️ See sample requests: http://pris.ly/e/ts/rest-express#3-using-the-rest-api`
     )
