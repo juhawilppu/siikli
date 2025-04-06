@@ -37,15 +37,6 @@ export interface GetOrderDto {
   items: ProductOrderDto[]
 }
 
-export interface PostOrderIdDto {
-  deliveryDate: string
-  customerId: string
-  hasNote: boolean
-  noteBody: string
-  noteHeader: string
-  rows: ProductOrderIdDto[]
-}
-
 export interface GetOrderList {
   id: string
   deliveryDate: string

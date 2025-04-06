@@ -18,6 +18,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Separator } from "@/components/ui/separator"
 import { Textarea } from "@/components/ui/textarea"
+import { useToast } from "@/hooks/use-toast"
 import { CustomerDto, GetOrderDto, OrderProduct, PostOrderDto, ProductOrderDto } from "@/types/types"
 import axios from "axios"
 import { format } from "date-fns"
@@ -56,6 +57,7 @@ export default function CreateOrder() {
   ])
 
   const { orderId } = useParams()
+  const { toast } = useToast()
 
   const handleAddItem = () => {
     setOrderItems([
@@ -137,7 +139,7 @@ export default function CreateOrder() {
     return orderItems.reduce((sum, item) => sum + item.amount * item.price, 0).toFixed(2)
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     if (!deliveryDate) {
       return
     }
@@ -152,7 +154,24 @@ export default function CreateOrder() {
       items: orderItems
     }
     console.log("Saving order:", data)
-    axios.post('/orders', data)
+    if (orderId) {
+      // Save order
+      await axios.post(`/orders/${orderId}`, data)
+      toast({
+        title: "Order saved successfully",
+        description: `Order for ${customers.find((c) => c.id === customerId)?.name} has been saved.`,
+        variant: "success",
+      })
+    } else {
+      // Save new order
+      await axios.post('/orders', data)
+      toast({
+        title: "Order created successfully",
+        description: `Order for ${customers.find((c) => c.id === customerId)?.name} has been saved.`,
+        variant: "success",
+      })
+    }
+
     // Show success message or handle errors
   }
 

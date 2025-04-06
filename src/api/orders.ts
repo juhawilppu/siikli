@@ -5,8 +5,7 @@ import moment from 'moment'
 import {
   GetOrderDto,
   GetOrderList,
-  PostOrderDto,
-  PostOrderIdDto,
+  PostOrderDto
 } from '../../frontend/src/types/types'
 import { dateToString } from '../../frontend/src/utils/date'
 
@@ -389,9 +388,9 @@ ordersRoute.post(`/api/orders`, async (req, res) => {
 })
 
 ordersRoute.post(`/api/orders/:id`, async (req, res) => {
-  console.log('getting orders')
+  console.log('saving order ' + req.params.id)
 
-  const data = req.body as PostOrderIdDto
+  const data = req.body as PostOrderDto
 
   const result = await prisma.order.update({
     data: {
@@ -415,8 +414,8 @@ ordersRoute.post(`/api/orders/:id`, async (req, res) => {
       id: req.params.id as string,
     },
   })
-  console.log(data.rows)
-  const toCreate = data.rows.filter((r) => !r.id)
+  console.log(data.items)
+  const toCreate = data.items.filter((r) => !r.id)
   if (toCreate.length > 0) {
     await prisma.orderProduct.createMany({
       data: toCreate.map((r) => {
@@ -432,7 +431,7 @@ ordersRoute.post(`/api/orders/:id`, async (req, res) => {
       }),
     })
   }
-  const toUpdate = data.rows.filter((r) => r.id)
+  const toUpdate = data.items.filter((r) => r.id)
   if (toUpdate.length > 0) {
     const promises = toUpdate.map((r) => {
       console.log(r)

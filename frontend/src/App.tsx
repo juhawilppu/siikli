@@ -13,6 +13,7 @@ import { Button } from './components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from './components/ui/dropdown-menu'
 import { Input } from './components/ui/input'
 import { SidebarInset, SidebarProvider, SidebarTrigger } from './components/ui/sidebar'
+import { Toaster } from './components/ui/toaster'
 import CompanySettings from './pages/CompanySettings'
 import { CustomerPage } from './pages/CustomerPage'
 import { Customers } from './pages/Customers'
@@ -157,6 +158,7 @@ function App() {
             </main>
           </div>
         </SidebarInset>
+        <Toaster />
       </SidebarProvider>
     </>
   )
