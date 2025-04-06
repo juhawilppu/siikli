@@ -116,3 +116,12 @@ export interface GetCompanySettings {
   email: string;
   website: string;
 }
+
+export interface CustomerDto {
+  id: string
+  chain: string
+  name: string
+  streetAddress: string | null
+  postalCode: string | null
+  city: string | null
+}
