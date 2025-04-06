@@ -1,4 +1,5 @@
 export interface ProductOrderDto {
+  id: string
   productId: string
   price: number
   amount: number
@@ -23,7 +24,17 @@ export interface PostOrderDto {
   hasNote: boolean
   noteBody: string
   noteHeader: string
-  rows: ProductOrderDto[]
+  items: ProductOrderDto[]
+}
+
+export interface GetOrderDto {
+  id: string
+  deliveryDate: string
+  customerId: string
+  hasNote: boolean
+  noteBody: string | null
+  noteHeader: string | null
+  items: ProductOrderDto[]
 }
 
 export interface PostOrderIdDto {

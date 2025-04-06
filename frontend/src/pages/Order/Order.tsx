@@ -18,6 +18,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Separator } from "@/components/ui/separator"
 import { Textarea } from "@/components/ui/textarea"
+import { CustomerDto, GetOrderDto, OrderProduct, PostOrderDto, ProductOrderDto } from "@/types/types"
 import axios from "axios"
 import { format } from "date-fns"
 import { fi } from 'date-fns/locale'
@@ -35,34 +36,22 @@ export interface ProductDto {
 }
 
 
-interface OrderItem {
-  id: string
-  productId: string
-  amount: number
-  packageSize: number
-  packageType: string
-  packages: number
-  price: number
-  notes: string
-}
-
 export default function CreateOrder() {
   const [deliveryDate, setDeliveryDate] = useState<Date>()
   const [customers, setCustomers] = useState<CustomerDto[]>()
   const [products, setProducts] = useState<ProductDto[]>()
   const [customerId, setCustomerId] = useState<string>("")
-  const [hasWaybillNote, setHasWaybillNote] = useState<boolean>()
+  const [hasWaybillNote, setHasWaybillNote] = useState<boolean>(false)
   const [waybillNote, setWaybillNote] = useState({ title: "", content: "" })
-  const [orderItems, setOrderItems] = useState<OrderItem[]>([
+  const [orderItems, setOrderItems] = useState<ProductOrderDto[]>([
     {
       id: "1",
-      productId: "",
+      productId: '',
       amount: 0,
       packageSize: 0,
       packageType: "",
-      packages: 0,
       price: 0,
-      notes: "",
+      freetext: "",
     },
   ])
 
@@ -73,13 +62,12 @@ export default function CreateOrder() {
       ...orderItems,
       {
         id: Date.now().toString(),
-        productId: "",
+        productId: '',
         amount: 0,
         packageSize: 0,
         packageType: "",
-        packages: 0,
         price: 0,
-        notes: "",
+        freetext: "",
       },
     ])
   }
@@ -97,11 +85,11 @@ export default function CreateOrder() {
 
       if (orderId) {
         console.log('has orderId')
-        const res = await axios.get<any>(`/orders/${orderId}`)
-        setOrderItems(res.data.products)
+        const res = await axios.get<GetOrderDto>(`/orders/${orderId}`)
+        setOrderItems(res.data.items)
         setCustomerId(res.data.customerId)
         console.log('settins customerId to ' + res.data.customerId)
-        setDeliveryDate(moment(res.data.deliveryDate, 'YYYY-MM-DD'))
+        setDeliveryDate(new Date(res.data.deliveryDate))
         setHasWaybillNote(res.data.hasNote)
         setWaybillNote({ title: res.data.noteHeader, content: res.data.noteBody })
       }
@@ -115,7 +103,7 @@ export default function CreateOrder() {
     }
   }
 
-  const handleItemChange = (id: string, field: keyof OrderItem, value: any) => {
+  const handleItemChange = (id: string, field: keyof OrderProduct, value: any) => {
     setOrderItems(
       orderItems.map((item) => {
         if (item.id === id) {
@@ -150,19 +138,25 @@ export default function CreateOrder() {
   }
 
   const handleSubmit = (e: React.FormEvent) => {
+    if (!deliveryDate) {
+      return
+    }
     e.preventDefault()
     // Here you would typically save the order to your backend
-    console.log("Saving order:", {
-      customer: selectedCustomer,
-      deliveryDate,
-      waybillNote,
-      items: orderItems,
-      total: calculateTotal(),
-    })
+    const data: PostOrderDto = {
+      customerId: selectedCustomer.id,
+      deliveryDate: format(deliveryDate, "yyyy-MM-dd", { locale: fi }),
+      hasNote: hasWaybillNote,
+      noteBody: waybillNote.content,
+      noteHeader: waybillNote.title,
+      items: orderItems
+    }
+    console.log("Saving order:", data)
+    axios.post('/orders', data)
     // Show success message or handle errors
   }
 
-  if (!customers) {
+  if (!customers || !products) {
     return <div></div>
   }
 
@@ -275,7 +269,7 @@ export default function CreateOrder() {
               <CardContent>
                 <ScrollArea className="max-h-[500px]">
                   <div className="space-y-4">
-                    {orderItems.map((item, index) => (
+                    {orderItems.map((item) => (
                       <div key={item.id} className="rounded-lg border p-4 relative">
                         <Button
                           type="button"
@@ -291,7 +285,7 @@ export default function CreateOrder() {
 
                         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                           <div className="space-y-2">
-                            <Label htmlFor={`product-${item.id}`}>Tuote</Label>
+                            <Label htmlFor={`product-${item.productId}`}>Tuote</Label>
                             <Select
                               value={item.productId}
                               onValueChange={(value) => handleItemChange(item.id, "productId", value)}
@@ -378,8 +372,9 @@ export default function CreateOrder() {
                             <Input
                               id={`packages-${item.id}`}
                               type="number"
+                              disabled
                               min="0"
-                              value={item.packages || ""}
+                              value={item.amount / item.packageSize}
                               readOnly
                               className="bg-muted"
                             />
@@ -392,8 +387,8 @@ export default function CreateOrder() {
                             <Label htmlFor={`notes-${item.id}`}>Lisätieto</Label>
                             <Input
                               id={`notes-${item.id}`}
-                              value={item.notes}
-                              onChange={(e) => handleItemChange(item.id, "notes", e.target.value)}
+                              value={item.freetext}
+                              onChange={(e) => handleItemChange(item.id, "freetext", e.target.value)}
                               placeholder="Lisätietoa tästä tuotteesta"
                             />
                           </div>
@@ -401,7 +396,7 @@ export default function CreateOrder() {
 
                         <div className="mt-4 text-right">
                           <p className="text-sm font-medium">
-                            Item Total: €{(item.amount * item.price).toFixed(2)}
+                            Tuote yhteensä: {(item.amount * item.price).toFixed(2)} €
                           </p>
                         </div>
                       </div>
@@ -416,8 +411,8 @@ export default function CreateOrder() {
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm text-muted-foreground">Order Subtotal</p>
-                  <p className="text-2xl font-bold">€{calculateTotal()}</p>
+                  <p className="text-sm text-muted-foreground">Tilauksen kokonaissumma</p>
+                  <p className="text-2xl font-bold">{calculateTotal()} €</p>
                 </div>
               </CardFooter>
             </Card>

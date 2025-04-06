@@ -3,10 +3,12 @@ import express from 'express'
 import pdf from 'html-pdf'
 import moment from 'moment'
 import {
+  GetOrderDto,
   GetOrderList,
   PostOrderDto,
   PostOrderIdDto,
 } from '../../frontend/src/types/types'
+import { dateToString } from '../../frontend/src/utils/date'
 
 const defaultStyle = `
     <style type="text/css">
@@ -291,8 +293,14 @@ ordersRoute.get(`/api/orders/cargo_reports`, async (req, res) => {
   })
 })
 
-const getOrder = async (id: string, tenantId: string) => {
-  const result = await prisma.order.findFirst({
+
+ordersRoute.get(`/api/orders/:id`, async (req, res) => {
+  console.log('getting order ' + req.params.id)
+
+  const orderId = req.params.id
+  const tenantId = parseTenantId(req)
+
+  const result = await prisma.order.findFirstOrThrow({
     include: {
       customer: true,
       products: true,
@@ -308,18 +316,32 @@ const getOrder = async (id: string, tenantId: string) => {
       },
     ],
     where: {
-      id: id,
+      id: orderId,
       tenantId: tenantId,
     },
   })
-  return result
-}
 
-ordersRoute.get(`/api/orders/:id`, async (req, res) => {
-  console.log('getting order ' + req.params.id)
-  res.json(
-    await getOrder(req.params.id, parseTenantId(req))
-  )
+  res.json({
+    id: result.id,
+    deliveryDate: dateToString(result.deliveryDate),
+    customerId: result.customerId,
+    hasNote: result.hasNote,
+    noteBody: result.noteBody,
+    noteHeader: result.noteHeader,
+    items: result.products.map(p => (
+      {
+        id: p.id,
+        productId: p.productId,
+        price: p.price,
+        price0: p.price0,
+        amount: p.amount,
+        packageSize: p.packageSize,
+        packageType: p.packageType || '',
+        freetext: p.freetext || ''
+      }
+    ))
+
+  } satisfies GetOrderDto)
 })
 
 export const parseTenantId = (req: any) => req.user.tenantId
@@ -349,7 +371,7 @@ ordersRoute.post(`/api/orders`, async (req, res) => {
     },
   })
   const result2 = await prisma.orderProduct.createMany({
-    data: data.rows.map((r) => {
+    data: data.items.map((r) => {
       return {
         orderId: result.id,
         productId: r.productId,
@@ -432,7 +454,5 @@ ordersRoute.post(`/api/orders/:id`, async (req, res) => {
     await Promise.all(promises)
   }
 
-  res.json(
-    await getOrder(req.params.id as string, parseTenantId(req))
-  )
+  res.status(200).json({ message: 'Saved' })
 })
