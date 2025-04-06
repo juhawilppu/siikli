@@ -311,8 +311,7 @@ export default function CreateOrder() {
 
                           <div className="space-y-2">
                             <Label htmlFor={`amount-${item.id}`}>
-                              Määrä (
-                              {item.productId ? products.find((p) => p.id === item.productId)?.unit : "units"})
+                              Määrä (kg)
                             </Label>
                             <Input
                               id={`amount-${item.id}`}
@@ -341,17 +340,20 @@ export default function CreateOrder() {
                           </div>
 
                           <div className="space-y-2">
-                            <Label htmlFor={`package-size-${item.id}`}>Pakkauskoko</Label>
-                            <Input
-                              id={`package-size-${item.id}`}
-                              type="number"
-                              min="0"
-                              step="0.01"
-                              value={item.packageSize || ""}
-                              onChange={(e) =>
-                                handleItemChange(item.id, "packageSize", Number.parseFloat(e.target.value) || 0)
-                              }
-                            />
+                            <Label htmlFor={`package-type-${item.id}`}>Pakkauskoko</Label>
+                            <Select
+                              value={item.packageSize + ''}
+                              onValueChange={(value) => handleItemChange(item.id, "packageSize", parseInt(value))}
+                            >
+                              <SelectTrigger id={`package-size-${item.id}`}>
+                                <SelectValue placeholder="Valitse pakkauskoko" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {packageSizes.map(type => (
+                                  <SelectItem value={type + ''}>{type}</SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
                           </div>
 
                           <div className="space-y-2">
