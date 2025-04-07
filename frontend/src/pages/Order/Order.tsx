@@ -20,6 +20,7 @@ import { Separator } from "@/components/ui/separator"
 import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/hooks/use-toast"
 import { CustomerDto, GetOrderDto, OrderProduct, PostOrderDto, ProductOrderDto } from "@/types/types"
+import { dateToString } from "@/utils/date"
 import axios from "axios"
 import { format } from "date-fns"
 import { fi } from 'date-fns/locale'
@@ -149,7 +150,7 @@ export default function CreateOrder() {
     // Here you would typically save the order to your backend
     const data: PostOrderDto = {
       customerId: selectedCustomer.id,
-      deliveryDate: format(deliveryDate, "yyyy-MM-dd", { locale: fi }),
+      deliveryDate: dateToString(deliveryDate),
       hasNote: hasWaybillNote,
       noteBody: waybillNote.content,
       noteHeader: waybillNote.title,
