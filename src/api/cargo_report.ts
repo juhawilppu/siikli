@@ -4,16 +4,15 @@ module.exports = async (company, order, first) => {
   const itemsTable = order.products.map((item) => {
     return `
             <tr>
-                <td class="align-left width-40">${item.products.name} ${
-      item.price < 0 ? '(Hyvitys)' : ''
-    }</td>
+                <td class="align-left width-40">${item.products.name} ${item.price < 0 ? '(Hyvitys)' : ''
+      }</td>
                 <td class="align-right width-20">${item.amount}</td>
                 <td class="align-right width-20">${item.price
-                  .toFixed(2)
-                  .replace('.', ',')}</td>
+        .toFixed(2)
+        .replace('.', ',')}</td>
                 <td class="align-right width-20">${(item.amount * item.price)
-                  .toFixed(2)
-                  .replace('.', ',')}</td>
+        .toFixed(2)
+        .replace('.', ',')}</td>
             </tr>`
   })
   const note = order.note_body
@@ -39,12 +38,11 @@ module.exports = async (company, order, first) => {
             </div>
             <h1>Kuormakirja</h1>
             <div style="margin-bottom: 10pt;">
-                <div><b>Asiakas:</b> <span>${order.customer.chain} ${
-    order.customer.name
-  }</span></div>
+                <div><b>Asiakas:</b> <span>${order.customer.chain} ${order.customer.name
+    }</span></div>
                 <div><b>Toimituspäivä:</b> <span>${moment(
-                  order.delivery_date
-                ).format('D.M.YYYY')}</span></div>
+      order.delivery_date
+    ).format('D.M.YYYY')}</span></div>
             </div>
             <table>
                 <thead>

@@ -3,10 +3,8 @@
 import { endOfWeek, startOfWeek } from "date-fns"
 import {
   Calendar,
-  Download,
   Package,
-  Printer,
-  RefreshCw
+  Printer
 } from "lucide-react"
 import { useEffect, useState } from "react"
 
@@ -19,6 +17,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { useToast } from "@/hooks/use-toast"
 import { GetOrderList } from "@/types/types"
 import { dateToString, formatDate } from "@/utils/date"
+import printJS from 'print-js'
+
 import axios from "axios"
 import { fi } from "date-fns/locale"
 
@@ -31,7 +31,6 @@ export default function Orders() {
   const [endDate, setEndDate] = useState<Date>(endOfWeek(now, { weekStartsOn: 1 }))
   const [statusFilter, setStatusFilter] = useState<string>("all")
   const [isLoading, setIsLoading] = useState(false)
-  const [isWaybillLoading, setIsWaybillLoading] = useState(false)
   const [isPrinting, setIsPrinting] = useState(false)
   const [orders, setOrders] = useState<GetOrderList[]>([])
   const [selectedOrders, setSelectedOrders] = useState<string[]>([])
@@ -64,85 +63,27 @@ export default function Orders() {
     }
   }
 
-  const filteredOrders = orders.filter((order) => {
-    // Filter by search query
-    if (
-      searchQuery &&
-      !order.id.toLowerCase().includes(searchQuery.toLowerCase()) &&
-      !order.customer.name.toLowerCase().includes(searchQuery.toLowerCase())
-    ) {
-      return false
-    }
-
-
-    // Filter by date range
-    if (startDate && new Date(order.deliveryDate) < startDate) {
-      return false
-    }
-
-    if (endDate) {
-      // Set the time to the end of the day for the end date
-      const endOfDay = new Date(endDate)
-      endOfDay.setHours(23, 59, 59, 999)
-
-      if (new Date(order.deliveryDate) > endOfDay) {
-        return false
-      }
-    }
-
-    return true
-  })
-
-  const handleFetchOrders = () => {
-    setIsLoading(true)
-
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false)
-      toast({
-        title: "Orders fetched successfully",
-        description: `Found ${filteredOrders.length} orders in the selected date range.`,
-      })
-    }, 1000)
-  }
-
-  const handleFetchWaybills = () => {
-    setIsWaybillLoading(true)
-
-    // Simulate API call
-    setTimeout(() => {
-      setIsWaybillLoading(false)
-      toast({
-        title: "Waybill data fetched",
-        description: `Waybill data updated for ${selectedOrders.length || "all"} selected orders.`,
-      })
-    }, 1500)
-  }
-
   const handlePrintWaybills = () => {
     setIsPrinting(true)
-
-    // Simulate API call
-    setTimeout(() => {
-      setIsPrinting(false)
-      toast({
-        title: "Waybills prepared for printing",
-        description: `${selectedOrders.length} waybills ready for download.`,
-      })
-    }, 2000)
+    printJS({
+      printable: `/api/orders/cargo_reports?startDate=${dateToString(startDate)}&endDate=${dateToString(endDate)}`,
+      type: 'pdf',
+      showModal: false,
+      onLoadingEnd: () => setIsPrinting(false)
+    })
   }
 
   const toggleOrderSelection = (orderId: string) => {
     setSelectedOrders((prev) => (prev.includes(orderId) ? prev.filter((id) => id !== orderId) : [...prev, orderId]))
   }
 
-  const isAllSelected = filteredOrders.length > 0 && selectedOrders.length === filteredOrders.length
+  const isAllSelected = orders.length > 0 && selectedOrders.length === orders.length
 
   const toggleSelectAll = () => {
     if (isAllSelected) {
       setSelectedOrders([])
     } else {
-      setSelectedOrders(filteredOrders.map((order) => order.id))
+      setSelectedOrders(orders.map((order) => order.id))
     }
   }
 
@@ -163,7 +104,7 @@ export default function Orders() {
       {/* Filters */}
       <Card>
         <CardHeader>
-          <CardTitle>Filters</CardTitle>
+          <CardTitle>Hakuehdot</CardTitle>
           <CardDescription>Filter orders by date range and status</CardDescription>
         </CardHeader>
         <CardContent>
@@ -219,41 +160,6 @@ export default function Orders() {
                 </SelectContent>
               </Select>
             </div>
-
-            <div className="flex items-end gap-2">
-              <Button onClick={handleFetchOrders} disabled={isLoading} className="flex-1">
-                {isLoading ? (
-                  <>
-                    <svg
-                      className="mr-2 h-4 w-4 animate-spin"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      ></circle>
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      ></path>
-                    </svg>
-                    Hae tilaukset
-                  </>
-                ) : (
-                  <>
-                    <RefreshCw className="mr-2 h-4 w-4" />
-                    Hae tilaukset
-                  </>
-                )}
-              </Button>
-            </div>
           </div>
         </CardContent>
       </Card>
@@ -263,43 +169,8 @@ export default function Orders() {
         <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <CardTitle>Tilaukset</CardTitle>
-            <CardDescription>
-              {filteredOrders.length} order{filteredOrders.length !== 1 ? "s" : ""} found
-            </CardDescription>
           </div>
           <div className="flex flex-wrap gap-2">
-            <Button variant="outline" onClick={handleFetchWaybills} disabled={isWaybillLoading}>
-              {isWaybillLoading ? (
-                <>
-                  <svg
-                    className="mr-2 h-4 w-4 animate-spin"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    ></circle>
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
-                  </svg>
-                  Loading...
-                </>
-              ) : (
-                <>
-                  <Download className="mr-2 h-4 w-4" />
-                  Fetch Waybill Data
-                </>
-              )}
-            </Button>
             <Button variant="outline" onClick={handlePrintWaybills} disabled={isPrinting}>
               {isPrinting ? (
                 <>
@@ -323,12 +194,12 @@ export default function Orders() {
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                     ></path>
                   </svg>
-                  Preparing...
+                  Tulosta kuormakirjat
                 </>
               ) : (
                 <>
                   <Printer className="mr-2 h-4 w-4" />
-                  Print Waybills
+                  Tulosta kuormakirjat
                 </>
               )}
             </Button>
@@ -346,7 +217,6 @@ export default function Orders() {
                     onChange={toggleSelectAll}
                   />
                 </TableHead>
-                <TableHead>Tilaus ID</TableHead>
                 <TableHead>Päivämäärä</TableHead>
                 <TableHead>Asiakas</TableHead>
                 <TableHead>Tila</TableHead>
@@ -355,14 +225,14 @@ export default function Orders() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredOrders.length === 0 ? (
+              {orders.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
-                    No orders found matching your filters
+                    Ei tilauksia
                   </TableCell>
                 </TableRow>
               ) : (
-                filteredOrders.map((order) => (
+                orders.map((order) => (
                   <TableRow key={order.id}>
                     <TableCell>
                       <input
@@ -372,8 +242,8 @@ export default function Orders() {
                         onChange={() => toggleOrderSelection(order.id)}
                       />
                     </TableCell>
-                    <TableCell className="font-medium">{order.id}</TableCell>
-                    <TableCell>{order.deliveryDate}</TableCell>
+                    {/*<TableCell className="font-medium">{order.id}</TableCell>*/}
+                    <TableCell>{formatDate(new Date(order.deliveryDate))}</TableCell>
                     <TableCell>{order.customer.chain} {order.customer.name}</TableCell>
                     <TableCell>
                       <span
@@ -400,15 +270,7 @@ export default function Orders() {
         </CardContent>
         <CardFooter className="flex items-center justify-between">
           <div className="text-sm text-muted-foreground">
-            Showing <strong>{filteredOrders.length}</strong> of <strong>{orders.length}</strong> orders
-          </div>
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" disabled>
-              Previous
-            </Button>
-            <Button variant="outline" size="sm" disabled>
-              Next
-            </Button>
+            <strong>{orders.length}</strong> {orders.length === 1 ? 'tilaus' : 'tilausta'}
           </div>
         </CardFooter>
       </Card>

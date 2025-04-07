@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client'
+import { endOfDay, parse, startOfDay } from 'date-fns'
 import express from 'express'
 import pdf from 'html-pdf'
 import moment from 'moment'
@@ -7,7 +8,7 @@ import {
   GetOrderList,
   PostOrderDto
 } from '../../frontend/src/types/types'
-import { dateToString } from '../../frontend/src/utils/date'
+import { dateToString, formatDate, stringToDate } from '../../frontend/src/utils/date'
 
 const defaultStyle = `
     <style type="text/css">
@@ -109,6 +110,12 @@ ordersRoute.get(`/api/orders`, async (req, res) => {
     return res.status(400)
   }
 
+  const startDate = stringToDate(req.query.startDate as string)
+  const endDate = stringToDate(req.query.endDate as string)
+
+  console.log('startDate', startDate)
+  console.log('endDate', endDate)
+
   const result = await prisma.order.findMany({
     include: {
       customer: true,
@@ -127,8 +134,8 @@ ordersRoute.get(`/api/orders`, async (req, res) => {
     ],
     where: {
       deliveryDate: {
-        gte: moment(req.query.startDate as string, 'YYYY-MM-DD').toDate(),
-        lte: moment(req.query.endDate as string, 'YYYY-MM-DD').toDate(),
+        gte: startOfDay(startDate),
+        lte: endOfDay(endDate)
       },
       tenantId: parseTenantId(req),
     },
@@ -136,7 +143,7 @@ ordersRoute.get(`/api/orders`, async (req, res) => {
   const mapped = result.map((o) => {
     return {
       id: o.id,
-      deliveryDate: moment(o.deliveryDate).format('YYYY-MM-DD'),
+      deliveryDate: formatDate(o.deliveryDate),
       customer: {
         id: o.customerId,
         chain: o.customer.chain,
@@ -157,6 +164,8 @@ ordersRoute.get(`/api/orders/cargo_reports`, async (req, res) => {
   if (!req.query.startDate || !req.query.endDate) {
     return res.status(400)
   }
+
+  console.log('startDate', startOfDay(parse(req.query.startDate as string, 'yyyy-MM-dd', new Date())))
 
   const orders = await prisma.order.findMany({
     include: {
@@ -180,20 +189,14 @@ ordersRoute.get(`/api/orders/cargo_reports`, async (req, res) => {
     ],
     where: {
       deliveryDate: {
-        gte: moment(req.query.startDate as string, 'YYYY-MM-DD').toDate(),
-        lte: moment(req.query.endDate as string, 'YYYY-MM-DD').toDate(),
+        gte: startOfDay(parse(req.query.startDate as string, 'yyyy-MM-dd', new Date())),
+        lte: endOfDay(parse(req.query.endDate as string, 'yyyy-MM-dd', new Date()))
       },
       tenantId: parseTenantId(req),
     },
   })
 
-  const company = {
-    name: 'MTY Männistö',
-    address: 'Tevännön pikatie 191',
-    postalCode: '12750',
-    city: 'PILPALA',
-    businessId: '2535794-6',
-  }
+  const company = prisma.tenant.findFirstOrThrow()
 
   const promises = orders.map((order, index) =>
     require('./cargo_report')(company, order, index === 0)
@@ -251,7 +254,7 @@ ordersRoute.get(`/api/orders/cargo_reports`, async (req, res) => {
                 </div>
             </div>
             <div class="siikli-footer">
-                Siikli-toiminnanohjausjärjestelmä (www.siikli.fi)
+                Siikli-toiminnanohjausjärjestelmä (siikli.fi)
             </div>
         </div>
     </body>

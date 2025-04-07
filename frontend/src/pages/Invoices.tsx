@@ -1,9 +1,12 @@
+import { Calendar as CalendarComponent } from "@/components/ui/calendar"
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Invoice, Order, OrderProduct } from '@/types/types'
+import { formatDate } from '@/utils/date'
 import { Button, FormControl, InputLabel, LinearProgress, MenuItem, Select, SelectChangeEvent } from '@mui/material'
-import { DatePicker, fiFI, LocalizationProvider } from '@mui/x-date-pickers'
-import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
 import axios from 'axios'
-import moment, { Moment } from 'moment'
+import { endOfWeek, startOfWeek } from 'date-fns'
+import { fi } from "date-fns/locale"
+import { Calendar } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { SideBySide } from '../components'
 import { InvoiceAppendix } from './InvoiceAppendix'
@@ -17,15 +20,17 @@ export interface FlatOrderItem extends OrderProduct {
     productName: string;
 }
 
+const now = new Date()
+
 export const Invoices = () => {
     const [customers, setCustomers] = useState<any>()
     const [invoice, setInvoice] = useState<Invoice>()
     const [loading, setLoading] = useState(true)
-    const [startDate, setStartDate] = useState<Moment>(
-        moment().clone().weekday(1)
+    const [startDate, setStartDate] = useState<Date>(
+        startOfWeek(now, { weekStartsOn: 1 })
     )
-    const [endDate, setEndDate] = useState(
-        moment().clone().weekday(1).add(7, 'day')
+    const [endDate, setEndDate] = useState<Date>(
+        endOfWeek(now, { weekStartsOn: 1 })
     )
 
     const handleStartDateChange = (value: Moment | null) => {
@@ -100,34 +105,26 @@ export const Invoices = () => {
                 </Select>
             </FormControl>
             <SideBySide>
-                <LocalizationProvider
-                    dateAdapter={AdapterMoment}
-                    adapterLocale='fi'
-                    localeText={
-                        fiFI.components.MuiLocalizationProvider.defaultProps.localeText
-                    }
-                >
-                    <DatePicker
-                        format='DD.MM.YYYY'
-                        label='Aloitus'
-                        value={startDate}
-                        onChange={handleStartDateChange}
-                    />
-                </LocalizationProvider>
-                <LocalizationProvider
-                    dateAdapter={AdapterMoment}
-                    adapterLocale='fi'
-                    localeText={
-                        fiFI.components.MuiLocalizationProvider.defaultProps.localeText
-                    }
-                >
-                    <DatePicker
-                        format='DD.MM.YYYY'
-                        label='Lopetus'
-                        value={endDate}
-                        onChange={handleEndDateChange}
-                    />
-                </LocalizationProvider>
+                <div className="space-y-2">
+                    <label className="text-sm font-medium">Alkupäivä</label>
+                    <Popover>
+                        <PopoverTrigger asChild>
+                            <Button variant="outline" className="w-full justify-start text-left font-normal">
+                                <Calendar className="mr-2 h-4 w-4" />
+                                {startDate ? formatDate(startDate) : <span>Select date</span>}
+                            </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0">
+                            <CalendarComponent
+                                mode="single"
+                                selected={startDate}
+                                onSelect={setStartDate}
+                                initialFocus
+                                locale={fi}
+                            />
+                        </PopoverContent>
+                    </Popover>
+                </div>
             </SideBySide>
 
             <Button onClick={getData}>Hae tiedot</Button>
