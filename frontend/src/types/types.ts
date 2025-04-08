@@ -45,6 +45,7 @@ export interface GetOrderList {
     chain: string
     name: string
   }
+  total: number
 }
 
 export interface Customer {

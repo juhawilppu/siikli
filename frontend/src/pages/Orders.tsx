@@ -83,7 +83,7 @@ export default function Orders() {
   }
 
   if (isLoading) {
-    return <div>Loading</div>
+    return <div></div>
   }
 
   return (
@@ -92,7 +92,7 @@ export default function Orders() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Tilaukset</h1>
-          <p className="text-muted-foreground">Manage and track all customer orders</p>
+          <p className="text-muted-foreground">Hallitse tilauksia tällä sivulla</p>
         </div>
         <Button onClick={() => (window.location.href = "/orders/new")}>
           <Package className="mr-2 h-4 w-4" />
@@ -104,7 +104,7 @@ export default function Orders() {
       <Card>
         <CardHeader>
           <CardTitle>Hakuehdot</CardTitle>
-          <CardDescription>Filter orders by date range and status</CardDescription>
+          <CardDescription>Suodata tilauksia päivämäärän mukaan</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid gap-4 md:grid-cols-4">
@@ -146,17 +146,17 @@ export default function Orders() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium">Status</label>
+              <label className="text-sm font-medium">Tila</label>
               <Select value={statusFilter} onValueChange={setStatusFilter}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select status" />
+                  <SelectValue placeholder="Valitse tila" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Statuses</SelectItem>
-                  <SelectItem value="Delivered">Delivered</SelectItem>
-                  <SelectItem value="In Transit">In Transit</SelectItem>
-                  <SelectItem value="Processing">Processing</SelectItem>
-                  <SelectItem value="Cancelled">Cancelled</SelectItem>
+                  <SelectItem value="all">Kaikki</SelectItem>
+                  <SelectItem value="Delivered">Toimitettu</SelectItem>
+                  <SelectItem value="In Transit">Toimituksessa</SelectItem>
+                  <SelectItem value="Processing">Käsittelyssä</SelectItem>
+                  <SelectItem value="Cancelled">Peruttu</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -252,7 +252,7 @@ export default function Orders() {
                         Kesken
                       </span>
                     </TableCell>
-                    <TableCell>100,00 €</TableCell>
+                    <TableCell>{order.total} €</TableCell>
                     <TableCell className="text-right">
                       <Button
                         variant="ghost"

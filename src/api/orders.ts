@@ -143,6 +143,7 @@ ordersRoute.get(`/api/orders`, async (req, res) => {
     return {
       id: o.id,
       deliveryDate: formatDate(o.deliveryDate),
+      total: o.products.map(o => o.amount * o.price).reduce((a, b) => a + b, 0),
       customer: {
         id: o.customerId,
         chain: o.customer.chain,
