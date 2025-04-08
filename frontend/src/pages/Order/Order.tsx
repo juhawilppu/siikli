@@ -205,10 +205,12 @@ export default function CreateOrder() {
           <div>
             <h1 className="text-2xl font-semibold tracking-tight">{orderId ? 'Tilaus' : 'Uusi tilaus'}</h1>
             <p className="text-muted-foreground">Tilauksen tiedot.</p>
-          </div>
+        </div>
+        {!orderId &&
           <Button variant="outline" onClick={() => window.history.back()}>
             Peruuta
           </Button>
+        }
         </div>
 
         <form onSubmit={handleSubmit}>
