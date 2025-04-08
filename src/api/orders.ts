@@ -2,7 +2,6 @@ import { PrismaClient } from '@prisma/client'
 import { endOfDay, parse, startOfDay } from 'date-fns'
 import express from 'express'
 import pdf from 'html-pdf'
-import moment from 'moment'
 import {
   GetOrderDto,
   GetOrderList,
@@ -355,7 +354,7 @@ ordersRoute.post(`/api/orders`, async (req, res) => {
 
   const result = await prisma.order.create({
     data: {
-      deliveryDate: moment(data.deliveryDate, 'YYYY-MM-DD').toDate(),
+      deliveryDate: stringToDate(data.deliveryDate),
       hasNote: data.hasNote,
       noteHeader: data.hasNote ? data.noteHeader : undefined,
       noteBody: data.hasNote ? data.noteBody : undefined,
@@ -397,7 +396,7 @@ ordersRoute.post(`/api/orders/:id`, async (req, res) => {
 
   const result = await prisma.order.update({
     data: {
-      deliveryDate: moment(data.deliveryDate, 'YYYY-MM-DD').toDate(),
+      deliveryDate: stringToDate(data.deliveryDate),
       hasNote: data.hasNote,
       noteHeader: data.hasNote ? data.noteHeader : undefined,
       noteBody: data.hasNote ? data.noteBody : undefined,

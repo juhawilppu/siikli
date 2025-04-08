@@ -1,6 +1,3 @@
-import {
-  CircularProgress
-} from '@mui/material'
 import axios from 'axios'
 import { HelpCircle, LogOut, Search, Settings, User } from 'lucide-react'
 import { useEffect, useState } from 'react'
@@ -55,7 +52,7 @@ function App() {
   if (loading) {
     routes = (
       <div style={{ marginTop: '100px' }}>
-        <CircularProgress />
+        <div>Loading</div>
       </div>
     )
   } else if (!user) {

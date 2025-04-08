@@ -1,25 +1,20 @@
-import { Button } from '@mui/material'
-import { DatePicker, fiFI, LocalizationProvider } from '@mui/x-date-pickers'
-import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
-import moment, { Moment } from 'moment'
+import { Button } from "@/components/ui/button"
+import { Calendar, Calendar as CalendarComponent } from "@/components/ui/calendar"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { formatDate } from "@/utils/date"
+import { endOfWeek, startOfWeek } from 'date-fns'
+import { fi } from "date-fns/locale"
 import { useState } from 'react'
-import { SideBySide } from '../components'
+
+const now = new Date()
 
 export const SalesReport = () => {
-    const [startDate, setStartDate] = useState<Moment>(
-        moment().clone().weekday(1)
+    const [startDate, setStartDate] = useState<Date>(
+        startOfWeek(now, { weekStartsOn: 1 })
     )
-    const [endDate, setEndDate] = useState(
-        moment().clone().weekday(1).add(7, 'day')
+    const [endDate, setEndDate] = useState<Date>(
+        endOfWeek(now, { weekStartsOn: 1 })
     )
-
-    const handleStartDateChange = (value: Moment | null) => {
-        if (value) setStartDate(value)
-    }
-
-    const handleEndDateChange = (value: Moment | null) => {
-        if (value) setEndDate(value)
-    }
 
     const getReport = async () => {
         const res = await fetch('/api/sales-report');
@@ -39,36 +34,40 @@ export const SalesReport = () => {
                 <h1 className="text-2xl font-semibold tracking-tight">Myyntiraportti</h1>
                 <p className="text-muted-foreground">Tällä sivulla voit tulostaa koko myyntikannan Exceliin.</p>
             </div>
-            <SideBySide>
-                <LocalizationProvider
-                    dateAdapter={AdapterMoment}
-                    adapterLocale='fi'
-                    localeText={
-                        fiFI.components.MuiLocalizationProvider.defaultProps.localeText
-                    }
-                >
-                    <DatePicker
-                        format='DD.MM.YYYY'
-                        label='Aloitus'
-                        value={startDate}
-                        onChange={handleStartDateChange}
-                    />
-                </LocalizationProvider>
-                <LocalizationProvider
-                    dateAdapter={AdapterMoment}
-                    adapterLocale='fi'
-                    localeText={
-                        fiFI.components.MuiLocalizationProvider.defaultProps.localeText
-                    }
-                >
-                    <DatePicker
-                        format='DD.MM.YYYY'
-                        label='Lopetus'
-                        value={endDate}
-                        onChange={handleEndDateChange}
-                    />
-                </LocalizationProvider>
-            </SideBySide>
+            <div className="space-y-2">
+                <label className="text-sm font-medium">Alkupäivä</label>
+                <Popover>
+                    <PopoverTrigger asChild>
+                        <Button variant="outline" className="w-full justify-start text-left font-normal">
+                            <Calendar className="mr-2 h-4 w-4" />
+                            {startDate ? formatDate(startDate) : <span>Select date</span>}
+                        </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                        <CalendarComponent
+                            mode="single"
+                            selected={startDate}
+                            onSelect={setStartDate}
+                            initialFocus
+                            locale={fi}
+                        />
+                    </PopoverContent>
+                </Popover>
+            </div>
+            <div className="space-y-2">
+                <label className="text-sm font-medium">Loppupäivä</label>
+                <Popover>
+                    <PopoverTrigger asChild>
+                        <Button variant="outline" className="w-full justify-start text-left font-normal">
+                            <Calendar className="mr-2 h-4 w-4" />
+                            {endDate ? formatDate(endDate) : <span>Select date</span>}
+                        </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                        <CalendarComponent mode="single" selected={endDate} onSelect={setEndDate} initialFocus locale={fi} />
+                    </PopoverContent>
+                </Popover>
+            </div>
             <Button onClick={getReport}>Tulosta</Button>
         </>
     )

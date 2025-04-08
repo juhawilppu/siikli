@@ -1,5 +1,4 @@
 import { Button } from '@/components/ui/button'
-import { LinearProgress } from '@mui/material'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -17,7 +16,7 @@ export const Products = () => {
       .finally(() => setLoading(false))
   }, [])
 
-  if (loading) return <LinearProgress />
+  if (loading) return <div>Loading</div>
   if (!customers) return <div>Ei tuotteita</div>
 
   return (

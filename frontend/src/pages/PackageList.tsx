@@ -1,27 +1,24 @@
+import { Button } from "@/components/ui/button"
+import { Calendar, Calendar as CalendarComponent } from "@/components/ui/calendar"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { WarehouseReportRow } from '@/types/types'
-import { Button } from '@mui/material'
-import { DatePicker, fiFI, LocalizationProvider } from '@mui/x-date-pickers'
-import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
+import { dateToString, formatDate } from '@/utils/date'
 import axios from 'axios'
-import moment, { Moment } from 'moment'
+import { fi } from "date-fns/locale"
 import { useState } from 'react'
-import { SideBySide } from '../components'
 import { WarehouseReportByCustomer } from './WarehouseReportByCustomer'
 
-export const PackageList = () => {
-    const [date, setDate] = useState<Moment>(
-        moment().clone()
-    )
-    const [report, setReport] = useState<WarehouseReportRow[]>()
+const now = new Date()
 
-    const handleDateChange = (value: Moment | null) => {
-        if (value) setDate(value)
-    }
+export const PackageList = () => {
+    const [date, setDate] = useState<Date>(now)
+
+    const [report, setReport] = useState<WarehouseReportRow[]>()
 
     const fetchData = async () => {
         const res = await axios.get('/warehouse-report/grouped-by-customer', {
             params: {
-                deliveryDate: date.format('YYYY-MM-DD')
+                deliveryDate: dateToString(date)
             }
         })
         console.log('report', res.data)
@@ -34,25 +31,29 @@ export const PackageList = () => {
                 <h1 className="text-2xl font-semibold tracking-tight">Pakkauslista</h1>
                 <p className="text-muted-foreground">Voit tulostaa pakkauslistan täältä.</p>
             </div>
-            <SideBySide>
-                <LocalizationProvider
-                    dateAdapter={AdapterMoment}
-                    adapterLocale='fi'
-                    localeText={
-                        fiFI.components.MuiLocalizationProvider.defaultProps.localeText
-                    }
-                >
-                    <DatePicker
-                        format='DD.MM.YYYY'
-                        label='Päivämäärä'
-                        value={date}
-                        onChange={handleDateChange}
-                    />
-                </LocalizationProvider>
-            </SideBySide>
+            <div className="space-y-2">
+                <label className="text-sm font-medium">Alkupäivä</label>
+                <Popover>
+                    <PopoverTrigger asChild>
+                        <Button variant="outline" className="w-full justify-start text-left font-normal">
+                            <Calendar className="mr-2 h-4 w-4" />
+                            {date ? formatDate(date) : <span>Select date</span>}
+                        </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                        <CalendarComponent
+                            mode="single"
+                            selected={date}
+                            onSelect={setDate}
+                            initialFocus
+                            locale={fi}
+                        />
+                    </PopoverContent>
+                </Popover>
+            </div>
             <Button onClick={fetchData}>Hae tiedot</Button>
             {report && <WarehouseReportByCustomer
-                reportDate={date.toDate()} reportData={report} getSum={() => 0} />}
+                reportDate={date} reportData={report} getSum={() => 0} />}
         </>
     )
 }

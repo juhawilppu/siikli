@@ -2,7 +2,10 @@ import { Calendar as CalendarComponent } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Invoice, Order, OrderProduct } from '@/types/types'
 import { formatDate } from '@/utils/date'
-import { Button, FormControl, InputLabel, LinearProgress, MenuItem, Select, SelectChangeEvent } from '@mui/material'
+
+import { Button } from "@/components/ui/button"
+import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import axios from 'axios'
 import { endOfWeek, startOfWeek } from 'date-fns'
 import { fi } from "date-fns/locale"
@@ -11,11 +14,10 @@ import { useEffect, useState } from 'react'
 import { SideBySide } from '../components'
 import { InvoiceAppendix } from './InvoiceAppendix'
 import { InvoiceView } from './InvoiceView'
-import { CustomerDto } from './Order/Order'
 
 export interface FlatOrderItem extends OrderProduct {
     deliveryDate: Date;
-    orderId: number;
+    orderId: string;
     orderNumber: number;
     productName: string;
 }
@@ -32,14 +34,6 @@ export const Invoices = () => {
     const [endDate, setEndDate] = useState<Date>(
         endOfWeek(now, { weekStartsOn: 1 })
     )
-
-    const handleStartDateChange = (value: Moment | null) => {
-        if (value) setStartDate(value)
-    }
-
-    const handleEndDateChange = (value: Moment | null) => {
-        if (value) setEndDate(value)
-    }
 
     const [customerId, setCustomerId] = useState<number>(20)
 
@@ -67,7 +61,7 @@ export const Invoices = () => {
             .finally(() => setLoading(false))
     }, [])
 
-    if (loading) return <LinearProgress />
+    if (loading) return <div>Loading</div>
     if (!customers) return <div>Ei tuotteita</div>
 
     function flattenOrderProducts(orders: Order[]): FlatOrderItem[] {
@@ -88,22 +82,26 @@ export const Invoices = () => {
                 <h1 className="text-2xl font-semibold tracking-tight">Laskut</h1>
                 <p className="text-muted-foreground">Tällä sivulla voit tulostaa laskut.</p>
             </div>
-            <FormControl fullWidth>
-                <InputLabel id='order-customer'>Asiakas</InputLabel>
-                <Select
-                    labelId='order-customer'
-                    id='order-customer'
-                    value={customerId ? customerId + '' : ''}
-                    label='Asiakas'
-                    onChange={handleCustomerChange}
-                >
-                    {customers.map((customer: CustomerDto) => (
-                        <MenuItem key={customer.id} value={customer.id}>
-                            {customer.chain} {customer.name}
-                        </MenuItem>
-                    ))}
+            <div className="space-y-2">
+                <Label htmlFor="customer">Asiakas</Label>
+                <Select value={customerId} onValueChange={setCustomerId}>
+                    <SelectTrigger id="customer">
+                        <SelectValue placeholder="Valitse asiakas" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {customers.map((customer) => (
+                            <SelectItem key={customer.id} value={customer.id}>
+                                {customer.chain} {customer.name}
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
                 </Select>
-            </FormControl>
+                {selectedCustomer && (
+                    <p className="text-xs text-muted-foreground mt-1">
+                        {selectedCustomer.streetAddress}, {selectedCustomer.postalCode} {selectedCustomer.city}
+                    </p>
+                )}
+            </div>
             <SideBySide>
                 <div className="space-y-2">
                     <label className="text-sm font-medium">Alkupäivä</label>

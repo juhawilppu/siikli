@@ -1,30 +1,30 @@
-import moment from 'moment'
+import { formatDate } from "../../frontend/src/utils/date"
 
 module.exports = async (company, order, first) => {
-  const itemsTable = order.products.map((item) => {
-    return `
+    const itemsTable = order.products.map((item) => {
+        return `
             <tr>
                 <td class="align-left width-40">${item.products.name} ${item.price < 0 ? '(Hyvitys)' : ''
-      }</td>
+            }</td>
                 <td class="align-right width-20">${item.amount}</td>
                 <td class="align-right width-20">${item.price
-        .toFixed(2)
-        .replace('.', ',')}</td>
+                .toFixed(2)
+                .replace('.', ',')}</td>
                 <td class="align-right width-20">${(item.amount * item.price)
-        .toFixed(2)
-        .replace('.', ',')}</td>
+                .toFixed(2)
+                .replace('.', ',')}</td>
             </tr>`
-  })
-  const note = order.note_body
-    ? `
+    })
+    const note = order.note_body
+        ? `
         <div style="margin-top: 10pt;">
             ${order.note_header ? `<h3>${order.note_header}</h3>` : ``}
             <div>${order.note_body}</div>
         </div>
     `
-    : ''
+        : ''
 
-  const html = `
+    const html = `
         <div class="order-section ${first ? '' : 'page-break'}">
             <div style="height: 3em;">
                 <div style="float: left;">
@@ -39,10 +39,8 @@ module.exports = async (company, order, first) => {
             <h1>Kuormakirja</h1>
             <div style="margin-bottom: 10pt;">
                 <div><b>Asiakas:</b> <span>${order.customer.chain} ${order.customer.name
-    }</span></div>
-                <div><b>Toimituspäivä:</b> <span>${moment(
-      order.delivery_date
-    ).format('D.M.YYYY')}</span></div>
+        }</span></div>
+                <div><b>Toimituspäivä:</b> <span>${formatDate(order.delivery_date)}</span></div>
             </div>
             <table>
                 <thead>
@@ -61,7 +59,7 @@ module.exports = async (company, order, first) => {
         <div>
     `
 
-  console.log(html)
+    console.log(html)
 
-  return html
+    return html
 }
