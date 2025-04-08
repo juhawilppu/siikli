@@ -1,5 +1,3 @@
-"use client"
-
 import { endOfWeek, startOfWeek } from "date-fns"
 import {
   Calendar,
@@ -14,7 +12,6 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { useToast } from "@/hooks/use-toast"
 import { GetOrderList } from "@/types/types"
 import { dateToString, formatDate } from "@/utils/date"
 import printJS from 'print-js'
@@ -26,7 +23,6 @@ import { fi } from "date-fns/locale"
 export default function Orders() {
   const now = new Date();
 
-  const [searchQuery, setSearchQuery] = useState<string>('')
   const [startDate, setStartDate] = useState<Date>(startOfWeek(now, { weekStartsOn: 1 }))
   const [endDate, setEndDate] = useState<Date>(endOfWeek(now, { weekStartsOn: 1 }))
   const [statusFilter, setStatusFilter] = useState<string>("all")
@@ -35,7 +31,6 @@ export default function Orders() {
   const [orders, setOrders] = useState<GetOrderList[]>([])
   const [selectedOrders, setSelectedOrders] = useState<string[]>([])
 
-  const { toast } = useToast()
 
   useEffect(() => {
     setIsLoading(true)
@@ -87,6 +82,10 @@ export default function Orders() {
     }
   }
 
+  if (isLoading) {
+    return <div>Loading</div>
+  }
+
   return (
 
     <div className="space-y-6">
@@ -123,7 +122,8 @@ export default function Orders() {
                     mode="single"
                     selected={startDate}
                     onSelect={setStartDate}
-                    initialFocus
+                    required
+                    autoFocus
                     locale={fi}
                   />
                 </PopoverContent>
@@ -140,7 +140,7 @@ export default function Orders() {
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0">
-                  <CalendarComponent mode="single" selected={endDate} onSelect={setEndDate} initialFocus locale={fi} />
+                  <CalendarComponent mode="single" selected={endDate} onSelect={setEndDate} required locale={fi} />
                 </PopoverContent>
               </Popover>
             </div>
