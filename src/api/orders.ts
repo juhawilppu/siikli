@@ -350,7 +350,7 @@ ordersRoute.get(`/api/orders/:id`, async (req, res) => {
 export const parseTenantId = (req: any) => req.user.tenantId
 
 ordersRoute.post(`/api/orders`, async (req, res) => {
-  console.log('getting orders')
+  console.log('saving order')
 
   const data = req.body as PostOrderDto
 

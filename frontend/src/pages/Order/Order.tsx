@@ -154,13 +154,17 @@ export default function CreateOrder() {
     if (!deliveryDate || !customers || !selectedCustomer) {
       return
     }
+    const customer = customers.find((c) => c.id === customerId)
+    if (!customer) {
+      return
+    }
     setIsSubmitting(true)
     e.preventDefault()
     // Here you would typically save the order to your backend
     const data: PostOrderDto = {
       customerId: selectedCustomer.id,
       deliveryDate: dateToString(deliveryDate),
-      hasNote: hasWaybillNote,
+      hasNote: waybillNote.title != "" && waybillNote.content != "",
       noteBody: waybillNote.content,
       noteHeader: waybillNote.title,
       items: orderItems
@@ -170,16 +174,17 @@ export default function CreateOrder() {
       // Save order
       await axios.post(`/orders/${orderId}`, data)
       toast({
-        title: "Order saved successfully",
-        description: `Order for ${customers.find((c) => c.id === customerId)?.name} has been saved.`,
+        title: "Tilaus tallennettiin onnistuneesti",
+        description: `${customer.chain} ${customer.name} tilaus tallennettu.`,
         variant: "success",
+    
       })
     } else {
       // Save new order
       await axios.post('/orders', data)
       toast({
-        title: "Order created successfully",
-        description: `Order for ${customers.find((c) => c.id === customerId)?.name} has been saved.`,
+        title: "Tilaus luotu onnistuneesti",
+        description: `${customer.chain} ${customer.name} tilaus luotu.`,
         variant: "success",
       })
     }
@@ -260,7 +265,7 @@ export default function CreateOrder() {
                 </div>
 
                 <Separator className="my-4" />
-                <h3 className="text-lg font-medium">Kuormakirjan huomautus</h3>
+              <h3 className="text-lg font-medium">Kuormakirjan huomautus</h3>
 
                 <div className="space-y-2">
                   <Label htmlFor="note-title">Otsikko</Label>
@@ -410,7 +415,7 @@ export default function CreateOrder() {
                               className="bg-muted"
                             />
                             <p className="text-xs text-muted-foreground">
-                              Calculated: {item.amount} / {item.packageSize}
+                              Laskukaava: {item.amount} / {item.packageSize}
                             </p>
                           </div>
 
@@ -438,7 +443,7 @@ export default function CreateOrder() {
               <CardFooter className="flex justify-between border-t p-4">
                 <div>
                   <p className="text-sm text-muted-foreground">
-                    {orderItems.length} item{orderItems.length !== 1 ? "s" : ""} in order
+                    {orderItems.length} rivi{orderItems.length !== 1 ? "ä" : ""} tilauksessa
                   </p>
                 </div>
                 <div className="text-right">
