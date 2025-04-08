@@ -35,6 +35,8 @@ export interface ProductDto {
   chain: string
   name: string
   price: number
+  packageSize: number
+  packageType: string
 }
 
 
@@ -51,6 +53,7 @@ export default function CreateOrder() {
       id: "1",
       productId: '',
       amount: 0,
+      packages: 0,
       packageSize: 0,
       packageType: "",
       price: 0,
@@ -68,6 +71,7 @@ export default function CreateOrder() {
         id: Date.now().toString(),
         productId: '',
         amount: 0,
+        packages: 0,
         packageSize: 0,
         packageType: "",
         price: 0,
@@ -95,11 +99,13 @@ export default function CreateOrder() {
         console.log('settins customerId to ' + res.data.customerId)
         setDeliveryDate(new Date(res.data.deliveryDate))
         setHasWaybillNote(res.data.hasNote)
-        setWaybillNote({ title: res.data.noteHeader, content: res.data.noteBody })
+        if (res.data.hasNote && res.data.noteHeader && res.data.noteBody) {
+          setWaybillNote({ title: res.data.noteHeader, content: res.data.noteBody })
+        }
       }
     }
     loadData()
-  }, [])
+  }, [orderId])
 
   const handleRemoveItem = (id: string) => {
     if (orderItems.length > 1) {
@@ -108,6 +114,9 @@ export default function CreateOrder() {
   }
 
   const handleItemChange = (id: string, field: keyof OrderProduct, value: any) => {
+    if (!products) {
+      return
+    }
     setOrderItems(
       orderItems.map((item) => {
         if (item.id === id) {
@@ -142,7 +151,7 @@ export default function CreateOrder() {
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    if (!deliveryDate) {
+    if (!deliveryDate || !customers || !selectedCustomer) {
       return
     }
     setIsSubmitting(true)
@@ -186,12 +195,11 @@ export default function CreateOrder() {
   const selectedCustomer = customers.find((c) => c.id === customerId)
 
   return (
-    <main className="flex-1 overflow-auto p-6">
-      <div className="space-y-6 max-w-5xl mx-auto">
+    <div className="space-y-6">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight">Uusi tilaus</h1>
-            <p className="text-muted-foreground">Fill in the details to create a new customer order.</p>
+            <h1 className="text-2xl font-semibold tracking-tight">{orderId ? 'Tilaus' : 'Uusi tilaus'}</h1>
+            <p className="text-muted-foreground">Tilauksen tiedot.</p>
           </div>
           <Button variant="outline" onClick={() => window.history.back()}>
             Peruuta
@@ -397,7 +405,7 @@ export default function CreateOrder() {
                               type="number"
                               disabled
                               min="0"
-                              value={item.amount / item.packageSize}
+                              value={item.packages}
                               readOnly
                               className="bg-muted"
                             />
@@ -480,7 +488,6 @@ export default function CreateOrder() {
           </div>
         </form>
       </div>
-    </main>
   )
 }
 

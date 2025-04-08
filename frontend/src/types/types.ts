@@ -3,6 +3,7 @@ export interface ProductOrderDto {
   productId: string
   price: number
   amount: number
+  packages: number
   packageSize: number
   packageType: string
   freetext: string

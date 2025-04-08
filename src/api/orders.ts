@@ -337,6 +337,7 @@ ordersRoute.get(`/api/orders/:id`, async (req, res) => {
         price: p.price,
         price0: p.price0,
         amount: p.amount,
+        packages: p.amount / p.packageSize,
         packageSize: p.packageSize,
         packageType: p.packageType || '',
         freetext: p.freetext || ''
