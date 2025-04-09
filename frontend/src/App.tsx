@@ -52,7 +52,7 @@ function App() {
   if (loading) {
     routes = (
       <div style={{ marginTop: '100px' }}>
-        <div>Loading</div>
+        <div></div>
       </div>
     )
   } else if (!user) {
@@ -93,8 +93,7 @@ function App() {
   return (
     <>
       <SidebarProvider>
-        {user && <SiikliDrawer />
-        }
+        <SiikliDrawer />
         <SidebarInset>
           <div className="flex flex-col w-full">
             {/* Top bar */}

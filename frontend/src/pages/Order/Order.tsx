@@ -43,9 +43,10 @@ export interface ProductDto {
 
 
 export default function CreateOrder() {
-  const [deliveryDate, setDeliveryDate] = useState<Date>()
   const [customers, setCustomers] = useState<CustomerDto[]>()
   const [products, setProducts] = useState<ProductDto[]>()
+  const [isLoading, setIsLoading] = useState(true)
+  const [deliveryDate, setDeliveryDate] = useState<Date>()
   const [customerId, setCustomerId] = useState<string>("")
   const [hasWaybillNote, setHasWaybillNote] = useState<boolean>(false)
   const [waybillNote, setWaybillNote] = useState({ title: "", content: "" })
@@ -105,6 +106,7 @@ export default function CreateOrder() {
           setWaybillNote({ title: res.data.noteHeader || '', content: res.data.noteBody || '' })
         }
       }
+      setIsLoading(false)
     }
     loadData()
   }, [orderId])
@@ -185,7 +187,7 @@ export default function CreateOrder() {
       // Save new order
       await axios.post('/orders', data)
       toast({
-        title: "Tilaus luotu onnistuneesti",
+        title: "Tilaus luotiin onnistuneesti",
         description: `${customer.chain} ${customer.name} tilaus luotu.`,
         variant: "success",
       })
@@ -195,7 +197,7 @@ export default function CreateOrder() {
     // Show success message or handle errors
   }
 
-  if (!customers || !products) {
+  if (isLoading || !customers || !products) {
     return <div></div>
   }
 
