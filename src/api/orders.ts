@@ -112,9 +112,6 @@ ordersRoute.get(`/api/orders`, async (req, res) => {
   const startDate = stringToDate(req.query.startDate as string)
   const endDate = stringToDate(req.query.endDate as string)
 
-  console.log('startDate', startDate)
-  console.log('endDate', endDate)
-
   const result = await prisma.order.findMany({
     include: {
       customer: true,
@@ -133,7 +130,7 @@ ordersRoute.get(`/api/orders`, async (req, res) => {
     ],
     where: {
       deliveryDate: {
-        gte: startOfDay(startDate),
+        gt: startOfDay(startDate),
         lte: endOfDay(endDate)
       },
       tenantId: parseTenantId(req),

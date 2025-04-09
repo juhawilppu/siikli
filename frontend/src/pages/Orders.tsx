@@ -243,7 +243,7 @@ export default function Orders() {
                       />
                     </TableCell>
                     {/*<TableCell className="font-medium">{order.id}</TableCell>*/}
-                    <TableCell>{formatDate(new Date(order.deliveryDate))}</TableCell>
+                    <TableCell>{order.deliveryDate}</TableCell>
                     <TableCell>{order.customer.chain} {order.customer.name}</TableCell>
                     <TableCell>
                       <span
