@@ -16,6 +16,7 @@ import { GetOrderList } from "@/types/types"
 import { dateToString, formatDate } from "@/utils/date"
 import printJS from 'print-js'
 
+import { formatMoneyFi } from "@/utils/money"
 import axios from "axios"
 import { fi } from "date-fns/locale"
 
@@ -251,7 +252,7 @@ export default function Orders() {
                         Kesken
                       </span>
                     </TableCell>
-                    <TableCell>{order.total} €</TableCell>
+                    <TableCell>{formatMoneyFi(order.total)}</TableCell>
                     <TableCell className="text-right">
                       <Button
                         variant="ghost"

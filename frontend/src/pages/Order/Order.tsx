@@ -22,6 +22,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/hooks/use-toast"
 import { CustomerDto, GetOrderDto, OrderProduct, PostOrderDto, ProductOrderDto } from "@/types/types"
 import { dateToString } from "@/utils/date"
+import { formatMoneyFi } from "@/utils/money"
 import axios from "axios"
 import { format } from "date-fns"
 import { fi } from 'date-fns/locale'
@@ -148,7 +149,7 @@ export default function CreateOrder() {
   }
 
   const calculateTotal = () => {
-    return orderItems.reduce((sum, item) => sum + item.amount * item.price, 0).toFixed(2)
+    return orderItems.reduce((sum, item) => sum + item.amount * item.price, 0)
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -447,7 +448,7 @@ export default function CreateOrder() {
 
                       <div className="mt-4 text-right">
                         <p className="text-sm font-medium">
-                          Tuote yhteensä: {(item.amount * item.price).toFixed(2)} €
+                          Tuote yhteensä: {formatMoneyFi(item.amount * item.price)}
                         </p>
                       </div>
                     </div>
@@ -463,7 +464,7 @@ export default function CreateOrder() {
               </div>
               <div className="text-right">
                 <p className="text-sm text-muted-foreground">Tilauksen kokonaissumma</p>
-                <p className="text-2xl font-bold">{calculateTotal()} €</p>
+                <p className="text-2xl font-bold">{formatMoneyFi(calculateTotal())}</p>
               </div>
             </CardFooter>
           </Card>
