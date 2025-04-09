@@ -1,9 +1,8 @@
 import { WarehouseReportRow } from "@/types/types";
 
-export const WarehouseReportByCustomer = ({ reportDate, reportData, getSum }: {
+export const WarehouseReportByCustomer = ({ reportDate, reportData }: {
     reportDate: Date,
-    reportData: WarehouseReportRow[],
-    getSum: (list: any[], field: string) => number
+    reportData: WarehouseReportRow[]
 }) => {
     function groupBy<T, K extends keyof T>(array: T[], key: K): Record<string, T[]> {
         return array.reduce((result, item) => {
@@ -16,6 +15,10 @@ export const WarehouseReportByCustomer = ({ reportDate, reportData, getSum }: {
         }, {} as Record<string, T[]>);
     }
 
+
+    const getSum = (rows: WarehouseReportRow[], field: 'amount') => {
+        return rows.map(r => r[field]).reduce((a, b) => a + b, 0)
+    }
 
     const groupedByproduct_type = groupBy(reportData, 'product_type');
 

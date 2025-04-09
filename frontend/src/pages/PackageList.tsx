@@ -1,21 +1,23 @@
 import { Button } from "@/components/ui/button"
-import { Calendar, Calendar as CalendarComponent } from "@/components/ui/calendar"
+import { Calendar as CalendarComponent } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { WarehouseReportRow } from '@/types/types'
 import { dateToString, formatDate } from '@/utils/date'
 import axios from 'axios'
 import { fi } from "date-fns/locale"
+import { Calendar } from "lucide-react"
 import { useState } from 'react'
 import { WarehouseReportByCustomer } from './WarehouseReportByCustomer'
 
-const now = new Date()
-
 export const PackageList = () => {
-    const [date, setDate] = useState<Date>(now)
+    const [date, setDate] = useState<Date | undefined>(new Date())
 
     const [report, setReport] = useState<WarehouseReportRow[]>()
 
     const fetchData = async () => {
+        if (!date) {
+            return
+        }
         const res = await axios.get('/warehouse-report/grouped-by-customer', {
             params: {
                 deliveryDate: dateToString(date)
@@ -50,10 +52,10 @@ export const PackageList = () => {
                         />
                     </PopoverContent>
                 </Popover>
+                <Button onClick={fetchData}>Hae tiedot</Button>
             </div>
-            <Button onClick={fetchData}>Hae tiedot</Button>
-            {report && <WarehouseReportByCustomer
-                reportDate={date} reportData={report} getSum={() => 0} />}
+            {report && date && <WarehouseReportByCustomer
+                reportDate={date} reportData={report} />}
         </>
     )
 }
