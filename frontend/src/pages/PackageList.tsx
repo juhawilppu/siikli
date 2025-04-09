@@ -4,26 +4,27 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Label } from "@/components/ui/label"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { WarehouseReportRow } from '@/types/types'
+import { WarehouseReportByCustomer, WarehouseReportByProduct } from "@/types/types"
 import { dateToString, formatDate } from '@/utils/date'
 import axios from 'axios'
 import { Calendar, RefreshCw } from "lucide-react"
 import { useState } from 'react'
-import { WarehouseReportByCustomer } from './WarehouseReportByCustomer'
+import WarehouseReportByCustomerDocument from "./WarehouseReportByCustomer"
+import WarehouseReportByProductDocument from "./WarehouseReportByProduct"
 
 export const PackageList = () => {
     const [deliveryDate, setDeliveryDate] = useState<Date | undefined>(new Date())
     const [groupBy, setGroupBy] = useState<'customer' | 'product'>('customer')
     const [isLoading, setIsLoading] = useState(false)
 
-    const [report, setReport] = useState<WarehouseReportRow[]>()
+    const [report, setReport] = useState<WarehouseReportByProduct | WarehouseReportByCustomer>()
 
     const handleFetch = async () => {
         if (!deliveryDate) {
             return
         }
         setIsLoading(true)
-        const res = await axios.get('/warehouse-report/grouped-by-customer', {
+        const res = await axios.get(`/warehouse-report/grouped-by/${groupBy}`, {
             params: {
                 deliveryDate: dateToString(deliveryDate)
             }
@@ -122,8 +123,11 @@ export const PackageList = () => {
                     </Button>
                 </CardFooter>
             </Card>
-            {report && deliveryDate && <WarehouseReportByCustomer
-                reportDate={deliveryDate} reportData={report} />
+            {report && report.groupedBy == 'customer' && <WarehouseReportByCustomerDocument
+                report={report} />
+            }
+            {report && report.groupedBy == 'product' && <WarehouseReportByProductDocument
+                report={report} />
             }
         </>
     )

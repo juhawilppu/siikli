@@ -95,14 +95,37 @@ export interface Invoice {
   total: number;
 }
 
-export interface WarehouseReportRow {
-  customer_id: string;
-  product_variety: string;
-  product_type: string;
-  product_name: string;
-  package_size: number;
-  package_type: string;
+export interface WarehouseReportByCustomerRow {
+
+  customerId: string;
+  customerName: string;
+  productVariety: string;
+  productType: string;
+  productName: string;
+  packageSize: number;
+  packageType: string;
+  freetext: string
   amount: number;
+}
+
+export interface WarehouseReportByCustomer {
+  deliveryDate: string
+  groupedBy: 'customer'
+  rows: WarehouseReportByCustomerRow[]
+}
+
+export interface WarehouseReportByProduct {
+  deliveryDate: string
+  groupedBy: 'product'
+  rows: {
+    productId: string;
+    productVariety: string;
+    productType: string;
+    productName: string;
+    packageSize: number;
+    packageType: string;
+    amount: number;
+  }[]
 }
 
 export interface GetCompanySettings {

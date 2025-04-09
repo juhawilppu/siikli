@@ -1,109 +1,72 @@
-import { WarehouseReportRow } from "@/types/types";
+import { WarehouseReportByCustomer, WarehouseReportByCustomerRow } from "@/types/types";
 
-export const WarehouseReportByCustomer = ({ reportDate, reportData }: {
-    reportDate: Date,
-    reportData: WarehouseReportRow[]
+export const WarehouseReportByCustomerDocument = ({ report }: {
+    report: WarehouseReportByCustomer
 }) => {
-    function groupBy<T, K extends keyof T>(array: T[], key: K): Record<string, T[]> {
-        return array.reduce((result, item) => {
-            const group = String(item[key]); // convert key to string for object key
-            if (!result[group]) {
-                result[group] = [];
+
+    const groupByCustomerName = (orders: WarehouseReportByCustomerRow[]): Record<string, WarehouseReportByCustomerRow[]> => {
+        return orders.reduce((acc, order) => {
+            if (!acc[order.customerName]) {
+                acc[order.customerName] = []
             }
-            result[group].push(item);
-            return result;
-        }, {} as Record<string, T[]>);
+            acc[order.customerName].push(order)
+            return acc
+        }, {} as Record<string, WarehouseReportByCustomerRow[]>)
     }
 
-
-    const getSum = (rows: WarehouseReportRow[], field: 'amount') => {
-        return rows.map(r => r[field]).reduce((a, b) => a + b, 0)
-    }
-
-    const groupedByproduct_type = groupBy(reportData, 'product_type');
+    const groupedData = groupByCustomerName(report.rows)
 
     return (
         <div>
-            <h1 className="md-display-1">Tuotekohtainen pakkauslista</h1>
+            <h1 className="md-display-1">Kauppakohtainen pakkauslista</h1>
             <br />
             <b>Raportointipäivä:</b>{' '}
-            <span>{new Date(reportDate).toLocaleDateString('fi-FI')}</span>
-            <br />
-            <br />
+            <span>{report.deliveryDate}</span>
 
-            {reportData.length === 0 ? (
-                <div>Ei tuotteita.</div>
-            ) : (
-                <>
-                    <table style={{ pageBreakInside: 'auto' }} className="border-bottom">
+            {!report.rows && <div>Ei tuotteita.</div>}
+
+            {Object.entries(groupedData).map(([customerName, rows]) => (
+                <div className="module" key={customerName}>
+                    <h2 className="align-center no-page-break-after">{customerName}</h2>
+                    <table className="border-bottom">
                         <thead>
-                            <tr className="md-subhead border-top">
-                                <td className="align-left" style={{ width: '35%' }}>Tuote</td>
-                                <td className="align-center" colSpan={2} style={{ width: '15%' }}>Pakkaus</td>
-                                <td className="align-right" style={{ width: '20%' }}>Kappaletta</td>
-                                <td className="align-right" style={{ width: '30%' }}>Kokonaismäärä (kg)</td>
+                            <tr className="md-subhead border-top border-bottom">
+                                <td className="align-left" style={{ width: '30%' }}>
+                                    Tuote
+                                </td>
+                                <td className="align-center" colSpan={2} style={{ width: '10%' }}>
+                                    Pakkaus
+                                </td>
+                                <td className="align-right" style={{ width: '10%' }}>
+                                    Kappaletta
+                                </td>
+                                <td className="align-right" style={{ width: '25%' }}>
+                                    Kokonaismäärä (kg)
+                                </td>
+                                <td className="align-left" style={{ width: '25%' }}>
+                                    Lisätietoa
+                                </td>
                             </tr>
                         </thead>
                         <tbody>
-                            {reportData.map((order, index) => {
-                                const current = reportData[index];
-                                const next = reportData[index + 1];
-                                const addBorder =
-                                    !next ||
-                                    current.product_variety !== next.product_variety ||
-                                    current.product_type !== next.product_type;
-
-                                return (
-                                    <tr key={index} className={addBorder ? 'border-bottom' : ''}>
-                                        <td className="align-left">{order.product_name}</td>
-                                        <td className="align-right">{order.package_size}</td>
-                                        <td className="align-left">&nbsp;{order.package_type}</td>
-                                        <td className="align-right">{Math.ceil(order.amount / order.package_size)}</td>
-                                        <td className="align-right">{order.amount}</td>
-                                    </tr>
-                                );
-                            })}
+                            {rows.map((order, idx) => (
+                                <tr key={idx}>
+                                    <td className="align-left">{order.productName}</td>
+                                    <td className="align-right">{order.packageSize}</td>
+                                    <td className="align-left">{order.packageType}</td>
+                                    <td className="align-right">
+                                        {Math.ceil(order.amount / order.packageSize)}
+                                    </td>
+                                    <td className="align-right">{order.amount}</td>
+                                    <td className="align-left">{order.freetext}</td>
+                                </tr>
+                            ))}
                         </tbody>
                     </table>
-                    <br />
-                    <br />
-                    <div style={{ pageBreakInside: 'avoid' }}>
-                        <b>Yhteensä lajikkeittain</b>
-                        <br />
-                        <br />
-                        <table style={{ pageBreakInside: 'avoid' }} className="border-bottom">
-                            <thead>
-                                <tr className="md-subhead border-top">
-                                    <td className="align-left width-50">Lajike</td>
-                                    <td className="align-right width-50">Kokonaismäärä (kg)</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {Object.entries(groupedByproduct_type).map(([product_type, products]) => {
-                                    const groupedByVariety = groupBy(products, 'product_variety');
-
-                                    return (
-                                        <tr key={product_type} className="border-bottom">
-                                            <td className="width-50">
-                                                {Object.keys(groupedByVariety).map((variety) => (
-                                                    <div key={variety}>{variety}</div>
-                                                ))}
-                                            </td>
-                                            <td className="align-right width-50">
-                                                {Object.values(groupedByVariety).map((productsOfVariety, i) => (
-                                                    <div key={i}>{getSum(productsOfVariety, 'amount')}</div>
-                                                ))}
-                                            </td>
-                                        </tr>
-                                    );
-                                })}
-                            </tbody>
-                        </table>
-                    </div>
-                </>
-            )}
+                </div>
+            ))}
         </div>
     );
 }
 
-export default WarehouseReportByCustomer;
+export default WarehouseReportByCustomerDocument
