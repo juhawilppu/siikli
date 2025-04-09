@@ -11,6 +11,7 @@ import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Calendar as CalendarComponent } from "@/components/ui/calendar"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
@@ -99,8 +100,8 @@ export default function CreateOrder() {
         console.log('settins customerId to ' + res.data.customerId)
         setDeliveryDate(new Date(res.data.deliveryDate))
         setHasWaybillNote(res.data.hasNote)
-        if (res.data.hasNote && res.data.noteHeader && res.data.noteBody) {
-          setWaybillNote({ title: res.data.noteHeader, content: res.data.noteBody })
+        if (res.data.hasNote) {
+          setWaybillNote({ title: res.data.noteHeader || '', content: res.data.noteBody || '' })
         }
       }
     }
@@ -164,9 +165,9 @@ export default function CreateOrder() {
     const data: PostOrderDto = {
       customerId: selectedCustomer.id,
       deliveryDate: dateToString(deliveryDate),
-      hasNote: waybillNote.title != "" && waybillNote.content != "",
-      noteBody: waybillNote.content,
-      noteHeader: waybillNote.title,
+      hasNote: hasWaybillNote,
+      noteBody: hasWaybillNote ? waybillNote.content : null,
+      noteHeader: hasWaybillNote ? waybillNote.title : null,
       items: orderItems
     }
     console.log("Saving order:", data)
@@ -177,7 +178,7 @@ export default function CreateOrder() {
         title: "Tilaus tallennettiin onnistuneesti",
         description: `${customer.chain} ${customer.name} tilaus tallennettu.`,
         variant: "success",
-    
+
       })
     } else {
       // Save new order
@@ -201,300 +202,312 @@ export default function CreateOrder() {
 
   return (
     <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight">{orderId ? 'Tilaus' : 'Uusi tilaus'}</h1>
-            <p className="text-muted-foreground">Tilauksen tiedot.</p>
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">{orderId ? 'Tilaus' : 'Uusi tilaus'}</h1>
+          <p className="text-muted-foreground">Tilauksen tiedot.</p>
         </div>
         {!orderId &&
           <Button variant="outline" onClick={() => window.history.back()}>
             Peruuta
           </Button>
         }
-        </div>
+      </div>
 
-        <form onSubmit={handleSubmit}>
-          <div className="space-y-6">
-            {/* Customer and Delivery Information */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Tilaukset tiedot</CardTitle>
-                <CardDescription>Täytä tilaukset perustiedot</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label htmlFor="customer">Asiakas</Label>
-                    <Select value={customerId} onValueChange={setCustomerId}>
-                      <SelectTrigger id="customer">
-                        <SelectValue placeholder="Valitse asiakas" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {customers.map((customer) => (
-                          <SelectItem key={customer.id} value={customer.id}>
-                            {customer.chain} {customer.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    {selectedCustomer && (
-                      <p className="text-xs text-muted-foreground mt-1">
-                        {selectedCustomer.streetAddress}, {selectedCustomer.postalCode} {selectedCustomer.city}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="delivery-date">Toimituspäivä</Label>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className="w-full justify-start text-left font-normal"
-                          id="delivery-date"
-                        >
-                          <Calendar className="mr-2 h-4 w-4" />
-                          {deliveryDate
-                            ? format(deliveryDate, "d.M.yyyy", { locale: fi })
-                            : <span>Valitse päivä</span>}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0">
-                        <CalendarComponent mode="single" selected={deliveryDate} onSelect={setDeliveryDate} initialFocus locale={fi} />
-                      </PopoverContent>
-                    </Popover>
-                  </div>
-                </div>
-
-                <Separator className="my-4" />
-              <h3 className="text-lg font-medium">Kuormakirjan huomautus</h3>
-
+      <form onSubmit={handleSubmit}>
+        <div className="space-y-6">
+          {/* Customer and Delivery Information */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Tilaukset tiedot</CardTitle>
+              <CardDescription>Täytä tilaukset perustiedot</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="note-title">Otsikko</Label>
-                  <Input
-                    id="note-title"
-                    value={waybillNote.title}
-                    onChange={(e) => setWaybillNote({ ...waybillNote, title: e.target.value })}
-                    placeholder="Otsikko"
-                  />
+                  <Label htmlFor="customer">Asiakas</Label>
+                  <Select value={customerId} onValueChange={setCustomerId}>
+                    <SelectTrigger id="customer">
+                      <SelectValue placeholder="Valitse asiakas" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {customers.map((customer) => (
+                        <SelectItem key={customer.id} value={customer.id}>
+                          {customer.chain} {customer.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {selectedCustomer && (
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {selectedCustomer.streetAddress}, {selectedCustomer.postalCode} {selectedCustomer.city}
+                    </p>
+                  )}
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="note-content">Sisältö</Label>
-                  <Textarea
-                    id="note-content"
-                    value={waybillNote.content}
-                    onChange={(e) => setWaybillNote({ ...waybillNote, content: e.target.value })}
-                    placeholder="Sisältö, esim. toimitusohjeita"
-                    rows={3}
-                  />
+                  <Label htmlFor="delivery-date">Toimituspäivä</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="w-full justify-start text-left font-normal"
+                        id="delivery-date"
+                      >
+                        <Calendar className="mr-2 h-4 w-4" />
+                        {deliveryDate
+                          ? format(deliveryDate, "d.M.yyyy", { locale: fi })
+                          : <span>Valitse päivä</span>}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                      <CalendarComponent mode="single" selected={deliveryDate} onSelect={setDeliveryDate} initialFocus locale={fi} />
+                    </PopoverContent>
+                  </Popover>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
 
-            {/* Order Items */}
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between">
-                <div>
-                  <CardTitle>Tuotteet</CardTitle>
-                  <CardDescription>Täytä tilaukset tuotteet</CardDescription>
-                </div>
-                <Button type="button" onClick={handleAddItem} size="sm">
-                  <Plus className="mr-2 h-4 w-4" />
-                  Lisää tuote
-                </Button>
-              </CardHeader>
-              <CardContent>
-                <ScrollArea className="max-h-[500px]">
-                  <div className="space-y-4">
-                    {orderItems.map((item) => (
-                      <div key={item.id} className="rounded-lg border p-4 relative">
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon"
-                          className="absolute right-2 top-2"
-                          onClick={() => handleRemoveItem(item.id)}
-                          disabled={orderItems.length === 1}
-                        >
-                          <X className="h-4 w-4" />
-                          <span className="sr-only">Poista</span>
-                        </Button>
+              <Separator className="my-4" />
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="include-waybill"
+                  checked={hasWaybillNote}
+                  onCheckedChange={(checked) => setHasWaybillNote(checked as boolean)}
+                />
+                <Label htmlFor="include-waybill" className="font-medium">
+                  Lisää huomautus kuormakirjaan
+                </Label>
+              </div>
+              {hasWaybillNote && (
+                <>
+                  <div className="space-y-2">
+                    <Label htmlFor="note-title">Otsikko</Label>
+                    <Input
+                      id="note-title"
+                      value={waybillNote.title}
+                      onChange={(e) => setWaybillNote({ ...waybillNote, title: e.target.value })}
+                      placeholder="Otsikko"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="note-content">Sisältö</Label>
+                    <Textarea
+                      id="note-content"
+                      value={waybillNote.content}
+                      onChange={(e) => setWaybillNote({ ...waybillNote, content: e.target.value })}
+                      placeholder="Sisältö, esim. toimitusohjeita"
+                      rows={3}
+                    />
+                  </div>
+                </>
+              )}
 
-                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                          <div className="space-y-2">
-                            <Label htmlFor={`product-${item.productId}`}>Tuote</Label>
-                            <Select
-                              value={item.productId}
-                              onValueChange={(value) => handleItemChange(item.id, "productId", value)}
-                            >
-                              <SelectTrigger id={`product-${item.id}`}>
-                                <SelectValue placeholder="Valitse tuote" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {products.map((product) => (
-                                  <SelectItem key={product.id} value={product.id}>
-                                    {product.name}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </div>
+            </CardContent>
+          </Card>
 
-                          <div className="space-y-2">
-                            <Label htmlFor={`amount-${item.id}`}>
-                              Määrä (kg)
-                            </Label>
-                            <Input
-                              id={`amount-${item.id}`}
-                              type="number"
-                              min="0"
-                              step="0.01"
-                              value={item.amount || ""}
-                              onChange={(e) =>
-                                handleItemChange(item.id, "amount", Number.parseFloat(e.target.value) || 0)
-                              }
-                            />
-                          </div>
+          {/* Order Items */}
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <div>
+                <CardTitle>Tuotteet</CardTitle>
+                <CardDescription>Täytä tilaukset tuotteet</CardDescription>
+              </div>
+              <Button type="button" onClick={handleAddItem} size="sm">
+                <Plus className="mr-2 h-4 w-4" />
+                Lisää tuote
+              </Button>
+            </CardHeader>
+            <CardContent>
+              <ScrollArea className="max-h-[500px]">
+                <div className="space-y-4">
+                  {orderItems.map((item) => (
+                    <div key={item.id} className="rounded-lg border p-4 relative">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="absolute right-2 top-2"
+                        onClick={() => handleRemoveItem(item.id)}
+                        disabled={orderItems.length === 1}
+                      >
+                        <X className="h-4 w-4" />
+                        <span className="sr-only">Poista</span>
+                      </Button>
 
-                          <div className="space-y-2">
-                            <Label htmlFor={`price-${item.id}`}>Hinta (€/kg) ALV 14 %</Label>
-                            <Input
-                              id={`price-${item.id}`}
-                              type="number"
-                              min="0"
-                              step="0.01"
-                              value={item.price || ""}
-                              onChange={(e) =>
-                                handleItemChange(item.id, "price", Number.parseFloat(e.target.value) || 0)
-                              }
-                            />
-                          </div>
-
-                          <div className="space-y-2">
-                            <Label htmlFor={`package-type-${item.id}`}>Pakkauskoko</Label>
-                            <Select
-                              value={item.packageSize + ''}
-                              onValueChange={(value) => handleItemChange(item.id, "packageSize", parseInt(value))}
-                            >
-                              <SelectTrigger id={`package-size-${item.id}`}>
-                                <SelectValue placeholder="Valitse pakkauskoko" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {packageSizes.map(type => (
-                                  <SelectItem value={type + ''}>{type}</SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </div>
-
-                          <div className="space-y-2">
-                            <Label htmlFor={`package-type-${item.id}`}>Pakkaustyyppi</Label>
-                            <Select
-                              value={item.packageType}
-                              onValueChange={(value) => handleItemChange(item.id, "packageType", value)}
-                            >
-                              <SelectTrigger id={`package-type-${item.id}`}>
-                                <SelectValue placeholder="Valitse pakkaustyyppi" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {packageTypes.map(type => (
-                                  <SelectItem value={type}>{type}</SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </div>
-
-                          <div className="space-y-2">
-                            <Label htmlFor={`packages-${item.id}`}>Kappaletta</Label>
-                            <Input
-                              id={`packages-${item.id}`}
-                              type="number"
-                              disabled
-                              min="0"
-                              value={item.packages}
-                              readOnly
-                              className="bg-muted"
-                            />
-                            <p className="text-xs text-muted-foreground">
-                              Laskukaava: {item.amount} / {item.packageSize}
-                            </p>
-                          </div>
-
-                          <div className="space-y-2 sm:col-span-2 lg:col-span-3">
-                            <Label htmlFor={`notes-${item.id}`}>Lisätieto</Label>
-                            <Input
-                              id={`notes-${item.id}`}
-                              value={item.freetext}
-                              onChange={(e) => handleItemChange(item.id, "freetext", e.target.value)}
-                              placeholder="Lisätietoa tästä tuotteesta"
-                            />
-                          </div>
+                      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                        <div className="space-y-2">
+                          <Label htmlFor={`product-${item.productId}`}>Tuote</Label>
+                          <Select
+                            value={item.productId}
+                            onValueChange={(value) => handleItemChange(item.id, "productId", value)}
+                          >
+                            <SelectTrigger id={`product-${item.id}`}>
+                              <SelectValue placeholder="Valitse tuote" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {products.map((product) => (
+                                <SelectItem key={product.id} value={product.id}>
+                                  {product.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
                         </div>
 
-                        <div className="mt-4 text-right">
-                          <p className="text-sm font-medium">
-                            Tuote yhteensä: {(item.amount * item.price).toFixed(2)} €
+                        <div className="space-y-2">
+                          <Label htmlFor={`amount-${item.id}`}>
+                            Määrä (kg)
+                          </Label>
+                          <Input
+                            id={`amount-${item.id}`}
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            value={item.amount || ""}
+                            onChange={(e) =>
+                              handleItemChange(item.id, "amount", Number.parseFloat(e.target.value) || 0)
+                            }
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor={`price-${item.id}`}>Hinta (€/kg) ALV 14 %</Label>
+                          <Input
+                            id={`price-${item.id}`}
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            value={item.price || ""}
+                            onChange={(e) =>
+                              handleItemChange(item.id, "price", Number.parseFloat(e.target.value) || 0)
+                            }
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor={`package-type-${item.id}`}>Pakkauskoko</Label>
+                          <Select
+                            value={item.packageSize + ''}
+                            onValueChange={(value) => handleItemChange(item.id, "packageSize", parseInt(value))}
+                          >
+                            <SelectTrigger id={`package-size-${item.id}`}>
+                              <SelectValue placeholder="Valitse pakkauskoko" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {packageSizes.map(type => (
+                                <SelectItem value={type + ''}>{type}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor={`package-type-${item.id}`}>Pakkaustyyppi</Label>
+                          <Select
+                            value={item.packageType}
+                            onValueChange={(value) => handleItemChange(item.id, "packageType", value)}
+                          >
+                            <SelectTrigger id={`package-type-${item.id}`}>
+                              <SelectValue placeholder="Valitse pakkaustyyppi" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {packageTypes.map(type => (
+                                <SelectItem value={type}>{type}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor={`packages-${item.id}`}>Kappaletta</Label>
+                          <Input
+                            id={`packages-${item.id}`}
+                            type="number"
+                            disabled
+                            min="0"
+                            value={item.packages}
+                            readOnly
+                            className="bg-muted"
+                          />
+                          <p className="text-xs text-muted-foreground">
+                            Laskukaava: {item.amount} / {item.packageSize}
                           </p>
                         </div>
-                      </div>
-                    ))}
-                  </div>
-                </ScrollArea>
-              </CardContent>
-              <CardFooter className="flex justify-between border-t p-4">
-                <div>
-                  <p className="text-sm text-muted-foreground">
-                    {orderItems.length} rivi{orderItems.length !== 1 ? "ä" : ""} tilauksessa
-                  </p>
-                </div>
-                <div className="text-right">
-                  <p className="text-sm text-muted-foreground">Tilauksen kokonaissumma</p>
-                  <p className="text-2xl font-bold">{calculateTotal()} €</p>
-                </div>
-              </CardFooter>
-            </Card>
 
-            <div className="flex justify-end gap-4">
-              <Button variant="outline" type="button" onClick={() => window.history.back()}>
-                Peruuta
-              </Button>
-              <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? (
-                  <>
-                    <svg
-                      className="mr-2 h-4 w-4 animate-spin"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      ></circle>
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      ></path>
-                    </svg>
-                    Tallennetaan...
-                  </>
-                ) : (
-                  <>
-                    <Save className="mr-2 h-4 w-4" />
-                    Tallenna
-                  </>
-                )}
-              </Button>
-            </div>
+                        <div className="space-y-2 sm:col-span-2 lg:col-span-3">
+                          <Label htmlFor={`notes-${item.id}`}>Lisätieto</Label>
+                          <Input
+                            id={`notes-${item.id}`}
+                            value={item.freetext}
+                            onChange={(e) => handleItemChange(item.id, "freetext", e.target.value)}
+                            placeholder="Lisätietoa tästä tuotteesta"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="mt-4 text-right">
+                        <p className="text-sm font-medium">
+                          Tuote yhteensä: {(item.amount * item.price).toFixed(2)} €
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </ScrollArea>
+            </CardContent>
+            <CardFooter className="flex justify-between border-t p-4">
+              <div>
+                <p className="text-sm text-muted-foreground">
+                  {orderItems.length} rivi{orderItems.length !== 1 ? "ä" : ""} tilauksessa
+                </p>
+              </div>
+              <div className="text-right">
+                <p className="text-sm text-muted-foreground">Tilauksen kokonaissumma</p>
+                <p className="text-2xl font-bold">{calculateTotal()} €</p>
+              </div>
+            </CardFooter>
+          </Card>
+
+          <div className="flex justify-end gap-4">
+            <Button variant="outline" type="button" onClick={() => window.history.back()}>
+              Peruuta
+            </Button>
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? (
+                <>
+                  <svg
+                    className="mr-2 h-4 w-4 animate-spin"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
+                  </svg>
+                  Tallennetaan...
+                </>
+              ) : (
+                <>
+                  <Save className="mr-2 h-4 w-4" />
+                  Tallenna
+                </>
+              )}
+            </Button>
           </div>
-        </form>
-      </div>
+        </div>
+      </form>
+    </div>
   )
 }
 

@@ -23,8 +23,8 @@ export interface PostOrderDto {
   deliveryDate: string
   customerId: string
   hasNote: boolean
-  noteBody: string
-  noteHeader: string
+  noteBody: string | null
+  noteHeader: string | null
   items: ProductOrderDto[]
 }
 
