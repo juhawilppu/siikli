@@ -2,12 +2,33 @@
   width: 100%;
 }
 
-.content-wrapper {
-  display: flex;
-  justify-content: center;
-  width: 100%;
+.pdf h2 {
+  font-weight: normal;
+  margin-top: 1em;
+  margin-bottom: 0.4em;
+  font-size: 24px;
 }
 
-.content {
-  max-width: 800px;
+.pdf .border-bottom {
+  border-bottom: 1px solid black;
+}
+
+.pdf .border-top {
+  border-top: 1px solid black;
+}
+
+.pdf .align-center {
+  text-align: center;
+}
+
+.pdf .align-right {
+  text-align: right;
+}
+
+.pdf .title {
+  font-weight: bold;
+}
+
+.pdf table {
+  width: 100%;
 }

@@ -22,7 +22,7 @@ export const WarehouseReportByProductDocument = ({ report }: {
     const groupedByproduct_type = groupBy(report.rows, 'productType');
 
     return (
-        <div>
+        <div className="pdf">
             <h1 className="md-display-1">Tuotekohtainen pakkauslista</h1>
             <br />
             <b>Raportointipäivä:</b>{' '}
@@ -36,7 +36,7 @@ export const WarehouseReportByProductDocument = ({ report }: {
                 <>
                     <table style={{ pageBreakInside: 'auto' }} className="border-bottom">
                         <thead>
-                            <tr className="md-subhead border-top">
+                            <tr className="title border-top border-bottom">
                                 <td className="align-left" style={{ width: '35%' }}>Tuote</td>
                                 <td className="align-center" colSpan={2} style={{ width: '15%' }}>Pakkaus</td>
                                 <td className="align-right" style={{ width: '20%' }}>Kappaletta</td>
@@ -72,7 +72,7 @@ export const WarehouseReportByProductDocument = ({ report }: {
                         <br />
                         <table style={{ pageBreakInside: 'avoid' }} className="border-bottom">
                             <thead>
-                                <tr className="md-subhead border-top">
+                                <tr className="title border-top border-bottom">
                                     <td className="align-left width-50">Lajike</td>
                                     <td className="align-right width-50">Kokonaismäärä (kg)</td>
                                 </tr>

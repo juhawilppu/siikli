@@ -17,7 +17,7 @@ export const WarehouseReportByCustomerDocument = ({ report }: {
     const groupedData = groupByCustomerName(report.rows)
 
     return (
-        <div>
+        <div className="pdf">
             <h1 className="md-display-1">Kauppakohtainen pakkauslista</h1>
             <br />
             <b>Raportointipäivä:</b>{' '}
@@ -30,7 +30,7 @@ export const WarehouseReportByCustomerDocument = ({ report }: {
                     <h2 className="align-center no-page-break-after">{customerName}</h2>
                     <table className="border-bottom">
                         <thead>
-                            <tr className="md-subhead border-top border-bottom">
+                            <tr className="title border-top border-bottom">
                                 <td className="align-left" style={{ width: '30%' }}>
                                     Tuote
                                 </td>
