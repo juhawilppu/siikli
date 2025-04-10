@@ -1,4 +1,5 @@
 import { Customer } from "@/types/types";
+import { formatMoneyFi } from "@/utils/money";
 import { FlatOrderItem } from "./Invoices";
 
 export function InvoiceAppendix({
@@ -34,7 +35,7 @@ export function InvoiceAppendix({
 
             <table className="border-all">
                 <thead>
-                    <tr className="md-subhead border-bottom">
+                    <tr className="md-title border-top border-bottom">
                         <th className="align-left width-10">Toimituspäivä</th>
                         <th className="align-left width-10">Tilausnumero</th>
                         <th className="align-left width-20">Tuotenimike</th>
@@ -58,29 +59,29 @@ export function InvoiceAppendix({
                             <td className="align-right width-20">{item.amount}</td>
                             {customer.show_price_without_tax ? (
                                 <>
-                                    <td className="align-right">{item.price0.toFixed(2)}</td>
-                                    <td className="align-right">{(item.amount * item.price0).toFixed(2)}</td>
+                                    <td className="align-right">{formatMoneyFi(item.price0)}</td>
+                                    <td className="align-right">{formatMoneyFi(item.amount * item.price0)}</td>
                                 </>
                             ) : (
                                 <>
-                                    <td className="align-right">{item.price.toFixed(2)}</td>
-                                    <td className="align-right">{(item.amount * item.price).toFixed(2)}</td>
+                                    <td className="align-right">{formatMoneyFi(item.price)}</td>
+                                    <td className="align-right">{formatMoneyFi(item.amount * item.price)}</td>
                                 </>
                             )}
                         </tr>
                     ))}
 
                     {showTotal && (
-                        <tr className="border-top">
-                            <td colSpan={3} className="md-subhead width-40">
+                        <tr className="border-top border-bottom">
+                            <td colSpan={3} className="title width-40">
                                 Yhteensä {customer.show_price_without_tax ? '(ALV 0 %)' : '(ALV 14 %)'}
                             </td>
                             <td className="align-right">{reportData.totalKg}</td>
                             <td></td>
                             <td className="align-right">
                                 {customer.show_price_without_tax
-                                    ? reportData.totalSumWithoutTax.toFixed(2)
-                                    : reportData.totalSumWithTax.toFixed(2)}
+                                    ? formatMoneyFi(reportData.totalSumWithoutTax)
+                                    : formatMoneyFi(reportData.totalSumWithTax)}
                             </td>
                         </tr>
                     )}

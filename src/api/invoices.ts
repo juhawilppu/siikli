@@ -37,13 +37,29 @@ invoiceRoute.get(`/api/invoices`, async (req, res) => {
         // Optional: if your model doesn’t auto-include products, fetch separately
         // and attach items to each order manually
 
-        const invoice: Invoice = {
-            customer,
+        const today = new Date()
+
+
+        const invoice = {
+            invoiceId: 1001,
+            date: dateToString(today),
+            dueDate: dateToString(addDays(today, 14)),
+            paymentCondition: '14 päivää',
+            notificationPeriod: '14 päivää',
+            interestRate: 7,
+            customer: {
+                name: customer.name,
+                companyName: customer.company_name,
+                businessId: customer.business_id,
+                address: customer.address,
+                postalCode: customer.postal_code,
+                city: customer.city
+            },
             orders,
             total: calculateInvoiceTotal(orders, usePrice0),
         };
 
-        return res.status(200).json(invoice);
+        return res.status(200).json(invoice satisfies InvoiceDto);
     } catch (err) {
         console.error('Error generating invoice:', err);
         res.status(500).json({ error: 'Internal server error' });
@@ -53,7 +69,9 @@ invoiceRoute.get(`/api/invoices`, async (req, res) => {
 
 
 import { Order, OrderProduct } from '@prisma/client'
-import { Invoice } from '../../frontend/src/types/types'
+import { addDays } from 'date-fns'
+import { InvoiceDto } from '../../frontend/src/types/types'
+import { dateToString } from '../../frontend/src/utils/date'
 
 export function calculateInvoiceTotal(
     orders: (Order & { products: OrderProduct[] })[],

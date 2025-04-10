@@ -1,6 +1,6 @@
 import { Calendar as CalendarComponent } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { CustomerDto, Invoice, Order, OrderProduct } from '@/types/types'
+import { CustomerDto, Invoice, InvoiceDto, Order, OrderProduct } from '@/types/types'
 import { formatDate } from '@/utils/date'
 
 import { Button } from "@/components/ui/button"
@@ -37,12 +37,8 @@ export const Invoices = () => {
 
     const [customerId, setCustomerId] = useState<string>()
 
-    const handleCustomerChange = (event: SelectChangeEvent) => {
-        setCustomerId(event.target.value)
-    }
-
     const getData = async () => {
-        const invoice = await axios.get('/invoices', {
+        const invoice = await axios.get<InvoiceDto>('/invoices', {
             params: {
                 customerId,
                 startDate: startDate.toISOString(),
@@ -149,43 +145,38 @@ export const Invoices = () => {
                         </div>
                     </div>
                 </CardContent>
+                <Button onClick={getData}>Hae tiedot</Button>
+                <Button onClick={print}>Tulosta</Button>
             </Card>
-
-            <Button onClick={getData}>Hae tiedot</Button>
-            <Button onClick={print}>Tulosta</Button>
-            <div>
-                {invoice && <InvoiceView customer={invoice.customer} invoice={{
-                    date: '5.4.2025',
-                    invoiceId: '1001',
-                    paymentCondition: '14 pv',
-                    dueDate: '19.5.2025',
-                    interestRate: '7 %',
-                    notificationPeriod: '14',
-                }} reportData={
-                    {
-                        totalPages: 1,
-                        finalSumWithoutTax: 200,
-                        finalSumWithTax: 100,
-                        totalTax: 100
-                    }
-                } isEditMode={true} onChange={() => { }}></InvoiceView>}
-                {invoice &&
-                    <InvoiceAppendix
-                        invoiceRows={flattenOrderProducts(invoice.orders)}
-                        customer={invoice.customer}
-                        reportData={
+            {invoice && (
+                <Card>
+                    <div className="pdf p-5">
+                        <InvoiceView invoice={invoice} reportData={
                             {
                                 totalPages: 1,
                                 finalSumWithoutTax: 200,
-                                totalSumWithTax: 100,
                                 finalSumWithTax: 100,
                                 totalTax: 100
                             }
-                        }
-                        showTotal={true}
-                        totalPages={1}
-                    />}
-            </div>
+                        } isEditMode={true} onChange={() => { }} />
+                        <InvoiceAppendix
+                            invoiceRows={flattenOrderProducts(invoice.orders)}
+                            customer={invoice.customer}
+                            reportData={
+                                {
+                                    totalPages: 1,
+                                    finalSumWithoutTax: 200,
+                                    totalSumWithTax: 100,
+                                    finalSumWithTax: 100,
+                                    totalTax: 100
+                                }
+                            }
+                            showTotal={true}
+                            totalPages={1}
+                        />
+                    </div>
+                </Card>
+            )}
         </>
     )
 }

@@ -89,12 +89,6 @@ export interface OrderProduct {
   freetext: string | null;
 }
 
-export interface Invoice {
-  customer: Customer;
-  orders: (Order & { products: OrderProduct[] })[];
-  total: number;
-}
-
 export interface WarehouseReportByCustomerRow {
 
   customerId: string;
@@ -151,4 +145,23 @@ export interface CustomerDto {
   streetAddress: string | null
   postalCode: string | null
   city: string | null
+}
+
+export interface InvoiceDto {
+  invoiceId: number
+  date: string
+  dueDate: string
+  customer: {
+    name: string
+    companyName: string | null
+    businessId: string | null
+    address: string | null
+    postalCode: string | null
+    city: string | null
+  }
+  paymentCondition: string
+  interestRate: number
+  notificationPeriod: string
+  total: number
+  orders: {}[]
 }
