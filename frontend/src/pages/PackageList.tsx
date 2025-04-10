@@ -66,7 +66,7 @@ export const PackageList = () => {
                                     <CalendarComponent
                                         mode="single"
                                         selected={deliveryDate}
-                                        onSelect={setDeliveryDate}
+                                        onSelect={(value: Date | undefined) => { setDeliveryDate(value); setReport(undefined); }}
                                         initialFocus
                                     />
                                 </PopoverContent>
@@ -75,7 +75,7 @@ export const PackageList = () => {
 
                         <div className="space-y-2">
                             <Label className="font-medium">Ryhmittely</Label>
-                            <RadioGroup value={groupBy} onValueChange={setGroupBy} className="flex gap-6">
+                            <RadioGroup value={groupBy} onValueChange={(value: 'customer' | 'product') => { setGroupBy(value); setReport(undefined); }} className="flex gap-6">
                                 <div className="flex items-center space-x-2">
                                     <RadioGroupItem value="customer" id="group-customer" />
                                     <Label htmlFor="group-customer">Asiakkaan mukaan</Label>
@@ -123,12 +123,17 @@ export const PackageList = () => {
                     </Button>
                 </CardFooter>
             </Card>
-            {report && report.groupedBy == 'customer' && <WarehouseReportByCustomerDocument
-                report={report} />
-            }
-            {report && report.groupedBy == 'product' && <WarehouseReportByProductDocument
-                report={report} />
-            }
+            {report && (
+                <Card className="p-5">
+                    <Button onClick={() => window.print()}>Tulosta</Button>
+                    {report.groupedBy == 'customer' && <WarehouseReportByCustomerDocument
+                        report={report} />
+                    }
+                    {report.groupedBy == 'product' && <WarehouseReportByProductDocument
+                        report={report} />
+                    }
+                </Card>
+            )}
         </>
     )
 }

@@ -32,3 +32,18 @@
 .pdf table {
   width: 100%;
 }
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .pdf,
+  .pdf * {
+    visibility: visible;
+  }
+  .pdf {
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+}
