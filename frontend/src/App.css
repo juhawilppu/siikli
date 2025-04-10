@@ -34,12 +34,26 @@
 }
 
 @media print {
+  @page {
+    size: A5 portrait;
+    margin: 10mm;
+  }
+
+  html,
+  body {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
   body * {
     visibility: hidden;
   }
   .pdf,
   .pdf * {
     visibility: visible;
+    width: 100%;
+    padding: 0;
+    margin: 0;
   }
   .pdf {
     position: absolute;
