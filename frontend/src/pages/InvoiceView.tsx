@@ -2,6 +2,7 @@
 // Some logic (like page numbers, datepickers, etc.) will need additional handling or libraries.
 
 import { InvoiceDto } from "@/types/types";
+import { formatMoneyFi } from "@/utils/money";
 
 
 export interface CustomerInvoiceDto {
@@ -31,7 +32,6 @@ export function InvoiceView(
         isEditMode: true,
         onChange: any
     }) {
-    const formatDate = (dateStr: string) => new Date(dateStr).toLocaleDateString('fi-FI');
 
     return (
         <div className="invoice">
@@ -57,12 +57,12 @@ export function InvoiceView(
                             {isEditMode ? (
                                 <input type="date" value={invoice.date} onChange={(e) => onChange('date', e.target.value)} />
                             ) : (
-                                <span>{formatDate(invoice.date)}</span>
+                                <span>{invoice.date}</span>
                             )}
                         </td>
                     </tr>
                     <tr>
-                        <td>{invoice.customer.name}</td>
+                        <td>{invoice.customer.chain} {invoice.customer.name}</td>
                         <td className="strong border-left">Laskun numero:</td>
                         <td>
                             {isEditMode ? (
@@ -90,12 +90,12 @@ export function InvoiceView(
                             {isEditMode ? (
                                 <input type="date" value={invoice.dueDate} onChange={(e) => onChange('dueDate', e.target.value)} />
                             ) : (
-                                <span>{formatDate(invoice.dueDate)}</span>
+                                <span>{invoice.dueDate}</span>
                             )}
                         </td>
                     </tr>
                     <tr>
-                        <td>{invoice.customer.businessId ? invoice.customer.address : `${invoice.customer.postalCode} ${invoice.customer.city}`}</td>
+                        <td>{invoice.customer.businessId ? invoice.customer.address : `${invoice.customer.postalCode || ''} ${invoice.customer.city || ''}`}</td>
                         <td className="strong border-left">Viivästyskorko:</td>
                         <td>
                             {isEditMode ? (
@@ -127,17 +127,17 @@ export function InvoiceView(
                     <tr>
                         <td className="strong">Yhteensä (ALV 0 %)</td>
                         <td></td>
-                        <td className="align-right">{reportData.finalSumWithoutTax.toFixed(2)}</td>
+                        <td className="align-right">{formatMoneyFi(reportData.finalSumWithoutTax)}</td>
                     </tr>
                     <tr>
                         <td className="strong">ALV 14 %</td>
                         <td></td>
-                        <td className="align-right">{reportData.totalTax.toFixed(2)}</td>
+                        <td className="align-right">{formatMoneyFi(reportData.totalTax)}</td>
                     </tr>
                     <tr>
                         <td className="strong">Yhteensä (ALV 14 %)</td>
                         <td></td>
-                        <td className="align-right">{reportData.finalSumWithTax.toFixed(2)}</td>
+                        <td className="align-right">{formatMoneyFi(reportData.finalSumWithTax)}</td>
                     </tr>
                 </tbody>
             </table>

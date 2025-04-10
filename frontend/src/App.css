@@ -17,6 +17,14 @@
   border-top: 1px solid black;
 }
 
+.pdf .border-all {
+  border: 1px solid black;
+}
+
+.pdf .align-left {
+  text-align: left;
+}
+
 .pdf .align-center {
   text-align: center;
 }

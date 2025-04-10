@@ -152,6 +152,7 @@ export interface InvoiceDto {
   date: string
   dueDate: string
   customer: {
+    chain: string
     name: string
     companyName: string | null
     businessId: string | null

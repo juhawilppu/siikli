@@ -48,6 +48,7 @@ invoiceRoute.get(`/api/invoices`, async (req, res) => {
             notificationPeriod: '14 päivää',
             interestRate: 7,
             customer: {
+                chain: customer.chain,
                 name: customer.name,
                 companyName: customer.company_name,
                 businessId: customer.business_id,
