@@ -1,18 +1,20 @@
 import { Button } from "@/components/ui/button"
-import { Calendar, Calendar as CalendarComponent } from "@/components/ui/calendar"
+import { Calendar as CalendarComponent } from "@/components/ui/calendar"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { formatDate } from "@/utils/date"
 import { endOfWeek, startOfWeek } from 'date-fns'
 import { fi } from "date-fns/locale"
+import { Calendar, RefreshCw } from "lucide-react"
 import { useState } from 'react'
 
 const now = new Date()
 
 export const SalesReport = () => {
-    const [startDate, setStartDate] = useState<Date>(
+    const [startDate, setStartDate] = useState<Date | undefined>(
         startOfWeek(now, { weekStartsOn: 1 })
     )
-    const [endDate, setEndDate] = useState<Date>(
+    const [endDate, setEndDate] = useState<Date | undefined>(
         endOfWeek(now, { weekStartsOn: 1 })
     )
 
@@ -35,40 +37,56 @@ export const SalesReport = () => {
                 <p className="text-muted-foreground">Tällä sivulla voit tulostaa koko myyntikannan Exceliin.</p>
             </div>
             <div className="space-y-2">
-                <label className="text-sm font-medium">Alkupäivä</label>
-                <Popover>
-                    <PopoverTrigger asChild>
-                        <Button variant="outline" className="w-full justify-start text-left font-normal">
-                            <Calendar className="mr-2 h-4 w-4" />
-                            {startDate ? formatDate(startDate) : <span>Select date</span>}
-                        </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0">
-                        <CalendarComponent
-                            mode="single"
-                            selected={startDate}
-                            onSelect={setStartDate}
-                            initialFocus
-                            locale={fi}
-                        />
-                    </PopoverContent>
-                </Popover>
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Hakuehdot</CardTitle>
+                        <CardDescription>Suodata tilauksia päivämäärän mukaan</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="grid gap-4 md:grid-cols-4">
+                            <div className="space-y-2">
+                                <label className="text-sm font-medium">Alkupäivä</label>
+                                <Popover>
+                                    <PopoverTrigger asChild>
+                                        <Button variant="outline" className="w-full justify-start text-left font-normal">
+                                            <Calendar className="mr-2 h-4 w-4" />
+                                            {startDate ? formatDate(startDate) : <span>Select date</span>}
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-auto p-0">
+                                        <CalendarComponent
+                                            mode="single"
+                                            selected={startDate}
+                                            onSelect={setStartDate}
+                                            required
+                                            initialFocus
+                                            locale={fi}
+                                        />
+                                    </PopoverContent>
+                                </Popover>
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="text-sm font-medium">Loppupäivä</label>
+                                <Popover>
+                                    <PopoverTrigger asChild>
+                                        <Button variant="outline" className="w-full justify-start text-left font-normal">
+                                            <Calendar className="mr-2 h-4 w-4" />
+                                            {endDate ? formatDate(endDate) : <span>Select date</span>}
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-auto p-0">
+                                        <CalendarComponent mode="single" selected={endDate} onSelect={setEndDate} required locale={fi} />
+                                    </PopoverContent>
+                                </Popover>
+                            </div>
+                            <div className="flex justify-end items-end gap-2">
+                                <Button onClick={getReport}><RefreshCw className="w-4 h-4 mr-2" /> Hae tiedot</Button>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
             </div>
-            <div className="space-y-2">
-                <label className="text-sm font-medium">Loppupäivä</label>
-                <Popover>
-                    <PopoverTrigger asChild>
-                        <Button variant="outline" className="w-full justify-start text-left font-normal">
-                            <Calendar className="mr-2 h-4 w-4" />
-                            {endDate ? formatDate(endDate) : <span>Select date</span>}
-                        </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0">
-                        <CalendarComponent mode="single" selected={endDate} onSelect={setEndDate} initialFocus locale={fi} />
-                    </PopoverContent>
-                </Popover>
-            </div>
-            <Button onClick={getReport}>Tulosta</Button>
         </>
     )
 }
