@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import axios from 'axios'
 import { endOfMonth, startOfMonth } from 'date-fns'
 import { fi } from "date-fns/locale"
-import { Calendar } from 'lucide-react'
+import { Calendar, Printer, RefreshCw } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { InvoiceAppendix } from './InvoiceAppendix'
 import { InvoiceView } from './InvoiceView'
@@ -92,7 +92,7 @@ export const Invoices = () => {
                                     ))}
                                 </SelectContent>
                             </Select>
-                            {selectedCustomer && (
+                            {selectedCustomer && selectedCustomer.streetAddress && selectedCustomer.postalCode && selectedCustomer.city && (
                                 <p className="text-xs text-muted-foreground mt-1">
                                     {selectedCustomer.streetAddress}, {selectedCustomer.postalCode} {selectedCustomer.city}
                                 </p>
@@ -134,10 +134,12 @@ export const Invoices = () => {
                                 </PopoverContent>
                             </Popover>
                         </div>
+                        <div className="flex justify-end items-end gap-2">
+                            <Button onClick={getData}><RefreshCw className="w-4 h-4 mr-2" /> Hae tiedot</Button>
+                            <Button disabled={!invoice} onClick={print}><Printer className="w-4 h-4 mr-2" /> Tulosta</Button>
+                        </div>
                     </div>
                 </CardContent>
-                <Button onClick={getData}>Hae tiedot</Button>
-                <Button onClick={print}>Tulosta</Button>
             </Card>
             {invoice && (
                 <Card>
