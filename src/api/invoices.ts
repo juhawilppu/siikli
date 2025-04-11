@@ -1,5 +1,9 @@
 import { PrismaClient } from '@prisma/client'
+import { addDays } from 'date-fns'
+import Decimal from 'decimal.js'
 import express from 'express'
+import { InvoiceDto, InvoiceItemDto } from '../../frontend/src/types/types'
+import { dateToString } from '../../frontend/src/utils/date'
 
 const invoiceRoute = express.Router()
 const prisma = new PrismaClient()
@@ -43,13 +47,29 @@ invoiceRoute.get(`/api/invoices`, async (req, res) => {
 
         const today = new Date()
 
+        const items = orders.map(o => {
+            return o.products.map(p => {
+                return {
+                    orderId: o.id,
+                    orderNumber: 1,
+                    amount: p.amount,
+                    deliveryDate: o.deliveryDate,
+                    productName: p.products.name,
+                    price: p.price,
+                    price0: p.price0
+                }
+            })
+        }
+        ).flat()
+
+        const notificationPeriod = 14
 
         const invoice = {
             invoiceId: 1001,
             date: dateToString(today),
-            dueDate: dateToString(addDays(today, 14)),
-            paymentCondition: '14 päivää',
-            notificationPeriod: '14 päivää',
+            dueDate: dateToString(addDays(today, notificationPeriod)),
+            paymentCondition: notificationPeriod + ' päivää',
+            notificationPeriod: notificationPeriod + ' päivää',
             interestRate: 7,
             customer: {
                 chain: customer.chain,
@@ -64,29 +84,9 @@ invoiceRoute.get(`/api/invoices`, async (req, res) => {
             company: {
                 name: company.name,
             },
-            items: orders.map(o => {
-                return o.products.map(p => {
-                    return {
-                        orderId: o.id,
-                        orderNumber: 1,
-                        amount: p.amount,
-                        deliveryDate: o.deliveryDate,
-                        productName: p.products.name,
-                        price: p.price,
-                        price0: p.price0
-                    }
-                })
-            }
-            ).flat(),
-            totalSumWithoutTax: calculateInvoiceTotal(orders, usePrice0),
-            finalSumWithoutTax: calculateInvoiceTotal(orders, usePrice0),
-            totalSumWithTax: calculateInvoiceTotal(orders, usePrice0),
-            finalSumWithTax: calculateInvoiceTotal(orders, usePrice0),
-            totalKg: 100,
-            totalTax: 0
+            items,
+            totals: calculateTotals(items, customer.compensation, customer.show_price_without_tax)
         };
-
-        invoice.totalTax = invoice.finalSumWithTax - invoice.finalSumWithoutTax
 
         return res.status(200).json(invoice satisfies InvoiceDto);
     } catch (err) {
@@ -96,24 +96,84 @@ invoiceRoute.get(`/api/invoices`, async (req, res) => {
 
 })
 
+const getPrice = (item: InvoiceItemDto, usePrice0: boolean) => {
+    return usePrice0 ? item.price0 * 1.14 : item.price;
+}
 
-import { Order, OrderProduct } from '@prisma/client'
-import { addDays } from 'date-fns'
-import { InvoiceDto } from '../../frontend/src/types/types'
-import { dateToString } from '../../frontend/src/utils/date'
+const getPriceWithoutTax = (item: InvoiceItemDto, usePrice0: boolean) => {
+    return usePrice0 ? item.price0 : item.price / 1.14;
+}
 
-export function calculateInvoiceTotal(
-    orders: (Order & { products: OrderProduct[] })[],
-    usePrice0: boolean
-): number {
-    let total = 0;
-    for (const order of orders) {
-        for (const item of order.products) {
-            const price = usePrice0 ? item.price0 : item.price;
-            total += item.amount * price;
+const calculateTotals = (items: InvoiceItemDto[], compensation: number, usePrice0: boolean) => {
+    let totalSumWithoutTax = new Decimal(0);
+    let totalSumWithTax = new Decimal(0);
+    let totalCompensation = new Decimal(0);
+    let totalTax = new Decimal(0);
+    let finalSumWithoutTax = new Decimal(0);
+    let finalSumWithTax = new Decimal(0);
+    let totalKg = 0;
+
+    for (const item of items) {
+
+        const priceWithoutTax = new Decimal(item.amount).mul(getPriceWithoutTax(item, usePrice0));
+        const priceWithTax = new Decimal(item.amount).mul(getPrice(item, usePrice0));
+
+        totalSumWithoutTax = totalSumWithoutTax.add(priceWithoutTax);
+        totalSumWithTax = totalSumWithTax.add(priceWithTax);
+        totalKg += item.amount;
+    }
+
+    if (usePrice0) {
+        totalSumWithoutTax = totalSumWithoutTax.toDecimalPlaces(2, Decimal.ROUND_HALF_DOWN);
+        totalSumWithTax = totalSumWithTax.toDecimalPlaces(2, Decimal.ROUND_HALF_DOWN);
+
+        totalCompensation = totalSumWithoutTax
+            .mul(new Decimal(compensation).div(100))
+            .toDecimalPlaces(2, Decimal.ROUND_HALF_DOWN);
+
+        totalTax = totalSumWithoutTax
+            .mul(0.14)
+            .toDecimalPlaces(2, Decimal.ROUND_HALF_DOWN);
+
+        finalSumWithoutTax = totalSumWithoutTax.sub(totalCompensation);
+        finalSumWithTax = finalSumWithoutTax.add(totalTax);
+    } else {
+        totalSumWithTax = totalSumWithTax.toDecimalPlaces(2, Decimal.ROUND_HALF_DOWN);
+
+        totalSumWithoutTax = totalSumWithTax
+            .div(1.14)
+            .toDecimalPlaces(2, Decimal.ROUND_HALF_DOWN);
+
+        if (compensation > 0) {
+            totalCompensation = totalSumWithoutTax
+                .mul(new Decimal(compensation).div(100))
+                .toDecimalPlaces(2, Decimal.ROUND_HALF_DOWN);
+
+            finalSumWithoutTax = totalSumWithoutTax.sub(totalCompensation);
+
+            totalTax = finalSumWithoutTax
+                .mul(0.14)
+                .toDecimalPlaces(2, Decimal.ROUND_HALF_DOWN);
+
+            finalSumWithTax = finalSumWithoutTax.add(totalTax);
+        } else {
+            totalCompensation = new Decimal(0);
+            totalTax = totalSumWithTax.sub(totalSumWithoutTax);
+
+            finalSumWithoutTax = totalSumWithoutTax;
+            finalSumWithTax = finalSumWithoutTax.add(totalTax);
         }
     }
-    return total;
+
+    return {
+        totalSumWithoutTax: totalSumWithoutTax.toNumber(),
+        totalSumWithTax: totalSumWithTax.toNumber(),
+        totalCompensation: totalCompensation.toNumber(),
+        totalTax: totalTax.toNumber(),
+        finalSumWithoutTax: finalSumWithoutTax.toNumber(),
+        finalSumWithTax: finalSumWithTax.toNumber(),
+        totalKg
+    }
 }
 
 export default invoiceRoute

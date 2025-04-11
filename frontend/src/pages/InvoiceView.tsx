@@ -124,17 +124,17 @@ export function InvoiceView(
                     <tr>
                         <td className="strong">Yhteensä (ALV 0 %)</td>
                         <td></td>
-                        <td className="align-right">{formatMoneyFi(invoice.finalSumWithoutTax)}</td>
+                        <td className="align-right">{formatMoneyFi(invoice.totals.finalSumWithoutTax)}</td>
                     </tr>
                     <tr>
                         <td className="strong">ALV 14 %</td>
                         <td></td>
-                        <td className="align-right">{formatMoneyFi(invoice.totalTax)}</td>
+                        <td className="align-right">{formatMoneyFi(invoice.totals.totalTax)}</td>
                     </tr>
                     <tr>
                         <td className="strong">Yhteensä (ALV 14 %)</td>
                         <td></td>
-                        <td className="align-right">{formatMoneyFi(invoice.finalSumWithTax)}</td>
+                        <td className="align-right">{formatMoneyFi(invoice.totals.finalSumWithTax)}</td>
                     </tr>
                 </tbody>
             </table>

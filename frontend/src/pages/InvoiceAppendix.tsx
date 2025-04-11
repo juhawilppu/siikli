@@ -71,12 +71,12 @@ export function InvoiceAppendix({
                             <td colSpan={3} className="title width-40">
                                 Yhteensä {invoice.customer.showPriceWithoutTax ? '(ALV 0 %)' : '(ALV 14 %)'}
                             </td>
-                            <td className="align-right">{invoice.totalKg}</td>
+                            <td className="align-right">{invoice.totals.totalKg}</td>
                             <td></td>
                             <td className="align-right">
                                 {invoice.customer.showPriceWithoutTax
-                                    ? formatMoneyFi(invoice.totalSumWithoutTax)
-                                    : formatMoneyFi(invoice.totalSumWithTax)}
+                                    ? formatMoneyFi(invoice.totals.totalSumWithoutTax)
+                                    : formatMoneyFi(invoice.totals.totalSumWithTax)}
                             </td>
                         </tr>
                     )}

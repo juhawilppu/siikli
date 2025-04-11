@@ -1,6 +1,6 @@
 import { Calendar as CalendarComponent } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { CustomerDto, Invoice, InvoiceDto } from '@/types/types'
+import { CustomerDto, InvoiceDto } from '@/types/types'
 import { formatDate } from '@/utils/date'
 
 import { Button } from "@/components/ui/button"
@@ -26,7 +26,7 @@ const now = new Date()
 
 export const Invoices = () => {
     const [customers, setCustomers] = useState<CustomerDto[]>()
-    const [invoice, setInvoice] = useState<Invoice>()
+    const [invoice, setInvoice] = useState<InvoiceDto>()
     const [loading, setLoading] = useState(true)
     const [startDate, setStartDate] = useState<Date | undefined>(
         startOfMonth(now)

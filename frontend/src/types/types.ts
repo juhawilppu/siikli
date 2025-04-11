@@ -147,6 +147,16 @@ export interface CustomerDto {
   city: string | null
 }
 
+export interface InvoiceItemDto {
+  orderId: string
+  orderNumber: number
+  deliveryDate: Date
+  productName: string
+  amount: number
+  price: number
+  price0: number
+}
+
 export interface InvoiceDto {
   invoiceId: number
   date: string
@@ -167,19 +177,14 @@ export interface InvoiceDto {
   paymentCondition: string
   interestRate: number
   notificationPeriod: string
-  items: {
-    orderId: string
-    orderNumber: number
-    deliveryDate: Date
-    productName: string
-    amount: number
-    price: number
-    price0: number
-  }[]
-  totalSumWithTax: number
-  finalSumWithTax: number
-  totalSumWithoutTax: number
-  finalSumWithoutTax: number
-  totalTax: number
-  totalKg: number
+  items: InvoiceItemDto[]
+  totals: {
+    totalSumWithTax: number
+    finalSumWithTax: number
+    totalSumWithoutTax: number
+    finalSumWithoutTax: number
+    totalTax: number
+    totalKg: number
+  }
 }
+
