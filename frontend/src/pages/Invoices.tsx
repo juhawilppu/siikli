@@ -160,8 +160,8 @@ export const Invoices = () => {
                             }
                         } isEditMode={true} onChange={() => { }} />
                         <InvoiceAppendix
+                            invoice={invoice}
                             invoiceRows={flattenOrderProducts(invoice.orders)}
-                            customer={invoice.customer}
                             reportData={
                                 {
                                     totalPages: 1,

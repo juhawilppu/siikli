@@ -1,16 +1,16 @@
-import { Customer } from "@/types/types";
+import { InvoiceDto } from "@/types/types";
 import { formatMoneyFi } from "@/utils/money";
 import { FlatOrderItem } from "./Invoices";
 
 export function InvoiceAppendix({
+    invoice,
     invoiceRows,
-    customer,
     reportData,
     showTotal,
     totalPages,
 }: {
+    invoice: InvoiceDto,
     invoiceRows: FlatOrderItem[],
-    customer: Customer,
     reportData: any,
     showTotal: boolean,
     totalPages: number
@@ -22,7 +22,7 @@ export function InvoiceAppendix({
             <table>
                 <tbody>
                     <tr>
-                        <td className="width-50 align-center vertical-center strong">Aromäen Tila Oy</td>
+                        <td className="width-50 align-center vertical-center strong">{invoice.company.name}</td>
                         <td className="width-30 vertical-center strong">LASKU FAKTURA</td>
                         <td className="width-20 vertical-center">
                             <span className="page-number" />/{totalPages}
@@ -42,11 +42,11 @@ export function InvoiceAppendix({
                         <th className="align-right width-20">Määrä (kg/kpl)</th>
                         <th className="align-right">
                             Yksikköhinta (€/kg/kpl)<br />
-                            {customer.show_price_without_tax ? 'ALV 0 %' : 'sis. ALV 14 %'}
+                            {invoice.customer.showPriceWithoutTax ? 'ALV 0 %' : 'sis. ALV 14 %'}
                         </th>
                         <th className="align-right">
                             Kokonaishinta (€)<br />
-                            {customer.show_price_without_tax ? 'ALV 0 %' : 'sis. ALV 14 %'}
+                            {invoice.customer.showPriceWithoutTax ? 'ALV 0 %' : 'sis. ALV 14 %'}
                         </th>
                     </tr>
                 </thead>
@@ -57,7 +57,7 @@ export function InvoiceAppendix({
                             <td className="align-left width-10">{item.orderNumber}</td>
                             <td className="align-left width-30">{item.productName}</td>
                             <td className="align-right width-20">{item.amount}</td>
-                            {customer.show_price_without_tax ? (
+                            {invoice.customer.showPriceWithoutTax ? (
                                 <>
                                     <td className="align-right">{formatMoneyFi(item.price0)}</td>
                                     <td className="align-right">{formatMoneyFi(item.amount * item.price0)}</td>
@@ -74,12 +74,12 @@ export function InvoiceAppendix({
                     {showTotal && (
                         <tr className="border-top border-bottom">
                             <td colSpan={3} className="title width-40">
-                                Yhteensä {customer.show_price_without_tax ? '(ALV 0 %)' : '(ALV 14 %)'}
+                                Yhteensä {invoice.customer.showPriceWithoutTax ? '(ALV 0 %)' : '(ALV 14 %)'}
                             </td>
                             <td className="align-right">{reportData.totalKg}</td>
                             <td></td>
                             <td className="align-right">
-                                {customer.show_price_without_tax
+                                {invoice.customer.showPriceWithoutTax
                                     ? formatMoneyFi(reportData.totalSumWithoutTax)
                                     : formatMoneyFi(reportData.totalSumWithTax)}
                             </td>

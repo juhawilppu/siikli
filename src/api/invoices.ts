@@ -30,12 +30,12 @@ invoiceRoute.get(`/api/invoices`, async (req, res) => {
                 deliveryDate: 'asc',
             },
             include: {
-                products: true, // Assuming the relation is named this way
+                products: true,
             },
         });
 
-        // Optional: if your model doesn’t auto-include products, fetch separately
-        // and attach items to each order manually
+
+        const company = await prisma.tenant.findFirstOrThrow()
 
         const today = new Date()
 
@@ -54,7 +54,11 @@ invoiceRoute.get(`/api/invoices`, async (req, res) => {
                 businessId: customer.business_id,
                 address: customer.address,
                 postalCode: customer.postal_code,
-                city: customer.city
+                city: customer.city,
+                showPriceWithoutTax: customer.show_price_without_tax
+            },
+            company: {
+                name: company.name,
             },
             orders,
             total: calculateInvoiceTotal(orders, usePrice0),

@@ -38,7 +38,7 @@ export function InvoiceView(
             <table className="show-on-print">
                 <tbody>
                     <tr>
-                        <td className="width-50 align-center vertical-center strong">Aromäen Tila Oy</td>
+                        <td className="width-50 align-center vertical-center strong">{invoice.company.name}</td>
                         <td className="width-30 vertical-center strong">LASKU FAKTURA</td>
                         <td className="width-20 vertical-center">
                             <span className="page-number" />/{reportData.totalPages}

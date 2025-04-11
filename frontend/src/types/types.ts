@@ -159,6 +159,10 @@ export interface InvoiceDto {
     address: string | null
     postalCode: string | null
     city: string | null
+    showPriceWithoutTax: boolean
+  }
+  company: {
+    name: string
   }
   paymentCondition: string
   interestRate: number
