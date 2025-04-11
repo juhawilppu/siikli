@@ -25,9 +25,6 @@ export function InvoiceView(
         invoice: InvoiceDto,
         reportData: {
             totalPages: number,
-            finalSumWithoutTax: number,
-            totalTax: number,
-            finalSumWithTax: number
         },
         isEditMode: true,
         onChange: any
@@ -127,17 +124,17 @@ export function InvoiceView(
                     <tr>
                         <td className="strong">Yhteensä (ALV 0 %)</td>
                         <td></td>
-                        <td className="align-right">{formatMoneyFi(reportData.finalSumWithoutTax)}</td>
+                        <td className="align-right">{formatMoneyFi(invoice.finalSumWithoutTax)}</td>
                     </tr>
                     <tr>
                         <td className="strong">ALV 14 %</td>
                         <td></td>
-                        <td className="align-right">{formatMoneyFi(reportData.totalTax)}</td>
+                        <td className="align-right">{formatMoneyFi(invoice.totalTax)}</td>
                     </tr>
                     <tr>
                         <td className="strong">Yhteensä (ALV 14 %)</td>
                         <td></td>
-                        <td className="align-right">{formatMoneyFi(reportData.finalSumWithTax)}</td>
+                        <td className="align-right">{formatMoneyFi(invoice.finalSumWithTax)}</td>
                     </tr>
                 </tbody>
             </table>

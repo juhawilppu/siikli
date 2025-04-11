@@ -30,7 +30,11 @@ invoiceRoute.get(`/api/invoices`, async (req, res) => {
                 deliveryDate: 'asc',
             },
             include: {
-                products: true,
+                products: {
+                    include: {
+                        products: true
+                    }
+                },
             },
         });
 
@@ -60,9 +64,29 @@ invoiceRoute.get(`/api/invoices`, async (req, res) => {
             company: {
                 name: company.name,
             },
-            orders,
-            total: calculateInvoiceTotal(orders, usePrice0),
+            items: orders.map(o => {
+                return o.products.map(p => {
+                    return {
+                        orderId: o.id,
+                        orderNumber: 1,
+                        amount: p.amount,
+                        deliveryDate: o.deliveryDate,
+                        productName: p.products.name,
+                        price: p.price,
+                        price0: p.price0
+                    }
+                })
+            }
+            ).flat(),
+            totalSumWithoutTax: calculateInvoiceTotal(orders, usePrice0),
+            finalSumWithoutTax: calculateInvoiceTotal(orders, usePrice0),
+            totalSumWithTax: calculateInvoiceTotal(orders, usePrice0),
+            finalSumWithTax: calculateInvoiceTotal(orders, usePrice0),
+            totalKg: 100,
+            totalTax: 0
         };
+
+        invoice.totalTax = invoice.finalSumWithTax - invoice.finalSumWithoutTax
 
         return res.status(200).json(invoice satisfies InvoiceDto);
     } catch (err) {

@@ -1,17 +1,12 @@
 import { InvoiceDto } from "@/types/types";
 import { formatMoneyFi } from "@/utils/money";
-import { FlatOrderItem } from "./Invoices";
 
 export function InvoiceAppendix({
     invoice,
-    invoiceRows,
-    reportData,
     showTotal,
     totalPages,
 }: {
     invoice: InvoiceDto,
-    invoiceRows: FlatOrderItem[],
-    reportData: any,
     showTotal: boolean,
     totalPages: number
 }) {
@@ -51,7 +46,7 @@ export function InvoiceAppendix({
                     </tr>
                 </thead>
                 <tbody>
-                    {invoiceRows.sort((a, b) => new Date(a.deliveryDate).getTime() - new Date(b.deliveryDate).getTime()).map((item, idx) => (
+                    {invoice.items.sort((a, b) => new Date(a.deliveryDate).getTime() - new Date(b.deliveryDate).getTime()).map((item, idx) => (
                         <tr key={idx} className="border-bottom">
                             <td className="align-left width-10">{formatDate(item.deliveryDate)}</td>
                             <td className="align-left width-10">{item.orderNumber}</td>
@@ -76,12 +71,12 @@ export function InvoiceAppendix({
                             <td colSpan={3} className="title width-40">
                                 Yhteensä {invoice.customer.showPriceWithoutTax ? '(ALV 0 %)' : '(ALV 14 %)'}
                             </td>
-                            <td className="align-right">{reportData.totalKg}</td>
+                            <td className="align-right">{invoice.totalKg}</td>
                             <td></td>
                             <td className="align-right">
                                 {invoice.customer.showPriceWithoutTax
-                                    ? formatMoneyFi(reportData.totalSumWithoutTax)
-                                    : formatMoneyFi(reportData.totalSumWithTax)}
+                                    ? formatMoneyFi(invoice.totalSumWithoutTax)
+                                    : formatMoneyFi(invoice.totalSumWithTax)}
                             </td>
                         </tr>
                     )}

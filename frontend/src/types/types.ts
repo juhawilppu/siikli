@@ -167,6 +167,19 @@ export interface InvoiceDto {
   paymentCondition: string
   interestRate: number
   notificationPeriod: string
-  total: number
-  orders: {}[]
+  items: {
+    orderId: string
+    orderNumber: number
+    deliveryDate: Date
+    productName: string
+    amount: number
+    price: number
+    price0: number
+  }[]
+  totalSumWithTax: number
+  finalSumWithTax: number
+  totalSumWithoutTax: number
+  finalSumWithoutTax: number
+  totalTax: number
+  totalKg: number
 }

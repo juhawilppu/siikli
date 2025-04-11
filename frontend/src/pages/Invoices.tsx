@@ -1,6 +1,6 @@
 import { Calendar as CalendarComponent } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { CustomerDto, Invoice, InvoiceDto, Order, OrderProduct } from '@/types/types'
+import { CustomerDto, Invoice, InvoiceDto } from '@/types/types'
 import { formatDate } from '@/utils/date'
 
 import { Button } from "@/components/ui/button"
@@ -15,7 +15,7 @@ import { useEffect, useState } from 'react'
 import { InvoiceAppendix } from './InvoiceAppendix'
 import { InvoiceView } from './InvoiceView'
 
-export interface FlatOrderItem extends OrderProduct {
+export interface FlatOrderItem {
     deliveryDate: Date;
     orderId: string;
     orderNumber: number;
@@ -62,18 +62,6 @@ export const Invoices = () => {
 
     if (loading) return <div>Loading</div>
     if (!customers) return <div>Ei tuotteita</div>
-
-    function flattenOrderProducts(orders: Order[]): FlatOrderItem[] {
-        return orders.flatMap(order =>
-            order.products.map(product => ({
-                ...product,
-                productName: 'siikli',
-                deliveryDate: new Date(order.deliveryDate),
-                orderId: order.id,
-                orderNumber: 100
-            }))
-        );
-    }
 
     const selectedCustomer = customers.find(c => c.id == customerId)
 
@@ -157,23 +145,10 @@ export const Invoices = () => {
                         <InvoiceView invoice={invoice} reportData={
                             {
                                 totalPages: 1,
-                                finalSumWithoutTax: 200,
-                                finalSumWithTax: 100,
-                                totalTax: 100
                             }
                         } isEditMode={true} onChange={() => { }} />
                         <InvoiceAppendix
                             invoice={invoice}
-                            invoiceRows={flattenOrderProducts(invoice.orders)}
-                            reportData={
-                                {
-                                    totalPages: 1,
-                                    finalSumWithoutTax: 200,
-                                    totalSumWithTax: 100,
-                                    finalSumWithTax: 100,
-                                    totalTax: 100
-                                }
-                            }
                             showTotal={true}
                             totalPages={1}
                         />
