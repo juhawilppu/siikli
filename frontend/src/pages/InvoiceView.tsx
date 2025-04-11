@@ -31,7 +31,7 @@ export function InvoiceView(
     }) {
 
     return (
-        <div>
+        <div className="space-y-5">
             <table>
                 <tbody>
                     <tr>
@@ -122,19 +122,16 @@ export function InvoiceView(
             <table className="border-all">
                 <tbody>
                     <tr>
-                        <td className="strong">Yhteensä (ALV 0 %)</td>
-                        <td></td>
-                        <td className="align-right">{formatMoneyFi(invoice.totals.finalSumWithoutTax)}</td>
+                        <td className="width-50 strong">Yhteensä (ALV 0 %)</td>
+                        <td className="width-50 align-right">{formatMoneyFi(invoice.totals.finalSumWithoutTax)}</td>
                     </tr>
                     <tr>
-                        <td className="strong">ALV 14 %</td>
-                        <td></td>
-                        <td className="align-right">{formatMoneyFi(invoice.totals.totalTax)}</td>
+                        <td className="width-50 strong">ALV 14 %</td>
+                        <td className="width-50 align-right">{formatMoneyFi(invoice.totals.totalTax)}</td>
                     </tr>
                     <tr>
-                        <td className="strong">Yhteensä (ALV 14 %)</td>
-                        <td></td>
-                        <td className="align-right">{formatMoneyFi(invoice.totals.finalSumWithTax)}</td>
+                        <td className="width-50 strong">Yhteensä (ALV 14 %)</td>
+                        <td className="width-50 align-right">{formatMoneyFi(invoice.totals.finalSumWithTax)}</td>
                     </tr>
                 </tbody>
             </table>
