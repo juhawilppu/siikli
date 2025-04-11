@@ -41,6 +41,11 @@
   width: 100%;
 }
 
+.pdf .page-number:before {
+  counter-increment: page;
+  content: counter(page);
+}
+
 @media print {
   @page {
     size: A5 portrait;
