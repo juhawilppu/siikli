@@ -28,16 +28,19 @@ export const Invoices = () => {
     const [customers, setCustomers] = useState<CustomerDto[]>()
     const [invoice, setInvoice] = useState<Invoice>()
     const [loading, setLoading] = useState(true)
-    const [startDate, setStartDate] = useState<Date>(
+    const [startDate, setStartDate] = useState<Date | undefined>(
         startOfMonth(now)
     )
-    const [endDate, setEndDate] = useState<Date>(
+    const [endDate, setEndDate] = useState<Date | undefined>(
         endOfMonth(now)
     )
 
     const [customerId, setCustomerId] = useState<string>()
 
     const getData = async () => {
+        if (!startDate || !endDate) {
+            return
+        }
         const invoice = await axios.get<InvoiceDto>('/invoices', {
             params: {
                 customerId,
@@ -122,7 +125,7 @@ export const Invoices = () => {
                                         selected={startDate}
                                         onSelect={setStartDate}
                                         required
-                                        autoFocus
+                                        initialFocus
                                         locale={fi}
                                     />
                                 </PopoverContent>
