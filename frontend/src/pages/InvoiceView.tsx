@@ -34,13 +34,13 @@ export function InvoiceView(
     }) {
 
     return (
-        <div className="invoice">
-            <table className="show-on-print">
+        <div>
+            <table>
                 <tbody>
                     <tr>
-                        <td className="width-50 align-center vertical-center strong">{invoice.company.name}</td>
-                        <td className="width-30 vertical-center strong">LASKU FAKTURA</td>
-                        <td className="width-20 vertical-center">
+                        <td className="width-50 strong">{invoice.company.name}</td>
+                        <td className="width-30 strong">LASKU FAKTURA</td>
+                        <td className="width-20 align-right">
                             Sivu <span className="page-number" />/{reportData.totalPages}
                         </td>
                     </tr>

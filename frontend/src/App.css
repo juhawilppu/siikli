@@ -41,6 +41,26 @@
   width: 100%;
 }
 
+.pdf .width-50 {
+  width: 50%;
+}
+
+.pdf .width-30 {
+  width: 30%;
+}
+
+.pdf .width-25 {
+  width: 25%;
+}
+
+.pdf .width-20 {
+  width: 20%;
+}
+
+.pdf .width-10 {
+  width: 10%;
+}
+
 .pdf .page-number:before {
   counter-increment: page;
   content: counter(page);
