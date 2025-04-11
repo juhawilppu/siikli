@@ -24,7 +24,7 @@ export const SalesReport = () => {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'order-products.xlsx';
+        a.download = 'sales-report.xlsx';
         a.click();
         window.URL.revokeObjectURL(url);
     };

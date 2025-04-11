@@ -21,6 +21,7 @@ router.get('/api/sales-report', async (req, res) => {
         // Define headers
         sheet.columns = [
             { header: 'ID', key: 'id' },
+            { header: 'Date', key: 'date' },
             { header: 'Order ID', key: 'orderId' },
             { header: 'Product ID', key: 'productId' },
             { header: 'Product Name', key: 'productName' },
@@ -36,6 +37,7 @@ router.get('/api/sales-report', async (req, res) => {
         data.forEach((item) => {
             sheet.addRow({
                 id: item.id,
+                date: item.order.deliveryDate,
                 orderId: item.orderId,
                 productId: item.productId,
                 productName: item.products.name,
@@ -51,7 +53,7 @@ router.get('/api/sales-report', async (req, res) => {
         // Set headers for file download
         res.setHeader(
             'Content-Disposition',
-            'attachment; filename="order-products.xlsx"'
+            'attachment; filename="sales-report.xlsx"'
         );
         res.setHeader(
             'Content-Type',
