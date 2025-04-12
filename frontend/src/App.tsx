@@ -23,7 +23,7 @@ import Orders from './pages/Orders'
 import { PackageConfiguration } from './pages/PackageConfiguration'
 import { PackageList } from './pages/PackageList'
 import { ProductPage } from './pages/ProductPage'
-import { Products } from './pages/Products'
+import Products from './pages/Products'
 import { SalesReport } from './pages/SalesReport'
 
 
