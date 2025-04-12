@@ -188,3 +188,21 @@ export interface InvoiceDto {
   }
 }
 
+export interface DashboardDataDto {
+  salesThisYear: {
+    value: number
+    change: number
+  }
+  invoicesSent: {
+    value: number
+    change: number
+  }
+  ordersToday: {
+    value: number
+    change: number
+  }
+  uninvoiced: {
+    value: number
+    change: number
+  }
+}

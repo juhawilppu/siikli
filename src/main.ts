@@ -6,6 +6,7 @@ import helmet from 'helmet'
 import passport from 'passport'
 import { authRoute } from './api/auth'
 import { customersRoute } from './api/customers'
+import dashboardRoute from './api/dashboard'
 import { ordersRoute } from './api/orders'
 import { postsRoute } from './api/posts'
 import productsRoute from './api/products'
@@ -105,6 +106,7 @@ async function startServer() {
   app.use(salesReportRoute)
   app.use(invoiceRoute)
   app.use(warehouseRoute)
+  app.use(dashboardRoute)
 
   if (process.env.NODE_ENV === 'production') {
     // Express will serve the client main.js etc.
