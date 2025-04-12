@@ -208,3 +208,26 @@ export interface DashboardDataDto {
     amount: number
   }[]
 }
+
+export interface ProductDto {
+  id: string
+  chain: string
+  name: string
+  price: number
+  packageSize: number
+  packageType: string
+}
+
+export interface FullProductDto {
+  id: string
+  orderIndex: number
+  chain: string
+  name: string
+  price: number
+  price0: number
+  variety: string
+  type: string
+  subtype: string
+  packageSize: number
+  packageType: string
+}

@@ -20,7 +20,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Separator } from "@/components/ui/separator"
 import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/hooks/use-toast"
-import { CustomerDto, GetOrderDto, OrderProduct, PostOrderDto, ProductOrderDto } from "@/types/types"
+import { CustomerDto, GetOrderDto, OrderProduct, PostOrderDto, ProductDto, ProductOrderDto } from "@/types/types"
 import { dateToString } from "@/utils/date"
 import { formatMoneyFi } from "@/utils/money"
 import axios from "axios"
@@ -30,16 +30,6 @@ import { useParams } from "react-router-dom"
 
 const packageSizes = [12, 20, 25, 120, 200, 250]
 const packageTypes = ['Ltk', 'SS', 'A', 'Ap', 'P', 'Pnt', 'PSS', 'HYV']
-
-
-export interface ProductDto {
-  id: string
-  chain: string
-  name: string
-  price: number
-  packageSize: number
-  packageType: string
-}
 
 
 export default function CreateOrder() {

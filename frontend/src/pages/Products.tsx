@@ -35,13 +35,16 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { useToast } from "@/hooks/use-toast"
+import { FullProductDto } from "@/types/types"
+import { formatMoneyFi } from "@/utils/money"
+import axios from "axios"
 
 
-// Tuoteryhmät
-const tuoteryhmat = ["Viljat", "Siemenet", "Jauhot", "Hiutaleet", "Luomutuotteet"]
+// productryhmät
+const typet = ["Viljat", "Siemenet", "Jauhot", "Hiutaleet", "Luomutuotteet"]
 
-// Alituoteryhmät
-const alituoteryhmat = {
+// Aliproductryhmät
+const subtypet = {
   Viljat: ["Vehnä", "Ohra", "Kaura", "Ruis"],
   Siemenet: ["Perunansiemen", "Ohransiemen", "Kauransiemen"],
   Jauhot: ["Vehnäjauho", "Ruisjauho", "Ohrajauho"],
@@ -52,163 +55,50 @@ const alituoteryhmat = {
 // Pakkausvaihtoehdot
 const pakkausvaihtoehdot = ["S", "A", "Ltk"]
 
-// Esimerkkituotteet
-const exampleProducts = [
-  {
-    id: "1",
-    jarjestysnumero: 1,
-    nimi: "Luomu Vehnäjauho",
-    lajike: "Kruunu",
-    tuoteryhma: "Jauhot",
-    alituoteryhma: "Vehnäjauho",
-    oletushinta: 3.5,
-    oletuspakkauskoko: 25,
-    oletuspakkaus: "S",
-    hinta: 3.5,
-    hintaAlv0: 2.82,
-  },
-  {
-    id: "2",
-    jarjestysnumero: 2,
-    nimi: "Ohransiemen",
-    lajike: "Kunnari",
-    tuoteryhma: "Siemenet",
-    alituoteryhma: "Ohransiemen",
-    oletushinta: 5.75,
-    oletuspakkauskoko: 20,
-    oletuspakkaus: "A",
-    hinta: 5.75,
-    hintaAlv0: 4.64,
-  },
-  {
-    id: "3",
-    jarjestysnumero: 3,
-    nimi: "Kaurahiutale",
-    lajike: "Aslak",
-    tuoteryhma: "Hiutaleet",
-    alituoteryhma: "Kaurahiutale",
-    oletushinta: 2.8,
-    oletuspakkauskoko: 10,
-    oletuspakkaus: "Ltk",
-    hinta: 2.8,
-    hintaAlv0: 2.26,
-  },
-  {
-    id: "4",
-    jarjestysnumero: 4,
-    nimi: "Ruisjauho",
-    lajike: "Reetta",
-    tuoteryhma: "Jauhot",
-    alituoteryhma: "Ruisjauho",
-    oletushinta: 4.2,
-    oletuspakkauskoko: 15,
-    oletuspakkaus: "S",
-    hinta: 4.2,
-    hintaAlv0: 3.39,
-  },
-  {
-    id: "5",
-    jarjestysnumero: 5,
-    nimi: "Perunansiemen",
-    lajike: "Siikli",
-    tuoteryhma: "Siemenet",
-    alituoteryhma: "Perunansiemen",
-    oletushinta: 6.5,
-    oletuspakkauskoko: 30,
-    oletuspakkaus: "A",
-    hinta: 6.5,
-    hintaAlv0: 5.24,
-  },
-  {
-    id: "6",
-    jarjestysnumero: 6,
-    nimi: "Luomu Kaurahiutale",
-    lajike: "Niklas",
-    tuoteryhma: "Luomutuotteet",
-    alituoteryhma: "Luomukaura",
-    oletushinta: 3.95,
-    oletuspakkauskoko: 12,
-    oletuspakkaus: "Ltk",
-    hinta: 3.95,
-    hintaAlv0: 3.19,
-  },
-  {
-    id: "7",
-    jarjestysnumero: 7,
-    nimi: "Vehnä",
-    lajike: "Anniina",
-    tuoteryhma: "Viljat",
-    alituoteryhma: "Vehnä",
-    oletushinta: 2.4,
-    oletuspakkauskoko: 40,
-    oletuspakkaus: "S",
-    hinta: 2.4,
-    hintaAlv0: 1.94,
-  },
-]
-
-interface Tuote {
-  id: string
-  jarjestysnumero: number
-  nimi: string
-  lajike: string
-  tuoteryhma: string
-  alituoteryhma: string
-  oletushinta: number
-  oletuspakkauskoko: number
-  oletuspakkaus: string
-  hinta: number
-  hintaAlv0: number
-}
-
 export default function TuotteetSivu() {
   const [searchQuery, setSearchQuery] = useState("")
-  const [products, setProducts] = useState<Tuote[]>(exampleProducts)
-  const [muokattavaTuote, setMuokattavaTuote] = useState<Tuote | null>(null)
-  const [uusiTuote, setUusiTuote] = useState<Partial<Tuote>>({
-    jarjestysnumero: products.length + 1,
-    nimi: "",
-    lajike: "",
-    tuoteryhma: "",
-    alituoteryhma: "",
-    oletushinta: 0,
-    oletuspakkauskoko: 0,
-    oletuspakkaus: "",
-    hinta: 0,
-    hintaAlv0: 0,
-  })
+  const [products, setProducts] = useState<FullProductDto[]>([])
+  const [muokattavaproduct, setMuokattavaproduct] = useState<FullProductDto | null>(null)
+  const [newProduct, setnewProduct] = useState<Partial<FullProductDto>>({})
   const [naytaLisaaDialog, setNaytaLisaaDialog] = useState(false)
   const [naytaMuokkaaDialog, setNaytaMuokkaaDialog] = useState(false)
-  const [tuoteryhmaFilter, setTuoteryhmaFilter] = useState<string>("kaikki")
+  const [typeFilter, settypeFilter] = useState<string>("kaikki")
   const [jarjestys, setJarjestys] = useState<"asc" | "desc">("asc")
-  const [jarjestysKentta, setJarjestysKentta] = useState<keyof Tuote>("jarjestysnumero")
+  const [jarjestysKentta, setJarjestysKentta] = useState<keyof FullProductDto>("orderIndex")
 
   const { toast } = useToast()
 
-  // Alituoteryhmät valitun tuoteryhmän perusteella
-  const [valittavatAlituoteryhmat, setValittavatAlituoteryhmat] = useState<string[]>([])
+  // Aliproductryhmät valitun productryhmän perusteella
+  const [valittavatsubtypet, setValittavatsubtypet] = useState<string[]>([])
 
   useEffect(() => {
-    if (muokattavaTuote?.tuoteryhma) {
-      setValittavatAlituoteryhmat(alituoteryhmat[muokattavaTuote.tuoteryhma as keyof typeof alituoteryhmat] || [])
-    } else if (uusiTuote.tuoteryhma) {
-      setValittavatAlituoteryhmat(alituoteryhmat[uusiTuote.tuoteryhma as keyof typeof alituoteryhmat] || [])
-    } else {
-      setValittavatAlituoteryhmat([])
+    axios.get<FullProductDto[]>('/products').then(res => setProducts(res.data))
+  }, [])
+
+  useEffect(() => {
+    if (!newProduct) {
+      return
     }
-  }, [muokattavaTuote?.tuoteryhma, uusiTuote.tuoteryhma])
+    if (muokattavaproduct?.type) {
+      setValittavatsubtypet(subtypet[muokattavaproduct.type as keyof typeof subtypet] || [])
+    } else if (newProduct.type) {
+      setValittavatsubtypet(subtypet[newProduct.type as keyof typeof subtypet] || [])
+    } else {
+      setValittavatsubtypet([])
+    }
+  }, [muokattavaproduct?.type, newProduct.type])
 
   // Suodata ja järjestä tuotteet
   const filteredTuotteet = products
-    .filter((tuote) => {
+    .filter((product) => {
       // Haku
       const matchesSearch =
-        tuote.nimi.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        tuote.lajike.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        tuote.tuoteryhma.toLowerCase().includes(searchQuery.toLowerCase())
+        product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        product.variety.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        product.type.toLowerCase().includes(searchQuery.toLowerCase())
 
-      // Tuoteryhmäsuodatus
-      const matchesCategory = tuoteryhmaFilter === "kaikki" || tuote.tuoteryhma === tuoteryhmaFilter
+      // productryhmäsuodatus
+      const matchesCategory = typeFilter === "kaikki" || product.type === typeFilter
 
       return matchesSearch && matchesCategory
     })
@@ -226,11 +116,11 @@ export default function TuotteetSivu() {
     })
 
   // Järjestysnumeron muuttaminen
-  const muutaJarjestysnumeroa = (id: string, suunta: "up" | "down") => {
-    const tuoteIndex = products.findIndex((t) => t.id === id)
-    if (tuoteIndex === -1) return
+  const muutaorderIndexa = (id: string, suunta: "up" | "down") => {
+    const productIndex = products.findIndex((t) => t.id === id)
+    if (productIndex === -1) return
 
-    const vaihdettavaIndex = suunta === "up" ? tuoteIndex - 1 : tuoteIndex + 1
+    const vaihdettavaIndex = suunta === "up" ? productIndex - 1 : productIndex + 1
 
     // Tarkista, että vaihdettava indeksi on sallitulla alueella
     if (vaihdettavaIndex < 0 || vaihdettavaIndex >= products.length) return
@@ -238,35 +128,35 @@ export default function TuotteetSivu() {
     const paivitetytTuotteet = [...products]
 
     // Vaihda järjestysnumerot
-    const temp = paivitetytTuotteet[tuoteIndex].jarjestysnumero
-    paivitetytTuotteet[tuoteIndex].jarjestysnumero = paivitetytTuotteet[vaihdettavaIndex].jarjestysnumero
-    paivitetytTuotteet[vaihdettavaIndex].jarjestysnumero = temp
+    const temp = paivitetytTuotteet[productIndex].orderIndex
+    paivitetytTuotteet[productIndex].orderIndex = paivitetytTuotteet[vaihdettavaIndex].orderIndex
+    paivitetytTuotteet[vaihdettavaIndex].orderIndex = temp
 
     // Järjestä tuotteet uudelleen järjestysnumeron mukaan
-    paivitetytTuotteet.sort((a, b) => a.jarjestysnumero - b.jarjestysnumero)
+    paivitetytTuotteet.sort((a, b) => a.orderIndex - b.orderIndex)
 
     setProducts(paivitetytTuotteet)
 
     toast({
       title: "Järjestys päivitetty",
-      description: `Tuotteen "${products[tuoteIndex].nimi}" järjestys muutettu.`,
+      description: `Tuotteen "${products[productIndex].name}" järjestys muutettu.`,
     })
   }
 
   // Tuotteen muokkaaminen
-  const aloitaMuokkaus = (tuote: Tuote) => {
-    setMuokattavaTuote({ ...tuote })
+  const aloitaMuokkaus = (product: FullProductDto) => {
+    setMuokattavaproduct({ ...product })
     setNaytaMuokkaaDialog(true)
   }
 
   const tallennaMuokkaus = () => {
-    if (!muokattavaTuote) return
+    if (!muokattavaproduct) return
 
-    // Laske ALV 0% hinta (24% ALV)
-    const hintaAlv0 = Number((muokattavaTuote.hinta / 1.24).toFixed(2))
+    // Laske ALV 0% price (24% ALV)
+    const price0 = Number((muokattavaproduct.price / 1.24).toFixed(2))
 
     const paivitetytTuotteet = products.map((t) =>
-      t.id === muokattavaTuote.id ? { ...muokattavaTuote, hintaAlv0 } : t,
+      t.id === muokattavaproduct.id ? { ...muokattavaproduct, price0 } : t,
     )
 
     setProducts(paivitetytTuotteet)
@@ -274,13 +164,13 @@ export default function TuotteetSivu() {
 
     toast({
       title: "Tuote päivitetty",
-      description: `Tuote "${muokattavaTuote.nimi}" on päivitetty onnistuneesti.`,
+      description: `Tuote "${muokattavaproduct.name}" on päivitetty onnistuneesti.`,
     })
   }
 
   // Uuden tuotteen lisääminen
-  const lisaaTuote = () => {
-    if (!uusiTuote.nimi || !uusiTuote.tuoteryhma) {
+  const lisaaproduct = () => {
+    if (!newProduct.name || !newProduct.type) {
       toast({
         title: "Virhe",
         description: "Nimi ja tuoteryhmä ovat pakollisia tietoja.",
@@ -289,72 +179,70 @@ export default function TuotteetSivu() {
       return
     }
 
-    // Laske ALV 0% hinta (24% ALV)
-    const hintaAlv0 = Number(((uusiTuote.hinta || 0) / 1.24).toFixed(2))
+    // Laske ALV 0% price (24% ALV)
+    const price0 = Number(((newProduct.price || 0) / 1.24).toFixed(2))
 
     const uusiId = (Number.parseInt(products[products.length - 1]?.id || "0") + 1).toString()
 
-    const uusiTuoteObjekti: Tuote = {
+    const newProductObjekti: FullProductDto = {
       id: uusiId,
-      jarjestysnumero: products.length + 1,
-      nimi: uusiTuote.nimi || "",
-      lajike: uusiTuote.lajike || "",
-      tuoteryhma: uusiTuote.tuoteryhma || "",
-      alituoteryhma: uusiTuote.alituoteryhma || "",
-      oletushinta: uusiTuote.oletushinta || 0,
-      oletuspakkauskoko: uusiTuote.oletuspakkauskoko || 0,
-      oletuspakkaus: uusiTuote.oletuspakkaus || "",
-      hinta: uusiTuote.hinta || 0,
-      hintaAlv0: hintaAlv0,
+      orderIndex: products.length + 1,
+      name: newProduct.name || "",
+      variety: newProduct.variety || "",
+      type: newProduct.type || "",
+      subtype: newProduct.subtype || "",
+      packageSize: newProduct.packageSize || 0,
+      packageType: newProduct.packageType || "",
+      price: newProduct.price || 0,
+      price0: price0,
     }
 
-    setProducts([...products, uusiTuoteObjekti])
+    setProducts([...products, newProductObjekti])
 
     // Tyhjennä lomake
-    setUusiTuote({
-      jarjestysnumero: products.length + 2,
-      nimi: "",
-      lajike: "",
-      tuoteryhma: "",
-      alituoteryhma: "",
-      oletushinta: 0,
-      oletuspakkauskoko: 0,
-      oletuspakkaus: "",
-      hinta: 0,
-      hintaAlv0: 0,
+    setnewProduct({
+      orderIndex: products.length + 2,
+      name: "",
+      variety: "",
+      type: "",
+      subtype: "",
+      packageSize: 0,
+      packageType: "",
+      price: 0,
+      price0: 0,
     })
 
     setNaytaLisaaDialog(false)
 
     toast({
-      title: "Tuote lisätty",
-      description: `Tuote "${uusiTuoteObjekti.nimi}" on lisätty onnistuneesti.`,
+      title: "Tuote luotu",
+      description: `Tuote "${newProductObjekti.name}" on tallennettu onnistuneesti.`,
     })
   }
 
   // Tuotteen poistaminen
-  const poistaTuote = (id: string) => {
-    const poistettavaTuote = products.find((t) => t.id === id)
-    if (!poistettavaTuote) return
+  const poistaproduct = (id: string) => {
+    const poistettavaproduct = products.find((t) => t.id === id)
+    if (!poistettavaproduct) return
 
     const paivitetytTuotteet = products.filter((t) => t.id !== id)
 
     // Päivitä järjestysnumerot
-    const jarjestetytTuotteet = paivitetytTuotteet.map((tuote, index) => ({
-      ...tuote,
-      jarjestysnumero: index + 1,
+    const jarjestetytTuotteet = paivitetytTuotteet.map((product, index) => ({
+      ...product,
+      orderIndex: index + 1,
     }))
 
     setProducts(jarjestetytTuotteet)
 
     toast({
       title: "Tuote poistettu",
-      description: `Tuote "${poistettavaTuote.nimi}" on poistettu onnistuneesti.`,
+      description: `Tuote "${poistettavaproduct.name}" on poistettu onnistuneesti.`,
     })
   }
 
   // Järjestyksen vaihtaminen
-  const vaihdaJarjestys = (kentta: keyof Tuote) => {
+  const vaihdaJarjestys = (kentta: keyof FullProductDto) => {
     if (jarjestysKentta === kentta) {
       setJarjestys(jarjestys === "asc" ? "desc" : "asc")
     } else {
@@ -363,19 +251,19 @@ export default function TuotteetSivu() {
     }
   }
 
-  // Tuoteryhmän vaihtaminen (muokkaustilassa)
-  const handleTuoteryhmaChange = (value: string) => {
-    if (muokattavaTuote) {
-      setMuokattavaTuote({
-        ...muokattavaTuote,
-        tuoteryhma: value,
-        alituoteryhma: "", // Tyhjennä alituoteryhmä, koska se riippuu tuoteryhmästä
+  // productryhmän vaihtaminen (muokkaustilassa)
+  const handletypeChange = (value: string) => {
+    if (muokattavaproduct) {
+      setMuokattavaproduct({
+        ...muokattavaproduct,
+        type: value,
+        subtype: "", // Tyhjennä aliproductryhmä, koska se riippuu productryhmästä
       })
     } else {
-      setUusiTuote({
-        ...uusiTuote,
-        tuoteryhma: value,
-        alituoteryhma: "", // Tyhjennä alituoteryhmä, koska se riippuu tuoteryhmästä
+      setnewProduct({
+        ...newProduct,
+        type: value,
+        subtype: "", // Tyhjennä aliproductryhmä, koska se riippuu productryhmästä
       })
     }
   }
@@ -386,7 +274,7 @@ export default function TuotteetSivu() {
         <div className="space-y-6 max-w-7xl mx-auto">
           <div className="bg-white p-6 rounded-lg border shadow-sm">
             <h1 className="text-2xl font-bold tracking-tight text-gray-900">Tuotteet</h1>
-            <p className="text-gray-600 mt-1">Hallitse tuotteita, hintoja ja tuotetietoja</p>
+            <p className="text-gray-600 mt-1">Hallitse tuotteita ja hintoja</p>
           </div>
 
           {/* Toiminnot ja suodattimet */}
@@ -396,16 +284,16 @@ export default function TuotteetSivu() {
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" className="gap-1">
                     <Filter className="h-4 w-4 mr-1" />
-                    Tuoteryhmä: {tuoteryhmaFilter === "kaikki" ? "Kaikki" : tuoteryhmaFilter}
+                    Tuoteryhmä: {typeFilter === "kaikki" ? "Kaikki" : typeFilter}
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
-                  <DropdownMenuItem onClick={() => setTuoteryhmaFilter("kaikki")}>
+                  <DropdownMenuItem onClick={() => settypeFilter("kaikki")}>
                     Kaikki tuoteryhmät
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  {tuoteryhmat.map((ryhma) => (
-                    <DropdownMenuItem key={ryhma} onClick={() => setTuoteryhmaFilter(ryhma)}>
+                  {typet.map((ryhma) => (
+                    <DropdownMenuItem key={ryhma} onClick={() => settypeFilter(ryhma)}>
                       {ryhma}
                     </DropdownMenuItem>
                   ))}
@@ -430,38 +318,38 @@ export default function TuotteetSivu() {
                 <div className="grid gap-4 py-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="nimi" className="font-medium">
+                      <Label htmlFor="name" className="font-medium">
                         Nimi *
                       </Label>
                       <Input
-                        id="nimi"
-                        value={uusiTuote.nimi || ""}
-                        onChange={(e) => setUusiTuote({ ...uusiTuote, nimi: e.target.value })}
+                        id="name"
+                        value={newProduct?.name || ""}
+                        onChange={(e) => setnewProduct({ ...newProduct, name: e.target.value })}
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="lajike" className="font-medium">
+                      <Label htmlFor="variety" className="font-medium">
                         Lajike
                       </Label>
                       <Input
-                        id="lajike"
-                        value={uusiTuote.lajike || ""}
-                        onChange={(e) => setUusiTuote({ ...uusiTuote, lajike: e.target.value })}
+                        id="variety"
+                        value={newProduct.variety || ""}
+                        onChange={(e) => setnewProduct({ ...newProduct, variety: e.target.value })}
                       />
                     </div>
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="tuoteryhma" className="font-medium">
+                      <Label htmlFor="type" className="font-medium">
                         Tuoteryhmä *
                       </Label>
-                      <Select value={uusiTuote.tuoteryhma} onValueChange={handleTuoteryhmaChange}>
-                        <SelectTrigger id="tuoteryhma">
-                          <SelectValue placeholder="Valitse tuoteryhmä" />
+                      <Select value={newProduct.type} onValueChange={handletypeChange}>
+                        <SelectTrigger id="type">
+                          <SelectValue placeholder="Valitse productryhmä" />
                         </SelectTrigger>
                         <SelectContent>
-                          {tuoteryhmat.map((ryhma) => (
+                          {typet.map((ryhma) => (
                             <SelectItem key={ryhma} value={ryhma}>
                               {ryhma}
                             </SelectItem>
@@ -470,19 +358,19 @@ export default function TuotteetSivu() {
                       </Select>
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="alituoteryhma" className="font-medium">
-                        Alituoteryhmä
+                      <Label htmlFor="subtype" className="font-medium">
+                        Aliryhmä
                       </Label>
                       <Select
-                        value={uusiTuote.alituoteryhma}
-                        onValueChange={(value) => setUusiTuote({ ...uusiTuote, alituoteryhma: value })}
-                        disabled={!uusiTuote.tuoteryhma}
+                        value={newProduct.subtype}
+                        onValueChange={(value) => setnewProduct({ ...newProduct, subtype: value })}
+                        disabled={!newProduct.type}
                       >
-                        <SelectTrigger id="alituoteryhma">
-                          <SelectValue placeholder="Valitse alituoteryhmä" />
+                        <SelectTrigger id="subtype">
+                          <SelectValue placeholder="Valitse aliproductryhmä" />
                         </SelectTrigger>
                         <SelectContent>
-                          {valittavatAlituoteryhmat.map((aliryhma) => (
+                          {valittavatsubtypet.map((aliryhma) => (
                             <SelectItem key={aliryhma} value={aliryhma}>
                               {aliryhma}
                             </SelectItem>
@@ -494,47 +382,47 @@ export default function TuotteetSivu() {
 
                   <div className="grid grid-cols-3 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="oletushinta" className="font-medium">
-                        Oletushinta (€)
+                      <Label htmlFor="price" className="font-medium">
+                        Hinta (€)
                       </Label>
                       <Input
-                        id="oletushinta"
+                        id="price"
                         type="number"
                         step="0.01"
                         min="0"
-                        value={uusiTuote.oletushinta || ""}
+                        value={newProduct.price || ""}
                         onChange={(e) =>
-                          setUusiTuote({ ...uusiTuote, oletushinta: Number.parseFloat(e.target.value) || 0 })
+                          setnewProduct({ ...newProduct, price: Number.parseFloat(e.target.value) || 0 })
                         }
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="oletuspakkauskoko" className="font-medium">
-                        Oletuspakkauskoko (kg)
+                      <Label htmlFor="packageSize" className="font-medium">
+                        Pakkauskoko (kg)
                       </Label>
                       <Input
-                        id="oletuspakkauskoko"
+                        id="packageSize"
                         type="number"
                         step="0.01"
                         min="0"
-                        value={uusiTuote.oletuspakkauskoko || ""}
+                        value={newProduct.packageSize || ""}
                         onChange={(e) =>
-                          setUusiTuote({
-                            ...uusiTuote,
-                            oletuspakkauskoko: Number.parseFloat(e.target.value) || 0,
+                          setnewProduct({
+                            ...newProduct,
+                            packageSize: Number.parseFloat(e.target.value) || 0,
                           })
                         }
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="oletuspakkaus" className="font-medium">
-                        Oletuspakkaus
+                      <Label htmlFor="packageType" className="font-medium">
+                        Pakkaustyyppi
                       </Label>
                       <Select
-                        value={uusiTuote.oletuspakkaus}
-                        onValueChange={(value) => setUusiTuote({ ...uusiTuote, oletuspakkaus: value })}
+                        value={newProduct.packageType}
+                        onValueChange={(value) => setnewProduct({ ...newProduct, packageType: value })}
                       >
-                        <SelectTrigger id="oletuspakkaus">
+                        <SelectTrigger id="packageType">
                           <SelectValue placeholder="Valitse pakkaus" />
                         </SelectTrigger>
                         <SelectContent>
@@ -550,30 +438,30 @@ export default function TuotteetSivu() {
 
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="hinta" className="font-medium">
-                        Hinta (€)
+                      <Label htmlFor="price" className="font-medium">
+                        Hinta ALV 14 % (€)
                       </Label>
                       <Input
-                        id="hinta"
+                        id="price"
                         type="number"
                         step="0.01"
                         min="0"
-                        value={uusiTuote.hinta || ""}
+                        value={newProduct.price || ""}
                         onChange={(e) =>
-                          setUusiTuote({ ...uusiTuote, hinta: Number.parseFloat(e.target.value) || 0 })
+                          setnewProduct({ ...newProduct, price: Number.parseFloat(e.target.value) || 0 })
                         }
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="hintaAlv0" className="font-medium">
-                        Hinta ALV 0% (€)
+                      <Label htmlFor="price0" className="font-medium">
+                        Hinta ALV 0 % (€)
                       </Label>
                       <Input
-                        id="hintaAlv0"
+                        id="price0"
                         type="number"
                         step="0.01"
                         min="0"
-                        value={uusiTuote.hinta ? (uusiTuote.hinta / 1.24).toFixed(2) : ""}
+                        value={newProduct.price ? (newProduct.price / 1.24).toFixed(2) : ""}
                         disabled
                         className="bg-gray-50"
                       />
@@ -585,7 +473,7 @@ export default function TuotteetSivu() {
                   <Button variant="outline" onClick={() => setNaytaLisaaDialog(false)}>
                     Peruuta
                   </Button>
-                  <Button type="button" onClick={lisaaTuote}>
+                  <Button type="button" onClick={lisaaproduct}>
                     <Save className="h-4 w-4 mr-2" />
                     Tallenna
                   </Button>
@@ -594,7 +482,7 @@ export default function TuotteetSivu() {
             </Dialog>
           </div>
 
-          {/* Tuotetaulukko */}
+          {/* producttaulukko */}
           <Card className="shadow-md">
             <CardHeader className="border-b bg-gray-50 py-4">
               <CardTitle>Tuoteluettelo</CardTitle>
@@ -607,10 +495,10 @@ export default function TuotteetSivu() {
                 <TableHeader className="bg-gray-50">
                   <TableRow>
                     <TableHead className="w-[80px]">Järjestys</TableHead>
-                    <TableHead className="cursor-pointer" onClick={() => vaihdaJarjestys("nimi")}>
+                    <TableHead className="cursor-pointer" onClick={() => vaihdaJarjestys("name")}>
                       <div className="flex items-center">
                         Nimi
-                        {jarjestysKentta === "nimi" &&
+                        {jarjestysKentta === "name" &&
                           (jarjestys === "asc" ? (
                             <ChevronUp className="ml-1 h-4 w-4" />
                           ) : (
@@ -619,10 +507,10 @@ export default function TuotteetSivu() {
                       </div>
                     </TableHead>
                     <TableHead>Lajike</TableHead>
-                    <TableHead className="cursor-pointer" onClick={() => vaihdaJarjestys("tuoteryhma")}>
+                    <TableHead className="cursor-pointer" onClick={() => vaihdaJarjestys("type")}>
                       <div className="flex items-center">
                         Tuoteryhmä
-                        {jarjestysKentta === "tuoteryhma" &&
+                        {jarjestysKentta === "type" &&
                           (jarjestys === "asc" ? (
                             <ChevronUp className="ml-1 h-4 w-4" />
                           ) : (
@@ -630,11 +518,11 @@ export default function TuotteetSivu() {
                           ))}
                       </div>
                     </TableHead>
-                    <TableHead>Alituoteryhmä</TableHead>
-                    <TableHead className="cursor-pointer" onClick={() => vaihdaJarjestys("hinta")}>
+                    <TableHead>Aliryhmä</TableHead>
+                    <TableHead className="cursor-pointer" onClick={() => vaihdaJarjestys("price")}>
                       <div className="flex items-center">
-                        Hinta (€)
-                        {jarjestysKentta === "hinta" &&
+                        Hinta ALV 14 % (€)
+                        {jarjestysKentta === "price" &&
                           (jarjestys === "asc" ? (
                             <ChevronUp className="ml-1 h-4 w-4" />
                           ) : (
@@ -642,7 +530,7 @@ export default function TuotteetSivu() {
                           ))}
                       </div>
                     </TableHead>
-                    <TableHead>Hinta ALV 0% (€)</TableHead>
+                    <TableHead>Hinta ALV 0 % (€)</TableHead>
                     <TableHead>Pakkauskoko</TableHead>
                     <TableHead>Pakkaus</TableHead>
                     <TableHead className="text-right">Toiminnot</TableHead>
@@ -656,11 +544,11 @@ export default function TuotteetSivu() {
                       </TableCell>
                     </TableRow>
                   ) : (
-                    filteredTuotteet.map((tuote, index) => (
-                      <TableRow key={tuote.id} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+                    filteredTuotteet.map((product, index) => (
+                      <TableRow key={product.id} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
                         <TableCell>
                           <div className="flex items-center">
-                            <span className="font-medium mr-2">{tuote.jarjestysnumero}</span>
+                            <span className="font-medium mr-2">{product.orderIndex}</span>
                             <div className="flex flex-col">
                               <TooltipProvider>
                                 <Tooltip>
@@ -669,8 +557,8 @@ export default function TuotteetSivu() {
                                       variant="ghost"
                                       size="icon"
                                       className="h-6 w-6"
-                                      onClick={() => muutaJarjestysnumeroa(tuote.id, "up")}
-                                      disabled={tuote.jarjestysnumero === 1}
+                                      onClick={() => muutaorderIndexa(product.id, "up")}
+                                      disabled={product.orderIndex === 1}
                                     >
                                       <ChevronUp className="h-4 w-4" />
                                     </Button>
@@ -687,8 +575,8 @@ export default function TuotteetSivu() {
                                       variant="ghost"
                                       size="icon"
                                       className="h-6 w-6"
-                                      onClick={() => muutaJarjestysnumeroa(tuote.id, "down")}
-                                      disabled={tuote.jarjestysnumero === products.length}
+                                      onClick={() => muutaorderIndexa(product.id, "down")}
+                                      disabled={product.orderIndex === products.length}
                                     >
                                       <ChevronDown className="h-4 w-4" />
                                     </Button>
@@ -701,14 +589,14 @@ export default function TuotteetSivu() {
                             </div>
                           </div>
                         </TableCell>
-                        <TableCell className="font-medium">{tuote.nimi}</TableCell>
-                        <TableCell>{tuote.lajike}</TableCell>
-                        <TableCell>{tuote.tuoteryhma}</TableCell>
-                        <TableCell>{tuote.alituoteryhma}</TableCell>
-                        <TableCell className="font-medium">{tuote.hinta.toFixed(2)}</TableCell>
-                        <TableCell>{tuote.hintaAlv0.toFixed(2)}</TableCell>
-                        <TableCell>{tuote.oletuspakkauskoko} kg</TableCell>
-                        <TableCell>{tuote.oletuspakkaus}</TableCell>
+                        <TableCell className="font-medium">{product.name}</TableCell>
+                        <TableCell>{product.variety}</TableCell>
+                        <TableCell>{product.type}</TableCell>
+                        <TableCell>{product.subtype}</TableCell>
+                        <TableCell className="font-medium">{formatMoneyFi(product.price)}</TableCell>
+                        <TableCell>{formatMoneyFi(product.price0)}</TableCell>
+                        <TableCell>{product.packageSize} kg</TableCell>
+                        <TableCell>{product.packageType}</TableCell>
                         <TableCell className="text-right">
                           <div className="flex justify-end gap-2">
                             <TooltipProvider>
@@ -718,7 +606,7 @@ export default function TuotteetSivu() {
                                     variant="ghost"
                                     size="icon"
                                     className="h-8 w-8"
-                                    onClick={() => aloitaMuokkaus(tuote)}
+                                    onClick={() => aloitaMuokkaus(product)}
                                   >
                                     <Edit className="h-4 w-4" />
                                   </Button>
@@ -735,7 +623,7 @@ export default function TuotteetSivu() {
                                     variant="ghost"
                                     size="icon"
                                     className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50"
-                                    onClick={() => poistaTuote(tuote.id)}
+                                    onClick={() => poistaproduct(product.id)}
                                   >
                                     <Trash2 className="h-4 w-4" />
                                   </Button>
@@ -768,42 +656,42 @@ export default function TuotteetSivu() {
             <DialogTitle>Muokkaa tuotetta</DialogTitle>
             <DialogDescription>Muokkaa tuotteen tietoja. Pakolliset kentät on merkitty tähdellä (*).</DialogDescription>
           </DialogHeader>
-          {muokattavaTuote && (
+          {muokattavaproduct && (
             <div className="grid gap-4 py-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="edit-nimi" className="font-medium">
+                  <Label htmlFor="edit-name" className="font-medium">
                     Nimi *
                   </Label>
                   <Input
-                    id="edit-nimi"
-                    value={muokattavaTuote.nimi}
-                    onChange={(e) => setMuokattavaTuote({ ...muokattavaTuote, nimi: e.target.value })}
+                    id="edit-name"
+                    value={muokattavaproduct.name}
+                    onChange={(e) => setMuokattavaproduct({ ...muokattavaproduct, name: e.target.value })}
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="edit-lajike" className="font-medium">
+                  <Label htmlFor="edit-variety" className="font-medium">
                     Lajike
                   </Label>
                   <Input
-                    id="edit-lajike"
-                    value={muokattavaTuote.lajike}
-                    onChange={(e) => setMuokattavaTuote({ ...muokattavaTuote, lajike: e.target.value })}
+                    id="edit-variety"
+                    value={muokattavaproduct.variety}
+                    onChange={(e) => setMuokattavaproduct({ ...muokattavaproduct, variety: e.target.value })}
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="edit-tuoteryhma" className="font-medium">
+                  <Label htmlFor="edit-type" className="font-medium">
                     Tuoteryhmä *
                   </Label>
-                  <Select value={muokattavaTuote.tuoteryhma} onValueChange={handleTuoteryhmaChange}>
-                    <SelectTrigger id="edit-tuoteryhma">
+                  <Select value={muokattavaproduct.type} onValueChange={handletypeChange}>
+                    <SelectTrigger id="edit-type">
                       <SelectValue placeholder="Valitse tuoteryhmä" />
                     </SelectTrigger>
                     <SelectContent>
-                      {tuoteryhmat.map((ryhma) => (
+                      {typet.map((ryhma) => (
                         <SelectItem key={ryhma} value={ryhma}>
                           {ryhma}
                         </SelectItem>
@@ -812,18 +700,18 @@ export default function TuotteetSivu() {
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="edit-alituoteryhma" className="font-medium">
-                    Alituoteryhmä
+                  <Label htmlFor="edit-subtype" className="font-medium">
+                    Aliryhmä
                   </Label>
                   <Select
-                    value={muokattavaTuote.alituoteryhma}
-                    onValueChange={(value) => setMuokattavaTuote({ ...muokattavaTuote, alituoteryhma: value })}
+                    value={muokattavaproduct.subtype}
+                    onValueChange={(value) => setMuokattavaproduct({ ...muokattavaproduct, subtype: value })}
                   >
-                    <SelectTrigger id="edit-alituoteryhma">
-                      <SelectValue placeholder="Valitse alituoteryhmä" />
+                    <SelectTrigger id="edit-subtype">
+                      <SelectValue placeholder="Valitse aliryhmä" />
                     </SelectTrigger>
                     <SelectContent>
-                      {valittavatAlituoteryhmat.map((aliryhma) => (
+                      {valittavatsubtypet.map((aliryhma) => (
                         <SelectItem key={aliryhma} value={aliryhma}>
                           {aliryhma}
                         </SelectItem>
@@ -835,47 +723,47 @@ export default function TuotteetSivu() {
 
               <div className="grid grid-cols-3 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="edit-oletushinta" className="font-medium">
-                    Oletushinta (€)
+                  <Label htmlFor="edit-price" className="font-medium">
+                    Hinta (€)
                   </Label>
                   <Input
-                    id="edit-oletushinta"
+                    id="edit-price"
                     type="number"
                     step="0.01"
                     min="0"
-                    value={muokattavaTuote.oletushinta}
+                    value={muokattavaproduct.price}
                     onChange={(e) =>
-                      setMuokattavaTuote({ ...muokattavaTuote, oletushinta: Number.parseFloat(e.target.value) || 0 })
+                      setMuokattavaproduct({ ...muokattavaproduct, price: Number.parseFloat(e.target.value) || 0 })
                     }
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="edit-oletuspakkauskoko" className="font-medium">
-                    Oletuspakkauskoko (kg)
+                  <Label htmlFor="edit-packageSize" className="font-medium">
+                    Pakkauskoko (kg)
                   </Label>
                   <Input
-                    id="edit-oletuspakkauskoko"
+                    id="edit-packageSize"
                     type="number"
                     step="0.01"
                     min="0"
-                    value={muokattavaTuote.oletuspakkauskoko}
+                    value={muokattavaproduct.packageSize}
                     onChange={(e) =>
-                      setMuokattavaTuote({
-                        ...muokattavaTuote,
-                        oletuspakkauskoko: Number.parseFloat(e.target.value) || 0,
+                      setMuokattavaproduct({
+                        ...muokattavaproduct,
+                        packageSize: Number.parseFloat(e.target.value) || 0,
                       })
                     }
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="edit-oletuspakkaus" className="font-medium">
-                    Oletuspakkaus
+                  <Label htmlFor="edit-packageType" className="font-medium">
+                    Pakkaustyyppi
                   </Label>
                   <Select
-                    value={muokattavaTuote.oletuspakkaus}
-                    onValueChange={(value) => setMuokattavaTuote({ ...muokattavaTuote, oletuspakkaus: value })}
+                    value={muokattavaproduct.packageType}
+                    onValueChange={(value) => setMuokattavaproduct({ ...muokattavaproduct, packageType: value })}
                   >
-                    <SelectTrigger id="edit-oletuspakkaus">
+                    <SelectTrigger id="edit-packageType">
                       <SelectValue placeholder="Valitse pakkaus" />
                     </SelectTrigger>
                     <SelectContent>
@@ -891,34 +779,34 @@ export default function TuotteetSivu() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="edit-hinta" className="font-medium">
-                    Hinta (€)
+                  <Label htmlFor="edit-price" className="font-medium">
+                    Hinta ALV 14 % (€)
                   </Label>
                   <Input
-                    id="edit-hinta"
+                    id="edit-price"
                     type="number"
                     step="0.01"
                     min="0"
-                    value={muokattavaTuote.hinta}
+                    value={muokattavaproduct.price}
                     onChange={(e) =>
-                      setMuokattavaTuote({ ...muokattavaTuote, hinta: Number.parseFloat(e.target.value) || 0 })
+                      setMuokattavaproduct({ ...muokattavaproduct, price: Number.parseFloat(e.target.value) || 0 })
                     }
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="edit-hintaAlv0" className="font-medium">
-                    Hinta ALV 0% (€)
+                  <Label htmlFor="edit-price0" className="font-medium">
+                    Hinta ALV 0 % (€)
                   </Label>
                   <Input
-                    id="edit-hintaAlv0"
+                    id="edit-price0"
                     type="number"
                     step="0.01"
                     min="0"
-                    value={(muokattavaTuote.hinta / 1.24).toFixed(2)}
+                    value={(muokattavaproduct.price / 1.24).toFixed(2)}
                     disabled
                     className="bg-gray-50"
                   />
-                  <p className="text-xs text-muted-foreground">Lasketaan automaattisesti (ALV 24%)</p>
+                  <p className="text-xs text-muted-foreground">Lasketaan automaattisesti (ALV 14 %)</p>
                 </div>
               </div>
             </div>
