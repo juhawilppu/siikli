@@ -2,10 +2,20 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { DashboardDataDto } from "@/types/types"
+import { formatDate } from "@/utils/date"
+import { formatMoneyFi } from "@/utils/money"
 import axios from "axios"
 import { FileText, Package, Plus, Truck, Users } from "lucide-react"
 import { useEffect, useState } from "react"
 import { NavLink, useNavigate } from "react-router-dom"
+
+const formatMetric = (value: number, unit: 'money' | 'count') => {
+    if (unit == 'money') {
+        return formatMoneyFi(value, 0)
+    } else {
+        return value
+    }
+}
 
 export const Dashboard = () => {
     const [data, setData] = useState<DashboardDataDto>()
@@ -15,19 +25,11 @@ export const Dashboard = () => {
         axios.get('/dashboard').then(res => setData(res.data))
     }, [])
 
-    const recentOrders = [
-        { id: "ORD-7392", customer: "Maatilayhtiö Oy", date: "2023-04-01", status: "Delivered", amount: "€2,345.00" },
-        { id: "ORD-7391", customer: "Viljelijät Cooperative", date: "2023-03-30", status: "In Transit", amount: "€1,789.50" },
-        { id: "ORD-7390", customer: "Suomen Maatalous Ltd", date: "2023-03-29", status: "Processing", amount: "€3,210.75" },
-        { id: "ORD-7389", customer: "Organic Farms Finland", date: "2023-03-28", status: "Delivered", amount: "€945.25" },
-        { id: "ORD-7388", customer: "Kasvattajat Group", date: "2023-03-27", status: "Delivered", amount: "€4,567.00" },
-    ]
-
     const metrics = [
-        { title: "Kokonaismyynti tänä vuonna", data: data?.salesThisYear },
-        { title: "Laskuja lähetetty", data: data?.salesThisYear },
-        { title: "Tilauksia tänään", data: data?.salesThisYear },
-        { title: "Laskuttamattomat myynnit", data: data?.salesThisYear },
+        { title: "Kokonaismyynti tänä vuonna", data: data?.metrics.salesThisYear },
+        { title: "Laskuja lähetetty", data: data?.metrics.invoicesSent },
+        { title: "Tilauksia tänään", data: data?.metrics.ordersToday },
+        { title: "Laskuttamattomat myynnit", data: data?.metrics.uninvoiced },
     ]
 
     const quickActions = [
@@ -52,8 +54,8 @@ export const Dashboard = () => {
                                 <CardTitle className="text-sm font-medium">{metric.title}</CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <div className="text-2xl font-bold">{metric.data ? metric.data.value : '-'}</div>
-                                {metric.data ?
+                                <div className="text-2xl font-bold">{metric.data ? formatMetric(metric.data.value, metric.data.unit) : '-'}</div>
+                                {metric.data?.change ?
                                     <p className={`text-xs ${metric.data?.change > 0 ? "text-green-500" : "text-red-500"}`}>
                                         {metric.data?.change} verrattuna viime kk
                                     </p> : <p>-</p>}
@@ -84,8 +86,8 @@ export const Dashboard = () => {
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between">
                         <div>
-                            <CardTitle>Viimeaikaiset tilaukset</CardTitle>
-                            <CardDescription>Sinulla on {recentOrders.length} tilausta tällä viikolla</CardDescription>
+                            <CardTitle>Tilaukset</CardTitle>
+                            <CardDescription>{data ? `Sinulla on ${data.orders.length} tilausta tänään` : ''}</CardDescription>
                         </div>
                         <NavLink to='/orders/new'>
                             <Button size="sm">
@@ -101,28 +103,15 @@ export const Dashboard = () => {
                                     <TableHead>Tilaus ID</TableHead>
                                     <TableHead>Asiakas</TableHead>
                                     <TableHead>Päivämäärä</TableHead>
-                                    <TableHead>Tila</TableHead>
                                     <TableHead className="text-right">Summa</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {recentOrders.map((order) => (
-                                    <TableRow key={order.id}>
-                                        <TableCell className="font-medium">{order.id}</TableCell>
-                                        <TableCell>{order.customer}</TableCell>
-                                        <TableCell>{order.date}</TableCell>
-                                        <TableCell>
-                                            <span
-                                                className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${order.status === "Delivered"
-                                                    ? "bg-green-100 text-green-800"
-                                                    : order.status === "In Transit"
-                                                        ? "bg-blue-100 text-blue-800"
-                                                        : "bg-yellow-100 text-yellow-800"
-                                                    }`}
-                                            >
-                                                {order.status}
-                                            </span>
-                                        </TableCell>
+                                {data && data.orders.map((order) => (
+                                    <TableRow key={order.orderId}>
+                                        <TableCell className="font-medium">{order.orderId}</TableCell>
+                                        <TableCell>{order.customerName}</TableCell>
+                                        <TableCell>{formatDate(order.deliveryDate)}</TableCell>
                                         <TableCell className="text-right">{order.amount}</TableCell>
                                     </TableRow>
                                 ))}

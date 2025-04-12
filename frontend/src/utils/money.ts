@@ -1,6 +1,6 @@
-export const formatMoneyFi = (amount: number) => {
+export const formatMoneyFi = (amount: number, decimals = 2) => {
     return amount
-        .toFixed(2)
+        .toFixed(decimals)
         .replace('.', ',')
         + ' €';
 }

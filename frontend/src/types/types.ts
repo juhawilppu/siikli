@@ -188,21 +188,23 @@ export interface InvoiceDto {
   }
 }
 
+export interface MetricDto {
+  value: number
+  change: number | null
+  unit: 'money' | 'count'
+}
+
 export interface DashboardDataDto {
-  salesThisYear: {
-    value: number
-    change: number
+  metrics: {
+    salesThisYear: MetricDto
+    invoicesSent: MetricDto
+    ordersToday: MetricDto
+    uninvoiced: MetricDto
   }
-  invoicesSent: {
-    value: number
-    change: number
-  }
-  ordersToday: {
-    value: number
-    change: number
-  }
-  uninvoiced: {
-    value: number
-    change: number
-  }
+  orders: {
+    orderId: string
+    deliveryDate: Date
+    customerName: string
+    amount: number
+  }[]
 }
