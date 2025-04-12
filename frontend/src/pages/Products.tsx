@@ -172,8 +172,7 @@ export default function TuotteetSivu() {
     })
   }
 
-  // Uuden tuotteen lisääminen
-  const lisaaproduct = () => {
+  const createProduct = async () => {
     if (!newProduct.name || !newProduct.type) {
       toast({
         title: "Virhe",
@@ -183,15 +182,18 @@ export default function TuotteetSivu() {
       return
     }
 
-    // Laske ALV 0% price (24% ALV)
     const price0 = Number(((newProduct.price || 0) / 1.24).toFixed(2))
 
+    await axios.post('/products', {
+      ...newProduct
+    })
     const uusiId = (Number.parseInt(products[products.length - 1]?.id || "0") + 1).toString()
 
     const newProductObjekti: FullProductDto = {
       id: uusiId,
       chain: "",
       orderIndex: products.length + 1,
+      info: '',
       name: newProduct.name || "",
       variety: newProduct.variety || "",
       type: newProduct.type || "",
@@ -205,6 +207,7 @@ export default function TuotteetSivu() {
     setProducts([...products, newProductObjekti])
 
     // Tyhjennä lomake
+    /*
     setnewProduct({
       orderIndex: products.length + 2,
       name: "",
@@ -216,8 +219,9 @@ export default function TuotteetSivu() {
       price: 0,
       price0: 0,
     })
+    */
 
-    setNaytaLisaaDialog(false)
+    //setNaytaLisaaDialog(false)
 
     toast({
       title: "Tuote luotu",
@@ -478,7 +482,7 @@ export default function TuotteetSivu() {
                   <Button variant="outline" onClick={() => setNaytaLisaaDialog(false)}>
                     Peruuta
                   </Button>
-                  <Button type="button" onClick={lisaaproduct}>
+                  <Button type="button" onClick={createProduct}>
                     <Save className="h-4 w-4 mr-2" />
                     Tallenna
                   </Button>
