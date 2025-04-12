@@ -149,11 +149,15 @@ export default function TuotteetSivu() {
     setNaytaMuokkaaDialog(true)
   }
 
-  const tallennaMuokkaus = () => {
+  const updateProduct = async () => {
     if (!muokattavaproduct) return
 
     // Laske ALV 0% price (24% ALV)
     const price0 = Number((muokattavaproduct.price / 1.24).toFixed(2))
+
+    await axios.post('/products/' + muokattavaproduct.id, {
+      ...muokattavaproduct
+    })
 
     const paivitetytTuotteet = products.map((t) =>
       t.id === muokattavaproduct.id ? { ...muokattavaproduct, price0 } : t,
@@ -186,6 +190,7 @@ export default function TuotteetSivu() {
 
     const newProductObjekti: FullProductDto = {
       id: uusiId,
+      chain: "",
       orderIndex: products.length + 1,
       name: newProduct.name || "",
       variety: newProduct.variety || "",
@@ -815,7 +820,7 @@ export default function TuotteetSivu() {
             <Button variant="outline" onClick={() => setNaytaMuokkaaDialog(false)}>
               Peruuta
             </Button>
-            <Button type="button" onClick={tallennaMuokkaus}>
+            <Button type="button" onClick={updateProduct}>
               <Save className="h-4 w-4 mr-2" />
               Tallenna muutokset
             </Button>

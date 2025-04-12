@@ -221,13 +221,14 @@ export interface ProductDto {
 export interface FullProductDto {
   id: string
   orderIndex: number
-  chain: string
+  chain: string | null
   name: string
+  info: string | null
   price: number
   price0: number
   variety: string
   type: string
-  subtype: string
-  packageSize: number
-  packageType: string
+  subtype: string | null
+  packageSize: number | null
+  packageType: string | null
 }
