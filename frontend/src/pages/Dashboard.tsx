@@ -58,7 +58,7 @@ export const Dashboard = () => {
                                 {metric.data?.change ?
                                     <p className={`text-xs ${metric.data?.change > 0 ? "text-green-500" : "text-red-500"}`}>
                                         {metric.data?.change} verrattuna viime kk
-                                    </p> : <p>-</p>}
+                                    </p> : <p className="text-xs">-</p>}
                             </CardContent>
                         </Card>
                     ))}
@@ -87,7 +87,7 @@ export const Dashboard = () => {
                     <CardHeader className="flex flex-row items-center justify-between">
                         <div>
                             <CardTitle>Tilaukset</CardTitle>
-                            <CardDescription>{data ? `Sinulla on ${data.orders.length} tilausta tänään` : ''}</CardDescription>
+                            <CardDescription>{data ? `Sinulla on ${data.orders.length} tilausta tänään` : '-'}</CardDescription>
                         </div>
                         <NavLink to='/orders/new'>
                             <Button size="sm">
