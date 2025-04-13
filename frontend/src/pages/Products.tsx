@@ -195,22 +195,17 @@ export default function TuotteetSivu() {
 
     await axios.delete('/products/' + id)
 
-    const poistettavaproduct = products.find((t) => t.id === id)
-    if (!poistettavaproduct) return
+    const product = products.find(p => p.id === id)
+    if (!product) {
+      return
+    }
+    const newProductList = products.filter((t) => t.id !== id)
 
-    const paivitetytTuotteet = products.filter((t) => t.id !== id)
-
-    // Päivitä järjestysnumerot
-    const jarjestetytTuotteet = paivitetytTuotteet.map((product, index) => ({
-      ...product,
-      orderIndex: index + 1,
-    }))
-
-    setProducts(jarjestetytTuotteet)
+    setProducts(newProductList)
 
     toast({
       title: "Tuote poistettu",
-      description: `Tuote "${poistettavaproduct.name}" on poistettu onnistuneesti.`,
+      description: `Tuote "${product.name}" on poistettu onnistuneesti.`,
     })
   }
 
@@ -355,7 +350,7 @@ export default function TuotteetSivu() {
                       <TableRow key={product.id} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
                         <TableCell>
                           <div className="flex items-center">
-                            <span className="font-medium mr-2">{product.orderIndex}</span>
+                            <span className="font-medium mr-2">{product.orderIndex + 1}</span>
                             <div className="flex flex-col">
                               <TooltipProvider>
                                 <Tooltip>
