@@ -371,7 +371,7 @@ export default function TuotteetSivu() {
                         Aliryhmä
                       </Label>
                       <Select
-                        value={newProduct.subtype}
+                        value={newProduct.subtype ?? undefined}
                         onValueChange={(value) => setnewProduct({ ...newProduct, subtype: value })}
                         disabled={!newProduct.type}
                       >
@@ -428,7 +428,7 @@ export default function TuotteetSivu() {
                         Pakkaustyyppi
                       </Label>
                       <Select
-                        value={newProduct.packageType}
+                        value={newProduct.packageType ?? undefined}
                         onValueChange={(value) => setnewProduct({ ...newProduct, packageType: value })}
                       >
                         <SelectTrigger id="packageType">
@@ -713,7 +713,7 @@ export default function TuotteetSivu() {
                     Aliryhmä
                   </Label>
                   <Select
-                    value={muokattavaproduct.subtype}
+                    value={muokattavaproduct.subtype ?? undefined}
                     onValueChange={(value) => setMuokattavaproduct({ ...muokattavaproduct, subtype: value })}
                   >
                     <SelectTrigger id="edit-subtype">
@@ -755,7 +755,7 @@ export default function TuotteetSivu() {
                     type="number"
                     step="0.01"
                     min="0"
-                    value={muokattavaproduct.packageSize}
+                    value={muokattavaproduct.packageSize ?? undefined}
                     onChange={(e) =>
                       setMuokattavaproduct({
                         ...muokattavaproduct,
@@ -769,7 +769,7 @@ export default function TuotteetSivu() {
                     Pakkaustyyppi
                   </Label>
                   <Select
-                    value={muokattavaproduct.packageType}
+                    value={muokattavaproduct.packageType ?? undefined}
                     onValueChange={(value) => setMuokattavaproduct({ ...muokattavaproduct, packageType: value })}
                   >
                     <SelectTrigger id="edit-packageType">
