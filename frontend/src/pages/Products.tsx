@@ -40,9 +40,6 @@ import { formatMoneyFi } from "@/utils/money"
 import axios from "axios"
 
 
-// productryhmät
-const typet = ["Viljat", "Siemenet", "Jauhot", "Hiutaleet", "Luomutuotteet"]
-
 // Aliproductryhmät
 const subtypet = {
   Viljat: ["Vehnä", "Ohra", "Kaura", "Ruis"],
@@ -57,7 +54,10 @@ const pakkausvaihtoehdot = ["S", "A", "Ltk"]
 
 export default function TuotteetSivu() {
   const [searchQuery, setSearchQuery] = useState("")
+  const [loading, setLoading] = useState(true)
   const [products, setProducts] = useState<FullProductDto[]>([])
+  const [productTypes, setProductTypes] = useState<string[]>()
+
   const [muokattavaproduct, setMuokattavaproduct] = useState<FullProductDto | null>(null)
   const [newProduct, setnewProduct] = useState<Partial<FullProductDto>>({})
   const [naytaLisaaDialog, setNaytaLisaaDialog] = useState(false)
@@ -72,7 +72,14 @@ export default function TuotteetSivu() {
   const [valittavatsubtypet, setValittavatsubtypet] = useState<string[]>([])
 
   useEffect(() => {
-    axios.get<FullProductDto[]>('/products').then(res => setProducts(res.data))
+    const loadData = async () => {
+      const promises = await Promise.all([axios.get<FullProductDto[]>('/products'), axios.get<{ types: string[] }>('/products/product-types')])
+      setProducts(promises[0].data)
+      setProductTypes(promises[1].data.types)
+      setLoading(false)
+    }
+    loadData()
+
   }, [])
 
   useEffect(() => {
@@ -277,6 +284,10 @@ export default function TuotteetSivu() {
     }
   }
 
+  if (loading || !products || !productTypes) {
+    return <div></div>
+  }
+
   return (
     <>
       <main className="flex-1 overflow-auto p-6">
@@ -301,7 +312,7 @@ export default function TuotteetSivu() {
                     Kaikki tuoteryhmät
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  {typet.map((ryhma) => (
+                  {productTypes.map((ryhma) => (
                     <DropdownMenuItem key={ryhma} onClick={() => settypeFilter(ryhma)}>
                       {ryhma}
                     </DropdownMenuItem>
@@ -355,10 +366,10 @@ export default function TuotteetSivu() {
                       </Label>
                       <Select value={newProduct.type} onValueChange={handletypeChange}>
                         <SelectTrigger id="type">
-                          <SelectValue placeholder="Valitse productryhmä" />
+                          <SelectValue placeholder="Valitse tuoteryhmä" />
                         </SelectTrigger>
                         <SelectContent>
-                          {typet.map((ryhma) => (
+                          {productTypes.map((ryhma) => (
                             <SelectItem key={ryhma} value={ryhma}>
                               {ryhma}
                             </SelectItem>
@@ -376,7 +387,7 @@ export default function TuotteetSivu() {
                         disabled={!newProduct.type}
                       >
                         <SelectTrigger id="subtype">
-                          <SelectValue placeholder="Valitse aliproductryhmä" />
+                          <SelectValue placeholder="Valitse aliryhmä" />
                         </SelectTrigger>
                         <SelectContent>
                           {valittavatsubtypet.map((aliryhma) => (
@@ -700,9 +711,9 @@ export default function TuotteetSivu() {
                       <SelectValue placeholder="Valitse tuoteryhmä" />
                     </SelectTrigger>
                     <SelectContent>
-                      {typet.map((ryhma) => (
-                        <SelectItem key={ryhma} value={ryhma}>
-                          {ryhma}
+                      {productTypes.map((productType) => (
+                        <SelectItem key={productType} value={productType}>
+                          {productType}
                         </SelectItem>
                       ))}
                     </SelectContent>

@@ -30,6 +30,17 @@ productsRoute.get(`/api/products`, async (req, res) => {
   }) satisfies FullProductDto[])
 })
 
+productsRoute.get(`/api/products/product-types`, async (req, res) => {
+  console.log('getting products')
+  const types = await prisma.product.findMany({
+    distinct: ['type'],
+    select: {
+      type: true,
+    },
+
+  })
+  res.status(200).json({ types: types.map(t => t.type) } satisfies { types: string[] })
+})
 
 productsRoute.post(`/api/products`, async (req, res) => {
   console.log('saving product')
