@@ -53,9 +53,9 @@ export default function TuotteetSivu() {
   const [newProduct, setnewProduct] = useState<Partial<FullProductDto>>({})
   const [showNewProductDialog, setShowNewProductDialog] = useState(false)
   const [naytaMuokkaaDialog, setNaytaMuokkaaDialog] = useState(false)
-  const [typeFilter, settypeFilter] = useState<string>("kaikki")
-  const [jarjestys, setJarjestys] = useState<"asc" | "desc">("asc")
-  const [jarjestysKentta, setJarjestysKentta] = useState<keyof FullProductDto>("orderIndex")
+  const [typeFilter, setTypeFilter] = useState<string>("all")
+  const [orderDirection, setOrderDirection] = useState<"asc" | "desc">("asc")
+  const [orderByField, setOrderByField] = useState<keyof FullProductDto>("orderIndex")
 
   const { toast } = useToast()
 
@@ -71,21 +71,6 @@ export default function TuotteetSivu() {
 
   }, [])
 
-  /*
-  useEffect(() => {
-    if (!newProduct) {
-      return
-    }
-    if (muokattavaproduct?.type) {
-      setProductSubTypes(subtypet[muokattavaproduct.type as keyof typeof subtypet] || [])
-    } else if (newProduct.type) {
-      setProductSubTypes(subtypet[newProduct.type as keyof typeof subtypet] || [])
-    } else {
-      setProductSubTypes([])
-    }
-  }, [muokattavaproduct?.type, newProduct.type])
-  */
-
   // Suodata ja järjestä tuotteet
   const filteredTuotteet = products
     .filter((product) => {
@@ -96,20 +81,20 @@ export default function TuotteetSivu() {
         product.type.toLowerCase().includes(searchQuery.toLowerCase())
 
       // productryhmäsuodatus
-      const matchesCategory = typeFilter === "kaikki" || product.type === typeFilter
+      const matchesCategory = typeFilter === "all" || product.type === typeFilter
 
       return matchesSearch && matchesCategory
     })
     .sort((a, b) => {
       // Järjestäminen
-      if (typeof a[jarjestysKentta] === "string" && typeof b[jarjestysKentta] === "string") {
-        return jarjestys === "asc"
-          ? (a[jarjestysKentta] as string).localeCompare(b[jarjestysKentta] as string)
-          : (b[jarjestysKentta] as string).localeCompare(a[jarjestysKentta] as string)
+      if (typeof a[orderByField] === "string" && typeof b[orderByField] === "string") {
+        return orderDirection === "asc"
+          ? (a[orderByField] as string).localeCompare(b[orderByField] as string)
+          : (b[orderByField] as string).localeCompare(a[orderByField] as string)
       } else {
-        return jarjestys === "asc"
-          ? (a[jarjestysKentta] as number) - (b[jarjestysKentta] as number)
-          : (b[jarjestysKentta] as number) - (a[jarjestysKentta] as number)
+        return orderDirection === "asc"
+          ? (a[orderByField] as number) - (b[orderByField] as number)
+          : (b[orderByField] as number) - (a[orderByField] as number)
       }
     })
 
@@ -211,11 +196,11 @@ export default function TuotteetSivu() {
 
   // Järjestyksen vaihtaminen
   const vaihdaJarjestys = (kentta: keyof FullProductDto) => {
-    if (jarjestysKentta === kentta) {
-      setJarjestys(jarjestys === "asc" ? "desc" : "asc")
+    if (orderByField === kentta) {
+      setOrderDirection(orderDirection === "asc" ? "desc" : "asc")
     } else {
-      setJarjestysKentta(kentta)
-      setJarjestys("asc")
+      setOrderByField(kentta)
+      setOrderDirection("asc")
     }
   }
 
@@ -256,16 +241,16 @@ export default function TuotteetSivu() {
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" className="gap-1">
                     <Filter className="h-4 w-4 mr-1" />
-                    Tuoteryhmä: {typeFilter === "kaikki" ? "Kaikki" : typeFilter}
+                    Tuoteryhmä: {typeFilter === "all" ? "Kaikki" : typeFilter}
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
-                  <DropdownMenuItem onClick={() => settypeFilter("kaikki")}>
+                  <DropdownMenuItem onClick={() => setTypeFilter("all")}>
                     Kaikki tuoteryhmät
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   {productTypes.map((productType) => (
-                    <DropdownMenuItem key={productType.type} onClick={() => settypeFilter(productType.type)}>
+                    <DropdownMenuItem key={productType.type} onClick={() => setTypeFilter(productType.type)}>
                       {productType.type}
                     </DropdownMenuItem>
                   ))}
@@ -300,8 +285,8 @@ export default function TuotteetSivu() {
                     <TableHead className="cursor-pointer" onClick={() => vaihdaJarjestys("name")}>
                       <div className="flex items-center">
                         Nimi
-                        {jarjestysKentta === "name" &&
-                          (jarjestys === "asc" ? (
+                        {orderByField === "name" &&
+                          (orderDirection === "asc" ? (
                             <ChevronUp className="ml-1 h-4 w-4" />
                           ) : (
                             <ChevronDown className="ml-1 h-4 w-4" />
@@ -312,8 +297,8 @@ export default function TuotteetSivu() {
                     <TableHead className="cursor-pointer" onClick={() => vaihdaJarjestys("type")}>
                       <div className="flex items-center">
                         Tuoteryhmä
-                        {jarjestysKentta === "type" &&
-                          (jarjestys === "asc" ? (
+                        {orderByField === "type" &&
+                          (orderDirection === "asc" ? (
                             <ChevronUp className="ml-1 h-4 w-4" />
                           ) : (
                             <ChevronDown className="ml-1 h-4 w-4" />
@@ -324,8 +309,8 @@ export default function TuotteetSivu() {
                     <TableHead className="cursor-pointer" onClick={() => vaihdaJarjestys("price")}>
                       <div className="flex items-center">
                         Hinta ALV 14 % (€)
-                        {jarjestysKentta === "price" &&
-                          (jarjestys === "asc" ? (
+                        {orderByField === "price" &&
+                          (orderDirection === "asc" ? (
                             <ChevronUp className="ml-1 h-4 w-4" />
                           ) : (
                             <ChevronDown className="ml-1 h-4 w-4" />
