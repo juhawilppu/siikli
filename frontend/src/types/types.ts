@@ -237,3 +237,14 @@ export interface ProductTypeResponse {
   type: string;
   subtypes: string[];
 }
+
+export interface ReorderDto {
+  first: {
+    id: string
+    orderIndex: number
+  },
+  second: {
+    id: string
+    orderIndex: number
+  }
+}

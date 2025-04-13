@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client'
 import express from 'express'
-import { FullProductDto, ProductTypeResponse } from '../../frontend/src/types/types'
+import { FullProductDto, ProductTypeResponse, ReorderDto } from '../../frontend/src/types/types'
 
 const productsRoute = express.Router()
 const prisma = new PrismaClient()
@@ -73,6 +73,41 @@ productsRoute.post(`/api/products`, async (req, res) => {
     }
   })
   res.status(201).json({ id: result.id })
+})
+
+productsRoute.delete(`/api/products/:id`, async (req, res) => {
+  console.log('delete', req.body)
+  const id = req.params.id
+  await prisma.product.delete({
+    where: {
+      id
+    }
+  })
+  res.status(200).json({ message: 'OK' })
+})
+
+productsRoute.post(`/api/products/reorder`, async (req, res) => {
+  console.log('reorder', req.body)
+  const body = req.body as ReorderDto
+  await prisma.product.update({
+    data: {
+      order_index: body.first.orderIndex
+    },
+    where: {
+      id: body.first.id
+    }
+  }
+  )
+  await prisma.product.update({
+    data: {
+      order_index: body.second.orderIndex
+    },
+    where: {
+      id: body.second.id
+    }
+  }
+  )
+  res.status(201).json({ message: 'OK' })
 })
 
 productsRoute.post(`/api/products/:id`, async (req, res) => {

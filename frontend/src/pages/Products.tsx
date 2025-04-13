@@ -35,7 +35,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { useToast } from "@/hooks/use-toast"
-import { FullProductDto, ProductTypeResponse } from "@/types/types"
+import { FullProductDto, ProductTypeResponse, ReorderDto } from "@/types/types"
 import { formatMoneyFi } from "@/utils/money"
 import axios from "axios"
 import NewProduct from "./NewProduct"
@@ -113,27 +113,43 @@ export default function TuotteetSivu() {
       }
     })
 
-  // Järjestysnumeron muuttaminen
-  const muutaorderIndexa = (id: string, suunta: "up" | "down") => {
-    const productIndex = products.findIndex((t) => t.id === id)
+  const changeOrderIndex = async (id: string, direction: "up" | "down") => {
+    console.log('changeOrderIndex', id, direction)
+    const productIndex = products.find((t) => t.id === id)?.orderIndex as number
     if (productIndex === -1) return
 
-    const vaihdettavaIndex = suunta === "up" ? productIndex - 1 : productIndex + 1
+    console.log('still')
 
-    // Tarkista, että vaihdettava indeksi on sallitulla alueella
-    if (vaihdettavaIndex < 0 || vaihdettavaIndex >= products.length) return
+    const indexToChange = direction === "up" ? productIndex - 1 : productIndex + 1
+    console.log('indexToChange', indexToChange)
 
-    const paivitetytTuotteet = [...products]
+    if (indexToChange < 0 || indexToChange > products.length) return
 
-    // Vaihda järjestysnumerot
-    const temp = paivitetytTuotteet[productIndex].orderIndex
-    paivitetytTuotteet[productIndex].orderIndex = paivitetytTuotteet[vaihdettavaIndex].orderIndex
-    paivitetytTuotteet[vaihdettavaIndex].orderIndex = temp
+    console.log('still2')
 
-    // Järjestä tuotteet uudelleen järjestysnumeron mukaan
-    paivitetytTuotteet.sort((a, b) => a.orderIndex - b.orderIndex)
+    const updatedProducts = [...products]
 
-    setProducts(paivitetytTuotteet)
+    // Swap order indexes
+    const temp = updatedProducts[productIndex].orderIndex
+    updatedProducts[productIndex].orderIndex = updatedProducts[indexToChange].orderIndex
+    updatedProducts[indexToChange].orderIndex = temp
+
+    // Reorder products
+    updatedProducts.sort((a, b) => a.orderIndex - b.orderIndex)
+
+    const payload: ReorderDto = {
+      first: {
+        id: updatedProducts[productIndex].id,
+        orderIndex: updatedProducts[productIndex].orderIndex
+      },
+      second: {
+        id: updatedProducts[indexToChange].id,
+        orderIndex: updatedProducts[indexToChange].orderIndex
+      }
+    }
+    await axios.post('/products/reorder', payload)
+
+    setProducts(updatedProducts)
 
     toast({
       title: "Järjestys päivitetty",
@@ -181,8 +197,10 @@ export default function TuotteetSivu() {
     })
   }
 
-  // Tuotteen poistaminen
-  const poistaproduct = (id: string) => {
+  const deleteProduct = async (id: string) => {
+
+    await axios.delete('/products/' + id)
+
     const poistettavaproduct = products.find((t) => t.id === id)
     if (!poistettavaproduct) return
 
@@ -352,7 +370,7 @@ export default function TuotteetSivu() {
                                       variant="ghost"
                                       size="icon"
                                       className="h-6 w-6"
-                                      onClick={() => muutaorderIndexa(product.id, "up")}
+                                      onClick={() => changeOrderIndex(product.id, "up")}
                                       disabled={product.orderIndex === 1}
                                     >
                                       <ChevronUp className="h-4 w-4" />
@@ -370,7 +388,7 @@ export default function TuotteetSivu() {
                                       variant="ghost"
                                       size="icon"
                                       className="h-6 w-6"
-                                      onClick={() => muutaorderIndexa(product.id, "down")}
+                                      onClick={() => changeOrderIndex(product.id, "down")}
                                       disabled={product.orderIndex === products.length}
                                     >
                                       <ChevronDown className="h-4 w-4" />
@@ -418,7 +436,7 @@ export default function TuotteetSivu() {
                                     variant="ghost"
                                     size="icon"
                                     className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50"
-                                    onClick={() => poistaproduct(product.id)}
+                                    onClick={() => deleteProduct(product.id)}
                                   >
                                     <Trash2 className="h-4 w-4" />
                                   </Button>

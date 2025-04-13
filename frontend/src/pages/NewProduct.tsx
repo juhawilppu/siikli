@@ -49,7 +49,7 @@ export default function NewProduct({ hide, onCreated, productTypes, packageSizes
             ...newProduct
         })
 
-        onCreated({ id: res.data.id, ...newProduct })
+        onCreated({ id: res.data.id, orderIndex: 0, ...newProduct } as FullProductDto)
 
     }
     const handleSelect = (value: string) => {
