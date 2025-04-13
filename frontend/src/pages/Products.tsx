@@ -1,9 +1,7 @@
 "use client"
 
 import {
-  Check,
   ChevronDown,
-  ChevronsUpDown,
   ChevronUp,
   Edit,
   Filter,
@@ -15,7 +13,6 @@ import { useEffect, useState } from "react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command"
 import {
   Dialog,
   DialogContent,
@@ -23,7 +20,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
+  DialogTrigger
 } from "@/components/ui/dialog"
 import {
   DropdownMenu,
@@ -34,16 +31,14 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { useToast } from "@/hooks/use-toast"
-import { cn } from "@/lib/utils"
 import { FullProductDto, ProductTypeResponse } from "@/types/types"
 import { formatMoneyFi } from "@/utils/money"
-import { Popover } from "@radix-ui/react-popover"
 import axios from "axios"
+import NewProduct from "./NewProduct"
 
 // Pakkausvaihtoehdot
 const pakkausvaihtoehdot = ["S", "A", "Ltk"]
@@ -54,15 +49,13 @@ export default function TuotteetSivu() {
   const [products, setProducts] = useState<FullProductDto[]>([])
   const [productTypes, setProductTypes] = useState<ProductTypeResponse[]>([])
 
-  const [inputValue, setInputValue] = useState("")
   const [muokattavaproduct, setMuokattavaproduct] = useState<FullProductDto | null>(null)
   const [newProduct, setnewProduct] = useState<Partial<FullProductDto>>({})
-  const [naytaLisaaDialog, setNaytaLisaaDialog] = useState(false)
+  const [showNewProductDialog, setShowNewProductDialog] = useState(false)
   const [naytaMuokkaaDialog, setNaytaMuokkaaDialog] = useState(false)
   const [typeFilter, settypeFilter] = useState<string>("kaikki")
   const [jarjestys, setJarjestys] = useState<"asc" | "desc">("asc")
   const [jarjestysKentta, setJarjestysKentta] = useState<keyof FullProductDto>("orderIndex")
-  const [open, setOpen] = useState(false)
 
   const { toast } = useToast()
 
@@ -177,75 +170,14 @@ export default function TuotteetSivu() {
     })
   }
 
-  const handleSelect = (value: string) => {
-    setnewProduct({ ...newProduct, type: value })
-    setOpen(false);
-  };
+  const onNewProductCreated = async (product: FullProductDto) => {
+    setProducts([...products, product])
 
-  const handleCreate = () => {
-    const newType = inputValue.trim();
-    if (newType && !productTypes.some(p => p.type === newType)) {
-      // optionally: add to list or emit callback
-      productTypes.push({ type: newType, subtypes: [] });
-      setnewProduct({ ...newProduct, type: newType })
-    }
-    setOpen(false);
-  };
-
-  const createProduct = async () => {
-    if (!newProduct.name || !newProduct.type) {
-      toast({
-        title: "Virhe",
-        description: "Nimi ja tuoteryhmä ovat pakollisia tietoja.",
-        variant: "destructive",
-      })
-      return
-    }
-
-    const price0 = Number(((newProduct.price || 0) / 1.24).toFixed(2))
-
-    await axios.post('/products', {
-      ...newProduct
-    })
-    const uusiId = (Number.parseInt(products[products.length - 1]?.id || "0") + 1).toString()
-
-    const newProductObjekti: FullProductDto = {
-      id: uusiId,
-      chain: "",
-      orderIndex: products.length + 1,
-      info: '',
-      name: newProduct.name || "",
-      variety: newProduct.variety || "",
-      type: newProduct.type || "",
-      subtype: newProduct.subtype || "",
-      packageSize: newProduct.packageSize || 0,
-      packageType: newProduct.packageType || "",
-      price: newProduct.price || 0,
-      price0: price0,
-    }
-
-    setProducts([...products, newProductObjekti])
-
-    // Tyhjennä lomake
-    /*
-    setnewProduct({
-      orderIndex: products.length + 2,
-      name: "",
-      variety: "",
-      type: "",
-      subtype: "",
-      packageSize: 0,
-      packageType: "",
-      price: 0,
-      price0: 0,
-    })
-    */
-
-    //setNaytaLisaaDialog(false)
+    setShowNewProductDialog(false)
 
     toast({
       title: "Tuote luotu",
-      description: `Tuote "${newProductObjekti.name}" on tallennettu onnistuneesti.`,
+      description: `Tuote "${product.name}" on tallennettu onnistuneesti.`,
     })
   }
 
@@ -333,206 +265,17 @@ export default function TuotteetSivu() {
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
-
-            <Dialog open={naytaLisaaDialog} onOpenChange={setNaytaLisaaDialog}>
-              <DialogTrigger asChild>
-                <Button className="bg-primary hover:bg-primary/90">
-                  <Plus className="h-4 w-4 mr-2" />
-                  Lisää tuote
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-[600px]">
-                <DialogHeader>
-                  <DialogTitle>Lisää uusi tuote</DialogTitle>
-                  <DialogDescription>
-                    Täytä tuotteen tiedot. Pakolliset kentät on merkitty tähdellä (*).
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="grid gap-4 py-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="name" className="font-medium">
-                        Nimi *
-                      </Label>
-                      <Input
-                        id="name"
-                        value={newProduct?.name || ""}
-                        onChange={(e) => setnewProduct({ ...newProduct, name: e.target.value })}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="variety" className="font-medium">
-                        Lajike
-                      </Label>
-                      <Input
-                        id="variety"
-                        value={newProduct.variety || ""}
-                        onChange={(e) => setnewProduct({ ...newProduct, variety: e.target.value })}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="type" className="font-medium">
-                        Tuoteryhmä *
-                      </Label>
-                      <Popover open={open} onOpenChange={setOpen}>
-                        <PopoverTrigger asChild>
-                          <Button variant="outline" role="combobox" className="w-full justify-between">
-                            {newProduct.type || "Valitse tuoteryhmä"}
-                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-full p-0">
-                          <Command>
-                            <CommandInput
-                              placeholder="Hae tai lisää"
-                              value={inputValue}
-                              onValueChange={setInputValue}
-                            />
-                            <CommandEmpty>
-                              <button onClick={handleCreate} className="flex items-center space-x-2 text-sm p-2 hover:bg-muted w-full text-left">
-                                <Plus className="w-4 h-4" />
-                                <span>Luo: {inputValue}</span>
-                              </button>
-                            </CommandEmpty>
-                            <CommandGroup>
-                              {productTypes.map((type) => (
-                                <CommandItem key={type.type} value={type.type} onSelect={handleSelect}>
-                                  <Check className={cn("mr-2 h-4 w-4", newProduct.type === type.type ? "opacity-100" : "opacity-0")} />
-                                  {type.type}
-                                </CommandItem>
-                              ))}
-                            </CommandGroup>
-                          </Command>
-                        </PopoverContent>
-                      </Popover>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="subtype" className="font-medium">
-                        Aliryhmä
-                      </Label>
-                      <Select
-                        value={newProduct.subtype ?? undefined}
-                        onValueChange={(value) => setnewProduct({ ...newProduct, subtype: value })}
-                        disabled={!newProduct.type}
-                      >
-                        <SelectTrigger id="subtype">
-                          <SelectValue placeholder="Valitse aliryhmä" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {productTypes.find(t => t.type === newProduct.type)?.subtypes.map(subType => (
-                            <SelectItem key={subType} value={subType}>
-                              {subType}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-3 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="price" className="font-medium">
-                        Hinta (€)
-                      </Label>
-                      <Input
-                        id="price"
-                        type="number"
-                        step="0.01"
-                        min="0"
-                        value={newProduct.price || ""}
-                        onChange={(e) =>
-                          setnewProduct({ ...newProduct, price: Number.parseFloat(e.target.value) || 0 })
-                        }
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="packageSize" className="font-medium">
-                        Pakkauskoko (kg)
-                      </Label>
-                      <Input
-                        id="packageSize"
-                        type="number"
-                        step="0.01"
-                        min="0"
-                        value={newProduct.packageSize || ""}
-                        onChange={(e) =>
-                          setnewProduct({
-                            ...newProduct,
-                            packageSize: Number.parseFloat(e.target.value) || 0,
-                          })
-                        }
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="packageType" className="font-medium">
-                        Pakkaustyyppi
-                      </Label>
-                      <Select
-                        value={newProduct.packageType ?? undefined}
-                        onValueChange={(value) => setnewProduct({ ...newProduct, packageType: value })}
-                      >
-                        <SelectTrigger id="packageType">
-                          <SelectValue placeholder="Valitse pakkaus" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {pakkausvaihtoehdot.map((pakkaus) => (
-                            <SelectItem key={pakkaus} value={pakkaus}>
-                              {pakkaus}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="price" className="font-medium">
-                        Hinta ALV 14 % (€)
-                      </Label>
-                      <Input
-                        id="price"
-                        type="number"
-                        step="0.01"
-                        min="0"
-                        value={newProduct.price || ""}
-                        onChange={(e) =>
-                          setnewProduct({ ...newProduct, price: Number.parseFloat(e.target.value) || 0 })
-                        }
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="price0" className="font-medium">
-                        Hinta ALV 0 % (€)
-                      </Label>
-                      <Input
-                        id="price0"
-                        type="number"
-                        step="0.01"
-                        min="0"
-                        value={newProduct.price ? (newProduct.price / 1.24).toFixed(2) : ""}
-                        disabled
-                        className="bg-gray-50"
-                      />
-                      <p className="text-xs text-muted-foreground">Lasketaan automaattisesti (ALV 24%)</p>
-                    </div>
-                  </div>
-                </div>
-                <DialogFooter>
-                  <Button variant="outline" onClick={() => setNaytaLisaaDialog(false)}>
-                    Peruuta
-                  </Button>
-                  <Button type="button" onClick={createProduct}>
-                    <Save className="h-4 w-4 mr-2" />
-                    Tallenna
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
           </div>
+          <Dialog open={showNewProductDialog} onOpenChange={setShowNewProductDialog}>
+            <DialogTrigger asChild>
+              <Button className="bg-primary hover:bg-primary/90">
+                <Plus className="h-4 w-4 mr-2" />
+                Lisää tuote
+              </Button>
+            </DialogTrigger>
+            {showNewProductDialog &&
+              <NewProduct hide={() => setShowNewProductDialog(false)} onCreated={onNewProductCreated} productTypes={productTypes} packageSizes={pakkausvaihtoehdot} />}
+          </Dialog>
 
           {/* producttaulukko */}
           <Card className="shadow-md">
