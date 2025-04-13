@@ -30,14 +30,15 @@ import { useState } from "react"
 
 
 
-export default function NewProduct({ hide, onCreated, productTypes, packageSizes, orderIndex }: { hide: () => void, onCreated: (product: FullProductDto) => void, productTypes: ProductTypeResponse[], packageSizes: string[], orderIndex: number }) {
-    const [product, setProduct] = useState<Partial<FullProductDto>>({
+export default function NewProduct({ productToEdit, hide, onSave, productTypes, packageSizes, orderIndex }: { productToEdit?: FullProductDto, hide: () => void, onSave: (product: FullProductDto) => void, productTypes: ProductTypeResponse[], packageSizes: string[], orderIndex?: number }) {
+    const mode = productToEdit ? 'edit' : 'create'
+    const [product, setProduct] = useState<Partial<FullProductDto>>(mode === 'edit' ? { ...productToEdit } : {
         orderIndex
     })
     const [open, setOpen] = useState(false)
     const [inputValue, setInputValue] = useState("")
 
-    const createProduct = async () => {
+    const handleFormSave = async () => {
         if (!product.name || !product.type) {
             toast({
                 title: "Virhe",
@@ -47,11 +48,18 @@ export default function NewProduct({ hide, onCreated, productTypes, packageSizes
             return
         }
 
-        const res = await axios.post<{ id: string }>('/products', {
-            ...product
-        })
+        if (mode === 'edit') {
+            await axios.post('/products/' + product.id, {
+                ...product
+            })
+            onSave({ ...product } as FullProductDto)
+        } else {
+            const res = await axios.post<{ id: string }>('/products', {
+                ...product
+            })
 
-        onCreated({ id: res.data.id, ...product } as FullProductDto)
+            onSave({ id: res.data.id, ...product } as FullProductDto)
+        }
 
     }
     const handleSelect = (value: string) => {
@@ -71,7 +79,7 @@ export default function NewProduct({ hide, onCreated, productTypes, packageSizes
     return (
         <DialogContent className="sm:max-w-[600px]">
             <DialogHeader>
-                <DialogTitle>Lisää uusi tuote</DialogTitle>
+                <DialogTitle>{mode == 'create' ? 'Lisää uusi tuote' : 'Muokkaa tuotetta'}</DialogTitle>
                 <DialogDescription>
                     Täytä tuotteen tiedot. Pakolliset kentät on merkitty tähdellä (*).
                 </DialogDescription>
@@ -239,7 +247,7 @@ export default function NewProduct({ hide, onCreated, productTypes, packageSizes
                 <Button variant="outline" onClick={hide}>
                     Peruuta
                 </Button>
-                <Button type="button" onClick={createProduct}>
+                <Button type="button" onClick={handleFormSave}>
                     <Save className="h-4 w-4 mr-2" />
                     Tallenna
                 </Button>

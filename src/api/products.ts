@@ -78,12 +78,16 @@ productsRoute.post(`/api/products`, async (req, res) => {
 productsRoute.delete(`/api/products/:id`, async (req, res) => {
   console.log('delete', req.body)
   const id = req.params.id
-  await prisma.product.delete({
-    where: {
-      id
-    }
-  })
-  res.status(200).json({ message: 'OK' })
+  try {
+    await prisma.product.delete({
+      where: {
+        id
+      }
+    })
+    res.status(200).json({ message: 'OK' })
+  } catch (e) {
+    res.status(400).json({ message: 'Failed' })
+  }
 })
 
 productsRoute.post(`/api/products/reorder`, async (req, res) => {

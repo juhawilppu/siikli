@@ -6,7 +6,6 @@ import {
   Edit,
   Filter,
   Plus,
-  Save,
   Trash2
 } from "lucide-react"
 import { useEffect, useState } from "react"
@@ -15,11 +14,6 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
   DialogTrigger
 } from "@/components/ui/dialog"
 import {
@@ -29,9 +23,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { useToast } from "@/hooks/use-toast"
@@ -49,10 +40,9 @@ export default function TuotteetSivu() {
   const [products, setProducts] = useState<FullProductDto[]>([])
   const [productTypes, setProductTypes] = useState<ProductTypeResponse[]>([])
 
-  const [muokattavaproduct, setMuokattavaproduct] = useState<FullProductDto | null>(null)
-  const [newProduct, setnewProduct] = useState<Partial<FullProductDto>>({})
   const [showNewProductDialog, setShowNewProductDialog] = useState(false)
-  const [naytaMuokkaaDialog, setNaytaMuokkaaDialog] = useState(false)
+  const [editProductId, setEditProductId] = useState<string>()
+
   const [typeFilter, setTypeFilter] = useState<string>("all")
   const [orderDirection, setOrderDirection] = useState<"asc" | "desc">("asc")
   const [orderByField, setOrderByField] = useState<keyof FullProductDto>("orderIndex")
@@ -136,62 +126,52 @@ export default function TuotteetSivu() {
     })
   }
 
-  // Tuotteen muokkaaminen
-  const aloitaMuokkaus = (product: FullProductDto) => {
-    setMuokattavaproduct({ ...product })
-    setNaytaMuokkaaDialog(true)
-  }
+  const onProductSaved = async (product: FullProductDto) => {
+    if (showNewProductDialog) {
+      setProducts([...products, product])
+      setShowNewProductDialog(false)
+      toast({
+        title: "Tuote luotu",
+        description: `Tuote "${product.name}" on tallennettu onnistuneesti.`,
+        variant: 'success'
+      })
+    } else {
+      const newProducts = [...products.filter(p => p.id !== product.id), product]
+      setProducts(newProducts)
+      setEditProductId(undefined)
+      toast({
+        title: "Muutokset tallennettu",
+        description: `Tuote "${product.name}" on tallennettu onnistuneesti.`,
+      })
+    }
 
-  const updateProduct = async () => {
-    if (!muokattavaproduct) return
 
-    // Laske ALV 0% price (24% ALV)
-    const price0 = Number((muokattavaproduct.price / 1.24).toFixed(2))
-
-    await axios.post('/products/' + muokattavaproduct.id, {
-      ...muokattavaproduct
-    })
-
-    const paivitetytTuotteet = products.map((t) =>
-      t.id === muokattavaproduct.id ? { ...muokattavaproduct, price0 } : t,
-    )
-
-    setProducts(paivitetytTuotteet)
-    setNaytaMuokkaaDialog(false)
-
-    toast({
-      title: "Tuote päivitetty",
-      description: `Tuote "${muokattavaproduct.name}" on päivitetty onnistuneesti.`,
-    })
-  }
-
-  const onNewProductCreated = async (product: FullProductDto) => {
-    setProducts([...products, product])
-
-    setShowNewProductDialog(false)
-
-    toast({
-      title: "Tuote luotu",
-      description: `Tuote "${product.name}" on tallennettu onnistuneesti.`,
-    })
   }
 
   const deleteProduct = async (id: string) => {
-
-    await axios.delete('/products/' + id)
-
     const product = products.find(p => p.id === id)
     if (!product) {
       return
     }
-    const newProductList = products.filter((t) => t.id !== id)
 
-    setProducts(newProductList)
+    try {
+      await axios.delete('/products/' + id)
 
-    toast({
-      title: "Tuote poistettu",
-      description: `Tuote "${product.name}" on poistettu onnistuneesti.`,
-    })
+      const newProductList = products.filter((t) => t.id !== id)
+
+      setProducts(newProductList)
+
+      toast({
+        title: "Tuote poistettu",
+        description: `Tuote "${product.name}" on poistettu onnistuneesti.`,
+      })
+    } catch (e) {
+      toast({
+        title: "Poistaminen epäonnistui",
+        description: `Tuotetta "${product.name}" ei voitu poistaa, koska se on jo lisätty tilaukseen.`,
+        variant: 'destructive'
+      })
+    }
   }
 
   // Järjestyksen vaihtaminen
@@ -201,23 +181,6 @@ export default function TuotteetSivu() {
     } else {
       setOrderByField(kentta)
       setOrderDirection("asc")
-    }
-  }
-
-  // productryhmän vaihtaminen (muokkaustilassa)
-  const handletypeChange = (value: string) => {
-    if (muokattavaproduct) {
-      setMuokattavaproduct({
-        ...muokattavaproduct,
-        type: value,
-        subtype: "", // Tyhjennä aliproductryhmä, koska se riippuu productryhmästä
-      })
-    } else {
-      setnewProduct({
-        ...newProduct,
-        type: value,
-        subtype: "", // Tyhjennä aliproductryhmä, koska se riippuu productryhmästä
-      })
     }
   }
 
@@ -266,7 +229,7 @@ export default function TuotteetSivu() {
               </Button>
             </DialogTrigger>
             {showNewProductDialog &&
-              <NewProduct hide={() => setShowNewProductDialog(false)} onCreated={onNewProductCreated} productTypes={productTypes} packageSizes={pakkausvaihtoehdot} orderIndex={Math.max(...products.map(p => p.orderIndex)) + 1} />}
+              <NewProduct hide={() => setShowNewProductDialog(false)} onSave={onProductSaved} productTypes={productTypes} packageSizes={pakkausvaihtoehdot} orderIndex={Math.max(...products.map(p => p.orderIndex)) + 1} />}
           </Dialog>
 
           {/* producttaulukko */}
@@ -393,7 +356,7 @@ export default function TuotteetSivu() {
                                     variant="ghost"
                                     size="icon"
                                     className="h-8 w-8"
-                                    onClick={() => aloitaMuokkaus(product)}
+                                    onClick={() => setEditProductId(product.id)}
                                   >
                                     <Edit className="h-4 w-4" />
                                   </Button>
@@ -436,179 +399,10 @@ export default function TuotteetSivu() {
           </Card>
         </div>
       </main >
-      {/* Muokkausdialogi */}
-      < Dialog open={naytaMuokkaaDialog} onOpenChange={setNaytaMuokkaaDialog} >
-        <DialogContent className="sm:max-w-[600px]">
-          <DialogHeader>
-            <DialogTitle>Muokkaa tuotetta</DialogTitle>
-            <DialogDescription>Muokkaa tuotteen tietoja. Pakolliset kentät on merkitty tähdellä (*).</DialogDescription>
-          </DialogHeader>
-          {muokattavaproduct && (
-            <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="edit-name" className="font-medium">
-                    Nimi *
-                  </Label>
-                  <Input
-                    id="edit-name"
-                    value={muokattavaproduct.name}
-                    onChange={(e) => setMuokattavaproduct({ ...muokattavaproduct, name: e.target.value })}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="edit-variety" className="font-medium">
-                    Lajike
-                  </Label>
-                  <Input
-                    id="edit-variety"
-                    value={muokattavaproduct.variety}
-                    onChange={(e) => setMuokattavaproduct({ ...muokattavaproduct, variety: e.target.value })}
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="edit-type" className="font-medium">
-                    Tuoteryhmä *
-                  </Label>
-                  <Select value={muokattavaproduct.type} onValueChange={handletypeChange}>
-                    <SelectTrigger id="edit-type">
-                      <SelectValue placeholder="Valitse tuoteryhmä" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {productTypes.map((productType) => (
-                        <SelectItem key={productType.type} value={productType.type}>
-                          {productType.type}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="edit-subtype" className="font-medium">
-                    Aliryhmä
-                  </Label>
-                  <Select
-                    value={muokattavaproduct.subtype ?? undefined}
-                    onValueChange={(value) => setMuokattavaproduct({ ...muokattavaproduct, subtype: value })}
-                  >
-                    <SelectTrigger id="edit-subtype">
-                      <SelectValue placeholder="Valitse aliryhmä" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {productTypes.find(t => t.type === muokattavaproduct.type)?.subtypes.map(subType => (
-                        <SelectItem key={subType} value={subType}>
-                          {subType}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-3 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="edit-price" className="font-medium">
-                    Hinta (€)
-                  </Label>
-                  <Input
-                    id="edit-price"
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    value={muokattavaproduct.price}
-                    onChange={(e) =>
-                      setMuokattavaproduct({ ...muokattavaproduct, price: Number.parseFloat(e.target.value) || 0 })
-                    }
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="edit-packageSize" className="font-medium">
-                    Pakkauskoko (kg)
-                  </Label>
-                  <Input
-                    id="edit-packageSize"
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    value={muokattavaproduct.packageSize ?? undefined}
-                    onChange={(e) =>
-                      setMuokattavaproduct({
-                        ...muokattavaproduct,
-                        packageSize: Number.parseFloat(e.target.value) || 0,
-                      })
-                    }
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="edit-packageType" className="font-medium">
-                    Pakkaustyyppi
-                  </Label>
-                  <Select
-                    value={muokattavaproduct.packageType ?? undefined}
-                    onValueChange={(value) => setMuokattavaproduct({ ...muokattavaproduct, packageType: value })}
-                  >
-                    <SelectTrigger id="edit-packageType">
-                      <SelectValue placeholder="Valitse pakkaus" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {pakkausvaihtoehdot.map((pakkaus) => (
-                        <SelectItem key={pakkaus} value={pakkaus}>
-                          {pakkaus}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="edit-price" className="font-medium">
-                    Hinta ALV 14 % (€)
-                  </Label>
-                  <Input
-                    id="edit-price"
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    value={muokattavaproduct.price}
-                    onChange={(e) =>
-                      setMuokattavaproduct({ ...muokattavaproduct, price: Number.parseFloat(e.target.value) || 0 })
-                    }
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="edit-price0" className="font-medium">
-                    Hinta ALV 0 % (€)
-                  </Label>
-                  <Input
-                    id="edit-price0"
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    value={(muokattavaproduct.price / 1.24).toFixed(2)}
-                    disabled
-                    className="bg-gray-50"
-                  />
-                  <p className="text-xs text-muted-foreground">Lasketaan automaattisesti (ALV 14 %)</p>
-                </div>
-              </div>
-            </div>
-          )}
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setNaytaMuokkaaDialog(false)}>
-              Peruuta
-            </Button>
-            <Button type="button" onClick={updateProduct}>
-              <Save className="h-4 w-4 mr-2" />
-              Tallenna muutokset
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog >
+      < Dialog open={editProductId !== undefined} onOpenChange={() => setEditProductId(undefined)} >
+        {editProductId &&
+          <NewProduct productToEdit={products.find(p => p.id === editProductId)} hide={() => setEditProductId(undefined)} onSave={onProductSaved} productTypes={productTypes} packageSizes={pakkausvaihtoehdot} />}
+      </Dialog>
     </>
   )
 }
