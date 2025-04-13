@@ -1,7 +1,9 @@
 "use client"
 
 import {
+  Check,
   ChevronDown,
+  ChevronsUpDown,
   ChevronUp,
   Edit,
   Filter,
@@ -13,6 +15,7 @@ import { useEffect, useState } from "react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command"
 import {
   Dialog,
   DialogContent,
@@ -31,12 +34,15 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { useToast } from "@/hooks/use-toast"
+import { cn } from "@/lib/utils"
 import { FullProductDto, ProductTypeResponse } from "@/types/types"
 import { formatMoneyFi } from "@/utils/money"
+import { Popover } from "@radix-ui/react-popover"
 import axios from "axios"
 
 // Pakkausvaihtoehdot
@@ -48,6 +54,7 @@ export default function TuotteetSivu() {
   const [products, setProducts] = useState<FullProductDto[]>([])
   const [productTypes, setProductTypes] = useState<ProductTypeResponse[]>([])
 
+  const [inputValue, setInputValue] = useState("")
   const [muokattavaproduct, setMuokattavaproduct] = useState<FullProductDto | null>(null)
   const [newProduct, setnewProduct] = useState<Partial<FullProductDto>>({})
   const [naytaLisaaDialog, setNaytaLisaaDialog] = useState(false)
@@ -55,6 +62,7 @@ export default function TuotteetSivu() {
   const [typeFilter, settypeFilter] = useState<string>("kaikki")
   const [jarjestys, setJarjestys] = useState<"asc" | "desc">("asc")
   const [jarjestysKentta, setJarjestysKentta] = useState<keyof FullProductDto>("orderIndex")
+  const [open, setOpen] = useState(false)
 
   const { toast } = useToast()
 
@@ -168,6 +176,21 @@ export default function TuotteetSivu() {
       description: `Tuote "${muokattavaproduct.name}" on päivitetty onnistuneesti.`,
     })
   }
+
+  const handleSelect = (value: string) => {
+    setnewProduct({ ...newProduct, type: value })
+    setOpen(false);
+  };
+
+  const handleCreate = () => {
+    const newType = inputValue.trim();
+    if (newType && !productTypes.some(p => p.type === newType)) {
+      // optionally: add to list or emit callback
+      productTypes.push({ type: newType, subtypes: [] });
+      setnewProduct({ ...newProduct, type: newType })
+    }
+    setOpen(false);
+  };
 
   const createProduct = async () => {
     if (!newProduct.name || !newProduct.type) {
@@ -354,18 +377,37 @@ export default function TuotteetSivu() {
                       <Label htmlFor="type" className="font-medium">
                         Tuoteryhmä *
                       </Label>
-                      <Select value={newProduct.type} onValueChange={handletypeChange}>
-                        <SelectTrigger id="type">
-                          <SelectValue placeholder="Valitse tuoteryhmä" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {productTypes.map((productType) => (
-                            <SelectItem key={productType.type} value={productType.type}>
-                              {productType.type}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      <Popover open={open} onOpenChange={setOpen}>
+                        <PopoverTrigger asChild>
+                          <Button variant="outline" role="combobox" className="w-full justify-between">
+                            {newProduct.type || "Valitse tuoteryhmä"}
+                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-full p-0">
+                          <Command>
+                            <CommandInput
+                              placeholder="Hae tai lisää"
+                              value={inputValue}
+                              onValueChange={setInputValue}
+                            />
+                            <CommandEmpty>
+                              <button onClick={handleCreate} className="flex items-center space-x-2 text-sm p-2 hover:bg-muted w-full text-left">
+                                <Plus className="w-4 h-4" />
+                                <span>Luo: {inputValue}</span>
+                              </button>
+                            </CommandEmpty>
+                            <CommandGroup>
+                              {productTypes.map((type) => (
+                                <CommandItem key={type.type} value={type.type} onSelect={handleSelect}>
+                                  <Check className={cn("mr-2 h-4 w-4", newProduct.type === type.type ? "opacity-100" : "opacity-0")} />
+                                  {type.type}
+                                </CommandItem>
+                              ))}
+                            </CommandGroup>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="subtype" className="font-medium">
@@ -658,9 +700,9 @@ export default function TuotteetSivu() {
             </CardFooter>
           </Card>
         </div>
-      </main>
+      </main >
       {/* Muokkausdialogi */}
-      <Dialog open={naytaMuokkaaDialog} onOpenChange={setNaytaMuokkaaDialog}>
+      < Dialog open={naytaMuokkaaDialog} onOpenChange={setNaytaMuokkaaDialog} >
         <DialogContent className="sm:max-w-[600px]">
           <DialogHeader>
             <DialogTitle>Muokkaa tuotetta</DialogTitle>
@@ -831,7 +873,7 @@ export default function TuotteetSivu() {
             </Button>
           </DialogFooter>
         </DialogContent>
-      </Dialog>
+      </Dialog >
     </>
   )
 }
