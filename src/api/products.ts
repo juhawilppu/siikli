@@ -65,7 +65,7 @@ productsRoute.post(`/api/products`, async (req, res) => {
       info: body.info,
       price0: body.price0,
       price: body.price,
-      order_index: 1,
+      order_index: body.orderIndex,
       subtype: body.subtype,
       package_size: body.packageSize + '',
       package_type: body.packageType,
