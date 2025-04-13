@@ -31,14 +31,14 @@ import { useState } from "react"
 
 
 export default function NewProduct({ hide, onCreated, productTypes, packageSizes, orderIndex }: { hide: () => void, onCreated: (product: FullProductDto) => void, productTypes: ProductTypeResponse[], packageSizes: string[], orderIndex: number }) {
-    const [newProduct, setnewProduct] = useState<Partial<FullProductDto>>({
+    const [product, setProduct] = useState<Partial<FullProductDto>>({
         orderIndex
     })
     const [open, setOpen] = useState(false)
     const [inputValue, setInputValue] = useState("")
 
     const createProduct = async () => {
-        if (!newProduct.name || !newProduct.type) {
+        if (!product.name || !product.type) {
             toast({
                 title: "Virhe",
                 description: "Nimi ja tuoteryhmä ovat pakollisia tietoja.",
@@ -48,14 +48,14 @@ export default function NewProduct({ hide, onCreated, productTypes, packageSizes
         }
 
         const res = await axios.post<{ id: string }>('/products', {
-            ...newProduct
+            ...product
         })
 
-        onCreated({ id: res.data.id, ...newProduct } as FullProductDto)
+        onCreated({ id: res.data.id, ...product } as FullProductDto)
 
     }
     const handleSelect = (value: string) => {
-        setnewProduct({ ...newProduct, type: value })
+        setProduct({ ...product, type: value })
         setOpen(false);
     };
 
@@ -64,7 +64,7 @@ export default function NewProduct({ hide, onCreated, productTypes, packageSizes
         if (newType && !productTypes.some(p => p.type === newType)) {
             // optionally: add to list or emit callback
             productTypes.push({ type: newType, subtypes: [] });
-            setnewProduct({ ...newProduct, type: newType })
+            setProduct({ ...product, type: newType })
         }
         setOpen(false);
     };
@@ -84,8 +84,8 @@ export default function NewProduct({ hide, onCreated, productTypes, packageSizes
                         </Label>
                         <Input
                             id="name"
-                            value={newProduct?.name || ""}
-                            onChange={(e) => setnewProduct({ ...newProduct, name: e.target.value })}
+                            value={product?.name || ""}
+                            onChange={(e) => setProduct({ ...product, name: e.target.value })}
                         />
                     </div>
                     <div className="space-y-2">
@@ -94,8 +94,8 @@ export default function NewProduct({ hide, onCreated, productTypes, packageSizes
                         </Label>
                         <Input
                             id="variety"
-                            value={newProduct.variety || ""}
-                            onChange={(e) => setnewProduct({ ...newProduct, variety: e.target.value })}
+                            value={product.variety || ""}
+                            onChange={(e) => setProduct({ ...product, variety: e.target.value })}
                         />
                     </div>
                 </div>
@@ -108,7 +108,7 @@ export default function NewProduct({ hide, onCreated, productTypes, packageSizes
                         <Popover open={open} onOpenChange={setOpen}>
                             <PopoverTrigger asChild>
                                 <Button variant="outline" role="combobox" className="w-full justify-between">
-                                    {newProduct.type || "Valitse tuoteryhmä"}
+                                    {product.type || "Valitse tuoteryhmä"}
                                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                                 </Button>
                             </PopoverTrigger>
@@ -128,7 +128,7 @@ export default function NewProduct({ hide, onCreated, productTypes, packageSizes
                                     <CommandGroup>
                                         {productTypes.map((type) => (
                                             <CommandItem key={type.type} value={type.type} onSelect={handleSelect}>
-                                                <Check className={cn("mr-2 h-4 w-4", newProduct.type === type.type ? "opacity-100" : "opacity-0")} />
+                                                <Check className={cn("mr-2 h-4 w-4", product.type === type.type ? "opacity-100" : "opacity-0")} />
                                                 {type.type}
                                             </CommandItem>
                                         ))}
@@ -142,15 +142,15 @@ export default function NewProduct({ hide, onCreated, productTypes, packageSizes
                             Aliryhmä
                         </Label>
                         <Select
-                            value={newProduct.subtype ?? undefined}
-                            onValueChange={(value) => setnewProduct({ ...newProduct, subtype: value })}
-                            disabled={!newProduct.type}
+                            value={product.subtype ?? undefined}
+                            onValueChange={(value) => setProduct({ ...product, subtype: value })}
+                            disabled={!product.type}
                         >
                             <SelectTrigger id="subtype">
                                 <SelectValue placeholder="Valitse aliryhmä" />
                             </SelectTrigger>
                             <SelectContent>
-                                {productTypes.find(t => t.type === newProduct.type)?.subtypes.map(subType => (
+                                {productTypes.find(t => t.type === product.type)?.subtypes.map(subType => (
                                     <SelectItem key={subType} value={subType}>
                                         {subType}
                                     </SelectItem>
@@ -170,10 +170,10 @@ export default function NewProduct({ hide, onCreated, productTypes, packageSizes
                             type="number"
                             step="0.01"
                             min="0"
-                            value={newProduct.packageSize || ""}
+                            value={product.packageSize || ""}
                             onChange={(e) =>
-                                setnewProduct({
-                                    ...newProduct,
+                                setProduct({
+                                    ...product,
                                     packageSize: Number.parseFloat(e.target.value) || 0,
                                 })
                             }
@@ -184,8 +184,8 @@ export default function NewProduct({ hide, onCreated, productTypes, packageSizes
                             Pakkaustyyppi
                         </Label>
                         <Select
-                            value={newProduct.packageType ?? undefined}
-                            onValueChange={(value) => setnewProduct({ ...newProduct, packageType: value })}
+                            value={product.packageType ?? undefined}
+                            onValueChange={(value) => setProduct({ ...product, packageType: value })}
                         >
                             <SelectTrigger id="packageType">
                                 <SelectValue placeholder="Valitse pakkaus" />
@@ -211,9 +211,9 @@ export default function NewProduct({ hide, onCreated, productTypes, packageSizes
                             type="number"
                             step="0.01"
                             min="0"
-                            value={newProduct.price || ""}
+                            value={product.price || ""}
                             onChange={(e) =>
-                                setnewProduct({ ...newProduct, price: toDecimal(Number.parseFloat(e.target.value) || 0), price0: toDecimal(Number.parseFloat(e.target.value) / 1.14) })
+                                setProduct({ ...product, price: toDecimal(Number.parseFloat(e.target.value) || 0), price0: toDecimal(Number.parseFloat(e.target.value) / 1.14) })
                             }
                         />
                     </div>
@@ -226,9 +226,9 @@ export default function NewProduct({ hide, onCreated, productTypes, packageSizes
                             type="number"
                             step="0.01"
                             min="0"
-                            value={newProduct.price0 || ""}
+                            value={product.price0 || ""}
                             onChange={(e) =>
-                                setnewProduct({ ...newProduct, price: toDecimal(Number.parseFloat(e.target.value) * 1.14 || 0), price0: toDecimal(Number.parseFloat(e.target.value)) })
+                                setProduct({ ...product, price: toDecimal(Number.parseFloat(e.target.value) * 1.14 || 0), price0: toDecimal(Number.parseFloat(e.target.value)) })
                             }
                         />
                         <p className="text-xs text-muted-foreground">Voit antaa joko ALV 14 % tai ALV 0 % hinnan. Toinen muuttaa toista.</p>
