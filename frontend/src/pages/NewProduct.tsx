@@ -30,8 +30,10 @@ import { useState } from "react"
 
 
 
-export default function NewProduct({ hide, onCreated, productTypes, packageSizes }: { hide: () => void, onCreated: (product: FullProductDto) => void, productTypes: ProductTypeResponse[], packageSizes: string[] }) {
-    const [newProduct, setnewProduct] = useState<Partial<FullProductDto>>({})
+export default function NewProduct({ hide, onCreated, productTypes, packageSizes, orderIndex }: { hide: () => void, onCreated: (product: FullProductDto) => void, productTypes: ProductTypeResponse[], packageSizes: string[], orderIndex: number }) {
+    const [newProduct, setnewProduct] = useState<Partial<FullProductDto>>({
+        orderIndex
+    })
     const [open, setOpen] = useState(false)
     const [inputValue, setInputValue] = useState("")
 
@@ -49,7 +51,7 @@ export default function NewProduct({ hide, onCreated, productTypes, packageSizes
             ...newProduct
         })
 
-        onCreated({ id: res.data.id, orderIndex: 0, ...newProduct } as FullProductDto)
+        onCreated({ id: res.data.id, ...newProduct } as FullProductDto)
 
     }
     const handleSelect = (value: string) => {

@@ -286,7 +286,7 @@ export default function TuotteetSivu() {
               </Button>
             </DialogTrigger>
             {showNewProductDialog &&
-              <NewProduct hide={() => setShowNewProductDialog(false)} onCreated={onNewProductCreated} productTypes={productTypes} packageSizes={pakkausvaihtoehdot} />}
+              <NewProduct hide={() => setShowNewProductDialog(false)} onCreated={onNewProductCreated} productTypes={productTypes} packageSizes={pakkausvaihtoehdot} orderIndex={Math.max(...products.map(p => p.orderIndex)) + 1} />}
           </Dialog>
 
           {/* producttaulukko */}
