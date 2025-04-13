@@ -114,18 +114,12 @@ export default function TuotteetSivu() {
     })
 
   const changeOrderIndex = async (id: string, direction: "up" | "down") => {
-    console.log('changeOrderIndex', id, direction)
     const productIndex = products.find((t) => t.id === id)?.orderIndex as number
     if (productIndex === -1) return
 
-    console.log('still')
-
     const indexToChange = direction === "up" ? productIndex - 1 : productIndex + 1
-    console.log('indexToChange', indexToChange)
 
-    if (indexToChange < 0 || indexToChange > products.length) return
-
-    console.log('still2')
+    if (indexToChange < 0 || indexToChange >= products.length) return
 
     const updatedProducts = [...products]
 
