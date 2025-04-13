@@ -232,3 +232,8 @@ export interface FullProductDto {
   packageSize: number | null
   packageType: string | null
 }
+
+export interface ProductTypeResponse {
+  type: string;
+  subtypes: string[];
+}

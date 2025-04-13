@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client'
 import express from 'express'
-import { FullProductDto } from '../../frontend/src/types/types'
+import { FullProductDto, ProductTypeResponse } from '../../frontend/src/types/types'
 
 const productsRoute = express.Router()
 const prisma = new PrismaClient()
@@ -31,15 +31,27 @@ productsRoute.get(`/api/products`, async (req, res) => {
 })
 
 productsRoute.get(`/api/products/product-types`, async (req, res) => {
-  console.log('getting products')
-  const types = await prisma.product.findMany({
-    distinct: ['type'],
+  console.log('getting product-types')
+  const rows = await prisma.product.findMany({
     select: {
       type: true,
+      subtype: true,
     },
+  });
 
-  })
-  res.status(200).json({ types: types.map(t => t.type) } satisfies { types: string[] })
+  const grouped = rows.reduce((acc, row) => {
+    if (!acc[row.type]) acc[row.type] = new Set();
+    if (row.subtype) {
+      acc[row.type].add(row.subtype);
+    }
+    return acc;
+  }, {} as Record<string, Set<string>>);
+
+  const result = Object.entries(grouped).map(([type, bSet]) => ({
+    type,
+    subtypes: Array.from(bSet),
+  }));
+  res.status(200).json(result satisfies ProductTypeResponse[])
 })
 
 productsRoute.post(`/api/products`, async (req, res) => {

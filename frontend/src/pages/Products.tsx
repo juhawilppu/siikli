@@ -35,19 +35,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { useToast } from "@/hooks/use-toast"
-import { FullProductDto } from "@/types/types"
+import { FullProductDto, ProductTypeResponse } from "@/types/types"
 import { formatMoneyFi } from "@/utils/money"
 import axios from "axios"
-
-
-// Aliproductryhmät
-const subtypet = {
-  Viljat: ["Vehnä", "Ohra", "Kaura", "Ruis"],
-  Siemenet: ["Perunansiemen", "Ohransiemen", "Kauransiemen"],
-  Jauhot: ["Vehnäjauho", "Ruisjauho", "Ohrajauho"],
-  Hiutaleet: ["Kaurahiutale", "Ruishiutale", "Vehnähiutale"],
-  Luomutuotteet: ["Luomuvehnä", "Luomukaura", "Luomuruis"],
-}
 
 // Pakkausvaihtoehdot
 const pakkausvaihtoehdot = ["S", "A", "Ltk"]
@@ -56,7 +46,7 @@ export default function TuotteetSivu() {
   const [searchQuery, setSearchQuery] = useState("")
   const [loading, setLoading] = useState(true)
   const [products, setProducts] = useState<FullProductDto[]>([])
-  const [productTypes, setProductTypes] = useState<string[]>()
+  const [productTypes, setProductTypes] = useState<ProductTypeResponse[]>([])
 
   const [muokattavaproduct, setMuokattavaproduct] = useState<FullProductDto | null>(null)
   const [newProduct, setnewProduct] = useState<Partial<FullProductDto>>({})
@@ -68,32 +58,32 @@ export default function TuotteetSivu() {
 
   const { toast } = useToast()
 
-  // Aliproductryhmät valitun productryhmän perusteella
-  const [valittavatsubtypet, setValittavatsubtypet] = useState<string[]>([])
 
   useEffect(() => {
     const loadData = async () => {
-      const promises = await Promise.all([axios.get<FullProductDto[]>('/products'), axios.get<{ types: string[] }>('/products/product-types')])
+      const promises = await Promise.all([axios.get<FullProductDto[]>('/products'), axios.get<ProductTypeResponse[]>('/products/product-types')])
       setProducts(promises[0].data)
-      setProductTypes(promises[1].data.types)
+      setProductTypes(promises[1].data)
       setLoading(false)
     }
     loadData()
 
   }, [])
 
+  /*
   useEffect(() => {
     if (!newProduct) {
       return
     }
     if (muokattavaproduct?.type) {
-      setValittavatsubtypet(subtypet[muokattavaproduct.type as keyof typeof subtypet] || [])
+      setProductSubTypes(subtypet[muokattavaproduct.type as keyof typeof subtypet] || [])
     } else if (newProduct.type) {
-      setValittavatsubtypet(subtypet[newProduct.type as keyof typeof subtypet] || [])
+      setProductSubTypes(subtypet[newProduct.type as keyof typeof subtypet] || [])
     } else {
-      setValittavatsubtypet([])
+      setProductSubTypes([])
     }
   }, [muokattavaproduct?.type, newProduct.type])
+  */
 
   // Suodata ja järjestä tuotteet
   const filteredTuotteet = products
@@ -284,7 +274,7 @@ export default function TuotteetSivu() {
     }
   }
 
-  if (loading || !products || !productTypes) {
+  if (loading) {
     return <div></div>
   }
 
@@ -312,9 +302,9 @@ export default function TuotteetSivu() {
                     Kaikki tuoteryhmät
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  {productTypes.map((ryhma) => (
-                    <DropdownMenuItem key={ryhma} onClick={() => settypeFilter(ryhma)}>
-                      {ryhma}
+                  {productTypes.map((productType) => (
+                    <DropdownMenuItem key={productType.type} onClick={() => settypeFilter(productType.type)}>
+                      {productType.type}
                     </DropdownMenuItem>
                   ))}
                 </DropdownMenuContent>
@@ -369,9 +359,9 @@ export default function TuotteetSivu() {
                           <SelectValue placeholder="Valitse tuoteryhmä" />
                         </SelectTrigger>
                         <SelectContent>
-                          {productTypes.map((ryhma) => (
-                            <SelectItem key={ryhma} value={ryhma}>
-                              {ryhma}
+                          {productTypes.map((productType) => (
+                            <SelectItem key={productType.type} value={productType.type}>
+                              {productType.type}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -390,9 +380,9 @@ export default function TuotteetSivu() {
                           <SelectValue placeholder="Valitse aliryhmä" />
                         </SelectTrigger>
                         <SelectContent>
-                          {valittavatsubtypet.map((aliryhma) => (
-                            <SelectItem key={aliryhma} value={aliryhma}>
-                              {aliryhma}
+                          {productTypes.find(t => t.type === newProduct.type)?.subtypes.map(subType => (
+                            <SelectItem key={subType} value={subType}>
+                              {subType}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -712,8 +702,8 @@ export default function TuotteetSivu() {
                     </SelectTrigger>
                     <SelectContent>
                       {productTypes.map((productType) => (
-                        <SelectItem key={productType} value={productType}>
-                          {productType}
+                        <SelectItem key={productType.type} value={productType.type}>
+                          {productType.type}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -731,9 +721,9 @@ export default function TuotteetSivu() {
                       <SelectValue placeholder="Valitse aliryhmä" />
                     </SelectTrigger>
                     <SelectContent>
-                      {valittavatsubtypet.map((aliryhma) => (
-                        <SelectItem key={aliryhma} value={aliryhma}>
-                          {aliryhma}
+                      {productTypes.find(t => t.type === muokattavaproduct.type)?.subtypes.map(subType => (
+                        <SelectItem key={subType} value={subType}>
+                          {subType}
                         </SelectItem>
                       ))}
                     </SelectContent>
