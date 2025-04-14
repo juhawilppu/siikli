@@ -32,26 +32,26 @@ productsRoute.get(`/api/products`, async (req, res) => {
 
 productsRoute.get(`/api/products/product-types`, async (req, res) => {
   console.log('getting product-types')
-  const rows = await prisma.product.findMany({
-    select: {
-      type: true,
-      subtype: true,
-    },
+  const rows = await prisma.productType.findMany({
+    include: {
+      product_subtypes: true
+    }
   });
 
-  const grouped = rows.reduce((acc, row) => {
-    if (!acc[row.type]) acc[row.type] = new Set();
-    if (row.subtype) {
-      acc[row.type].add(row.subtype);
+  res.status(200).json(rows.map(r => {
+    return {
+      id: r.id,
+      name: r.type!,
+      orderIndex: r.order_index,
+      subtypes: r.product_subtypes.map(s => {
+        return {
+          id: s.id,
+          name: s.subtype!,
+          orderIndex: s.order_index
+        }
+      })
     }
-    return acc;
-  }, {} as Record<string, Set<string>>);
-
-  const result = Object.entries(grouped).map(([type, bSet]) => ({
-    type,
-    subtypes: Array.from(bSet),
-  }));
-  res.status(200).json(result satisfies ProductTypeResponse[])
+  }) satisfies ProductTypeResponse[])
 })
 
 productsRoute.post(`/api/products`, async (req, res) => {

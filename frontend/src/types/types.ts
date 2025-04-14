@@ -234,8 +234,14 @@ export interface FullProductDto {
 }
 
 export interface ProductTypeResponse {
-  type: string;
-  subtypes: string[];
+  id: string;
+  name: string;
+  orderIndex: number
+  subtypes: {
+    id: string;
+    name: string;
+    orderIndex: number;
+  }[];
 }
 
 export interface ReorderDto {
