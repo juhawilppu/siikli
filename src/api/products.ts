@@ -54,9 +54,52 @@ productsRoute.get(`/api/products/product-types`, async (req, res) => {
   }) satisfies ProductTypeResponse[])
 })
 
+const verifyProductTypeAndSubtype = async (body: { type: string, subtype: string }) => {
+  console.log('checking type', body.type)
+  const type = await prisma.productType.findFirst({
+    where: {
+      type: body.type
+    }
+  })
+  if (!type) {
+    console.log('creating type', body.type)
+    await prisma.productType.create({
+      data: {
+        type: body.type,
+        order_index: 0
+      }
+    })
+  } else {
+    console.log('type OK')
+  }
+
+  console.log('checking subtype', body.subtype)
+  const subtype = await prisma.productSubtypes.findFirst({
+    where: {
+      type: body.type,
+      subtype: body.subtype
+    }
+  })
+  if (!subtype) {
+    console.log('creating subtype', body.subtype)
+    await prisma.productSubtypes.create({
+      data: {
+        type: body.type,
+        subtype: body.subtype,
+        order_index: 0
+      }
+    })
+  } else {
+    console.log('subtype OK')
+  }
+}
+
 productsRoute.post(`/api/products`, async (req, res) => {
   console.log('saving product')
   const body = req.body as FullProductDto
+
+  await verifyProductTypeAndSubtype(body as any)
+
   const result = await prisma.product.create({
     data: {
       name: body.name,
@@ -119,6 +162,8 @@ productsRoute.post(`/api/products/:id`, async (req, res) => {
   console.log('updating product ' + id)
 
   const body = req.body as FullProductDto
+
+  await verifyProductTypeAndSubtype(body as any)
 
   const result = await prisma.product.update({
     data: {

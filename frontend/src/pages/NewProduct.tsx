@@ -35,8 +35,11 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
     const [product, setProduct] = useState<Partial<FullProductDto>>(mode === 'edit' ? { ...productToEdit } : {
         orderIndex
     })
-    const [open, setOpen] = useState(false)
-    const [inputValue, setInputValue] = useState("")
+    const [openType, setOpenType] = useState(false)
+    const [inputValueType, setInputValueType] = useState("")
+
+    const [openSubtype, setOpenSubtype] = useState(false)
+    const [inputValueSubtype, setInputValueSubtype] = useState("")
 
     const handleFormSave = async () => {
         if (!product.name || !product.type) {
@@ -62,20 +65,44 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
         }
 
     }
-    const handleSelect = (value: string) => {
+
+    const handleSelectType = (value: string) => {
         setProduct({ ...product, type: value })
-        setOpen(false);
+        setOpenType(false);
     };
 
-    const handleCreate = () => {
-        const newType = inputValue.trim();
-        if (newType && !productTypes.some(p => p.type === newType)) {
+    const handleSelectSubtype = (value: string) => {
+        setProduct({ ...product, subtype: value })
+        setOpenSubtype(false);
+    };
+
+    const handleCreateType = () => {
+        const newType = inputValueType.trim();
+        if (newType && !productTypes.some(p => p.name === newType)) {
             // optionally: add to list or emit callback
-            productTypes.push({ type: newType, subtypes: [] });
+            productTypes.push({ id: 'TODO', name: newType, orderIndex: 0, subtypes: [] });
             setProduct({ ...product, type: newType })
         }
-        setOpen(false);
+        setOpenType(false);
     };
+
+    const handleCreateSubtype = () => {
+        if (!product.type || !productTypes) {
+            return
+        }
+        const newType = inputValueSubtype.trim();
+        if (newType && !productTypes.find(p => p.name === product.type)?.subtypes.some(p => p.name === newType)) {
+            // optionally: add to list or emit callback
+            productTypes.find(p => p.name === product.type)?.subtypes.push({ id: 'TODO', name: newType, orderIndex: 0 });
+            setProduct({ ...product, subtype: newType })
+        }
+        setOpenSubtype(false);
+    };
+
+    if (!productTypes) {
+        return <div></div>
+    }
+
     return (
         <DialogContent className="sm:max-w-[600px]">
             <DialogHeader>
@@ -113,7 +140,7 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
                         <Label htmlFor="type" className="font-medium">
                             Tuoteryhmä *
                         </Label>
-                        <Popover open={open} onOpenChange={setOpen}>
+                        <Popover open={openType} onOpenChange={setOpenType}>
                             <PopoverTrigger asChild>
                                 <Button variant="outline" role="combobox" className="w-full justify-between">
                                     {product.type || "Valitse tuoteryhmä"}
@@ -124,20 +151,20 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
                                 <Command>
                                     <CommandInput
                                         placeholder="Hae tai lisää"
-                                        value={inputValue}
-                                        onValueChange={setInputValue}
+                                        value={inputValueType}
+                                        onValueChange={setInputValueType}
                                     />
                                     <CommandEmpty>
-                                        <button onClick={handleCreate} className="flex items-center space-x-2 text-sm p-2 hover:bg-muted w-full text-left">
+                                        <button onClick={handleCreateType} className="flex items-center space-x-2 text-sm p-2 hover:bg-muted w-full text-left">
                                             <Plus className="w-4 h-4" />
-                                            <span>Luo: {inputValue}</span>
+                                            <span>Luo: {inputValueType}</span>
                                         </button>
                                     </CommandEmpty>
                                     <CommandGroup>
                                         {productTypes.map((type) => (
-                                            <CommandItem key={type.type} value={type.type} onSelect={handleSelect}>
-                                                <Check className={cn("mr-2 h-4 w-4", product.type === type.type ? "opacity-100" : "opacity-0")} />
-                                                {type.type}
+                                            <CommandItem key={type.name} value={type.name} onSelect={handleSelectType}>
+                                                <Check className={cn("mr-2 h-4 w-4", product.type === type.name ? "opacity-100" : "opacity-0")} />
+                                                {type.name}
                                             </CommandItem>
                                         ))}
                                     </CommandGroup>
@@ -147,24 +174,39 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
                     </div>
                     <div className="space-y-2">
                         <Label htmlFor="subtype" className="font-medium">
-                            Aliryhmä
+                            Tuoteryhmä *
                         </Label>
-                        <Select
-                            value={product.subtype ?? undefined}
-                            onValueChange={(value) => setProduct({ ...product, subtype: value })}
-                            disabled={!product.type}
-                        >
-                            <SelectTrigger id="subtype">
-                                <SelectValue placeholder="Valitse aliryhmä" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {productTypes.find(t => t.type === product.type)?.subtypes.map(subType => (
-                                    <SelectItem key={subType} value={subType}>
-                                        {subType}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
+                        <Popover open={openSubtype} onOpenChange={setOpenSubtype}>
+                            <PopoverTrigger asChild>
+                                <Button variant="outline" role="combobox" className="w-full justify-between">
+                                    {product.subtype || "Valitse aliryhmä"}
+                                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-full p-0">
+                                <Command>
+                                    <CommandInput
+                                        placeholder="Hae tai lisää"
+                                        value={inputValueSubtype}
+                                        onValueChange={setInputValueSubtype}
+                                    />
+                                    <CommandEmpty>
+                                        <button onClick={handleCreateSubtype} className="flex items-center space-x-2 text-sm p-2 hover:bg-muted w-full text-left">
+                                            <Plus className="w-4 h-4" />
+                                            <span>Luo: {inputValueSubtype}</span>
+                                        </button>
+                                    </CommandEmpty>
+                                    <CommandGroup>
+                                        {productTypes.find(p => p.name === product.type)?.subtypes.map((subtype) => (
+                                            <CommandItem key={subtype.name} value={subtype.name} onSelect={handleSelectSubtype}>
+                                                <Check className={cn("mr-2 h-4 w-4", product.subtype === subtype.name ? "opacity-100" : "opacity-0")} />
+                                                {subtype.name}
+                                            </CommandItem>
+                                        ))}
+                                    </CommandGroup>
+                                </Command>
+                            </PopoverContent>
+                        </Popover>
                     </div>
                 </div>
 
