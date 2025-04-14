@@ -29,6 +29,7 @@ import { useToast } from "@/hooks/use-toast"
 import { FullProductDto, ProductTypeResponse, ReorderDto } from "@/types/types"
 import { formatMoneyFi } from "@/utils/money"
 import axios from "axios"
+import { useNavigate } from "react-router-dom"
 import NewProduct from "./NewProduct"
 
 // Pakkausvaihtoehdot
@@ -49,6 +50,7 @@ export default function TuotteetSivu() {
 
   const { toast } = useToast()
 
+  const navigate = useNavigate()
 
   useEffect(() => {
     const loadData = async () => {
@@ -219,6 +221,7 @@ export default function TuotteetSivu() {
                   ))}
                 </DropdownMenuContent>
               </DropdownMenu>
+              <Button onClick={() => navigate('/products/reorder')}>Järjestele ryhmät</Button>
             </div>
           </div>
           <Dialog open={showNewProductDialog} onOpenChange={setShowNewProductDialog}>
