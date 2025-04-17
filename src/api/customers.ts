@@ -19,7 +19,15 @@ customersRoute.get(`/api/customers`, async (req, res) => {
       name: r.name,
       streetAddress: r.address,
       postalCode: r.postal_code,
-      city: r.city
+      compensation: r.compensation,
+      city: r.city,
+      email: r.email,
+      phone: r.phone,
+      show_price_without_tax: r.show_price_without_tax,
+      tenantId: r.tenantId,
+      reference: r.reference,
+      company_name: r.company_name,
+      order_index: r.order_index,
     }
   }) satisfies CustomerDto[])
 })

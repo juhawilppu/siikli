@@ -145,6 +145,12 @@ export interface CustomerDto {
   streetAddress: string | null
   postalCode: string | null
   city: string | null
+  compensation: number
+  reference: string | null
+  company_name: string | null
+  order_index: number | null
+  email: string | null
+  phone: string | null
 }
 
 export interface InvoiceItemDto {
