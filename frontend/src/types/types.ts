@@ -145,12 +145,15 @@ export interface CustomerDto {
   streetAddress: string | null
   postalCode: string | null
   city: string | null
+  showPriceWithoutTax: boolean
   compensation: number
   reference: string | null
-  company_name: string | null
-  order_index: number | null
+  companyName: string | null
+  orderIndex: number | null
   email: string | null
   phone: string | null
+  businessId: string | null
+  customerGroup: string | null
 }
 
 export interface InvoiceItemDto {

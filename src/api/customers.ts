@@ -20,14 +20,16 @@ customersRoute.get(`/api/customers`, async (req, res) => {
       streetAddress: r.address,
       postalCode: r.postal_code,
       compensation: r.compensation,
+      businessId: r.business_id,
       city: r.city,
       email: r.email,
       phone: r.phone,
-      show_price_without_tax: r.show_price_without_tax,
+      showPriceWithoutTax: r.show_price_without_tax,
       tenantId: r.tenantId,
       reference: r.reference,
-      company_name: r.company_name,
-      order_index: r.order_index,
+      companyName: r.company_name,
+      orderIndex: r.order_index,
+      customerGroup: r.customer_group,
     }
   }) satisfies CustomerDto[])
 })
@@ -35,7 +37,7 @@ customersRoute.get(`/api/customers`, async (req, res) => {
 
 customersRoute.post(`/api/customers`, async (req, res) => {
   console.log('creating customer')
-  console.log(req.body)
+  const body = req.body as CustomerDto
   const tenant = await prisma.tenant.findFirstOrThrow()
   const result = await prisma.customer.create({
     data: {
@@ -44,9 +46,20 @@ customersRoute.post(`/api/customers`, async (req, res) => {
           id: tenant.id
         }
       },
-      chain: req.body.chain,
-      name: req.body.name,
-      compensation: parseInt(req.body.compensation)
+      chain: body.chain,
+      name: body.name,
+      compensation: body.compensation,
+      address: body.streetAddress,
+      postal_code: body.postalCode,
+      city: body.city,
+      email: body.email,
+      phone: body.phone,
+      show_price_without_tax: body.showPriceWithoutTax,
+      reference: body.reference,
+      company_name: body.companyName,
+      order_index: body.orderIndex,
+      business_id: body.businessId,
+      customer_group: body.customerGroup,
     }
   })
   res.json(result)
@@ -55,7 +68,7 @@ customersRoute.post(`/api/customers`, async (req, res) => {
 customersRoute.put(`/api/customers/:id`, async (req, res) => {
   console.log('updating customer')
   const id = req.params.id
-  console.log(req.body)
+  const body = req.body as CustomerDto
   const tenant = await prisma.tenant.findFirstOrThrow()
   const result = await prisma.customer.update({
     where: {
@@ -67,15 +80,20 @@ customersRoute.put(`/api/customers/:id`, async (req, res) => {
           id: tenant.id
         }
       },
-      chain: req.body.chain,
-      name: req.body.name,
-      compensation: parseInt(req.body.compensation),
-      address: req.body.address,
-      postal_code: req.body.postal_code,
-      city: req.body.city,
-      email: req.body.email,
-      phone: req.body.phone,
-      show_price_without_tax: req.body.show_price_without_tax
+      chain: body.chain,
+      name: body.name,
+      compensation: body.compensation,
+      address: body.streetAddress,
+      postal_code: body.postalCode,
+      city: body.city,
+      email: body.email,
+      phone: body.phone,
+      show_price_without_tax: body.showPriceWithoutTax,
+      reference: body.reference,
+      company_name: body.companyName,
+      order_index: body.orderIndex,
+      business_id: body.businessId,
+      customer_group: body.customerGroup,
     }
   })
   res.json(result)

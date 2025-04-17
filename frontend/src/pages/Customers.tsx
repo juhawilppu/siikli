@@ -67,13 +67,12 @@ export const Customers = () => {
   const [customers, setCustomers] = useState<CustomerDto[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
-  const [muokattavaAsiakas, setMuokattavaAsiakas] = useState<CustomerDto | null>(null)
+  const [muokattavaAsiakas, setMuokattavaAsiakas] = useState<CustomerDto>()
   const [uusiAsiakas, setUusiAsiakas] = useState<Partial<CustomerDto>>({
     chain: "",
     name: "",
     compensation: 0,
-    show_price_without_tax: false,
-    tenantId: "tenant-1",
+    showPriceWithoutTax: false
   })
   const [naytaLisaaDialog, setNaytaLisaaDialog] = useState(false)
   const [naytaMuokkaaDialog, setNaytaMuokkaaDialog] = useState(false)
@@ -100,14 +99,14 @@ export const Customers = () => {
       // Haku
       const matchesSearch =
         asiakas.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        asiakas.company_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        asiakas.companyName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         asiakas.city?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        asiakas.business_id?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        asiakas.businessId?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         asiakas.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         asiakas.phone?.toLowerCase().includes(searchQuery.toLowerCase())
 
       // Asiakasryhmäsuodatus
-      const matchesGroup = asiakasryhmaFilter === "kaikki" || asiakas.customer_group === asiakasryhmaFilter
+      const matchesGroup = asiakasryhmaFilter === "kaikki" || asiakas.customerGroup === asiakasryhmaFilter
 
       // Ketjusuodatus
       const matchesChain = ketjuFilter === "kaikki" || asiakas.chain === ketjuFilter
@@ -136,7 +135,7 @@ export const Customers = () => {
   const sivujenMaara = Math.ceil(filteredAsiakkaat.length / rivejaSivulla)
 
   // Asiakkaan muokkaaminen
-  const aloitaMuokkaus = (asiakas: Asiakas) => {
+  const aloitaMuokkaus = (asiakas: CustomerDto) => {
     setMuokattavaAsiakas({ ...asiakas })
     setNaytaMuokkaaDialog(true)
   }
@@ -174,11 +173,11 @@ export const Customers = () => {
       return
     }
 
-    const uusiJarjestys = Math.max(...customers.map((a) => a.order_index || 0), 0) + 1
-    const uusiAsiakasObjekti: Asiakas = {
+    const uusiJarjestys = Math.max(...customers.map((a) => a.orderIndex || 0), 0) + 1
+    const uusiAsiakasObjekti: CustomerDto = {
       ...uusiAsiakas,
-      order_index: uusiJarjestys,
-    } as Asiakas
+      orderIndex: uusiJarjestys,
+    } as CustomerDto
 
     axios
       .post('/customers', uusiAsiakasObjekti)
@@ -189,8 +188,7 @@ export const Customers = () => {
           chain: "",
           name: "",
           compensation: 0,
-          show_price_without_tax: false,
-          tenantId: "tenant-1",
+          showPriceWithoutTax: false
         })
         toast({
           title: "Asiakas lisätty",
@@ -355,8 +353,8 @@ export const Customers = () => {
                     </Label>
                     <Input
                       id="company_name"
-                      value={uusiAsiakas.company_name || ""}
-                      onChange={(e) => setUusiAsiakas({ ...uusiAsiakas, company_name: e.target.value })}
+                      value={uusiAsiakas.companyName || ""}
+                      onChange={(e) => setUusiAsiakas({ ...uusiAsiakas, companyName: e.target.value })}
                       maxLength={255}
                     />
                   </div>
@@ -366,8 +364,8 @@ export const Customers = () => {
                     </Label>
                     <Input
                       id="business_id"
-                      value={uusiAsiakas.business_id || ""}
-                      onChange={(e) => setUusiAsiakas({ ...uusiAsiakas, business_id: e.target.value })}
+                      value={uusiAsiakas.businessId || ""}
+                      onChange={(e) => setUusiAsiakas({ ...uusiAsiakas, businessId: e.target.value })}
                       maxLength={255}
                     />
                   </div>
@@ -379,8 +377,8 @@ export const Customers = () => {
                       Asiakasryhmä
                     </Label>
                     <Select
-                      value={uusiAsiakas.customer_group}
-                      onValueChange={(value) => setUusiAsiakas({ ...uusiAsiakas, customer_group: value })}
+                      value={uusiAsiakas.customerGroup}
+                      onValueChange={(value) => setUusiAsiakas({ ...uusiAsiakas, customerGroup: value })}
                     >
                       <SelectTrigger id="customer_group">
                         <SelectValue placeholder="Valitse asiakasryhmä" />
@@ -434,11 +432,11 @@ export const Customers = () => {
                       id="order_index"
                       type="number"
                       min="0"
-                      value={uusiAsiakas.order_index || ""}
+                      value={uusiAsiakas.orderIndex || ""}
                       onChange={(e) =>
                         setUusiAsiakas({
                           ...uusiAsiakas,
-                          order_index: Number.parseInt(e.target.value) || undefined,
+                          orderIndex: Number.parseInt(e.target.value) || undefined,
                         })
                       }
                     />
@@ -451,8 +449,8 @@ export const Customers = () => {
                   </Label>
                   <Input
                     id="address"
-                    value={uusiAsiakas.address || ""}
-                    onChange={(e) => setUusiAsiakas({ ...uusiAsiakas, address: e.target.value })}
+                    value={uusiAsiakas.streetAddress || ""}
+                    onChange={(e) => setUusiAsiakas({ ...uusiAsiakas, streetAddress: e.target.value })}
                     maxLength={255}
                   />
                 </div>
@@ -476,8 +474,8 @@ export const Customers = () => {
                     </Label>
                     <Input
                       id="postal_code"
-                      value={uusiAsiakas.postal_code || ""}
-                      onChange={(e) => setUusiAsiakas({ ...uusiAsiakas, postal_code: e.target.value })}
+                      value={uusiAsiakas.postalCode || ""}
+                      onChange={(e) => setUusiAsiakas({ ...uusiAsiakas, postalCode: e.target.value })}
                       maxLength={5}
                     />
                   </div>
@@ -523,9 +521,9 @@ export const Customers = () => {
                 <div className="flex items-center space-x-2 pt-2">
                   <Checkbox
                     id="show_price_without_tax"
-                    checked={uusiAsiakas.show_price_without_tax}
+                    checked={uusiAsiakas.showPriceWithoutTax}
                     onCheckedChange={(checked) =>
-                      setUusiAsiakas({ ...uusiAsiakas, show_price_without_tax: checked as boolean })
+                      setUusiAsiakas({ ...uusiAsiakas, showPriceWithoutTax: checked as boolean })
                     }
                   />
                   <Label htmlFor="show_price_without_tax" className="font-medium">
@@ -574,7 +572,7 @@ export const Customers = () => {
                   <TableHead className="cursor-pointer" onClick={() => vaihdaJarjestys("customer_group")}>
                     <div className="flex items-center">
                       Asiakasryhmä
-                      {jarjestysKentta === "customer_group" && (
+                      {jarjestysKentta === "customerGroup" && (
                         <ChevronDown
                           className={`ml-1 h-4 w-4 ${jarjestys === "asc" ? "rotate-180 transform" : ""}`}
                         />
@@ -607,9 +605,9 @@ export const Customers = () => {
                     <TableRow key={asiakas.id} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
                       <TableCell className="font-medium">{asiakas.chain}</TableCell>
                       <TableCell className="font-medium">{asiakas.name}</TableCell>
-                      <TableCell>{asiakas.company_name}</TableCell>
+                      <TableCell>{asiakas.companyName}</TableCell>
                       <TableCell>{asiakas.city}</TableCell>
-                      <TableCell>{asiakas.customer_group}</TableCell>
+                      <TableCell>{asiakas.customerGroup}</TableCell>
                       <TableCell>{asiakas.compensation.toFixed(2)}</TableCell>
                       <TableCell>
                         <div className="text-sm">
@@ -771,8 +769,8 @@ export const Customers = () => {
                   </Label>
                   <Input
                     id="edit-company_name"
-                    value={muokattavaAsiakas.company_name || ""}
-                    onChange={(e) => setMuokattavaAsiakas({ ...muokattavaAsiakas, company_name: e.target.value })}
+                    value={muokattavaAsiakas.companyName || ""}
+                    onChange={(e) => setMuokattavaAsiakas({ ...muokattavaAsiakas, companyName: e.target.value })}
                     maxLength={255}
                   />
                 </div>
@@ -782,8 +780,8 @@ export const Customers = () => {
                   </Label>
                   <Input
                     id="edit-business_id"
-                    value={muokattavaAsiakas.business_id || ""}
-                    onChange={(e) => setMuokattavaAsiakas({ ...muokattavaAsiakas, business_id: e.target.value })}
+                    value={muokattavaAsiakas.businessId || ""}
+                    onChange={(e) => setMuokattavaAsiakas({ ...muokattavaAsiakas, businessId: e.target.value })}
                     maxLength={255}
                   />
                 </div>
@@ -795,8 +793,8 @@ export const Customers = () => {
                     Asiakasryhmä
                   </Label>
                   <Select
-                    value={muokattavaAsiakas.customer_group || ""}
-                    onValueChange={(value) => setMuokattavaAsiakas({ ...muokattavaAsiakas, customer_group: value })}
+                    value={muokattavaAsiakas.customerGroup || ""}
+                    onValueChange={(value) => setMuokattavaAsiakas({ ...muokattavaAsiakas, customerGroup: value })}
                   >
                     <SelectTrigger id="edit-customer_group">
                       <SelectValue placeholder="Valitse asiakasryhmä" />
@@ -867,8 +865,8 @@ export const Customers = () => {
                 </Label>
                 <Input
                   id="edit-address"
-                  value={muokattavaAsiakas.address || ""}
-                  onChange={(e) => setMuokattavaAsiakas({ ...muokattavaAsiakas, address: e.target.value })}
+                  value={muokattavaAsiakas.streetAddress || ""}
+                  onChange={(e) => setMuokattavaAsiakas({ ...muokattavaAsiakas, streetAddress: e.target.value })}
                   maxLength={255}
                 />
               </div>
@@ -892,8 +890,8 @@ export const Customers = () => {
                   </Label>
                   <Input
                     id="edit-postal_code"
-                    value={muokattavaAsiakas.postal_code || ""}
-                    onChange={(e) => setMuokattavaAsiakas({ ...muokattavaAsiakas, postal_code: e.target.value })}
+                    value={muokattavaAsiakas.postalCode || ""}
+                    onChange={(e) => setMuokattavaAsiakas({ ...muokattavaAsiakas, postalCode: e.target.value })}
                     maxLength={5}
                   />
                 </div>
@@ -939,9 +937,9 @@ export const Customers = () => {
               <div className="flex items-center space-x-2 pt-2">
                 <Checkbox
                   id="edit-show_price_without_tax"
-                  checked={muokattavaAsiakas.show_price_without_tax}
+                  checked={muokattavaAsiakas.showPriceWithoutTax}
                   onCheckedChange={(checked) =>
-                    setMuokattavaAsiakas({ ...muokattavaAsiakas, show_price_without_tax: checked as boolean })
+                    setMuokattavaAsiakas({ ...muokattavaAsiakas, showPriceWithoutTax: checked as boolean })
                   }
                 />
                 <Label htmlFor="edit-show_price_without_tax" className="font-medium">
