@@ -51,3 +51,32 @@ customersRoute.post(`/api/customers`, async (req, res) => {
   })
   res.json(result)
 })
+
+customersRoute.put(`/api/customers/:id`, async (req, res) => {
+  console.log('updating customer')
+  const id = req.params.id
+  console.log(req.body)
+  const tenant = await prisma.tenant.findFirstOrThrow()
+  const result = await prisma.customer.update({
+    where: {
+      id: id
+    },
+    data: {
+      tenant: {
+        connect: {
+          id: tenant.id
+        }
+      },
+      chain: req.body.chain,
+      name: req.body.name,
+      compensation: parseInt(req.body.compensation),
+      address: req.body.address,
+      postal_code: req.body.postal_code,
+      city: req.body.city,
+      email: req.body.email,
+      phone: req.body.phone,
+      show_price_without_tax: req.body.show_price_without_tax
+    }
+  })
+  res.json(result)
+})
