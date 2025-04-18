@@ -910,72 +910,78 @@ export const Customers = () => {
               </div>
               <DragOverlay>
                 {activeId ? (
-                  <TableRow className="bg-white shadow-lg">
-                    <TableCell className="w-10">
-                      <div className="flex items-center">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 cursor-grabbing"
-                        >
-                          <GripVertical className="h-4 w-4" />
-                        </Button>
-                        {(paginatedCustomers.find(c => c.id === activeId)?.orderIndex || 0) + 1}
-                      </div>
-                    </TableCell>
-                    <TableCell className="font-medium">
-                      {paginatedCustomers.find(c => c.id === activeId)?.chain}
-                    </TableCell>
-                    <TableCell className="font-medium">
-                      {paginatedCustomers.find(c => c.id === activeId)?.name}
-                    </TableCell>
-                    <TableCell>
-                      {paginatedCustomers.find(c => c.id === activeId)?.companyName}
-                    </TableCell>
-                    <TableCell>
-                      {paginatedCustomers.find(c => c.id === activeId)?.city}
-                    </TableCell>
-                    <TableCell>
-                      {paginatedCustomers.find(c => c.id === activeId)?.customerGroup}
-                    </TableCell>
-                    <TableCell>
-                      {formatPercentage(paginatedCustomers.find(c => c.id === activeId)?.compensation || 0)}
-                    </TableCell>
-                    <TableCell>
-                      <div className="text-sm">
-                        {paginatedCustomers.find(c => c.id === activeId)?.email && (
-                          <div>
-                            <span className="text-gray-500">Email:</span>{" "}
-                            {paginatedCustomers.find(c => c.id === activeId)?.email}
-                          </div>
-                        )}
-                        {paginatedCustomers.find(c => c.id === activeId)?.phone && (
-                          <div>
-                            <span className="text-gray-500">Puh:</span>{" "}
-                            {paginatedCustomers.find(c => c.id === activeId)?.phone}
-                          </div>
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8"
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
+                  <div className="w-full">
+                    <Table>
+                      <TableBody>
+                        <TableRow className="bg-white shadow-lg">
+                          <TableCell className="w-[60px]">
+                            <div className="flex items-center">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 cursor-grab"
+                              >
+                                <GripVertical className="h-4 w-4" />
+                              </Button>
+                              {(paginatedCustomers.find(c => c.id === activeId)?.orderIndex || 0) + 1}
+                            </div>
+                          </TableCell>
+                          <TableCell className="font-medium">
+                            {paginatedCustomers.find(c => c.id === activeId)?.chain}
+                          </TableCell>
+                          <TableCell className="font-medium">
+                            {paginatedCustomers.find(c => c.id === activeId)?.name}
+                          </TableCell>
+                          <TableCell>
+                            {paginatedCustomers.find(c => c.id === activeId)?.companyName}
+                          </TableCell>
+                          <TableCell>
+                            {paginatedCustomers.find(c => c.id === activeId)?.city}
+                          </TableCell>
+                          <TableCell>
+                            {paginatedCustomers.find(c => c.id === activeId)?.customerGroup}
+                          </TableCell>
+                          <TableCell>
+                            {formatPercentage(paginatedCustomers.find(c => c.id === activeId)?.compensation || 0)}
+                          </TableCell>
+                          <TableCell>
+                            <div className="text-sm">
+                              {paginatedCustomers.find(c => c.id === activeId)?.email && (
+                                <div>
+                                  <span className="text-gray-500">Email:</span>{" "}
+                                  {paginatedCustomers.find(c => c.id === activeId)?.email}
+                                </div>
+                              )}
+                              {paginatedCustomers.find(c => c.id === activeId)?.phone && (
+                                <div>
+                                  <span className="text-gray-500">Puh:</span>{" "}
+                                  {paginatedCustomers.find(c => c.id === activeId)?.phone}
+                                </div>
+                              )}
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex justify-end gap-2">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8"
+                              >
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      </TableBody>
+                    </Table>
+                  </div>
                 ) : null}
               </DragOverlay>
             </DndContext>
