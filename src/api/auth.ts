@@ -16,7 +16,7 @@ authRoute.get(
   passport.authenticate('google'),
   (req, res) => {
     console.log('callback here')
-    res.redirect('/messages')
+    res.redirect('/')
   }
 )
 
