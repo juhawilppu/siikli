@@ -461,8 +461,8 @@ export const Customers = () => {
                   </Label>
                   <Input
                     id="address2"
-                    value={uusiAsiakas.address2 || ""}
-                    onChange={(e) => setUusiAsiakas({ ...uusiAsiakas, address2: e.target.value })}
+                    value={uusiAsiakas.streetAddress2 || ""}
+                    onChange={(e) => setUusiAsiakas({ ...uusiAsiakas, streetAddress2: e.target.value })}
                     maxLength={255}
                   />
                 </div>
@@ -848,11 +848,11 @@ export const Customers = () => {
                     id="edit-order_index"
                     type="number"
                     min="0"
-                    value={muokattavaAsiakas.order_index || ""}
+                    value={muokattavaAsiakas.orderIndex || ""}
                     onChange={(e) =>
                       setMuokattavaAsiakas({
                         ...muokattavaAsiakas,
-                        order_index: Number.parseInt(e.target.value) || undefined,
+                        orderIndex: Number.parseInt(e.target.value) || undefined,
                       })
                     }
                   />
@@ -877,8 +877,8 @@ export const Customers = () => {
                 </Label>
                 <Input
                   id="edit-address2"
-                  value={muokattavaAsiakas.address2 || ""}
-                  onChange={(e) => setMuokattavaAsiakas({ ...muokattavaAsiakas, address2: e.target.value })}
+                  value={muokattavaAsiakas.streetAddress2 || ""}
+                  onChange={(e) => setMuokattavaAsiakas({ ...muokattavaAsiakas, streetAddress2: e.target.value })}
                   maxLength={255}
                 />
               </div>

@@ -143,6 +143,7 @@ export interface CustomerDto {
   chain: string
   name: string
   streetAddress: string | null
+  streetAddress2: string | null
   postalCode: string | null
   city: string | null
   showPriceWithoutTax: boolean
