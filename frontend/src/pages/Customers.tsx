@@ -65,7 +65,7 @@ export const Customers = () => {
 
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
-  const [muokattavaAsiakas, setMuokattavaAsiakas] = useState<CustomerDto>()
+  const [customerToEdit, setCustomerToEdit] = useState<CustomerDto>()
   const [uusiAsiakas, setUusiAsiakas] = useState<Partial<CustomerDto>>({
     chain: "",
     name: "",
@@ -73,7 +73,7 @@ export const Customers = () => {
     showPriceWithoutTax: false
   })
   const [naytaLisaaDialog, setNaytaLisaaDialog] = useState(false)
-  const [naytaMuokkaaDialog, setNaytaMuokkaaDialog] = useState(false)
+  const [showEditDialog, setNaytaMuokkaaDialog] = useState(false)
   const [poistettavaAsiakas, setPoistettavaAsiakas] = useState<string | null>(null)
   const [asiakasryhmaFilter, setCustomerGroupFilter] = useState<string>("kaikki")
   const [ketjuFilter, setChainFilter] = useState<string>("kaikki")
@@ -90,9 +90,9 @@ export const Customers = () => {
       setChains([...chains, inputValueChain])
       if (naytaLisaaDialog) {
         setUusiAsiakas({ ...uusiAsiakas, chain: inputValueChain })
-      } else if (naytaMuokkaaDialog) {
-        if (muokattavaAsiakas) {
-          setMuokattavaAsiakas({ ...muokattavaAsiakas, chain: inputValueChain })
+      } else if (showEditDialog) {
+        if (customerToEdit) {
+          setCustomerToEdit({ ...customerToEdit, chain: inputValueChain })
         }
       }
       setInputValueChain("")
@@ -162,21 +162,21 @@ export const Customers = () => {
 
   // Asiakkaan muokkaaminen
   const aloitaMuokkaus = (asiakas: CustomerDto) => {
-    setMuokattavaAsiakas({ ...asiakas })
+    setCustomerToEdit({ ...asiakas })
     setNaytaMuokkaaDialog(true)
   }
 
   const tallennaMuokkaus = () => {
-    if (!muokattavaAsiakas) return
+    if (!customerToEdit) return
 
     axios
-      .put(`/customers/${muokattavaAsiakas.id}`, muokattavaAsiakas)
+      .put(`/customers/${customerToEdit.id}`, customerToEdit)
       .then(() => {
-        setCustomers(customers.map((a) => (a.id === muokattavaAsiakas.id ? muokattavaAsiakas : a)))
+        setCustomers(customers.map((a) => (a.id === customerToEdit.id ? customerToEdit : a)))
         setNaytaMuokkaaDialog(false)
         toast({
           title: "Asiakas päivitetty",
-          description: `Asiakas "${muokattavaAsiakas.name}" on päivitetty onnistuneesti.`,
+          description: `Asiakas "${customerToEdit.name}" on päivitetty onnistuneesti.`,
         })
       })
       .catch((error) => {
@@ -780,7 +780,7 @@ export const Customers = () => {
       </div>
 
       {/* Muokkausdialogi */}
-      <Dialog open={naytaMuokkaaDialog} onOpenChange={setNaytaMuokkaaDialog}>
+      <Dialog open={showEditDialog} onOpenChange={setNaytaMuokkaaDialog}>
         <DialogContent className="sm:max-w-[600px]">
           <DialogHeader>
             <DialogTitle>Muokkaa asiakasta</DialogTitle>
@@ -788,7 +788,7 @@ export const Customers = () => {
               Muokkaa asiakkaan tietoja. Pakolliset kentät on merkitty tähdellä (*).
             </DialogDescription>
           </DialogHeader>
-          {muokattavaAsiakas && (
+          {customerToEdit && (
             <div className="grid gap-4 py-4 max-h-[70vh] overflow-y-auto pr-2">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
@@ -797,8 +797,8 @@ export const Customers = () => {
                   </Label>
                   <Input
                     id="edit-name"
-                    value={muokattavaAsiakas.name}
-                    onChange={(e) => setMuokattavaAsiakas({ ...muokattavaAsiakas, name: e.target.value })}
+                    value={customerToEdit.name}
+                    onChange={(e) => setCustomerToEdit({ ...customerToEdit, name: e.target.value })}
                     maxLength={50}
                   />
                 </div>
@@ -809,7 +809,7 @@ export const Customers = () => {
                   <Popover>
                     <PopoverTrigger asChild>
                       <Button variant="outline" role="combobox" className="w-full justify-between">
-                        {muokattavaAsiakas.chain || "Valitse ketju"}
+                        {customerToEdit.chain || "Valitse ketju"}
                         <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                       </Button>
                     </PopoverTrigger>
@@ -838,9 +838,9 @@ export const Customers = () => {
                             key={chain}
                             variant="ghost"
                             className="w-full justify-start"
-                            onClick={() => setMuokattavaAsiakas({ ...muokattavaAsiakas, chain })}
+                            onClick={() => setCustomerToEdit({ ...customerToEdit, chain })}
                           >
-                            <Check className={cn("mr-2 h-4 w-4", muokattavaAsiakas.chain === chain ? "opacity-100" : "opacity-0")} />
+                            <Check className={cn("mr-2 h-4 w-4", customerToEdit.chain === chain ? "opacity-100" : "opacity-0")} />
                             {chain}
                           </Button>
                         ))}
@@ -857,8 +857,8 @@ export const Customers = () => {
                   </Label>
                   <Input
                     id="edit-company_name"
-                    value={muokattavaAsiakas.companyName || ""}
-                    onChange={(e) => setMuokattavaAsiakas({ ...muokattavaAsiakas, companyName: e.target.value })}
+                    value={customerToEdit.companyName || ""}
+                    onChange={(e) => setCustomerToEdit({ ...customerToEdit, companyName: e.target.value })}
                     maxLength={255}
                   />
                 </div>
@@ -868,8 +868,8 @@ export const Customers = () => {
                   </Label>
                   <Input
                     id="edit-business_id"
-                    value={muokattavaAsiakas.businessId || ""}
-                    onChange={(e) => setMuokattavaAsiakas({ ...muokattavaAsiakas, businessId: e.target.value })}
+                    value={customerToEdit.businessId || ""}
+                    onChange={(e) => setCustomerToEdit({ ...customerToEdit, businessId: e.target.value })}
                     maxLength={255}
                   />
                 </div>
@@ -881,8 +881,8 @@ export const Customers = () => {
                     Asiakasryhmä
                   </Label>
                   <Select
-                    value={muokattavaAsiakas.customerGroup || ""}
-                    onValueChange={(value) => setMuokattavaAsiakas({ ...muokattavaAsiakas, customerGroup: value })}
+                    value={customerToEdit.customerGroup || ""}
+                    onValueChange={(value) => setCustomerToEdit({ ...customerToEdit, customerGroup: value })}
                   >
                     <SelectTrigger id="edit-customer_group">
                       <SelectValue placeholder="Valitse asiakasryhmä" />
@@ -905,10 +905,10 @@ export const Customers = () => {
                     type="number"
                     step="0.01"
                     min="0"
-                    value={muokattavaAsiakas.compensation}
+                    value={customerToEdit.compensation}
                     onChange={(e) =>
-                      setMuokattavaAsiakas({
-                        ...muokattavaAsiakas,
+                      setCustomerToEdit({
+                        ...customerToEdit,
                         compensation: Number.parseFloat(e.target.value) || 0,
                       })
                     }
@@ -923,8 +923,8 @@ export const Customers = () => {
                   </Label>
                   <Input
                     id="edit-reference"
-                    value={muokattavaAsiakas.reference || ""}
-                    onChange={(e) => setMuokattavaAsiakas({ ...muokattavaAsiakas, reference: e.target.value })}
+                    value={customerToEdit.reference || ""}
+                    onChange={(e) => setCustomerToEdit({ ...customerToEdit, reference: e.target.value })}
                     maxLength={255}
                   />
                 </div>
@@ -936,10 +936,10 @@ export const Customers = () => {
                     id="edit-order_index"
                     type="number"
                     min="0"
-                    value={muokattavaAsiakas.orderIndex || ""}
+                    value={customerToEdit.orderIndex || ""}
                     onChange={(e) =>
-                      setMuokattavaAsiakas({
-                        ...muokattavaAsiakas,
+                      setCustomerToEdit({
+                        ...customerToEdit,
                         orderIndex: Number.parseInt(e.target.value) || 0,
                       })
                     }
@@ -953,8 +953,8 @@ export const Customers = () => {
                 </Label>
                 <Input
                   id="edit-address"
-                  value={muokattavaAsiakas.streetAddress || ""}
-                  onChange={(e) => setMuokattavaAsiakas({ ...muokattavaAsiakas, streetAddress: e.target.value })}
+                  value={customerToEdit.streetAddress || ""}
+                  onChange={(e) => setCustomerToEdit({ ...customerToEdit, streetAddress: e.target.value })}
                   maxLength={255}
                 />
               </div>
@@ -965,8 +965,8 @@ export const Customers = () => {
                 </Label>
                 <Input
                   id="edit-address2"
-                  value={muokattavaAsiakas.streetAddress2 || ""}
-                  onChange={(e) => setMuokattavaAsiakas({ ...muokattavaAsiakas, streetAddress2: e.target.value })}
+                  value={customerToEdit.streetAddress2 || ""}
+                  onChange={(e) => setCustomerToEdit({ ...customerToEdit, streetAddress2: e.target.value })}
                   maxLength={255}
                 />
               </div>
@@ -978,8 +978,8 @@ export const Customers = () => {
                   </Label>
                   <Input
                     id="edit-postal_code"
-                    value={muokattavaAsiakas.postalCode || ""}
-                    onChange={(e) => setMuokattavaAsiakas({ ...muokattavaAsiakas, postalCode: e.target.value })}
+                    value={customerToEdit.postalCode || ""}
+                    onChange={(e) => setCustomerToEdit({ ...customerToEdit, postalCode: e.target.value })}
                     maxLength={5}
                   />
                 </div>
@@ -989,8 +989,8 @@ export const Customers = () => {
                   </Label>
                   <Input
                     id="edit-city"
-                    value={muokattavaAsiakas.city || ""}
-                    onChange={(e) => setMuokattavaAsiakas({ ...muokattavaAsiakas, city: e.target.value })}
+                    value={customerToEdit.city || ""}
+                    onChange={(e) => setCustomerToEdit({ ...customerToEdit, city: e.target.value })}
                     maxLength={255}
                   />
                 </div>
@@ -1004,8 +1004,8 @@ export const Customers = () => {
                   <Input
                     id="edit-email"
                     type="email"
-                    value={muokattavaAsiakas.email || ""}
-                    onChange={(e) => setMuokattavaAsiakas({ ...muokattavaAsiakas, email: e.target.value })}
+                    value={customerToEdit.email || ""}
+                    onChange={(e) => setCustomerToEdit({ ...customerToEdit, email: e.target.value })}
                     maxLength={255}
                   />
                 </div>
@@ -1015,8 +1015,8 @@ export const Customers = () => {
                   </Label>
                   <Input
                     id="edit-phone"
-                    value={muokattavaAsiakas.phone || ""}
-                    onChange={(e) => setMuokattavaAsiakas({ ...muokattavaAsiakas, phone: e.target.value })}
+                    value={customerToEdit.phone || ""}
+                    onChange={(e) => setCustomerToEdit({ ...customerToEdit, phone: e.target.value })}
                     maxLength={255}
                   />
                 </div>
@@ -1025,9 +1025,9 @@ export const Customers = () => {
               <div className="flex items-center space-x-2 pt-2">
                 <Checkbox
                   id="edit-show_price_without_tax"
-                  checked={muokattavaAsiakas.showPriceWithoutTax}
+                  checked={customerToEdit.showPriceWithoutTax}
                   onCheckedChange={(checked) =>
-                    setMuokattavaAsiakas({ ...muokattavaAsiakas, showPriceWithoutTax: checked as boolean })
+                    setCustomerToEdit({ ...customerToEdit, showPriceWithoutTax: checked as boolean })
                   }
                 />
                 <Label htmlFor="edit-show_price_without_tax" className="font-medium">
