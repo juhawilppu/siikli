@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client'
 import express from 'express'
-import { CustomerDto } from '../../frontend/src/types/types'
+import { CustomerDto, GetCustomersResponseDto } from '../../frontend/src/types/types'
 
 export const customersRoute = express.Router()
 const prisma = new PrismaClient()
@@ -12,29 +12,43 @@ customersRoute.get(`/api/customers`, async (req, res) => {
       order_index: 'asc',
     },
   })
-  res.json(result.map(r => {
-    return {
-      id: r.id,
-      chain: r.chain,
-      name: r.name,
-      streetAddress: r.address,
-      streetAddress2: r.address2,
-      postalCode: r.postal_code,
-      compensation: r.compensation,
-      businessId: r.business_id,
-      city: r.city,
-      email: r.email,
-      phone: r.phone,
-      showPriceWithoutTax: r.show_price_without_tax,
-      tenantId: r.tenantId,
-      reference: r.reference,
-      companyName: r.company_name,
-      orderIndex: r.order_index,
-      customerGroup: r.customer_group,
+  const customerGroups = await prisma.customer.findMany({
+    select: {
+      customer_group: true
+    },
+    distinct: ['customer_group'],
+    where: {
+      customer_group: {
+        not: null
+      }
     }
-  }) satisfies CustomerDto[])
-})
+  })
 
+  res.json({
+    customerGroups: customerGroups.map(r => r.customer_group as string),
+    customers: result.map(r => {
+      return {
+        id: r.id,
+        chain: r.chain,
+        name: r.name,
+        streetAddress: r.address,
+        streetAddress2: r.address2,
+        postalCode: r.postal_code,
+        compensation: r.compensation,
+        businessId: r.business_id,
+        city: r.city,
+        email: r.email,
+        phone: r.phone,
+        showPriceWithoutTax: r.show_price_without_tax,
+        tenantId: r.tenantId,
+        reference: r.reference,
+        companyName: r.company_name,
+        orderIndex: r.order_index,
+        customerGroup: r.customer_group,
+      }
+    })
+  } satisfies GetCustomersResponseDto)
+})
 
 customersRoute.post(`/api/customers`, async (req, res) => {
   console.log('creating customer')

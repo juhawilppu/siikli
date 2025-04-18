@@ -42,7 +42,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { useToast } from "@/hooks/use-toast"
-import { CustomerDto } from "@/types/types"
+import { CustomerDto, GetCustomersResponseDto } from "@/types/types"
 import axios from 'axios'
 import {
   ChevronDown,
@@ -53,11 +53,6 @@ import {
   Trash2
 } from "lucide-react"
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-
-
-// Asiakasryhmät
-const asiakasryhmat = ["Vähittäiskauppa", "Tukkukauppa", "Ravintola", "Leipomo", "Muu"]
 
 // Ketjut
 const ketjut = ["S", "K", "L", "M", "R"]
@@ -65,6 +60,8 @@ const ketjut = ["S", "K", "L", "M", "R"]
 
 export const Customers = () => {
   const [customers, setCustomers] = useState<CustomerDto[]>([])
+  const [customerGroups, setCustomerGroups] = useState<string[]>([])
+
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
   const [muokattavaAsiakas, setMuokattavaAsiakas] = useState<CustomerDto>()
@@ -77,19 +74,21 @@ export const Customers = () => {
   const [naytaLisaaDialog, setNaytaLisaaDialog] = useState(false)
   const [naytaMuokkaaDialog, setNaytaMuokkaaDialog] = useState(false)
   const [poistettavaAsiakas, setPoistettavaAsiakas] = useState<string | null>(null)
-  const [asiakasryhmaFilter, setAsiakasryhmaFilter] = useState<string>("kaikki")
+  const [asiakasryhmaFilter, setCustomerGroupFilter] = useState<string>("kaikki")
   const [ketjuFilter, setKetjuFilter] = useState<string>("kaikki")
   const [jarjestys, setJarjestys] = useState<"asc" | "desc">("asc")
   const [jarjestysKentta, setJarjestysKentta] = useState<keyof CustomerDto>("name")
   const [sivu, setSivu] = useState(1)
   const rivejaSivulla = 5
-  const navigate = useNavigate()
   const { toast } = useToast()
 
   useEffect(() => {
     axios
-      .get('/customers')
-      .then((response) => setCustomers(response.data))
+      .get<GetCustomersResponseDto>('/customers')
+      .then((response) => {
+        setCustomers(response.data.customers)
+        setCustomerGroups(response.data.customerGroups)
+      })
       .finally(() => setLoading(false))
   }, [])
 
@@ -154,6 +153,7 @@ export const Customers = () => {
         })
       })
       .catch((error) => {
+        console.error(error)
         toast({
           title: "Virhe",
           description: "Asiakkaan päivitys epäonnistui.",
@@ -196,6 +196,7 @@ export const Customers = () => {
         })
       })
       .catch((error) => {
+        console.error(error)
         toast({
           title: "Virhe",
           description: "Asiakkaan lisäys epäonnistui.",
@@ -226,6 +227,7 @@ export const Customers = () => {
         })
       })
       .catch((error) => {
+        console.error(error)
         toast({
           title: "Virhe",
           description: "Asiakkaan poisto epäonnistui.",
@@ -235,7 +237,7 @@ export const Customers = () => {
   }
 
   // Järjestyksen vaihtaminen
-  const vaihdaJarjestys = (kentta: keyof Asiakas) => {
+  const vaihdaJarjestys = (kentta: keyof CustomerDto) => {
     if (jarjestysKentta === kentta) {
       setJarjestys(jarjestys === "asc" ? "desc" : "asc")
     } else {
@@ -266,13 +268,13 @@ export const Customers = () => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <DropdownMenuItem onClick={() => setAsiakasryhmaFilter("kaikki")}>
+                <DropdownMenuItem onClick={() => setCustomerGroupFilter("kaikki")}>
                   Kaikki asiakasryhmät
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                {asiakasryhmat.map((ryhma) => (
-                  <DropdownMenuItem key={ryhma} onClick={() => setAsiakasryhmaFilter(ryhma)}>
-                    {ryhma}
+                {customerGroups.map((customerGroup) => (
+                  <DropdownMenuItem key={customerGroup} onClick={() => setCustomerGroupFilter(customerGroup)}>
+                    {customerGroup}
                   </DropdownMenuItem>
                 ))}
               </DropdownMenuContent>
@@ -377,16 +379,16 @@ export const Customers = () => {
                       Asiakasryhmä
                     </Label>
                     <Select
-                      value={uusiAsiakas.customerGroup}
+                      value={uusiAsiakas.customerGroup ?? undefined}
                       onValueChange={(value) => setUusiAsiakas({ ...uusiAsiakas, customerGroup: value })}
                     >
                       <SelectTrigger id="customer_group">
                         <SelectValue placeholder="Valitse asiakasryhmä" />
                       </SelectTrigger>
                       <SelectContent>
-                        {asiakasryhmat.map((ryhma) => (
-                          <SelectItem key={ryhma} value={ryhma}>
-                            {ryhma}
+                        {customerGroups.map((customerGroup) => (
+                          <SelectItem key={customerGroup} value={customerGroup}>
+                            {customerGroup}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -569,7 +571,7 @@ export const Customers = () => {
                   </TableHead>
                   <TableHead>Yritys</TableHead>
                   <TableHead>Kaupunki</TableHead>
-                  <TableHead className="cursor-pointer" onClick={() => vaihdaJarjestys("customer_group")}>
+                  <TableHead className="cursor-pointer" onClick={() => vaihdaJarjestys("customerGroup")}>
                     <div className="flex items-center">
                       Asiakasryhmä
                       {jarjestysKentta === "customerGroup" && (
@@ -800,9 +802,9 @@ export const Customers = () => {
                       <SelectValue placeholder="Valitse asiakasryhmä" />
                     </SelectTrigger>
                     <SelectContent>
-                      {asiakasryhmat.map((ryhma) => (
-                        <SelectItem key={ryhma} value={ryhma}>
-                          {ryhma}
+                      {customerGroups.map((customerGroup) => (
+                        <SelectItem key={customerGroup} value={customerGroup}>
+                          {customerGroup}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -852,7 +854,7 @@ export const Customers = () => {
                     onChange={(e) =>
                       setMuokattavaAsiakas({
                         ...muokattavaAsiakas,
-                        orderIndex: Number.parseInt(e.target.value) || undefined,
+                        orderIndex: Number.parseInt(e.target.value) || 0,
                       })
                     }
                   />

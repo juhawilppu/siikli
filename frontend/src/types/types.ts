@@ -138,6 +138,11 @@ export interface GetCompanySettings {
   website: string;
 }
 
+export interface GetCustomersResponseDto {
+  customerGroups: string[]
+  customers: CustomerDto[]
+}
+
 export interface CustomerDto {
   id: string
   chain: string
