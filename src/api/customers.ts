@@ -88,6 +88,31 @@ customersRoute.post(`/api/customers`, async (req, res) => {
   res.json(result)
 })
 
+customersRoute.put(`/api/customers/reorder`, async (req, res) => {
+  console.log('reordering customers')
+  const customers = req.body as CustomerDto[]
+
+  try {
+    // Update all customers in a transaction to ensure atomicity
+    await prisma.$transaction(
+      customers.map(customer =>
+        prisma.customer.update({
+          where: { id: customer.id },
+          data: { order_index: customer.orderIndex }
+        })
+      )
+    )
+
+    res.json({ success: true })
+  } catch (error) {
+    console.error('Failed to reorder customers:', error)
+    res.status(500).json({
+      success: false,
+      error: 'Failed to update customer order'
+    })
+  }
+})
+
 customersRoute.put(`/api/customers/:id`, async (req, res) => {
   console.log('updating customer')
   const id = req.params.id
