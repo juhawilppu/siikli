@@ -62,11 +62,12 @@ import {
 } from "lucide-react"
 import { useEffect, useState } from 'react'
 
-const SortableTableRow = ({ customer, index, onEdit, onDelete }: {
+const SortableTableRow = ({ customer, index, onEdit, onDelete, fieldToSortBy }: {
   customer: CustomerDto,
   index: number,
   onEdit: (customer: CustomerDto) => void,
-  onDelete: (id: string) => void
+  onDelete: (id: string) => void,
+  fieldToSortBy: keyof CustomerDto
 }) => {
   const {
     attributes,
@@ -90,9 +91,11 @@ const SortableTableRow = ({ customer, index, onEdit, onDelete }: {
       )}
     >
       <TableCell className="w-10">
+        {customer.orderIndex}
         <Button
           variant="ghost"
           size="icon"
+          disabled={fieldToSortBy !== "orderIndex"}
           className="h-8 w-8 cursor-grab active:cursor-grabbing"
           {...attributes}
           {...listeners}
@@ -182,7 +185,7 @@ export const Customers = () => {
   const [customerGroupFilter, setCustomerGroupFilter] = useState<string>("all")
   const [chainFilter, setChainFilter] = useState<string>("all")
   const [orderDirection, setOrderDirection] = useState<"asc" | "desc">("asc")
-  const [fieldToSortBy, setJarjestysKentta] = useState<keyof CustomerDto>("name")
+  const [fieldToSortBy, setFieldToSortBy] = useState<keyof CustomerDto>("orderIndex")
   const [page, setPage] = useState(1)
   const rowsPerPage = 20
   const { toast } = useToast()
@@ -393,7 +396,7 @@ export const Customers = () => {
     if (fieldToSortBy === kentta) {
       setOrderDirection(orderDirection === "asc" ? "desc" : "asc")
     } else {
-      setJarjestysKentta(kentta)
+      setFieldToSortBy(kentta)
       setOrderDirection("asc")
     }
   }
@@ -803,6 +806,17 @@ export const Customers = () => {
               <Table>
                 <TableHeader className="bg-gray-50">
                   <TableRow>
+                    <TableHead className="w-[60px]" onClick={() => changeOrderDirection("orderIndex")}>
+                      <div className="flex items-center">
+                        Järjestysnumero
+                        {fieldToSortBy === "orderIndex" && (
+                          <ChevronDown
+                            className={`ml-1 h-4 w-4 ${orderDirection === "asc" ? "rotate-180 transform" : ""}`}
+                          />
+                        )}
+                      </div>
+
+                    </TableHead>
                     <TableHead className="w-[60px]">Ketju</TableHead>
                     <TableHead className="cursor-pointer" onClick={() => changeOrderDirection("name")}>
                       <div className="flex items-center">
@@ -859,6 +873,7 @@ export const Customers = () => {
                           index={index}
                           onEdit={startEdit}
                           onDelete={deleteCustomer}
+                          fieldToSortBy={fieldToSortBy}
                         />
                       ))}
                     </SortableContext>
