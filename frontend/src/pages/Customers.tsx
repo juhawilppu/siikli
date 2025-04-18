@@ -45,7 +45,7 @@ import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 import { CustomerDto, GetCustomersResponseDto } from "@/types/types"
 import { formatPercentage } from "@/utils/money"
-import { DndContext, DragEndEvent, closestCenter } from '@dnd-kit/core'
+import { DndContext, DragEndEvent, DragOverlay, closestCenter } from '@dnd-kit/core'
 import { SortableContext, arrayMove, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import axios from 'axios'
@@ -75,11 +75,21 @@ const SortableTableRow = ({ customer, index, onEdit, onDelete, fieldToSortBy }: 
     setNodeRef,
     transform,
     transition,
-  } = useSortable({ id: customer.id })
+    isDragging,
+  } = useSortable({
+    id: customer.id,
+    data: {
+      type: 'customer',
+      customer
+    }
+  })
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
+    position: isDragging ? ('relative' as const) : undefined,
+    zIndex: isDragging ? 1 : undefined,
+    touchAction: 'none' as const
   }
 
   return (
@@ -87,7 +97,8 @@ const SortableTableRow = ({ customer, index, onEdit, onDelete, fieldToSortBy }: 
       ref={setNodeRef}
       style={style}
       className={cn(
-        index % 2 === 0 ? "bg-white" : "bg-gray-50"
+        index % 2 === 0 ? "bg-white" : "bg-gray-50",
+        isDragging && "shadow-lg"
       )}
     >
       <TableCell className="w-10">
@@ -96,7 +107,10 @@ const SortableTableRow = ({ customer, index, onEdit, onDelete, fieldToSortBy }: 
             variant="ghost"
             size="icon"
             disabled={fieldToSortBy !== "orderIndex"}
-            className="h-8 w-8 cursor-grab active:cursor-grabbing"
+            className={cn(
+              "h-8 w-8",
+              fieldToSortBy === "orderIndex" && "cursor-grab active:cursor-grabbing"
+            )}
             {...attributes}
             {...listeners}
           >
@@ -195,6 +209,7 @@ export const Customers = () => {
   const [inputValueCustomerGroup, setInputValueCustomerGroup] = useState("")
   const [isChainPopoverOpen, setIsChainPopoverOpen] = useState(false)
   const [isCustomerGroupPopoverOpen, setIsCustomerGroupPopoverOpen] = useState(false)
+  const [activeId, setActiveId] = useState<string | null>(null)
 
   const handleCreateChain = () => {
     if (inputValueChain && !chains.includes(inputValueChain)) {
@@ -403,7 +418,12 @@ export const Customers = () => {
     }
   }
 
+  const handleDragStart = (event: any) => {
+    setActiveId(event.active.id)
+  }
+
   const handleDragEnd = (event: DragEndEvent) => {
+    setActiveId(null)
     const { active, over } = event
 
     if (over && active.id !== over.id) {
@@ -803,85 +823,161 @@ export const Customers = () => {
           <CardContent className="p-0">
             <DndContext
               collisionDetection={closestCenter}
+              onDragStart={handleDragStart}
               onDragEnd={handleDragEnd}
             >
-              <Table>
-                <TableHeader className="bg-gray-50">
-                  <TableRow>
-                    <TableHead className="w-[60px]" onClick={() => changeOrderDirection("orderIndex")}>
-                      <div className="flex items-center">
-                        Järjestysnumero
-                        {fieldToSortBy === "orderIndex" && (
-                          <ChevronDown
-                            className={`ml-1 h-4 w-4 ${orderDirection === "asc" ? "rotate-180 transform" : ""}`}
-                          />
-                        )}
-                      </div>
-
-                    </TableHead>
-                    <TableHead className="w-[60px]">Ketju</TableHead>
-                    <TableHead className="cursor-pointer" onClick={() => changeOrderDirection("name")}>
-                      <div className="flex items-center">
-                        Nimi
-                        {fieldToSortBy === "name" && (
-                          <ChevronDown
-                            className={`ml-1 h-4 w-4 ${orderDirection === "asc" ? "rotate-180 transform" : ""}`}
-                          />
-                        )}
-                      </div>
-                    </TableHead>
-                    <TableHead>Yritys</TableHead>
-                    <TableHead>Kaupunki</TableHead>
-                    <TableHead className="cursor-pointer" onClick={() => changeOrderDirection("customerGroup")}>
-                      <div className="flex items-center">
-                        Asiakasryhmä
-                        {fieldToSortBy === "customerGroup" && (
-                          <ChevronDown
-                            className={`ml-1 h-4 w-4 ${orderDirection === "asc" ? "rotate-180 transform" : ""}`}
-                          />
-                        )}
-                      </div>
-                    </TableHead>
-                    <TableHead className="cursor-pointer" onClick={() => changeOrderDirection("compensation")}>
-                      <div className="flex items-center">
-                        Alennus
-                        {fieldToSortBy === "compensation" && (
-                          <ChevronDown
-                            className={`ml-1 h-4 w-4 ${orderDirection === "asc" ? "rotate-180 transform" : ""}`}
-                          />
-                        )}
-                      </div>
-                    </TableHead>
-                    <TableHead>Yhteystiedot</TableHead>
-                    <TableHead className="text-right">Toiminnot</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {paginatedCustomers.length === 0 ? (
+              <div className="relative">
+                <Table>
+                  <TableHeader className="bg-gray-50 sticky top-0 z-10">
                     <TableRow>
-                      <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
-                        Ei asiakkaita hakuehdoilla
-                      </TableCell>
+                      <TableHead className="w-[60px]" onClick={() => changeOrderDirection("orderIndex")}>
+                        <div className="flex items-center">
+                          Järjestysnumero
+                          {fieldToSortBy === "orderIndex" && (
+                            <ChevronDown
+                              className={`ml-1 h-4 w-4 ${orderDirection === "asc" ? "rotate-180 transform" : ""}`}
+                            />
+                          )}
+                        </div>
+                      </TableHead>
+                      <TableHead className="w-[60px]">Ketju</TableHead>
+                      <TableHead className="cursor-pointer" onClick={() => changeOrderDirection("name")}>
+                        <div className="flex items-center">
+                          Nimi
+                          {fieldToSortBy === "name" && (
+                            <ChevronDown
+                              className={`ml-1 h-4 w-4 ${orderDirection === "asc" ? "rotate-180 transform" : ""}`}
+                            />
+                          )}
+                        </div>
+                      </TableHead>
+                      <TableHead>Yritys</TableHead>
+                      <TableHead>Kaupunki</TableHead>
+                      <TableHead className="cursor-pointer" onClick={() => changeOrderDirection("customerGroup")}>
+                        <div className="flex items-center">
+                          Asiakasryhmä
+                          {fieldToSortBy === "customerGroup" && (
+                            <ChevronDown
+                              className={`ml-1 h-4 w-4 ${orderDirection === "asc" ? "rotate-180 transform" : ""}`}
+                            />
+                          )}
+                        </div>
+                      </TableHead>
+                      <TableHead className="cursor-pointer" onClick={() => changeOrderDirection("compensation")}>
+                        <div className="flex items-center">
+                          Alennus
+                          {fieldToSortBy === "compensation" && (
+                            <ChevronDown
+                              className={`ml-1 h-4 w-4 ${orderDirection === "asc" ? "rotate-180 transform" : ""}`}
+                            />
+                          )}
+                        </div>
+                      </TableHead>
+                      <TableHead>Yhteystiedot</TableHead>
+                      <TableHead className="text-right">Toiminnot</TableHead>
                     </TableRow>
-                  ) : (
-                    <SortableContext
-                      items={paginatedCustomers.map(c => c.id)}
-                      strategy={verticalListSortingStrategy}
-                    >
-                      {paginatedCustomers.map((customer, index) => (
-                        <SortableTableRow
-                          key={customer.id}
-                          customer={customer}
-                          index={index}
-                          onEdit={startEdit}
-                          onDelete={deleteCustomer}
-                          fieldToSortBy={fieldToSortBy}
-                        />
-                      ))}
-                    </SortableContext>
-                  )}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                </Table>
+                <div className="max-h-[calc(100vh-300px)] overflow-y-auto">
+                  <Table>
+                    <TableBody>
+                      {paginatedCustomers.length === 0 ? (
+                        <TableRow>
+                          <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                            Ei asiakkaita hakuehdoilla
+                          </TableCell>
+                        </TableRow>
+                      ) : (
+                        <SortableContext
+                          items={paginatedCustomers.map(c => c.id)}
+                          strategy={verticalListSortingStrategy}
+                        >
+                          {paginatedCustomers.map((customer, index) => (
+                            <SortableTableRow
+                              key={customer.id}
+                              customer={customer}
+                              index={index}
+                              onEdit={startEdit}
+                              onDelete={deleteCustomer}
+                              fieldToSortBy={fieldToSortBy}
+                            />
+                          ))}
+                        </SortableContext>
+                      )}
+                    </TableBody>
+                  </Table>
+                </div>
+              </div>
+              <DragOverlay>
+                {activeId ? (
+                  <TableRow className="bg-white shadow-lg">
+                    <TableCell className="w-10">
+                      <div className="flex items-center">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 cursor-grabbing"
+                        >
+                          <GripVertical className="h-4 w-4" />
+                        </Button>
+                        {(paginatedCustomers.find(c => c.id === activeId)?.orderIndex || 0) + 1}
+                      </div>
+                    </TableCell>
+                    <TableCell className="font-medium">
+                      {paginatedCustomers.find(c => c.id === activeId)?.chain}
+                    </TableCell>
+                    <TableCell className="font-medium">
+                      {paginatedCustomers.find(c => c.id === activeId)?.name}
+                    </TableCell>
+                    <TableCell>
+                      {paginatedCustomers.find(c => c.id === activeId)?.companyName}
+                    </TableCell>
+                    <TableCell>
+                      {paginatedCustomers.find(c => c.id === activeId)?.city}
+                    </TableCell>
+                    <TableCell>
+                      {paginatedCustomers.find(c => c.id === activeId)?.customerGroup}
+                    </TableCell>
+                    <TableCell>
+                      {formatPercentage(paginatedCustomers.find(c => c.id === activeId)?.compensation || 0)}
+                    </TableCell>
+                    <TableCell>
+                      <div className="text-sm">
+                        {paginatedCustomers.find(c => c.id === activeId)?.email && (
+                          <div>
+                            <span className="text-gray-500">Email:</span>{" "}
+                            {paginatedCustomers.find(c => c.id === activeId)?.email}
+                          </div>
+                        )}
+                        {paginatedCustomers.find(c => c.id === activeId)?.phone && (
+                          <div>
+                            <span className="text-gray-500">Puh:</span>{" "}
+                            {paginatedCustomers.find(c => c.id === activeId)?.phone}
+                          </div>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-2">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8"
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ) : null}
+              </DragOverlay>
             </DndContext>
           </CardContent>
           <CardFooter className="flex justify-between border-t bg-gray-50 py-3">
