@@ -79,6 +79,11 @@ export const Customers = () => {
   const rivejaSivulla = 5
   const { toast } = useToast()
 
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value)
+    setSivu(1) // Reset to first page when searching
+  }
+
   useEffect(() => {
     axios
       .get<GetCustomersResponseDto>('/customers')
@@ -258,6 +263,13 @@ export const Customers = () => {
         {/* Toiminnot ja suodattimet */}
         <div className="flex flex-col sm:flex-row gap-4 justify-between">
           <div className="flex flex-wrap gap-2">
+            <Input
+              type="text"
+              placeholder="Hae asiakasta"
+              value={searchQuery}
+              onChange={handleSearch}
+              className="w-full sm:w-auto"
+            />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" className="gap-1">
