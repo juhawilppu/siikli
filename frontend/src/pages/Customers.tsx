@@ -86,8 +86,15 @@ export const Customers = () => {
 
   const handleCreateChain = () => {
     if (inputValueChain && !chains.includes(inputValueChain)) {
+      console.log("Create chain", inputValueChain)
       setChains([...chains, inputValueChain])
-      setUusiAsiakas({ ...uusiAsiakas, chain: inputValueChain })
+      if (naytaLisaaDialog) {
+        setUusiAsiakas({ ...uusiAsiakas, chain: inputValueChain })
+      } else if (naytaMuokkaaDialog) {
+        if (muokattavaAsiakas) {
+          setMuokattavaAsiakas({ ...muokattavaAsiakas, chain: inputValueChain })
+        }
+      }
       setInputValueChain("")
     }
   }
