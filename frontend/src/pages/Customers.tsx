@@ -799,21 +799,47 @@ export const Customers = () => {
                   <Label htmlFor="edit-chain" className="font-medium">
                     Ketju *
                   </Label>
-                  <Select
-                    value={muokattavaAsiakas.chain}
-                    onValueChange={(value) => setMuokattavaAsiakas({ ...muokattavaAsiakas, chain: value })}
-                  >
-                    <SelectTrigger id="edit-chain">
-                      <SelectValue placeholder="Valitse ketju" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {chains.map((chain) => (
-                        <SelectItem key={chain} value={chain}>
-                          {chain}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button variant="outline" role="combobox" className="w-full justify-between">
+                        {muokattavaAsiakas.chain || "Valitse ketju"}
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-full p-0">
+                      <div className="p-2">
+                        <Input
+                          placeholder="Hae tai lisää"
+                          value={inputValueChain}
+                          onChange={(e) => setInputValueChain(e.target.value)}
+                          className="mb-2"
+                        />
+                        {inputValueChain && !chains.includes(inputValueChain) && (
+                          <Button
+                            variant="ghost"
+                            className="w-full justify-start"
+                            onClick={handleCreateChain}
+                          >
+                            <Plus className="w-4 h-4 mr-2" />
+                            Luo: {inputValueChain}
+                          </Button>
+                        )}
+                      </div>
+                      <div className="max-h-[200px] overflow-y-auto">
+                        {chains.map((chain) => (
+                          <Button
+                            key={chain}
+                            variant="ghost"
+                            className="w-full justify-start"
+                            onClick={() => setMuokattavaAsiakas({ ...muokattavaAsiakas, chain })}
+                          >
+                            <Check className={cn("mr-2 h-4 w-4", muokattavaAsiakas.chain === chain ? "opacity-100" : "opacity-0")} />
+                            {chain}
+                          </Button>
+                        ))}
+                      </div>
+                    </PopoverContent>
+                  </Popover>
                 </div>
               </div>
 
