@@ -39,7 +39,6 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { useToast } from "@/hooks/use-toast"
@@ -84,6 +83,9 @@ export const Customers = () => {
   const rowsPerPage = 20
   const { toast } = useToast()
   const [inputValueChain, setInputValueChain] = useState("")
+  const [inputValueCustomerGroup, setInputValueCustomerGroup] = useState("")
+  const [isChainPopoverOpen, setIsChainPopoverOpen] = useState(false)
+  const [isCustomerGroupPopoverOpen, setIsCustomerGroupPopoverOpen] = useState(false)
 
   const handleCreateChain = () => {
     if (inputValueChain && !chains.includes(inputValueChain)) {
@@ -97,22 +99,28 @@ export const Customers = () => {
         }
       }
       setInputValueChain("")
-
-      // Close the popover
-      const popoverTrigger = document.querySelector('[role="combobox"]') as HTMLElement
-      if (popoverTrigger) {
-        popoverTrigger.click()
-      }
+      setIsChainPopoverOpen(false)
     }
   }
 
   const handleSelectChain = (chain: string) => {
     setCustomerToCreate({ ...customerToCreate, chain })
+    setIsChainPopoverOpen(false)
+  }
 
-    // Close the popover
-    const popoverTrigger = document.querySelector('[role="combobox"]') as HTMLElement
-    if (popoverTrigger) {
-      popoverTrigger.click()
+  const handleCreateCustomerGroup = () => {
+    if (inputValueCustomerGroup && !customerGroups.includes(inputValueCustomerGroup)) {
+      console.log("Create customer group", inputValueCustomerGroup)
+      setCustomerGroups([...customerGroups, inputValueCustomerGroup])
+      if (showCreateDialog) {
+        setCustomerToCreate({ ...customerToCreate, customerGroup: inputValueCustomerGroup })
+      } else if (showEditDialog) {
+        if (customerToEdit) {
+          setCustomerToEdit({ ...customerToEdit, customerGroup: inputValueCustomerGroup })
+        }
+      }
+      setInputValueCustomerGroup("")
+      setIsCustomerGroupPopoverOpen(false)
     }
   }
 
@@ -377,7 +385,7 @@ export const Customers = () => {
                     <Label htmlFor="chain" className="font-medium">
                       Ketju *
                     </Label>
-                    <Popover>
+                    <Popover open={isChainPopoverOpen} onOpenChange={setIsChainPopoverOpen}>
                       <PopoverTrigger asChild>
                         <Button variant="outline" role="combobox" className="w-full justify-between">
                           {customerToCreate.chain || "Valitse ketju"}
@@ -451,21 +459,47 @@ export const Customers = () => {
                     <Label htmlFor="customer_group" className="font-medium">
                       Asiakasryhmä
                     </Label>
-                    <Select
-                      value={customerToCreate.customerGroup ?? undefined}
-                      onValueChange={(value) => setCustomerToCreate({ ...customerToCreate, customerGroup: value })}
-                    >
-                      <SelectTrigger id="customer_group">
-                        <SelectValue placeholder="Valitse asiakasryhmä" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {customerGroups.map((customerGroup) => (
-                          <SelectItem key={customerGroup} value={customerGroup}>
-                            {customerGroup}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <Popover open={isCustomerGroupPopoverOpen} onOpenChange={setIsCustomerGroupPopoverOpen}>
+                      <PopoverTrigger asChild>
+                        <Button variant="outline" role="combobox" className="w-full justify-between">
+                          {customerToCreate.customerGroup || "Valitse asiakasryhmä"}
+                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-full p-0">
+                        <div className="p-2">
+                          <Input
+                            placeholder="Hae tai lisää"
+                            value={inputValueCustomerGroup}
+                            onChange={(e) => setInputValueCustomerGroup(e.target.value)}
+                            className="mb-2"
+                          />
+                          {inputValueCustomerGroup && !customerGroups.includes(inputValueCustomerGroup) && (
+                            <Button
+                              variant="ghost"
+                              className="w-full justify-start"
+                              onClick={handleCreateCustomerGroup}
+                            >
+                              <Plus className="w-4 h-4 mr-2" />
+                              Luo: {inputValueCustomerGroup}
+                            </Button>
+                          )}
+                        </div>
+                        <div className="max-h-[200px] overflow-y-auto">
+                          {customerGroups.map((customerGroup) => (
+                            <Button
+                              key={customerGroup}
+                              variant="ghost"
+                              className="w-full justify-start"
+                              onClick={() => setCustomerToCreate({ ...customerToCreate, customerGroup })}
+                            >
+                              <Check className={cn("mr-2 h-4 w-4", customerToCreate.customerGroup === customerGroup ? "opacity-100" : "opacity-0")} />
+                              {customerGroup}
+                            </Button>
+                          ))}
+                        </div>
+                      </PopoverContent>
+                    </Popover>
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="compensation" className="font-medium">
@@ -819,7 +853,7 @@ export const Customers = () => {
                   <Label htmlFor="edit-chain" className="font-medium">
                     Ketju *
                   </Label>
-                  <Popover>
+                  <Popover open={isChainPopoverOpen} onOpenChange={setIsChainPopoverOpen}>
                     <PopoverTrigger asChild>
                       <Button variant="outline" role="combobox" className="w-full justify-between">
                         {customerToEdit.chain || "Valitse ketju"}
@@ -893,21 +927,47 @@ export const Customers = () => {
                   <Label htmlFor="edit-customer_group" className="font-medium">
                     Asiakasryhmä
                   </Label>
-                  <Select
-                    value={customerToEdit.customerGroup || ""}
-                    onValueChange={(value) => setCustomerToEdit({ ...customerToEdit, customerGroup: value })}
-                  >
-                    <SelectTrigger id="edit-customer_group">
-                      <SelectValue placeholder="Valitse asiakasryhmä" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {customerGroups.map((customerGroup) => (
-                        <SelectItem key={customerGroup} value={customerGroup}>
-                          {customerGroup}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <Popover open={isCustomerGroupPopoverOpen} onOpenChange={setIsCustomerGroupPopoverOpen}>
+                    <PopoverTrigger asChild>
+                      <Button variant="outline" role="combobox" className="w-full justify-between">
+                        {customerToEdit.customerGroup || "Valitse asiakasryhmä"}
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-full p-0">
+                      <div className="p-2">
+                        <Input
+                          placeholder="Hae tai lisää"
+                          value={inputValueCustomerGroup}
+                          onChange={(e) => setInputValueCustomerGroup(e.target.value)}
+                          className="mb-2"
+                        />
+                        {inputValueCustomerGroup && !customerGroups.includes(inputValueCustomerGroup) && (
+                          <Button
+                            variant="ghost"
+                            className="w-full justify-start"
+                            onClick={handleCreateCustomerGroup}
+                          >
+                            <Plus className="w-4 h-4 mr-2" />
+                            Luo: {inputValueCustomerGroup}
+                          </Button>
+                        )}
+                      </div>
+                      <div className="max-h-[200px] overflow-y-auto">
+                        {customerGroups.map((customerGroup) => (
+                          <Button
+                            key={customerGroup}
+                            variant="ghost"
+                            className="w-full justify-start"
+                            onClick={() => setCustomerToEdit({ ...customerToEdit, customerGroup })}
+                          >
+                            <Check className={cn("mr-2 h-4 w-4", customerToEdit.customerGroup === customerGroup ? "opacity-100" : "opacity-0")} />
+                            {customerGroup}
+                          </Button>
+                        ))}
+                      </div>
+                    </PopoverContent>
+                  </Popover>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="edit-compensation" className="font-medium">
