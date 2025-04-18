@@ -96,11 +96,23 @@ export const Customers = () => {
         }
       }
       setInputValueChain("")
+
+      // Close the popover
+      const popoverTrigger = document.querySelector('[role="combobox"]') as HTMLElement
+      if (popoverTrigger) {
+        popoverTrigger.click()
+      }
     }
   }
 
   const handleSelectChain = (chain: string) => {
     setCustomerToCreate({ ...customerToCreate, chain })
+
+    // Close the popover
+    const popoverTrigger = document.querySelector('[role="combobox"]') as HTMLElement
+    if (popoverTrigger) {
+      popoverTrigger.click()
+    }
   }
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -663,24 +675,24 @@ export const Customers = () => {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  paginatedCustomers.map((asiakas, index) => (
-                    <TableRow key={asiakas.id} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
-                      <TableCell className="font-medium">{asiakas.chain}</TableCell>
-                      <TableCell className="font-medium">{asiakas.name}</TableCell>
-                      <TableCell>{asiakas.companyName}</TableCell>
-                      <TableCell>{asiakas.city}</TableCell>
-                      <TableCell>{asiakas.customerGroup}</TableCell>
-                      <TableCell>{asiakas.compensation.toFixed(2)}</TableCell>
+                  paginatedCustomers.map((customer, index) => (
+                    <TableRow key={customer.id} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+                      <TableCell className="font-medium">{customer.chain}</TableCell>
+                      <TableCell className="font-medium">{customer.name}</TableCell>
+                      <TableCell>{customer.companyName}</TableCell>
+                      <TableCell>{customer.city}</TableCell>
+                      <TableCell>{customer.customerGroup}</TableCell>
+                      <TableCell>{customer.compensation.toFixed(2)}</TableCell>
                       <TableCell>
                         <div className="text-sm">
-                          {asiakas.email && (
+                          {customer.email && (
                             <div>
-                              <span className="text-gray-500">Email:</span> {asiakas.email}
+                              <span className="text-gray-500">Email:</span> {customer.email}
                             </div>
                           )}
-                          {asiakas.phone && (
+                          {customer.phone && (
                             <div>
-                              <span className="text-gray-500">Puh:</span> {asiakas.phone}
+                              <span className="text-gray-500">Puh:</span> {customer.phone}
                             </div>
                           )}
                         </div>
@@ -694,7 +706,7 @@ export const Customers = () => {
                                   variant="ghost"
                                   size="icon"
                                   className="h-8 w-8"
-                                  onClick={() => startEdit(asiakas)}
+                                  onClick={() => startEdit(customer)}
                                 >
                                   <Edit className="h-4 w-4" />
                                 </Button>
@@ -711,7 +723,7 @@ export const Customers = () => {
                                   variant="ghost"
                                   size="icon"
                                   className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50"
-                                  onClick={() => deleteCustomer(asiakas.id)}
+                                  onClick={() => deleteCustomer(customer.id)}
                                 >
                                   <Trash2 className="h-4 w-4" />
                                 </Button>
