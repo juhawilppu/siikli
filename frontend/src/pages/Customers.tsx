@@ -38,14 +38,18 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { useToast } from "@/hooks/use-toast"
+import { cn } from "@/lib/utils"
 import { CustomerDto, GetCustomersResponseDto } from "@/types/types"
 import axios from 'axios'
 import {
+  Check,
   ChevronDown,
+  ChevronsUpDown,
   Edit,
   Filter,
   Plus,
@@ -78,6 +82,19 @@ export const Customers = () => {
   const [sivu, setSivu] = useState(1)
   const rivejaSivulla = 5
   const { toast } = useToast()
+  const [inputValueChain, setInputValueChain] = useState("")
+
+  const handleCreateChain = () => {
+    if (inputValueChain && !chains.includes(inputValueChain)) {
+      setChains([...chains, inputValueChain])
+      setUusiAsiakas({ ...uusiAsiakas, chain: inputValueChain })
+      setInputValueChain("")
+    }
+  }
+
+  const handleSelectChain = (chain: string) => {
+    setUusiAsiakas({ ...uusiAsiakas, chain })
+  }
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value)
@@ -340,21 +357,47 @@ export const Customers = () => {
                     <Label htmlFor="chain" className="font-medium">
                       Ketju *
                     </Label>
-                    <Select
-                      value={uusiAsiakas.chain}
-                      onValueChange={(value) => setUusiAsiakas({ ...uusiAsiakas, chain: value })}
-                    >
-                      <SelectTrigger id="chain">
-                        <SelectValue placeholder="Valitse ketju" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {chains.map((chain) => (
-                          <SelectItem key={chain} value={chain}>
-                            {chain}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button variant="outline" role="combobox" className="w-full justify-between">
+                          {uusiAsiakas.chain || "Valitse ketju"}
+                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-full p-0">
+                        <div className="p-2">
+                          <Input
+                            placeholder="Hae tai lisää"
+                            value={inputValueChain}
+                            onChange={(e) => setInputValueChain(e.target.value)}
+                            className="mb-2"
+                          />
+                          {inputValueChain && !chains.includes(inputValueChain) && (
+                            <Button
+                              variant="ghost"
+                              className="w-full justify-start"
+                              onClick={handleCreateChain}
+                            >
+                              <Plus className="w-4 h-4 mr-2" />
+                              Luo: {inputValueChain}
+                            </Button>
+                          )}
+                        </div>
+                        <div className="max-h-[200px] overflow-y-auto">
+                          {chains.map((chain) => (
+                            <Button
+                              key={chain}
+                              variant="ghost"
+                              className="w-full justify-start"
+                              onClick={() => handleSelectChain(chain)}
+                            >
+                              <Check className={cn("mr-2 h-4 w-4", uusiAsiakas.chain === chain ? "opacity-100" : "opacity-0")} />
+                              {chain}
+                            </Button>
+                          ))}
+                        </div>
+                      </PopoverContent>
+                    </Popover>
                   </div>
                 </div>
 
