@@ -144,6 +144,11 @@ export interface GetCustomersResponseDto {
   chains: string[]
 }
 
+export interface DeleteCustomerResponseDto {
+  deletedOrders: number
+  deletedCustomer: string
+}
+
 export interface CustomerDto {
   id: string
   chain: string

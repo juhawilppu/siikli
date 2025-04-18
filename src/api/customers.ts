@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client'
 import express from 'express'
-import { CustomerDto, GetCustomersResponseDto } from '../../frontend/src/types/types'
+import { CustomerDto, DeleteCustomerResponseDto, GetCustomersResponseDto } from '../../frontend/src/types/types'
 
 export const customersRoute = express.Router()
 const prisma = new PrismaClient()
@@ -121,4 +121,25 @@ customersRoute.put(`/api/customers/:id`, async (req, res) => {
     }
   })
   res.json(result)
+})
+
+customersRoute.delete(`/api/customers/:id`, async (req, res) => {
+  const id = req.params.id
+  console.log('deleting customer', id)
+
+  const deletedOrders = await prisma.order.deleteMany({
+    where: {
+      customerId: id
+    }
+  })
+
+  const result = await prisma.customer.delete({
+    where: {
+      id: id
+    }
+  })
+  res.json({
+    deletedOrders: deletedOrders.count,
+    deletedCustomer: result.id
+  } satisfies DeleteCustomerResponseDto)
 })

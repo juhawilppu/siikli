@@ -1127,7 +1127,8 @@ export const Customers = () => {
           <AlertDialogHeader>
             <AlertDialogTitle>Haluatko varmasti poistaa tämän asiakkaan?</AlertDialogTitle>
             <AlertDialogDescription>
-              Tätä toimintoa ei voi peruuttaa. Asiakkaan tiedot poistetaan pysyvästi järjestelmästä.
+              <p>Tätä toimintoa ei voi peruuttaa. Asiakkaan tiedot poistetaan pysyvästi järjestelmästä.</p>
+              <p>Jos asiakkaalla on tilauksia, ne poistetaan myös.</p>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
