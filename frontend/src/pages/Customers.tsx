@@ -54,13 +54,10 @@ import {
 } from "lucide-react"
 import { useEffect, useState } from 'react'
 
-// Ketjut
-const ketjut = ["S", "K", "L", "M", "R"]
-
-
 export const Customers = () => {
   const [customers, setCustomers] = useState<CustomerDto[]>([])
   const [customerGroups, setCustomerGroups] = useState<string[]>([])
+  const [chains, setChains] = useState<string[]>([])
 
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
@@ -75,7 +72,7 @@ export const Customers = () => {
   const [naytaMuokkaaDialog, setNaytaMuokkaaDialog] = useState(false)
   const [poistettavaAsiakas, setPoistettavaAsiakas] = useState<string | null>(null)
   const [asiakasryhmaFilter, setCustomerGroupFilter] = useState<string>("kaikki")
-  const [ketjuFilter, setKetjuFilter] = useState<string>("kaikki")
+  const [ketjuFilter, setChainFilter] = useState<string>("kaikki")
   const [jarjestys, setJarjestys] = useState<"asc" | "desc">("asc")
   const [jarjestysKentta, setJarjestysKentta] = useState<keyof CustomerDto>("name")
   const [sivu, setSivu] = useState(1)
@@ -88,6 +85,7 @@ export const Customers = () => {
       .then((response) => {
         setCustomers(response.data.customers)
         setCustomerGroups(response.data.customerGroups)
+        setChains(response.data.chains)
       })
       .finally(() => setLoading(false))
   }, [])
@@ -288,11 +286,11 @@ export const Customers = () => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <DropdownMenuItem onClick={() => setKetjuFilter("kaikki")}>Kaikki ketjut</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setChainFilter("kaikki")}>Kaikki ketjut</DropdownMenuItem>
                 <DropdownMenuSeparator />
-                {ketjut.map((ketju) => (
-                  <DropdownMenuItem key={ketju} onClick={() => setKetjuFilter(ketju)}>
-                    {ketju}
+                {chains.map((chain) => (
+                  <DropdownMenuItem key={chain} onClick={() => setChainFilter(chain)}>
+                    {chain}
                   </DropdownMenuItem>
                 ))}
               </DropdownMenuContent>
@@ -338,9 +336,9 @@ export const Customers = () => {
                         <SelectValue placeholder="Valitse ketju" />
                       </SelectTrigger>
                       <SelectContent>
-                        {ketjut.map((ketju) => (
-                          <SelectItem key={ketju} value={ketju}>
-                            {ketju}
+                        {chains.map((chain) => (
+                          <SelectItem key={chain} value={chain}>
+                            {chain}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -754,9 +752,9 @@ export const Customers = () => {
                       <SelectValue placeholder="Valitse ketju" />
                     </SelectTrigger>
                     <SelectContent>
-                      {ketjut.map((ketju) => (
-                        <SelectItem key={ketju} value={ketju}>
-                          {ketju}
+                      {chains.map((chain) => (
+                        <SelectItem key={chain} value={chain}>
+                          {chain}
                         </SelectItem>
                       ))}
                     </SelectContent>

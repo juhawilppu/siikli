@@ -12,6 +12,12 @@ customersRoute.get(`/api/customers`, async (req, res) => {
       order_index: 'asc',
     },
   })
+  const chains = await prisma.customer.findMany({
+    select: {
+      chain: true
+    },
+    distinct: ['chain'],
+  })
   const customerGroups = await prisma.customer.findMany({
     select: {
       customer_group: true
@@ -26,6 +32,7 @@ customersRoute.get(`/api/customers`, async (req, res) => {
 
   res.json({
     customerGroups: customerGroups.map(r => r.customer_group as string),
+    chains: chains.map(r => r.chain as string),
     customers: result.map(r => {
       return {
         id: r.id,

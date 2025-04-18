@@ -141,6 +141,7 @@ export interface GetCompanySettings {
 export interface GetCustomersResponseDto {
   customerGroups: string[]
   customers: CustomerDto[]
+  chains: string[]
 }
 
 export interface CustomerDto {
