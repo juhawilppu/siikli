@@ -360,7 +360,7 @@ export const Customers = () => {
                   Täytä asiakkaan tiedot. Pakolliset kentät on merkitty tähdellä (*).
                 </DialogDescription>
               </DialogHeader>
-              <div className="grid gap-4 py-4 max-h-[70vh] overflow-y-auto pr-2">
+              <div className="grid gap-4 py-4 max-h-[70vh] overflow-y-auto pl-[1px] pr-2"> {/* pl-[1px] to fix scrollbar width */}
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="name" className="font-medium">
@@ -802,7 +802,7 @@ export const Customers = () => {
             </DialogDescription>
           </DialogHeader>
           {customerToEdit && (
-            <div className="grid gap-4 py-4 max-h-[70vh] overflow-y-auto pr-2">
+            <div className="grid gap-4 py-4 max-h-[70vh] overflow-y-auto pl-[1px] pr-2"> {/* pl-[1px] to fix scrollbar width */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="edit-name" className="font-medium">
