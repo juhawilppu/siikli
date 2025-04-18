@@ -45,6 +45,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 import { CustomerDto, GetCustomersResponseDto } from "@/types/types"
+import { formatPercentage } from "@/utils/money"
 import axios from 'axios'
 import {
   Check,
@@ -468,7 +469,7 @@ export const Customers = () => {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="compensation" className="font-medium">
-                      Korvaus
+                      Alennus
                     </Label>
                     <Input
                       id="compensation"
@@ -655,7 +656,7 @@ export const Customers = () => {
                   </TableHead>
                   <TableHead className="cursor-pointer" onClick={() => changeOrderDirection("compensation")}>
                     <div className="flex items-center">
-                      Korvaus
+                      Alennus
                       {fieldToSortBy === "compensation" && (
                         <ChevronDown
                           className={`ml-1 h-4 w-4 ${orderDirection === "asc" ? "rotate-180 transform" : ""}`}
@@ -682,7 +683,7 @@ export const Customers = () => {
                       <TableCell>{customer.companyName}</TableCell>
                       <TableCell>{customer.city}</TableCell>
                       <TableCell>{customer.customerGroup}</TableCell>
-                      <TableCell>{customer.compensation.toFixed(2)}</TableCell>
+                      <TableCell>{formatPercentage(customer.compensation)}</TableCell>
                       <TableCell>
                         <div className="text-sm">
                           {customer.email && (
@@ -791,7 +792,7 @@ export const Customers = () => {
         </Card>
       </div>
 
-      {/* Muokkausdialogi */}
+      {/* Edit dialog */}
       <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
         <DialogContent className="sm:max-w-[600px]">
           <DialogHeader>
@@ -910,7 +911,7 @@ export const Customers = () => {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="edit-compensation" className="font-medium">
-                    Korvaus
+                    Alennus
                   </Label>
                   <Input
                     id="edit-compensation"
@@ -1060,7 +1061,7 @@ export const Customers = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Poistodialogi */}
+      {/* Delete dialog */}
       <AlertDialog open={!!customerIdToDelete} onOpenChange={(open) => !open && setCustomerIdToDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
