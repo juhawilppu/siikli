@@ -66,21 +66,21 @@ export const Customers = () => {
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
   const [customerToEdit, setCustomerToEdit] = useState<CustomerDto>()
-  const [uusiAsiakas, setUusiAsiakas] = useState<Partial<CustomerDto>>({
+  const [customerToCreate, setCustomerToCreate] = useState<Partial<CustomerDto>>({
     chain: "",
     name: "",
     compensation: 0,
     showPriceWithoutTax: false
   })
-  const [naytaLisaaDialog, setNaytaLisaaDialog] = useState(false)
-  const [showEditDialog, setNaytaMuokkaaDialog] = useState(false)
-  const [poistettavaAsiakas, setPoistettavaAsiakas] = useState<string | null>(null)
-  const [asiakasryhmaFilter, setCustomerGroupFilter] = useState<string>("kaikki")
-  const [ketjuFilter, setChainFilter] = useState<string>("kaikki")
-  const [jarjestys, setJarjestys] = useState<"asc" | "desc">("asc")
+  const [showCreateDialog, setShowCreateDialog] = useState(false)
+  const [showEditDialog, setShowEditDialog] = useState(false)
+  const [customerIdToDelete, setCustomerIdToDelete] = useState<string | null>(null)
+  const [customerGroupFilter, setCustomerGroupFilter] = useState<string>("kaikki")
+  const [chainFilter, setChainFilter] = useState<string>("kaikki")
+  const [orderDirection, setOrderDirection] = useState<"asc" | "desc">("asc")
   const [jarjestysKentta, setJarjestysKentta] = useState<keyof CustomerDto>("name")
-  const [sivu, setSivu] = useState(1)
-  const rivejaSivulla = 5
+  const [page, setPage] = useState(1)
+  const rowsPerPage = 20
   const { toast } = useToast()
   const [inputValueChain, setInputValueChain] = useState("")
 
@@ -88,8 +88,8 @@ export const Customers = () => {
     if (inputValueChain && !chains.includes(inputValueChain)) {
       console.log("Create chain", inputValueChain)
       setChains([...chains, inputValueChain])
-      if (naytaLisaaDialog) {
-        setUusiAsiakas({ ...uusiAsiakas, chain: inputValueChain })
+      if (showCreateDialog) {
+        setCustomerToCreate({ ...customerToCreate, chain: inputValueChain })
       } else if (showEditDialog) {
         if (customerToEdit) {
           setCustomerToEdit({ ...customerToEdit, chain: inputValueChain })
@@ -100,12 +100,12 @@ export const Customers = () => {
   }
 
   const handleSelectChain = (chain: string) => {
-    setUusiAsiakas({ ...uusiAsiakas, chain })
+    setCustomerToCreate({ ...customerToCreate, chain })
   }
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value)
-    setSivu(1) // Reset to first page when searching
+    setPage(1) // Reset to first page when searching
   }
 
   useEffect(() => {
@@ -132,10 +132,10 @@ export const Customers = () => {
         asiakas.phone?.toLowerCase().includes(searchQuery.toLowerCase())
 
       // Asiakasryhmäsuodatus
-      const matchesGroup = asiakasryhmaFilter === "kaikki" || asiakas.customerGroup === asiakasryhmaFilter
+      const matchesGroup = customerGroupFilter === "kaikki" || asiakas.customerGroup === customerGroupFilter
 
       // Ketjusuodatus
-      const matchesChain = ketjuFilter === "kaikki" || asiakas.chain === ketjuFilter
+      const matchesChain = chainFilter === "kaikki" || asiakas.chain === chainFilter
 
       return matchesSearch && matchesGroup && matchesChain
     })
@@ -147,23 +147,23 @@ export const Customers = () => {
       if (aValue === undefined || bValue === undefined) return 0
 
       if (typeof aValue === "string" && typeof bValue === "string") {
-        return jarjestys === "asc" ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue)
+        return orderDirection === "asc" ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue)
       } else if (typeof aValue === "number" && typeof bValue === "number") {
-        return jarjestys === "asc" ? aValue - bValue : bValue - aValue
+        return orderDirection === "asc" ? aValue - bValue : bValue - aValue
       } else if (typeof aValue === "boolean" && typeof bValue === "boolean") {
-        return jarjestys === "asc" ? (aValue ? 1 : -1) : bValue ? 1 : -1
+        return orderDirection === "asc" ? (aValue ? 1 : -1) : bValue ? 1 : -1
       }
       return 0
     })
 
   // Sivutus
-  const sivutetutAsiakkaat = filteredAsiakkaat.slice((sivu - 1) * rivejaSivulla, sivu * rivejaSivulla)
-  const sivujenMaara = Math.ceil(filteredAsiakkaat.length / rivejaSivulla)
+  const sivutetutAsiakkaat = filteredAsiakkaat.slice((page - 1) * rowsPerPage, page * rowsPerPage)
+  const sivujenMaara = Math.ceil(filteredAsiakkaat.length / rowsPerPage)
 
   // Asiakkaan muokkaaminen
   const aloitaMuokkaus = (asiakas: CustomerDto) => {
     setCustomerToEdit({ ...asiakas })
-    setNaytaMuokkaaDialog(true)
+    setShowEditDialog(true)
   }
 
   const tallennaMuokkaus = () => {
@@ -173,7 +173,7 @@ export const Customers = () => {
       .put(`/customers/${customerToEdit.id}`, customerToEdit)
       .then(() => {
         setCustomers(customers.map((a) => (a.id === customerToEdit.id ? customerToEdit : a)))
-        setNaytaMuokkaaDialog(false)
+        setShowEditDialog(false)
         toast({
           title: "Asiakas päivitetty",
           description: `Asiakas "${customerToEdit.name}" on päivitetty onnistuneesti.`,
@@ -191,7 +191,7 @@ export const Customers = () => {
 
   // Uuden asiakkaan lisääminen
   const lisaaAsiakas = () => {
-    if (!uusiAsiakas.name || !uusiAsiakas.chain) {
+    if (!customerToCreate.name || !customerToCreate.chain) {
       toast({
         title: "Virhe",
         description: "Nimi ja ketju ovat pakollisia tietoja.",
@@ -202,7 +202,7 @@ export const Customers = () => {
 
     const uusiJarjestys = Math.max(...customers.map((a) => a.orderIndex || 0), 0) + 1
     const uusiAsiakasObjekti: CustomerDto = {
-      ...uusiAsiakas,
+      ...customerToCreate,
       orderIndex: uusiJarjestys,
     } as CustomerDto
 
@@ -210,8 +210,8 @@ export const Customers = () => {
       .post('/customers', uusiAsiakasObjekti)
       .then((response) => {
         setCustomers([...customers, response.data])
-        setNaytaLisaaDialog(false)
-        setUusiAsiakas({
+        setShowCreateDialog(false)
+        setCustomerToCreate({
           chain: "",
           name: "",
           compensation: 0,
@@ -234,20 +234,20 @@ export const Customers = () => {
 
   // Asiakkaan poistaminen
   const poistaAsiakas = (id: string) => {
-    setPoistettavaAsiakas(id)
+    setCustomerIdToDelete(id)
   }
 
   const vahvistaPoisto = () => {
-    if (!poistettavaAsiakas) return
+    if (!customerIdToDelete) return
 
-    const poistettava = customers.find((a) => a.id === poistettavaAsiakas)
+    const poistettava = customers.find((a) => a.id === customerIdToDelete)
     if (!poistettava) return
 
     axios
-      .delete(`/customers/${poistettavaAsiakas}`)
+      .delete(`/customers/${customerIdToDelete}`)
       .then(() => {
-        setCustomers(customers.filter((a) => a.id !== poistettavaAsiakas))
-        setPoistettavaAsiakas(null)
+        setCustomers(customers.filter((a) => a.id !== customerIdToDelete))
+        setCustomerIdToDelete(null)
         toast({
           title: "Asiakas poistettu",
           description: `Asiakas "${poistettava.name}" on poistettu onnistuneesti.`,
@@ -266,10 +266,10 @@ export const Customers = () => {
   // Järjestyksen vaihtaminen
   const vaihdaJarjestys = (kentta: keyof CustomerDto) => {
     if (jarjestysKentta === kentta) {
-      setJarjestys(jarjestys === "asc" ? "desc" : "asc")
+      setOrderDirection(orderDirection === "asc" ? "desc" : "asc")
     } else {
       setJarjestysKentta(kentta)
-      setJarjestys("asc")
+      setOrderDirection("asc")
     }
   }
 
@@ -298,7 +298,7 @@ export const Customers = () => {
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" className="gap-1">
                   <Filter className="h-4 w-4 mr-1" />
-                  Asiakasryhmä: {asiakasryhmaFilter === "kaikki" ? "Kaikki" : asiakasryhmaFilter}
+                  Asiakasryhmä: {customerGroupFilter === "kaikki" ? "Kaikki" : customerGroupFilter}
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
@@ -318,7 +318,7 @@ export const Customers = () => {
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" className="gap-1">
                   <Filter className="h-4 w-4 mr-1" />
-                  Ketju: {ketjuFilter === "kaikki" ? "Kaikki" : ketjuFilter}
+                  Ketju: {chainFilter === "kaikki" ? "Kaikki" : chainFilter}
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
@@ -333,7 +333,7 @@ export const Customers = () => {
             </DropdownMenu>
           </div>
 
-          <Dialog open={naytaLisaaDialog} onOpenChange={setNaytaLisaaDialog}>
+          <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
             <DialogTrigger asChild>
               <Button className="bg-primary hover:bg-primary/90">
                 <Plus className="h-4 w-4 mr-2" />
@@ -355,8 +355,8 @@ export const Customers = () => {
                     </Label>
                     <Input
                       id="name"
-                      value={uusiAsiakas.name || ""}
-                      onChange={(e) => setUusiAsiakas({ ...uusiAsiakas, name: e.target.value })}
+                      value={customerToCreate.name || ""}
+                      onChange={(e) => setCustomerToCreate({ ...customerToCreate, name: e.target.value })}
                       maxLength={50}
                     />
                   </div>
@@ -367,7 +367,7 @@ export const Customers = () => {
                     <Popover>
                       <PopoverTrigger asChild>
                         <Button variant="outline" role="combobox" className="w-full justify-between">
-                          {uusiAsiakas.chain || "Valitse ketju"}
+                          {customerToCreate.chain || "Valitse ketju"}
                           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                         </Button>
                       </PopoverTrigger>
@@ -398,7 +398,7 @@ export const Customers = () => {
                               className="w-full justify-start"
                               onClick={() => handleSelectChain(chain)}
                             >
-                              <Check className={cn("mr-2 h-4 w-4", uusiAsiakas.chain === chain ? "opacity-100" : "opacity-0")} />
+                              <Check className={cn("mr-2 h-4 w-4", customerToCreate.chain === chain ? "opacity-100" : "opacity-0")} />
                               {chain}
                             </Button>
                           ))}
@@ -415,8 +415,8 @@ export const Customers = () => {
                     </Label>
                     <Input
                       id="company_name"
-                      value={uusiAsiakas.companyName || ""}
-                      onChange={(e) => setUusiAsiakas({ ...uusiAsiakas, companyName: e.target.value })}
+                      value={customerToCreate.companyName || ""}
+                      onChange={(e) => setCustomerToCreate({ ...customerToCreate, companyName: e.target.value })}
                       maxLength={255}
                     />
                   </div>
@@ -426,8 +426,8 @@ export const Customers = () => {
                     </Label>
                     <Input
                       id="business_id"
-                      value={uusiAsiakas.businessId || ""}
-                      onChange={(e) => setUusiAsiakas({ ...uusiAsiakas, businessId: e.target.value })}
+                      value={customerToCreate.businessId || ""}
+                      onChange={(e) => setCustomerToCreate({ ...customerToCreate, businessId: e.target.value })}
                       maxLength={255}
                     />
                   </div>
@@ -439,8 +439,8 @@ export const Customers = () => {
                       Asiakasryhmä
                     </Label>
                     <Select
-                      value={uusiAsiakas.customerGroup ?? undefined}
-                      onValueChange={(value) => setUusiAsiakas({ ...uusiAsiakas, customerGroup: value })}
+                      value={customerToCreate.customerGroup ?? undefined}
+                      onValueChange={(value) => setCustomerToCreate({ ...customerToCreate, customerGroup: value })}
                     >
                       <SelectTrigger id="customer_group">
                         <SelectValue placeholder="Valitse asiakasryhmä" />
@@ -463,10 +463,10 @@ export const Customers = () => {
                       type="number"
                       step="0.01"
                       min="0"
-                      value={uusiAsiakas.compensation || ""}
+                      value={customerToCreate.compensation || ""}
                       onChange={(e) =>
-                        setUusiAsiakas({
-                          ...uusiAsiakas,
+                        setCustomerToCreate({
+                          ...customerToCreate,
                           compensation: Number.parseFloat(e.target.value) || 0,
                         })
                       }
@@ -481,8 +481,8 @@ export const Customers = () => {
                     </Label>
                     <Input
                       id="reference"
-                      value={uusiAsiakas.reference || ""}
-                      onChange={(e) => setUusiAsiakas({ ...uusiAsiakas, reference: e.target.value })}
+                      value={customerToCreate.reference || ""}
+                      onChange={(e) => setCustomerToCreate({ ...customerToCreate, reference: e.target.value })}
                       maxLength={255}
                     />
                   </div>
@@ -494,10 +494,10 @@ export const Customers = () => {
                       id="order_index"
                       type="number"
                       min="0"
-                      value={uusiAsiakas.orderIndex || ""}
+                      value={customerToCreate.orderIndex || ""}
                       onChange={(e) =>
-                        setUusiAsiakas({
-                          ...uusiAsiakas,
+                        setCustomerToCreate({
+                          ...customerToCreate,
                           orderIndex: Number.parseInt(e.target.value) || undefined,
                         })
                       }
@@ -511,8 +511,8 @@ export const Customers = () => {
                   </Label>
                   <Input
                     id="address"
-                    value={uusiAsiakas.streetAddress || ""}
-                    onChange={(e) => setUusiAsiakas({ ...uusiAsiakas, streetAddress: e.target.value })}
+                    value={customerToCreate.streetAddress || ""}
+                    onChange={(e) => setCustomerToCreate({ ...customerToCreate, streetAddress: e.target.value })}
                     maxLength={255}
                   />
                 </div>
@@ -523,8 +523,8 @@ export const Customers = () => {
                   </Label>
                   <Input
                     id="address2"
-                    value={uusiAsiakas.streetAddress2 || ""}
-                    onChange={(e) => setUusiAsiakas({ ...uusiAsiakas, streetAddress2: e.target.value })}
+                    value={customerToCreate.streetAddress2 || ""}
+                    onChange={(e) => setCustomerToCreate({ ...customerToCreate, streetAddress2: e.target.value })}
                     maxLength={255}
                   />
                 </div>
@@ -536,8 +536,8 @@ export const Customers = () => {
                     </Label>
                     <Input
                       id="postal_code"
-                      value={uusiAsiakas.postalCode || ""}
-                      onChange={(e) => setUusiAsiakas({ ...uusiAsiakas, postalCode: e.target.value })}
+                      value={customerToCreate.postalCode || ""}
+                      onChange={(e) => setCustomerToCreate({ ...customerToCreate, postalCode: e.target.value })}
                       maxLength={5}
                     />
                   </div>
@@ -547,8 +547,8 @@ export const Customers = () => {
                     </Label>
                     <Input
                       id="city"
-                      value={uusiAsiakas.city || ""}
-                      onChange={(e) => setUusiAsiakas({ ...uusiAsiakas, city: e.target.value })}
+                      value={customerToCreate.city || ""}
+                      onChange={(e) => setCustomerToCreate({ ...customerToCreate, city: e.target.value })}
                       maxLength={255}
                     />
                   </div>
@@ -562,8 +562,8 @@ export const Customers = () => {
                     <Input
                       id="email"
                       type="email"
-                      value={uusiAsiakas.email || ""}
-                      onChange={(e) => setUusiAsiakas({ ...uusiAsiakas, email: e.target.value })}
+                      value={customerToCreate.email || ""}
+                      onChange={(e) => setCustomerToCreate({ ...customerToCreate, email: e.target.value })}
                       maxLength={255}
                     />
                   </div>
@@ -573,8 +573,8 @@ export const Customers = () => {
                     </Label>
                     <Input
                       id="phone"
-                      value={uusiAsiakas.phone || ""}
-                      onChange={(e) => setUusiAsiakas({ ...uusiAsiakas, phone: e.target.value })}
+                      value={customerToCreate.phone || ""}
+                      onChange={(e) => setCustomerToCreate({ ...customerToCreate, phone: e.target.value })}
                       maxLength={255}
                     />
                   </div>
@@ -583,9 +583,9 @@ export const Customers = () => {
                 <div className="flex items-center space-x-2 pt-2">
                   <Checkbox
                     id="show_price_without_tax"
-                    checked={uusiAsiakas.showPriceWithoutTax}
+                    checked={customerToCreate.showPriceWithoutTax}
                     onCheckedChange={(checked) =>
-                      setUusiAsiakas({ ...uusiAsiakas, showPriceWithoutTax: checked as boolean })
+                      setCustomerToCreate({ ...customerToCreate, showPriceWithoutTax: checked as boolean })
                     }
                   />
                   <Label htmlFor="show_price_without_tax" className="font-medium">
@@ -594,7 +594,7 @@ export const Customers = () => {
                 </div>
               </div>
               <DialogFooter>
-                <Button variant="outline" onClick={() => setNaytaLisaaDialog(false)}>
+                <Button variant="outline" onClick={() => setShowCreateDialog(false)}>
                   Peruuta
                 </Button>
                 <Button type="button" onClick={lisaaAsiakas}>
@@ -624,7 +624,7 @@ export const Customers = () => {
                       Nimi
                       {jarjestysKentta === "name" && (
                         <ChevronDown
-                          className={`ml-1 h-4 w-4 ${jarjestys === "asc" ? "rotate-180 transform" : ""}`}
+                          className={`ml-1 h-4 w-4 ${orderDirection === "asc" ? "rotate-180 transform" : ""}`}
                         />
                       )}
                     </div>
@@ -636,7 +636,7 @@ export const Customers = () => {
                       Asiakasryhmä
                       {jarjestysKentta === "customerGroup" && (
                         <ChevronDown
-                          className={`ml-1 h-4 w-4 ${jarjestys === "asc" ? "rotate-180 transform" : ""}`}
+                          className={`ml-1 h-4 w-4 ${orderDirection === "asc" ? "rotate-180 transform" : ""}`}
                         />
                       )}
                     </div>
@@ -646,7 +646,7 @@ export const Customers = () => {
                       Korvaus
                       {jarjestysKentta === "compensation" && (
                         <ChevronDown
-                          className={`ml-1 h-4 w-4 ${jarjestys === "asc" ? "rotate-180 transform" : ""}`}
+                          className={`ml-1 h-4 w-4 ${orderDirection === "asc" ? "rotate-180 transform" : ""}`}
                         />
                       )}
                     </div>
@@ -731,21 +731,21 @@ export const Customers = () => {
           </CardContent>
           <CardFooter className="flex justify-between border-t bg-gray-50 py-3">
             <div className="text-sm text-muted-foreground">
-              Näytetään {(sivu - 1) * rivejaSivulla + 1}-
-              {Math.min(sivu * rivejaSivulla, filteredAsiakkaat.length)} / {filteredAsiakkaat.length} asiakasta
+              Näytetään {(page - 1) * rowsPerPage + 1}-
+              {Math.min(page * rowsPerPage, filteredAsiakkaat.length)} / {filteredAsiakkaat.length} asiakasta
             </div>
             <Pagination>
               <PaginationContent>
                 <PaginationItem>
                   <PaginationPrevious
-                    onClick={() => setSivu((prev) => Math.max(prev - 1, 1))}
-                    className={sivu === 1 ? "pointer-events-none opacity-50" : ""}
+                    onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+                    className={page === 1 ? "pointer-events-none opacity-50" : ""}
                   />
                 </PaginationItem>
                 {Array.from({ length: Math.min(5, sivujenMaara) }, (_, i) => {
                   let pageNum = i + 1
-                  if (sivujenMaara > 5 && sivu > 3) {
-                    pageNum = sivu - 3 + i
+                  if (sivujenMaara > 5 && page > 3) {
+                    pageNum = page - 3 + i
                     if (pageNum > sivujenMaara) {
                       pageNum = sivujenMaara - (4 - i)
                     }
@@ -753,8 +753,8 @@ export const Customers = () => {
                   return (
                     <PaginationItem key={i}>
                       <PaginationLink
-                        onClick={() => setSivu(pageNum)}
-                        isActive={sivu === pageNum}
+                        onClick={() => setPage(pageNum)}
+                        isActive={page === pageNum}
                         className={pageNum > sivujenMaara ? "pointer-events-none opacity-50" : ""}
                       >
                         {pageNum}
@@ -762,15 +762,15 @@ export const Customers = () => {
                     </PaginationItem>
                   )
                 })}
-                {sivujenMaara > 5 && sivu < sivujenMaara - 2 && (
+                {sivujenMaara > 5 && page < sivujenMaara - 2 && (
                   <PaginationItem>
                     <PaginationEllipsis />
                   </PaginationItem>
                 )}
                 <PaginationItem>
                   <PaginationNext
-                    onClick={() => setSivu((prev) => Math.min(prev + 1, sivujenMaara))}
-                    className={sivu === sivujenMaara || sivujenMaara === 0 ? "pointer-events-none opacity-50" : ""}
+                    onClick={() => setPage((prev) => Math.min(prev + 1, sivujenMaara))}
+                    className={page === sivujenMaara || sivujenMaara === 0 ? "pointer-events-none opacity-50" : ""}
                   />
                 </PaginationItem>
               </PaginationContent>
@@ -780,7 +780,7 @@ export const Customers = () => {
       </div>
 
       {/* Muokkausdialogi */}
-      <Dialog open={showEditDialog} onOpenChange={setNaytaMuokkaaDialog}>
+      <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
         <DialogContent className="sm:max-w-[600px]">
           <DialogHeader>
             <DialogTitle>Muokkaa asiakasta</DialogTitle>
@@ -1037,7 +1037,7 @@ export const Customers = () => {
             </div>
           )}
           <DialogFooter>
-            <Button variant="outline" onClick={() => setNaytaMuokkaaDialog(false)}>
+            <Button variant="outline" onClick={() => setShowEditDialog(false)}>
               Peruuta
             </Button>
             <Button type="button" onClick={tallennaMuokkaus}>
@@ -1049,7 +1049,7 @@ export const Customers = () => {
       </Dialog>
 
       {/* Poistodialogi */}
-      <AlertDialog open={!!poistettavaAsiakas} onOpenChange={(open) => !open && setPoistettavaAsiakas(null)}>
+      <AlertDialog open={!!customerIdToDelete} onOpenChange={(open) => !open && setCustomerIdToDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Haluatko varmasti poistaa tämän asiakkaan?</AlertDialogTitle>
