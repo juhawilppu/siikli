@@ -75,10 +75,10 @@ export const Customers = () => {
   const [showCreateDialog, setShowCreateDialog] = useState(false)
   const [showEditDialog, setShowEditDialog] = useState(false)
   const [customerIdToDelete, setCustomerIdToDelete] = useState<string | null>(null)
-  const [customerGroupFilter, setCustomerGroupFilter] = useState<string>("kaikki")
-  const [chainFilter, setChainFilter] = useState<string>("kaikki")
+  const [customerGroupFilter, setCustomerGroupFilter] = useState<string>("all")
+  const [chainFilter, setChainFilter] = useState<string>("all")
   const [orderDirection, setOrderDirection] = useState<"asc" | "desc">("asc")
-  const [jarjestysKentta, setJarjestysKentta] = useState<keyof CustomerDto>("name")
+  const [fieldToSortBy, setJarjestysKentta] = useState<keyof CustomerDto>("name")
   const [page, setPage] = useState(1)
   const rowsPerPage = 20
   const { toast } = useToast()
@@ -119,30 +119,30 @@ export const Customers = () => {
       .finally(() => setLoading(false))
   }, [])
 
-  // Suodata ja järjestä asiakkaat
-  const filteredAsiakkaat = customers
-    .filter((asiakas) => {
-      // Haku
+  // Filter and sort customers
+  const filteredCustomers = customers
+    .filter((customer) => {
+      // Searchs
       const matchesSearch =
-        asiakas.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        asiakas.companyName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        asiakas.city?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        asiakas.businessId?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        asiakas.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        asiakas.phone?.toLowerCase().includes(searchQuery.toLowerCase())
+        customer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        customer.companyName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        customer.city?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        customer.businessId?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        customer.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        customer.phone?.toLowerCase().includes(searchQuery.toLowerCase())
 
-      // Asiakasryhmäsuodatus
-      const matchesGroup = customerGroupFilter === "kaikki" || asiakas.customerGroup === customerGroupFilter
+      // Customer group filter
+      const matchesGroup = customerGroupFilter === "all" || customer.customerGroup === customerGroupFilter
 
-      // Ketjusuodatus
-      const matchesChain = chainFilter === "kaikki" || asiakas.chain === chainFilter
+      // Chain filter
+      const matchesChain = chainFilter === "all" || customer.chain === chainFilter
 
       return matchesSearch && matchesGroup && matchesChain
     })
     .sort((a, b) => {
-      // Järjestäminen
-      const aValue = a[jarjestysKentta]
-      const bValue = b[jarjestysKentta]
+      // Sorting
+      const aValue = a[fieldToSortBy]
+      const bValue = b[fieldToSortBy]
 
       if (aValue === undefined || bValue === undefined) return 0
 
@@ -156,17 +156,17 @@ export const Customers = () => {
       return 0
     })
 
-  // Sivutus
-  const sivutetutAsiakkaat = filteredAsiakkaat.slice((page - 1) * rowsPerPage, page * rowsPerPage)
-  const sivujenMaara = Math.ceil(filteredAsiakkaat.length / rowsPerPage)
+  // Pagination
+  const paginatedCustomers = filteredCustomers.slice((page - 1) * rowsPerPage, page * rowsPerPage)
+  const totalPages = Math.ceil(filteredCustomers.length / rowsPerPage)
 
-  // Asiakkaan muokkaaminen
-  const aloitaMuokkaus = (asiakas: CustomerDto) => {
-    setCustomerToEdit({ ...asiakas })
+  // Customer edit
+  const startEdit = (customer: CustomerDto) => {
+    setCustomerToEdit({ ...customer })
     setShowEditDialog(true)
   }
 
-  const tallennaMuokkaus = () => {
+  const saveCustomerToEdit = () => {
     if (!customerToEdit) return
 
     axios
@@ -190,7 +190,7 @@ export const Customers = () => {
   }
 
   // Uuden asiakkaan lisääminen
-  const lisaaAsiakas = () => {
+  const createCustomer = () => {
     if (!customerToCreate.name || !customerToCreate.chain) {
       toast({
         title: "Virhe",
@@ -232,12 +232,12 @@ export const Customers = () => {
       })
   }
 
-  // Asiakkaan poistaminen
-  const poistaAsiakas = (id: string) => {
+  // Customer deletion
+  const deleteCustomer = (id: string) => {
     setCustomerIdToDelete(id)
   }
 
-  const vahvistaPoisto = () => {
+  const confirmCustomerDeletion = () => {
     if (!customerIdToDelete) return
 
     const poistettava = customers.find((a) => a.id === customerIdToDelete)
@@ -263,9 +263,9 @@ export const Customers = () => {
       })
   }
 
-  // Järjestyksen vaihtaminen
-  const vaihdaJarjestys = (kentta: keyof CustomerDto) => {
-    if (jarjestysKentta === kentta) {
+  // Change order direction
+  const changeOrderDirection = (kentta: keyof CustomerDto) => {
+    if (fieldToSortBy === kentta) {
       setOrderDirection(orderDirection === "asc" ? "desc" : "asc")
     } else {
       setJarjestysKentta(kentta)
@@ -298,11 +298,11 @@ export const Customers = () => {
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" className="gap-1">
                   <Filter className="h-4 w-4 mr-1" />
-                  Asiakasryhmä: {customerGroupFilter === "kaikki" ? "Kaikki" : customerGroupFilter}
+                  Asiakasryhmä: {customerGroupFilter === "all" ? "Kaikki" : customerGroupFilter}
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <DropdownMenuItem onClick={() => setCustomerGroupFilter("kaikki")}>
+                <DropdownMenuItem onClick={() => setCustomerGroupFilter("all")}>
                   Kaikki asiakasryhmät
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
@@ -318,11 +318,11 @@ export const Customers = () => {
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" className="gap-1">
                   <Filter className="h-4 w-4 mr-1" />
-                  Ketju: {chainFilter === "kaikki" ? "Kaikki" : chainFilter}
+                  Ketju: {chainFilter === "all" ? "Kaikki" : chainFilter}
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <DropdownMenuItem onClick={() => setChainFilter("kaikki")}>Kaikki ketjut</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setChainFilter("all")}>Kaikki ketjut</DropdownMenuItem>
                 <DropdownMenuSeparator />
                 {chains.map((chain) => (
                   <DropdownMenuItem key={chain} onClick={() => setChainFilter(chain)}>
@@ -597,7 +597,7 @@ export const Customers = () => {
                 <Button variant="outline" onClick={() => setShowCreateDialog(false)}>
                   Peruuta
                 </Button>
-                <Button type="button" onClick={lisaaAsiakas}>
+                <Button type="button" onClick={createCustomer}>
                   <Save className="h-4 w-4 mr-2" />
                   Tallenna
                 </Button>
@@ -606,12 +606,12 @@ export const Customers = () => {
           </Dialog>
         </div>
 
-        {/* Asiakastaulukko */}
+        {/* Customer table */}
         <Card className="shadow-md">
           <CardHeader className="border-b bg-gray-50 py-4">
             <CardTitle>Asiakasluettelo</CardTitle>
             <CardDescription>
-              {filteredAsiakkaat.length} asiakasta {customers.length} asiakkaasta
+              {filteredCustomers.length} asiakasta {customers.length} asiakkaasta
             </CardDescription>
           </CardHeader>
           <CardContent className="p-0">
@@ -619,10 +619,10 @@ export const Customers = () => {
               <TableHeader className="bg-gray-50">
                 <TableRow>
                   <TableHead className="w-[60px]">Ketju</TableHead>
-                  <TableHead className="cursor-pointer" onClick={() => vaihdaJarjestys("name")}>
+                  <TableHead className="cursor-pointer" onClick={() => changeOrderDirection("name")}>
                     <div className="flex items-center">
                       Nimi
-                      {jarjestysKentta === "name" && (
+                      {fieldToSortBy === "name" && (
                         <ChevronDown
                           className={`ml-1 h-4 w-4 ${orderDirection === "asc" ? "rotate-180 transform" : ""}`}
                         />
@@ -631,20 +631,20 @@ export const Customers = () => {
                   </TableHead>
                   <TableHead>Yritys</TableHead>
                   <TableHead>Kaupunki</TableHead>
-                  <TableHead className="cursor-pointer" onClick={() => vaihdaJarjestys("customerGroup")}>
+                  <TableHead className="cursor-pointer" onClick={() => changeOrderDirection("customerGroup")}>
                     <div className="flex items-center">
                       Asiakasryhmä
-                      {jarjestysKentta === "customerGroup" && (
+                      {fieldToSortBy === "customerGroup" && (
                         <ChevronDown
                           className={`ml-1 h-4 w-4 ${orderDirection === "asc" ? "rotate-180 transform" : ""}`}
                         />
                       )}
                     </div>
                   </TableHead>
-                  <TableHead className="cursor-pointer" onClick={() => vaihdaJarjestys("compensation")}>
+                  <TableHead className="cursor-pointer" onClick={() => changeOrderDirection("compensation")}>
                     <div className="flex items-center">
                       Korvaus
-                      {jarjestysKentta === "compensation" && (
+                      {fieldToSortBy === "compensation" && (
                         <ChevronDown
                           className={`ml-1 h-4 w-4 ${orderDirection === "asc" ? "rotate-180 transform" : ""}`}
                         />
@@ -656,14 +656,14 @@ export const Customers = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {sivutetutAsiakkaat.length === 0 ? (
+                {paginatedCustomers.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
                       Ei asiakkaita hakuehdoilla
                     </TableCell>
                   </TableRow>
                 ) : (
-                  sivutetutAsiakkaat.map((asiakas, index) => (
+                  paginatedCustomers.map((asiakas, index) => (
                     <TableRow key={asiakas.id} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
                       <TableCell className="font-medium">{asiakas.chain}</TableCell>
                       <TableCell className="font-medium">{asiakas.name}</TableCell>
@@ -694,7 +694,7 @@ export const Customers = () => {
                                   variant="ghost"
                                   size="icon"
                                   className="h-8 w-8"
-                                  onClick={() => aloitaMuokkaus(asiakas)}
+                                  onClick={() => startEdit(asiakas)}
                                 >
                                   <Edit className="h-4 w-4" />
                                 </Button>
@@ -711,7 +711,7 @@ export const Customers = () => {
                                   variant="ghost"
                                   size="icon"
                                   className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50"
-                                  onClick={() => poistaAsiakas(asiakas.id)}
+                                  onClick={() => deleteCustomer(asiakas.id)}
                                 >
                                   <Trash2 className="h-4 w-4" />
                                 </Button>
@@ -732,7 +732,7 @@ export const Customers = () => {
           <CardFooter className="flex justify-between border-t bg-gray-50 py-3">
             <div className="text-sm text-muted-foreground">
               Näytetään {(page - 1) * rowsPerPage + 1}-
-              {Math.min(page * rowsPerPage, filteredAsiakkaat.length)} / {filteredAsiakkaat.length} asiakasta
+              {Math.min(page * rowsPerPage, filteredCustomers.length)} / {filteredCustomers.length} asiakasta
             </div>
             <Pagination>
               <PaginationContent>
@@ -742,12 +742,12 @@ export const Customers = () => {
                     className={page === 1 ? "pointer-events-none opacity-50" : ""}
                   />
                 </PaginationItem>
-                {Array.from({ length: Math.min(5, sivujenMaara) }, (_, i) => {
+                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                   let pageNum = i + 1
-                  if (sivujenMaara > 5 && page > 3) {
+                  if (totalPages > 5 && page > 3) {
                     pageNum = page - 3 + i
-                    if (pageNum > sivujenMaara) {
-                      pageNum = sivujenMaara - (4 - i)
+                    if (pageNum > totalPages) {
+                      pageNum = totalPages - (4 - i)
                     }
                   }
                   return (
@@ -755,22 +755,22 @@ export const Customers = () => {
                       <PaginationLink
                         onClick={() => setPage(pageNum)}
                         isActive={page === pageNum}
-                        className={pageNum > sivujenMaara ? "pointer-events-none opacity-50" : ""}
+                        className={pageNum > totalPages ? "pointer-events-none opacity-50" : ""}
                       >
                         {pageNum}
                       </PaginationLink>
                     </PaginationItem>
                   )
                 })}
-                {sivujenMaara > 5 && page < sivujenMaara - 2 && (
+                {totalPages > 5 && page < totalPages - 2 && (
                   <PaginationItem>
                     <PaginationEllipsis />
                   </PaginationItem>
                 )}
                 <PaginationItem>
                   <PaginationNext
-                    onClick={() => setPage((prev) => Math.min(prev + 1, sivujenMaara))}
-                    className={page === sivujenMaara || sivujenMaara === 0 ? "pointer-events-none opacity-50" : ""}
+                    onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
+                    className={page === totalPages || totalPages === 0 ? "pointer-events-none opacity-50" : ""}
                   />
                 </PaginationItem>
               </PaginationContent>
@@ -1040,7 +1040,7 @@ export const Customers = () => {
             <Button variant="outline" onClick={() => setShowEditDialog(false)}>
               Peruuta
             </Button>
-            <Button type="button" onClick={tallennaMuokkaus}>
+            <Button type="button" onClick={saveCustomerToEdit}>
               <Save className="h-4 w-4 mr-2" />
               Tallenna muutokset
             </Button>
@@ -1059,7 +1059,7 @@ export const Customers = () => {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Peruuta</AlertDialogCancel>
-            <AlertDialogAction onClick={vahvistaPoisto} className="bg-red-500 hover:bg-red-600">
+            <AlertDialogAction onClick={confirmCustomerDeletion} className="bg-red-500 hover:bg-red-600">
               Poista
             </AlertDialogAction>
           </AlertDialogFooter>
