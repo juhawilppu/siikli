@@ -91,17 +91,19 @@ const SortableTableRow = ({ customer, index, onEdit, onDelete, fieldToSortBy }: 
       )}
     >
       <TableCell className="w-10">
-        {customer.orderIndex}
-        <Button
-          variant="ghost"
-          size="icon"
-          disabled={fieldToSortBy !== "orderIndex"}
-          className="h-8 w-8 cursor-grab active:cursor-grabbing"
-          {...attributes}
-          {...listeners}
-        >
-          <GripVertical className="h-4 w-4" />
-        </Button>
+        <div className="flex items-center">
+          <Button
+            variant="ghost"
+            size="icon"
+            disabled={fieldToSortBy !== "orderIndex"}
+            className="h-8 w-8 cursor-grab active:cursor-grabbing"
+            {...attributes}
+            {...listeners}
+          >
+            <GripVertical className="h-4 w-4" />
+          </Button>
+          {(customer.orderIndex || 0) + 1}
+        </div>
       </TableCell>
       <TableCell className="font-medium">{customer.chain}</TableCell>
       <TableCell className="font-medium">{customer.name}</TableCell>
