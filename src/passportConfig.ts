@@ -56,6 +56,9 @@ const init = () => {
           console.log('done1')
           return cb(null, existingUser)
         } else {
+          return cb(null, false, { message: 'New user registration is not allowed', redirectTo: '/unauthorized' })
+
+          /*
           // New user. Save it to db.
           const tenant = await prisma.tenant.findFirstOrThrow()
           const user = await prisma.user.create({
@@ -68,6 +71,7 @@ const init = () => {
           })
           console.log('done2')
           return cb(null, user)
+          */
         }
       }
     )

@@ -13,10 +13,15 @@ authRoute.get(
 
 authRoute.get(
   '/auth/google/callback',
-  passport.authenticate('google'),
-  (req, res) => {
-    console.log('callback here')
-    res.redirect('/')
+  passport.authenticate('google', { failureRedirect: '/error' }),
+  (req, res, next) => {
+    try {
+      console.log('callback here')
+      res.redirect('/')
+    } catch (error) {
+      console.log('login error', error)
+      next(error)
+    }
   }
 )
 

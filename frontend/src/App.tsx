@@ -3,6 +3,7 @@ import { HelpCircle, LogOut, Search, Settings, User } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import './App.css'
+import Error from './Error'
 import { Landing } from './Landing'
 import SiikliDrawer from './SiikliDrawer'
 import { Avatar, AvatarFallback, AvatarImage } from './components/ui/avatar'
@@ -60,6 +61,7 @@ function App() {
     routes = (
       <Routes>
         <Route path='/' element={<Landing />} />
+        <Route path='/error' element={<Error />} />
         <Route path='*' element={<Navigate to='/' replace />} />
       </Routes>
     )
