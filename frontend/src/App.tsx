@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import './App.css'
 import Error from './Error'
-import { Landing } from './Landing'
+import Landing from './Landing'
 import SiikliDrawer from './SiikliDrawer'
 import { Avatar, AvatarFallback, AvatarImage } from './components/ui/avatar'
 import { Button } from './components/ui/button'
@@ -50,15 +50,14 @@ function App() {
       .finally(() => setLoading(false))
   }, [])
 
-  let routes
   if (loading) {
-    routes = (
+    return (
       <div style={{ marginTop: '100px' }}>
         <div></div>
       </div>
     )
   } else if (!user) {
-    routes = (
+    return (
       <Routes>
         <Route path='/' element={<Landing />} />
         <Route path='/error' element={<Error />} />
@@ -66,36 +65,7 @@ function App() {
       </Routes>
     )
   } else {
-    routes = (
-      <Routes>
-        <Route path='/' element={<Dashboard />} />
-        <Route path='/orders' element={<Orders />} />
-        <Route path='/orders/new' element={<Order />} />
-        <Route path='/orders/:orderId' element={<Order />} />
-        <Route path='/sales-report' element={<SalesReport />} />
-        <Route path='/packaging-list' element={<PackageList />} />
-        <Route path='/invoices' element={<Invoices />} />
-        <Route path='/customers' element={<Customers />} />
-        <Route path='/customers/new' element={<NewCustomerForm />} />
-        <Route path='/customers/:customerId' element={<CustomerPage />} />
-        <Route path='/customers/:customerId/:edit' element={<CustomerPage />} />
-        <Route path='/products' element={<Products />} />
-        <Route path='/products/new' element={<NewProduct />} />
-        <Route path='/products/reorder' element={<TuoteryhmatJarjestely />} />
-        <Route path='/products/:productId' element={<ProductPage />} />
-        <Route path='/products/:productId/:edit' element={<ProductPage />} />
-        <Route
-          path='/package_configuration'
-          element={<PackageConfiguration />}
-        />
-        <Route path='/own-company' element={<CompanySettings />} />
-        <Route path='*' element={<Navigate to='/' replace />} />
-      </Routes>
-    )
-  }
-
-  return (
-    <>
+    return (<>
       <SidebarProvider>
         <SiikliDrawer />
         <SidebarInset>
@@ -154,14 +124,38 @@ function App() {
             </header>
             <main className="flex-1 overflow-auto p-6">
               <div className="space-y-6"></div>
-              {routes}
+              <Routes>
+                <Route path='/' element={<Dashboard />} />
+                <Route path='/orders' element={<Orders />} />
+                <Route path='/orders/new' element={<Order />} />
+                <Route path='/orders/:orderId' element={<Order />} />
+                <Route path='/sales-report' element={<SalesReport />} />
+                <Route path='/packaging-list' element={<PackageList />} />
+                <Route path='/invoices' element={<Invoices />} />
+                <Route path='/customers' element={<Customers />} />
+                <Route path='/customers/new' element={<NewCustomerForm />} />
+                <Route path='/customers/:customerId' element={<CustomerPage />} />
+                <Route path='/customers/:customerId/:edit' element={<CustomerPage />} />
+                <Route path='/products' element={<Products />} />
+                <Route path='/products/new' element={<NewProduct />} />
+                <Route path='/products/reorder' element={<TuoteryhmatJarjestely />} />
+                <Route path='/products/:productId' element={<ProductPage />} />
+                <Route path='/products/:productId/:edit' element={<ProductPage />} />
+                <Route
+                  path='/package_configuration'
+                  element={<PackageConfiguration />}
+                />
+                <Route path='/own-company' element={<CompanySettings />} />
+                <Route path='*' element={<Navigate to='/' replace />} />
+              </Routes>
             </main>
           </div>
         </SidebarInset>
         <Toaster />
       </SidebarProvider>
     </>
-  )
+    )
+  }
 }
 
 export default App
