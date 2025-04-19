@@ -17,7 +17,9 @@ import passportConfig from './passportConfig'
 
 import { RedisStore } from 'connect-redis'
 import dotenv from 'dotenv'
+import { NextFunction, Request, Response } from 'express'
 import invoiceRoute from './api/invoices'
+import { authErrorHandler } from './middlewares/authError'
 import redisClient from './redis'
 dotenv.config();
 
@@ -63,9 +65,22 @@ async function startServer() {
     // process.exit(1);
   });
 
-  app.use((err, req, res, next) => {
-    console.error("💥 Error handler caught:", err);
-    res.status(500).json({ message: "Something went wrong." });
+  app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+    console.error('General error handler caught:', {
+      message: err.message,
+      name: err.name,
+      stack: err.stack,
+      path: req.path,
+      method: req.method
+    })
+
+    // Ensure we always send a response
+    if (!res.headersSent) {
+      res.status(500).json({
+        error: 'Internal server error',
+        message: err.message
+      })
+    }
   });
 
   const sessionSecret = process.env.SESSION_SECRET;
@@ -124,10 +139,24 @@ async function startServer() {
     res.status(404).send("Sorry can't find that!")
   })
 
-  // custom error handler
-  app.use((err: any, req: any, res: any, next: any) => {
-    console.error(err.stack)
-    res.status(500).send('Something went wrong')
+  // Error handlers must be after all routes
+  app.use(authErrorHandler) // Auth errors first
+  app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+    console.error('General error handler caught:', {
+      message: err.message,
+      name: err.name,
+      stack: err.stack,
+      path: req.path,
+      method: req.method
+    })
+
+    // Ensure we always send a response
+    if (!res.headersSent) {
+      res.status(500).json({
+        error: 'Internal server error',
+        message: err.message
+      })
+    }
   })
 
   const server = app.listen(3033, () => {

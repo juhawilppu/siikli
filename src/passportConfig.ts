@@ -4,15 +4,6 @@ const passport = require('passport')
 const GoogleStrategy = require('passport-google-oidc')
 const prisma = new PrismaClient()
 
-interface Profile {
-  id: string
-  displayName: string
-  name: {
-    familyName: string
-    givenName: string
-  }
-  emails: { value: string }[]
-}
 
 const init = () => {
   passport.serializeUser((user: User, done: any) => {
