@@ -2,13 +2,20 @@
 import { PrismaClient } from '@prisma/client';
 import ExcelJS from 'exceljs';
 import express from 'express';
+import { getTenantId, isAuthenticated } from '../middlewares/permissions';
 
 const router = express.Router();
 const prisma = new PrismaClient();
 
-router.get('/api/sales-report', async (req, res) => {
+router.get('/api/sales-report', isAuthenticated, async (req, res) => {
     try {
+        const tenantId = getTenantId(req)
         const data = await prisma.orderProduct.findMany({
+            where: {
+                order: {
+                    tenantId
+                }
+            },
             include: {
                 order: true,
                 products: true,

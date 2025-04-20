@@ -1,12 +1,11 @@
 import { PrismaClient } from '@prisma/client'
 import express from 'express'
-import { parseTenantId } from './orders'
-
+import { getTenantId, isAuthenticated } from '../middlewares/permissions'
 const companiesRoute = express.Router()
 const prisma = new PrismaClient()
 
-companiesRoute.get(`/api/tenants`, async (req, res) => {
-  const tenantId = parseTenantId(req)
+companiesRoute.get(`/api/tenants`, isAuthenticated, async (req, res) => {
+  const tenantId = getTenantId(req)
   const result = await prisma.tenant.findFirst({
     where: {
       id: tenantId
@@ -15,7 +14,8 @@ companiesRoute.get(`/api/tenants`, async (req, res) => {
   res.json(result)
 })
 
-companiesRoute.post(`/api/tenants/:id`, async (req, res) => {
+companiesRoute.post(`/api/tenants`, isAuthenticated, async (req, res) => {
+  const tenantId = getTenantId(req)
   const result = await prisma.tenant.update({
     data: {
       name: req.body.companyName,
@@ -27,7 +27,7 @@ companiesRoute.post(`/api/tenants/:id`, async (req, res) => {
       invoiceSumRow: req.body.invoiceSumRow,
     },
     where: {
-      id: req.params.id as string
+      id: tenantId
     },
   })
   res.json(result)

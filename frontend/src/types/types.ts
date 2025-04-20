@@ -239,7 +239,7 @@ export interface ProductDto {
   packageType: string
 }
 
-export interface FullProductDto {
+export interface GetProductResponseDto {
   id: string
   orderIndex: number
   chain: string | null

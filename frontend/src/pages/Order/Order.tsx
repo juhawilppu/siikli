@@ -20,7 +20,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Separator } from "@/components/ui/separator"
 import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/hooks/use-toast"
-import { CustomerDto, GetOrderDto, OrderProduct, PostOrderDto, ProductDto, ProductOrderDto } from "@/types/types"
+import { CustomerDto, GetCustomersResponseDto, GetOrderDto, GetProductResponseDto, OrderProduct, PostOrderDto, ProductOrderDto } from "@/types/types"
 import { dateToString } from "@/utils/date"
 import { formatMoneyFi } from "@/utils/money"
 import axios from "axios"
@@ -34,7 +34,7 @@ const packageTypes = ['Ltk', 'SS', 'A', 'Ap', 'P', 'Pnt', 'PSS', 'HYV']
 
 export default function CreateOrder() {
   const [customers, setCustomers] = useState<CustomerDto[]>()
-  const [products, setProducts] = useState<ProductDto[]>()
+  const [products, setProducts] = useState<GetProductResponseDto[]>()
   const [isLoading, setIsLoading] = useState(true)
   const [deliveryDate, setDeliveryDate] = useState<Date>()
   const [customerId, setCustomerId] = useState<string>("")
@@ -77,11 +77,11 @@ export default function CreateOrder() {
     const loadData = async () => {
 
       const promises = await Promise.all([
-        axios.get('/customers'),
-        axios.get('/products')
+        axios.get<GetCustomersResponseDto>('/customers'),
+        axios.get<GetProductResponseDto[]>('/products')
       ])
 
-      setCustomers(promises[0].data)
+      setCustomers(promises[0].data.customers)
       setProducts(promises[1].data)
 
       if (orderId) {
@@ -121,8 +121,8 @@ export default function CreateOrder() {
             const product = products.find((p) => p.id === value)
             if (product) {
               updatedItem.price = product.price
-              updatedItem.packageSize = product.packageSize
-              updatedItem.packageType = product.packageType
+              updatedItem.packageSize = product.packageSize || 0
+              updatedItem.packageType = product.packageType || ''
             }
           }
 

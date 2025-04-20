@@ -8,7 +8,6 @@ import { authRoute } from './api/auth'
 import { customersRoute } from './api/customers'
 import dashboardRoute from './api/dashboard'
 import { ordersRoute } from './api/orders'
-import { postsRoute } from './api/posts'
 import productsRoute from './api/products'
 import salesReportRoute from './api/sales_report'
 import tenantsRoute from './api/tenants'
@@ -113,7 +112,6 @@ async function startServer() {
   app.use(passport.initialize())
   app.use(passport.session())
   app.use(authRoute)
-  app.use(postsRoute)
   app.use(ordersRoute)
   app.use(customersRoute)
   app.use(productsRoute)

@@ -2,16 +2,21 @@ import { PrismaClient } from '@prisma/client'
 import { addDays, endOfDay, startOfDay, startOfYear } from 'date-fns'
 import express from 'express'
 import { DashboardDataDto } from '../../frontend/src/types/types'
+import { getTenantId, isAuthenticated } from '../middlewares/permissions'
 
 export const dashboardRoute = express.Router()
 const prisma = new PrismaClient()
 
-dashboardRoute.get(`/api/dashboard`, async (req, res) => {
+dashboardRoute.get(`/api/dashboard`, isAuthenticated, async (req, res) => {
+    const tenantId = getTenantId(req)
 
     const now = new Date()
 
     console.log('getting dashboard data')
     const result = await prisma.customer.findMany({
+        where: {
+            tenantId: tenantId
+        },
         orderBy: {
             order_index: 'asc',
         },
@@ -21,7 +26,8 @@ dashboardRoute.get(`/api/dashboard`, async (req, res) => {
         where: {
             deliveryDate: {
                 gte: startOfYear(now)
-            }
+            },
+            tenantId: tenantId
         },
         include: {
             products: true
@@ -37,7 +43,8 @@ dashboardRoute.get(`/api/dashboard`, async (req, res) => {
             deliveryDate: {
                 gte: startOfDay(addDays(now, -1)),
                 lt: endOfDay(addDays(now, -1))
-            }
+            },
+            tenantId: tenantId
         }
     })
 
@@ -46,7 +53,8 @@ dashboardRoute.get(`/api/dashboard`, async (req, res) => {
             deliveryDate: {
                 gte: startOfDay(now),
                 lt: endOfDay(now)
-            }
+            },
+            tenantId: tenantId
         },
         include: {
             customer: true

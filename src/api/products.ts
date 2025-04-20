@@ -1,13 +1,18 @@
 import { PrismaClient } from '@prisma/client'
 import express from 'express'
-import { FullProductDto, ProductTypeResponse, ReorderDto } from '../../frontend/src/types/types'
+import { GetProductResponseDto, ProductTypeResponse, ReorderDto } from '../../frontend/src/types/types'
+import { getTenantId, isAuthenticated } from '../middlewares/permissions'
 
 const productsRoute = express.Router()
 const prisma = new PrismaClient()
 
-productsRoute.get(`/api/products`, async (req, res) => {
+productsRoute.get(`/api/products`, isAuthenticated, async (req, res) => {
   console.log('getting products')
+  const tenantId = getTenantId(req)
   const products = await prisma.product.findMany({
+    where: {
+      tenantId
+    },
     orderBy: {
       name: 'asc',
     },
@@ -27,12 +32,16 @@ productsRoute.get(`/api/products`, async (req, res) => {
       orderIndex: p.order_index || 0,
       info: p.info
     }
-  }) satisfies FullProductDto[])
+  }) satisfies GetProductResponseDto[])
 })
 
-productsRoute.get(`/api/products/product-types`, async (req, res) => {
+productsRoute.get(`/api/products/product-types`, isAuthenticated, async (req, res) => {
   console.log('getting product-types')
+  const tenantId = getTenantId(req)
   const rows = await prisma.productType.findMany({
+    where: {
+      tenantId
+    },
     include: {
       product_subtypes: true
     }
@@ -54,7 +63,7 @@ productsRoute.get(`/api/products/product-types`, async (req, res) => {
   }) satisfies ProductTypeResponse[])
 })
 
-const verifyProductTypeAndSubtype = async (body: { type: string, subtype: string }) => {
+const verifyProductTypeAndSubtype = async (body: { type: string, subtype: string }, tenantId: string) => {
   console.log('checking type', body.type)
   const type = await prisma.productType.findFirst({
     where: {
@@ -65,6 +74,7 @@ const verifyProductTypeAndSubtype = async (body: { type: string, subtype: string
     console.log('creating type', body.type)
     await prisma.productType.create({
       data: {
+        tenantId,
         type: body.type,
         order_index: 0
       }
@@ -84,6 +94,7 @@ const verifyProductTypeAndSubtype = async (body: { type: string, subtype: string
     console.log('creating subtype', body.subtype)
     await prisma.productSubtypes.create({
       data: {
+        tenantId,
         type: body.type,
         subtype: body.subtype,
         order_index: 0
@@ -94,11 +105,11 @@ const verifyProductTypeAndSubtype = async (body: { type: string, subtype: string
   }
 }
 
-productsRoute.post(`/api/products`, async (req, res) => {
+productsRoute.post(`/api/products`, isAuthenticated, async (req, res) => {
   console.log('saving product')
-  const body = req.body as FullProductDto
-
-  await verifyProductTypeAndSubtype(body as any)
+  const body = req.body as GetProductResponseDto
+  const tenantId = getTenantId(req)
+  await verifyProductTypeAndSubtype(body as any, tenantId)
 
   const result = await prisma.product.create({
     data: {
@@ -112,19 +123,22 @@ productsRoute.post(`/api/products`, async (req, res) => {
       subtype: body.subtype,
       package_size: body.packageSize + '',
       package_type: body.packageType,
-      customer_group: body.chain
+      customer_group: body.chain,
+      tenantId
     }
   })
   res.status(201).json({ id: result.id })
 })
 
-productsRoute.delete(`/api/products/:id`, async (req, res) => {
+productsRoute.delete(`/api/products/:id`, isAuthenticated, async (req, res) => {
   console.log('delete', req.body)
+  const tenantId = getTenantId(req)
   const id = req.params.id
   try {
     await prisma.product.delete({
       where: {
-        id
+        id,
+        tenantId
       }
     })
     res.status(200).json({ message: 'OK' })
@@ -133,15 +147,17 @@ productsRoute.delete(`/api/products/:id`, async (req, res) => {
   }
 })
 
-productsRoute.post(`/api/products/reorder`, async (req, res) => {
+productsRoute.post(`/api/products/reorder`, isAuthenticated, async (req, res) => {
   console.log('reorder', req.body)
   const body = req.body as ReorderDto
+  const tenantId = getTenantId(req)
   await prisma.product.update({
     data: {
       order_index: body.first.orderIndex
     },
     where: {
-      id: body.first.id
+      id: body.first.id,
+      tenantId
     }
   }
   )
@@ -150,20 +166,21 @@ productsRoute.post(`/api/products/reorder`, async (req, res) => {
       order_index: body.second.orderIndex
     },
     where: {
-      id: body.second.id
+      id: body.second.id,
+      tenantId
     }
   }
   )
   res.status(201).json({ message: 'OK' })
 })
 
-productsRoute.post(`/api/products/:id`, async (req, res) => {
+productsRoute.post(`/api/products/:id`, isAuthenticated, async (req, res) => {
   const id = req.params.id
   console.log('updating product ' + id)
+  const tenantId = getTenantId(req)
+  const body = req.body as GetProductResponseDto
 
-  const body = req.body as FullProductDto
-
-  await verifyProductTypeAndSubtype(body as any)
+  await verifyProductTypeAndSubtype(body as any, tenantId)
 
   const result = await prisma.product.update({
     data: {
@@ -180,7 +197,8 @@ productsRoute.post(`/api/products/:id`, async (req, res) => {
       customer_group: body.chain
     },
     where: {
-      id
+      id,
+      tenantId
     }
   })
   res.json(result)

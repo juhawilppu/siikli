@@ -4,11 +4,13 @@ import Decimal from 'decimal.js'
 import express from 'express'
 import { InvoiceDto, InvoiceItemDto } from '../../frontend/src/types/types'
 import { dateToString } from '../../frontend/src/utils/date'
+import { getTenantId, isAuthenticated } from '../middlewares/permissions'
 
 const invoiceRoute = express.Router()
 const prisma = new PrismaClient()
 
-invoiceRoute.get(`/api/invoices`, async (req, res) => {
+invoiceRoute.get(`/api/invoices`, isAuthenticated, async (req, res) => {
+    const tenantId = getTenantId(req)
     try {
         const customerId = req.query.customerId as string;
         const startDate = new Date(req.query.startDate as string);
@@ -16,15 +18,18 @@ invoiceRoute.get(`/api/invoices`, async (req, res) => {
         const usePrice0 = req.query.usePrice0 === 'true';
 
         const customer = await prisma.customer.findUnique({
-            where: { id: customerId },
+            where: {
+                id: customerId,
+                tenantId
+            },
         });
 
         if (!customer) throw new Error('Customer not found');
 
-
         const orders = await prisma.order.findMany({
             where: {
                 customerId: customer.id,
+                tenantId,
                 deliveryDate: {
                     gte: startDate,
                     lte: endDate,
@@ -43,7 +48,11 @@ invoiceRoute.get(`/api/invoices`, async (req, res) => {
         });
 
 
-        const company = await prisma.tenant.findFirstOrThrow()
+        const company = await prisma.tenant.findFirstOrThrow({
+            where: {
+                id: tenantId
+            }
+        })
 
         const today = new Date()
 

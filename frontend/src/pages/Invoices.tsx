@@ -1,6 +1,6 @@
 import { Calendar as CalendarComponent } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { CustomerDto, InvoiceDto } from '@/types/types'
+import { CustomerDto, GetCustomersResponseDto, InvoiceDto } from '@/types/types'
 import { formatDate } from '@/utils/date'
 
 import { Button } from "@/components/ui/button"
@@ -55,8 +55,8 @@ export const Invoices = () => {
 
     useEffect(() => {
         axios
-            .get<CustomerDto[]>('/customers')
-            .then((response) => setCustomers(response.data))
+            .get<GetCustomersResponseDto>('/customers')
+            .then((response) => setCustomers(response.data.customers))
             .finally(() => setLoading(false))
     }, [])
 
