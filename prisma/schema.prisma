@@ -31,10 +31,8 @@ model Tenant {
 
 model User {
   id String @id @default(uuid())
-  externalId String  @unique @db.VarChar(128)
-  username   String  @unique @db.VarChar(128)
+  googleExternalId String?  @unique @db.VarChar(128)
   email      String  @unique
-  name       String?
   tenantId  String @db.Uuid
   tenant Tenant @relation(fields: [tenantId], references: [id])
 

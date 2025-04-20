@@ -39,7 +39,7 @@ const init = () => {
         console.log(profile)
         console.log(cb)
         const existingUser = await prisma.user.findFirst({
-          where: { externalId: profile.id },
+          where: { googleExternalId: profile.id },
         })
         console.log('existingUser', existingUser)
 
