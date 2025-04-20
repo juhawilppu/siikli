@@ -154,3 +154,12 @@ model ProductSubtypes {
   @@index([order_id])
   @@map("product_subtype")
 }
+
+model RateLimit {
+  id String @id @default(uuid()) @db.Uuid
+  ip String @db.VarChar(255)
+  key String @db.VarChar(255)
+  createdAt DateTime @default(now())
+
+  @@map("rate_limit")
+}

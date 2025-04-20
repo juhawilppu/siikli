@@ -2,6 +2,7 @@ const passport = require('passport')
 
 import { PrismaClient } from '@prisma/client'
 import express from 'express'
+import { rateLimit } from '../../middlewares/rateLimit'
 const prisma = new PrismaClient()
 export const authRoute = express.Router()
 
@@ -26,7 +27,7 @@ authRoute.get(
   }
 )
 
-authRoute.post('/api/auth/email/create-pin', async (req, res, next) => {
+authRoute.post('/api/auth/email/create-pin', rateLimit(5, 10), async (req, res, next) => {
   const body = req.body
   console.log(body)
   const pin = Math.floor(100000 + Math.random() * 900000)
@@ -46,7 +47,7 @@ authRoute.post('/api/auth/email/create-pin', async (req, res, next) => {
   res.status(200).json({ message: 'OK' })
 })
 
-authRoute.post('/api/auth/email/check-pin', passport.authenticate('local', {
+authRoute.post('/api/auth/email/check-pin', rateLimit(5, 1), passport.authenticate('local', {
   failureMessage: true,
   session: false
 }), (req, res, next) => {

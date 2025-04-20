@@ -1,5 +1,7 @@
+import { PrismaClient } from '@prisma/client'
 import { NextFunction, Request, Response } from 'express'
-import { createRedisClient } from '../src/redis'
+
+const prisma = new PrismaClient()
 
 /***
  * Rate-limiting middleware based on client IP address. Rate-limiting is done per endpoint (method, url).
@@ -13,28 +15,41 @@ import { createRedisClient } from '../src/redis'
  */
 export const rateLimit =
   (limit: number, durationInMinutes: number) =>
-  async (req: Request, res: Response, next: NextFunction) => {
-    const redis = createRedisClient()
-    await redis.connect()
+    async (req: Request, res: Response, next: NextFunction) => {
 
-    const key = `rate-limit|${req.url}|${req.method}|${req.ip}`
-    const attemptsSoFar = parseInt((await redis.get(key)) || '0')
-    const remainingBeforeThisRequest = limit - attemptsSoFar
-    const remainingAfterThisRequest = Math.max(
-      remainingBeforeThisRequest - 1,
-      0
-    )
+      if (!req.ip) {
+        return res.status(400).send({ error: 'ip_not_found' })
+      }
 
-    res.setHeader('X-RateLimit-Limit', limit)
-    res.setHeader('X-RateLimit-Remaining', remainingAfterThisRequest)
+      const key = `rate-limit|${req.url}|${req.method}|${req.ip}`
+      const attemptsSoFar = await prisma.rateLimit.count({
+        where: {
+          key: key,
+          ip: req.ip,
+          createdAt: {
+            gte: new Date(Date.now() - durationInMinutes * 60 * 1000),
+          },
+        },
+      });
 
-    if (remainingBeforeThisRequest === 0) {
-      await redis.disconnect()
-      return res.status(429).send({ error: 'rate_limit_reached' })
+      const remainingBeforeThisRequest = limit - attemptsSoFar
+      const remainingAfterThisRequest = Math.max(
+        remainingBeforeThisRequest - 1,
+        0
+      )
+
+      res.setHeader('X-RateLimit-Limit', limit)
+      res.setHeader('X-RateLimit-Remaining', remainingAfterThisRequest)
+
+      if (remainingBeforeThisRequest === 0) {
+        return res.status(429).send({ error: 'rate_limit_reached' })
+      }
+
+      await prisma.rateLimit.create({
+        data: {
+          ip: req.ip,
+          key: key
+        }
+      })
+      next()
     }
-
-    await redis.incr(key)
-    await redis.expire(key, durationInMinutes * 60)
-    await redis.disconnect()
-    next()
-  }

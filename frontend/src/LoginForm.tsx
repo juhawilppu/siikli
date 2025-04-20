@@ -93,11 +93,20 @@ export default function LoginForm() {
                 pinCode
             })
         } catch (error) {
-            toast({
-                title: "Virhe",
-                description: "Virheellinen PIN-koodi.",
-                variant: "destructive",
-            })
+            console.log('error.status', (error as any).status)
+            if ((error as any).status === 429) {
+                toast({
+                    title: "Virhe",
+                    description: "Olet yrittänyt liian monta kertaa. Yritä hetken kuluttua uudelleen.",
+                    variant: "destructive",
+                })
+            } else {
+                toast({
+                    title: "Virhe",
+                    description: "Virheellinen PIN-koodi.",
+                    variant: "destructive",
+                })
+            }
         } finally {
             setIsLoading(false)
         }
