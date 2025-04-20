@@ -5,24 +5,33 @@ import { CustomerDto, DeleteCustomerResponseDto, GetCustomersResponseDto } from 
 export const customersRoute = express.Router()
 const prisma = new PrismaClient()
 
-const getTenantId = (req: express.Request, res: express.Response) => {
+const isAuthenticated = (req: express.Request, res: express.Response, next: express.NextFunction) => {
   const user = req.user as User
-  if (!user?.tenantId || user.tenantId !== '232') {
-    console.log('Unauthorized - No tenant ID found')
+  if (!user?.tenantId) {
+    console.log('isAuthenticated - Unauthorized')
     res.status(401).json({
       error: 'Unauthorized',
       message: 'You must be logged in to access this resource',
       redirect: '/login'
     })
-    return null
+    return
+  }
+  next()
+}
+
+const getTenantId = (req: express.Request) => {
+  const user = req.user as User
+  if (!user?.tenantId) {
+    console.log('getTenantId - No tenant ID found')
+    throw new Error(' No tenant ID found')
   }
   return user.tenantId
 }
 
-customersRoute.get(`/api/customers`, async (req, res) => {
+customersRoute.get(`/api/customers`, isAuthenticated, async (req, res) => {
   console.log('getting customers', req.user)
-  const tenantId = getTenantId(req, res)
-  if (!tenantId) return // Early return if unauthorized
+
+  const tenantId = getTenantId(req)
 
   const result = await prisma.customer.findMany({
     where: {
@@ -81,18 +90,17 @@ customersRoute.get(`/api/customers`, async (req, res) => {
   } satisfies GetCustomersResponseDto)
 })
 
-customersRoute.post(`/api/customers`, async (req, res) => {
+customersRoute.post(`/api/customers`, isAuthenticated, async (req, res) => {
   console.log('creating customer')
-  const tenantId = getTenantId(req, res)
-  if (!tenantId) return // Early return if unauthorized
+
+  const tenantId = getTenantId(req)
 
   const body = req.body as CustomerDto
-  const tenant = await prisma.tenant.findFirstOrThrow()
   const result = await prisma.customer.create({
     data: {
       tenant: {
         connect: {
-          id: tenant.id
+          id: tenantId
         }
       },
       chain: body.chain,
@@ -115,10 +123,9 @@ customersRoute.post(`/api/customers`, async (req, res) => {
   res.json(result)
 })
 
-customersRoute.put(`/api/customers/reorder`, async (req, res) => {
+customersRoute.put(`/api/customers/reorder`, isAuthenticated, async (req, res) => {
   console.log('reordering customers')
-  const tenantId = getTenantId(req, res)
-  if (!tenantId) return // Early return if unauthorized
+  const tenantId = getTenantId(req)
 
   const customers = req.body as CustomerDto[]
 
@@ -127,7 +134,7 @@ customersRoute.put(`/api/customers/reorder`, async (req, res) => {
     await prisma.$transaction(
       customers.map(customer =>
         prisma.customer.update({
-          where: { id: customer.id },
+          where: { id: customer.id, tenantId: tenantId },
           data: { order_index: customer.orderIndex }
         })
       )
@@ -143,22 +150,21 @@ customersRoute.put(`/api/customers/reorder`, async (req, res) => {
   }
 })
 
-customersRoute.put(`/api/customers/:id`, async (req, res) => {
+customersRoute.put(`/api/customers/:id`, isAuthenticated, async (req, res) => {
   console.log('updating customer')
-  const tenantId = getTenantId(req, res)
-  if (!tenantId) return // Early return if unauthorized
+  const tenantId = getTenantId(req)
 
   const id = req.params.id
   const body = req.body as CustomerDto
-  const tenant = await prisma.tenant.findFirstOrThrow()
   const result = await prisma.customer.update({
     where: {
-      id: id
+      id: id,
+      tenantId: tenantId
     },
     data: {
       tenant: {
         connect: {
-          id: tenant.id
+          id: tenantId
         }
       },
       chain: body.chain,
@@ -181,22 +187,23 @@ customersRoute.put(`/api/customers/:id`, async (req, res) => {
   res.json(result)
 })
 
-customersRoute.delete(`/api/customers/:id`, async (req, res) => {
-  const tenantId = getTenantId(req, res)
-  if (!tenantId) return // Early return if unauthorized
+customersRoute.delete(`/api/customers/:id`, isAuthenticated, async (req, res) => {
+  const tenantId = getTenantId(req)
 
   const id = req.params.id
   console.log('deleting customer', id)
 
   const deletedOrders = await prisma.order.deleteMany({
     where: {
-      customerId: id
+      customerId: id,
+      tenantId: tenantId
     }
   })
 
   const result = await prisma.customer.delete({
     where: {
-      id: id
+      id: id,
+      tenantId: tenantId
     }
   })
   res.json({
