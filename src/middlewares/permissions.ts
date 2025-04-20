@@ -15,11 +15,11 @@ export const isAuthenticated = (req: express.Request, res: express.Response, nex
     next()
 }
 
-export const getTenantId = (req: express.Request) => {
+export const getUser = (req: express.Request) => {
     const user = req.user as User
     if (!user?.tenantId) {
         console.log('getTenantId - No tenant ID found')
         throw new Error(' No tenant ID found')
     }
-    return user.tenantId
+    return { userId: user.id, tenantId: user.tenantId }
 }

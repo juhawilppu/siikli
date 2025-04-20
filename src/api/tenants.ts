@@ -1,11 +1,11 @@
 import { PrismaClient } from '@prisma/client'
 import express from 'express'
-import { getTenantId, isAuthenticated } from '../middlewares/permissions'
+import { getUser, isAuthenticated } from '../middlewares/permissions'
 const companiesRoute = express.Router()
 const prisma = new PrismaClient()
 
 companiesRoute.get(`/api/tenants`, isAuthenticated, async (req, res) => {
-  const tenantId = getTenantId(req)
+  const { tenantId } = getUser(req)
   const result = await prisma.tenant.findFirst({
     where: {
       id: tenantId
@@ -15,7 +15,7 @@ companiesRoute.get(`/api/tenants`, isAuthenticated, async (req, res) => {
 })
 
 companiesRoute.post(`/api/tenants`, isAuthenticated, async (req, res) => {
-  const tenantId = getTenantId(req)
+  const { tenantId, userId } = getUser(req)
   const result = await prisma.tenant.update({
     data: {
       name: req.body.companyName,
@@ -29,6 +29,13 @@ companiesRoute.post(`/api/tenants`, isAuthenticated, async (req, res) => {
     where: {
       id: tenantId
     },
+  })
+  await prisma.log.create({
+    data: {
+      userId,
+      tenantId,
+      event: 'update_tenant',
+    }
   })
   res.json(result)
 })

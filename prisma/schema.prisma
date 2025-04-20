@@ -28,16 +28,17 @@ model Tenant {
   products             Product[]
   productTypes         ProductType[]
   productSubtypes      ProductSubtypes[]
+  logs Log[]
   @@map("tenant")
 }
 
 model User {
-  id String @id @default(uuid())
+  id String @id @db.Uuid @default(uuid())
   googleExternalId String?  @unique @db.VarChar(128)
   email      String  @unique
   tenantId  String @db.Uuid
   tenant Tenant @relation(fields: [tenantId], references: [id])
-
+  logs Log[]
   @@map("user")
 }
 
@@ -162,4 +163,17 @@ model RateLimit {
   createdAt DateTime @default(now())
 
   @@map("rate_limit")
+}
+
+model Log {
+  id String @id @default(uuid()) @db.Uuid
+  userId String @db.Uuid
+  user User @relation(fields: [userId], references: [id]) 
+  tenantId String @db.Uuid
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  event String @db.VarChar(255)
+  data Json @default("{}")
+  createdAt DateTime @default(now())
+
+  @@map("log")
 }

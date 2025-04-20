@@ -2,14 +2,14 @@
 import { PrismaClient } from '@prisma/client';
 import ExcelJS from 'exceljs';
 import express from 'express';
-import { getTenantId, isAuthenticated } from '../middlewares/permissions';
+import { getUser, isAuthenticated } from '../middlewares/permissions';
 
 const router = express.Router();
 const prisma = new PrismaClient();
 
 router.get('/api/sales-report', isAuthenticated, async (req, res) => {
     try {
-        const tenantId = getTenantId(req)
+        const { tenantId, userId } = getUser(req)
         const data = await prisma.orderProduct.findMany({
             where: {
                 order: {
@@ -69,6 +69,14 @@ router.get('/api/sales-report', isAuthenticated, async (req, res) => {
 
         // Stream the Excel file to the response
         await workbook.xlsx.write(res);
+
+        await prisma.log.create({
+            data: {
+                userId,
+                tenantId,
+                event: 'export_sales_report',
+            }
+        })
         res.end();
     } catch (err) {
         console.error('Failed to export orders:', err);

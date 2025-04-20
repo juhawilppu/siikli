@@ -1,14 +1,14 @@
 import { PrismaClient } from '@prisma/client'
 import express from 'express'
 import { GetProductResponseDto, ProductTypeResponse, ReorderDto } from '../../frontend/src/types/types'
-import { getTenantId, isAuthenticated } from '../middlewares/permissions'
+import { getUser, isAuthenticated } from '../middlewares/permissions'
 
 const productsRoute = express.Router()
 const prisma = new PrismaClient()
 
 productsRoute.get(`/api/products`, isAuthenticated, async (req, res) => {
   console.log('getting products')
-  const tenantId = getTenantId(req)
+  const { tenantId } = getUser(req)
   const products = await prisma.product.findMany({
     where: {
       tenantId
@@ -37,7 +37,7 @@ productsRoute.get(`/api/products`, isAuthenticated, async (req, res) => {
 
 productsRoute.get(`/api/products/product-types`, isAuthenticated, async (req, res) => {
   console.log('getting product-types')
-  const tenantId = getTenantId(req)
+  const { tenantId } = getUser(req)
   const rows = await prisma.productType.findMany({
     where: {
       tenantId
@@ -108,7 +108,7 @@ const verifyProductTypeAndSubtype = async (body: { type: string, subtype: string
 productsRoute.post(`/api/products`, isAuthenticated, async (req, res) => {
   console.log('saving product')
   const body = req.body as GetProductResponseDto
-  const tenantId = getTenantId(req)
+  const { tenantId, userId } = getUser(req)
   await verifyProductTypeAndSubtype(body as any, tenantId)
 
   const result = await prisma.product.create({
@@ -127,18 +127,39 @@ productsRoute.post(`/api/products`, isAuthenticated, async (req, res) => {
       tenantId
     }
   })
+  await prisma.log.create({
+    data: {
+      userId,
+      tenantId,
+      event: 'create_product',
+      data: {
+        product: result.id,
+        name: result.name,
+      }
+    }
+  })
   res.status(201).json({ id: result.id })
 })
 
 productsRoute.delete(`/api/products/:id`, isAuthenticated, async (req, res) => {
   console.log('delete', req.body)
-  const tenantId = getTenantId(req)
+  const { tenantId, userId } = getUser(req)
   const id = req.params.id
   try {
     await prisma.product.delete({
       where: {
         id,
         tenantId
+      }
+    })
+    await prisma.log.create({
+      data: {
+        userId,
+        tenantId,
+        event: 'delete_product',
+        data: {
+          product: id,
+        }
       }
     })
     res.status(200).json({ message: 'OK' })
@@ -150,7 +171,7 @@ productsRoute.delete(`/api/products/:id`, isAuthenticated, async (req, res) => {
 productsRoute.post(`/api/products/reorder`, isAuthenticated, async (req, res) => {
   console.log('reorder', req.body)
   const body = req.body as ReorderDto
-  const tenantId = getTenantId(req)
+  const { tenantId } = getUser(req)
   await prisma.product.update({
     data: {
       order_index: body.first.orderIndex
@@ -177,7 +198,7 @@ productsRoute.post(`/api/products/reorder`, isAuthenticated, async (req, res) =>
 productsRoute.post(`/api/products/:id`, isAuthenticated, async (req, res) => {
   const id = req.params.id
   console.log('updating product ' + id)
-  const tenantId = getTenantId(req)
+  const { tenantId } = getUser(req)
   const body = req.body as GetProductResponseDto
 
   await verifyProductTypeAndSubtype(body as any, tenantId)

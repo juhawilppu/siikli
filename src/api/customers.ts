@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client'
 import express from 'express'
 import { CustomerDto, DeleteCustomerResponseDto, GetCustomersResponseDto } from '../../frontend/src/types/types'
-import { getTenantId, isAuthenticated } from '../middlewares/permissions'
+import { getUser, isAuthenticated } from '../middlewares/permissions'
 
 export const customersRoute = express.Router()
 const prisma = new PrismaClient()
@@ -9,7 +9,15 @@ const prisma = new PrismaClient()
 customersRoute.get(`/api/customers`, isAuthenticated, async (req, res) => {
   console.log('getting customers', req.user)
 
-  const tenantId = getTenantId(req)
+  const { userId, tenantId } = getUser(req)
+
+  await prisma.log.create({
+    data: {
+      userId,
+      tenantId,
+      event: 'get_customers'
+    }
+  })
 
   const result = await prisma.customer.findMany({
     where: {
@@ -71,7 +79,7 @@ customersRoute.get(`/api/customers`, isAuthenticated, async (req, res) => {
 customersRoute.post(`/api/customers`, isAuthenticated, async (req, res) => {
   console.log('creating customer')
 
-  const tenantId = getTenantId(req)
+  const { userId, tenantId } = getUser(req)
 
   const body = req.body as CustomerDto
   const result = await prisma.customer.create({
@@ -98,12 +106,24 @@ customersRoute.post(`/api/customers`, isAuthenticated, async (req, res) => {
       customer_group: body.customerGroup,
     }
   })
+
+  await prisma.log.create({
+    data: {
+      userId,
+      tenantId,
+      event: 'create_customer',
+      data: {
+        customer: result.id,
+        name: result.name,
+      }
+    }
+  })
   res.json(result)
 })
 
 customersRoute.put(`/api/customers/reorder`, isAuthenticated, async (req, res) => {
   console.log('reordering customers')
-  const tenantId = getTenantId(req)
+  const { userId, tenantId } = getUser(req)
 
   const customers = req.body as CustomerDto[]
 
@@ -130,7 +150,7 @@ customersRoute.put(`/api/customers/reorder`, isAuthenticated, async (req, res) =
 
 customersRoute.put(`/api/customers/:id`, isAuthenticated, async (req, res) => {
   console.log('updating customer')
-  const tenantId = getTenantId(req)
+  const { userId, tenantId } = getUser(req)
 
   const id = req.params.id
   const body = req.body as CustomerDto
@@ -162,11 +182,23 @@ customersRoute.put(`/api/customers/:id`, isAuthenticated, async (req, res) => {
       customer_group: body.customerGroup,
     }
   })
+  await prisma.log.create({
+    data: {
+      userId,
+      tenantId,
+      event: 'update_customer',
+      data: {
+        customer: result.id,
+        name: result.name,
+      }
+    }
+  })
+
   res.json(result)
 })
 
 customersRoute.delete(`/api/customers/:id`, isAuthenticated, async (req, res) => {
-  const tenantId = getTenantId(req)
+  const { userId, tenantId } = getUser(req)
 
   const id = req.params.id
   console.log('deleting customer', id)
@@ -182,6 +214,17 @@ customersRoute.delete(`/api/customers/:id`, isAuthenticated, async (req, res) =>
     where: {
       id: id,
       tenantId: tenantId
+    }
+  })
+  await prisma.log.create({
+    data: {
+      userId,
+      tenantId,
+      event: 'delete_customer',
+      data: {
+        customer: result.id,
+        name: result.name,
+      }
     }
   })
   res.json({

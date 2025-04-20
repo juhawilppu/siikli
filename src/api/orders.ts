@@ -8,7 +8,7 @@ import {
   PostOrderDto
 } from '../../frontend/src/types/types'
 import { dateToString, formatDate, stringToDate } from '../../frontend/src/utils/date'
-import { getTenantId, isAuthenticated } from '../middlewares/permissions'
+import { getUser, isAuthenticated } from '../middlewares/permissions'
 
 const defaultStyle = `
     <style type="text/css">
@@ -112,7 +112,7 @@ ordersRoute.get(`/api/orders`, isAuthenticated, async (req, res) => {
 
   const startDate = stringToDate(req.query.startDate as string)
   const endDate = stringToDate(req.query.endDate as string)
-  const tenantId = getTenantId(req)
+  const { tenantId } = getUser(req)
 
   const result = await prisma.order.findMany({
     include: {
@@ -161,7 +161,7 @@ ordersRoute.get(`/api/orders/cargo_reports`, isAuthenticated, async (req, res) =
     return res.status(400)
   }
 
-  const tenantId = getTenantId(req)
+  const { tenantId } = getUser(req)
 
   console.log('startDate', startOfDay(parse(req.query.startDate as string, 'yyyy-MM-dd', new Date())))
 
@@ -298,7 +298,7 @@ ordersRoute.get(`/api/orders/:id`, isAuthenticated, async (req, res) => {
   console.log('getting order ' + req.params.id)
 
   const orderId = req.params.id
-  const tenantId = getTenantId(req)
+  const { tenantId } = getUser(req)
 
   const result = await prisma.order.findFirstOrThrow({
     include: {
@@ -349,7 +349,7 @@ ordersRoute.post(`/api/orders`, isAuthenticated, async (req, res) => {
   console.log('saving order')
 
   const data = req.body as PostOrderDto
-  const tenantId = getTenantId(req)
+  const { tenantId, userId } = getUser(req)
 
   const result = await prisma.order.create({
     data: {
@@ -384,6 +384,17 @@ ordersRoute.post(`/api/orders`, isAuthenticated, async (req, res) => {
     }),
   })
 
+  await prisma.log.create({
+    data: {
+      userId,
+      tenantId,
+      event: 'create_order',
+      data: {
+        order: result.id,
+        customer: result.customerId,
+      }
+    }
+  })
   res.json({ ...result, rows: result2 })
 })
 
@@ -391,7 +402,7 @@ ordersRoute.post(`/api/orders/:id`, isAuthenticated, async (req, res) => {
   console.log('saving order ' + req.params.id)
 
   const data = req.body as PostOrderDto
-  const tenantId = getTenantId(req)
+  const { tenantId, userId } = getUser(req)
   const result = await prisma.order.update({
     data: {
       deliveryDate: stringToDate(data.deliveryDate),
@@ -453,6 +464,18 @@ ordersRoute.post(`/api/orders/:id`, isAuthenticated, async (req, res) => {
     })
     await Promise.all(promises)
   }
+
+  await prisma.log.create({
+    data: {
+      userId,
+      tenantId,
+      event: 'update_order',
+      data: {
+        order: result.id,
+        customer: result.customerId,
+      }
+    }
+  })
 
   res.status(200).json({ message: 'Saved' })
 })

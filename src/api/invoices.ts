@@ -4,13 +4,13 @@ import Decimal from 'decimal.js'
 import express from 'express'
 import { InvoiceDto, InvoiceItemDto } from '../../frontend/src/types/types'
 import { dateToString } from '../../frontend/src/utils/date'
-import { getTenantId, isAuthenticated } from '../middlewares/permissions'
+import { getUser, isAuthenticated } from '../middlewares/permissions'
 
 const invoiceRoute = express.Router()
 const prisma = new PrismaClient()
 
 invoiceRoute.get(`/api/invoices`, isAuthenticated, async (req, res) => {
-    const tenantId = getTenantId(req)
+    const { userId, tenantId } = getUser(req)
     try {
         const customerId = req.query.customerId as string;
         const startDate = new Date(req.query.startDate as string);
