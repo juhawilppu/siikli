@@ -3,14 +3,16 @@ import { addDays, endOfDay, startOfDay, startOfYear } from 'date-fns'
 import express from 'express'
 import { DashboardDataDto } from '../../frontend/src/types/types'
 import { getTenantId, isAuthenticated } from '../middlewares/permissions'
+import { setSentryUser } from '../middlewares/sentryUser'
 
 export const dashboardRoute = express.Router()
 const prisma = new PrismaClient()
 
-dashboardRoute.get(`/api/dashboard`, isAuthenticated, async (req, res) => {
+dashboardRoute.get(`/api/dashboard`, isAuthenticated, setSentryUser, async (req, res) => {
     const tenantId = getTenantId(req)
 
     const now = new Date()
+    throw new Error('test')
 
     console.log('getting dashboard data')
     const result = await prisma.customer.findMany({

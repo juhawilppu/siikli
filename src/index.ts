@@ -1,25 +1,28 @@
-import cookieParser from 'cookie-parser'
-import cors from 'cors'
-import express from 'express'
-import session from 'express-session'
-import helmet from 'helmet'
-import passport from 'passport'
-import { authRoute } from './api/auth'
-import { customersRoute } from './api/customers'
-import dashboardRoute from './api/dashboard'
-import { ordersRoute } from './api/orders'
-import productsRoute from './api/products'
-import salesReportRoute from './api/sales_report'
-import tenantsRoute from './api/tenants'
-import warehouseRoute from './api/warehouse-report'
-import passportConfig from './passportConfig'
+import * as Sentry from "@sentry/node";
+import cookieParser from 'cookie-parser';
+import cors from 'cors';
+import express from 'express';
+import session from 'express-session';
+import helmet from 'helmet';
+import passport from 'passport';
+import { authRoute } from './api/auth';
+import { customersRoute } from './api/customers';
+import dashboardRoute from './api/dashboard';
+import { ordersRoute } from './api/orders';
+import productsRoute from './api/products';
+import salesReportRoute from './api/sales_report';
+import tenantsRoute from './api/tenants';
+import warehouseRoute from './api/warehouse-report';
+import "./instrument.js";
+import passportConfig from './passportConfig';
 
-import { RedisStore } from 'connect-redis'
-import dotenv from 'dotenv'
-import { NextFunction, Request, Response } from 'express'
-import invoiceRoute from './api/invoices'
-import { authErrorHandler } from './middlewares/authError'
-import redisClient from './redis'
+import { User } from "@prisma/client";
+import { RedisStore } from 'connect-redis';
+import dotenv from 'dotenv';
+import { NextFunction, Request, Response } from 'express';
+import invoiceRoute from './api/invoices';
+import { authErrorHandler } from './middlewares/authError';
+import redisClient from './redis';
 dotenv.config();
 
 async function startServer() {
@@ -131,6 +134,19 @@ async function startServer() {
       res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'))
     })
   }
+
+  Sentry.setupExpressErrorHandler(app);
+
+  app.use((req, res, next) => {
+    if (req.user) {
+      const user = req.user as User;
+      Sentry.setUser({
+        userId: user.id,
+        tenantId: user.tenantId,
+      });
+    }
+    next();
+  });
 
   // custom 404
   app.use((req, res, next) => {
