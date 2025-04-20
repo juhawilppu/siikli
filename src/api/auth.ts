@@ -2,6 +2,7 @@ const passport = require('passport')
 
 import { PrismaClient } from '@prisma/client'
 import express from 'express'
+import { GetCurrentUserDto } from '../../frontend/src/types/types'
 import { rateLimit } from '../../middlewares/rateLimit'
 const prisma = new PrismaClient()
 export const authRoute = express.Router()
@@ -85,7 +86,7 @@ authRoute.get('/api/auth/current-user', (req, res) => {
         .split('@')[0]
         .slice(0, 2)
         .toUpperCase()
-    res.status(200).send({ username: user.email, initials })
+    res.status(200).send({ userId: user.id, tenantId: user.tenantId, initials } satisfies GetCurrentUserDto)
   } else {
     res.status(404).end()
   }

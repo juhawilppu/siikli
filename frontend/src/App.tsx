@@ -1,9 +1,10 @@
+import * as Sentry from "@sentry/react"
 import axios from 'axios'
 import { HelpCircle, LogOut, Search, Settings, User } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import './App.css'
-import Error from './Error'
+import ErrorPage from './ErrorPage'
 import Landing from './Landing'
 import SiikliDrawer from './SiikliDrawer'
 import { Avatar, AvatarFallback, AvatarImage } from './components/ui/avatar'
@@ -27,25 +28,35 @@ import { ProductPage } from './pages/ProductPage'
 import TuoteryhmatJarjestely from './pages/ProductTypeReorder'
 import Products from './pages/Products'
 import { SalesReport } from './pages/SalesReport'
-
+import { GetCurrentUserDto } from "./types/types"
 
 axios.defaults.baseURL = 'http://localhost:5173/api'
 
 function App() {
-  const [user, setUser] = useState<{ username: string, initials: string }>()
+  const [user, setUser] = useState<GetCurrentUserDto>()
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
 
   const logout = async () => {
     await axios.post('/auth/logout')
     setUser(undefined)
+    Sentry.setUser(null)
   }
 
   useEffect(() => {
     axios
-      .get('/auth/current-user')
+      .get<GetCurrentUserDto>('/auth/current-user')
       .then((response) => {
-        setUser(response.data)
+        console.log('response', response)
+        const userData = response.data
+        setUser(userData)
+
+        // Update Sentry user context
+        Sentry.setUser({
+          id: userData.userId,
+          initials: userData.initials,
+          tenantId: userData.tenantId
+        })
       })
       .finally(() => setLoading(false))
   }, [])
@@ -61,7 +72,7 @@ function App() {
       <>
         <Routes>
           <Route path='/' element={<Landing />} />
-          <Route path='/error' element={<Error />} />
+          <Route path='/error' element={<ErrorPage />} />
           <Route path='*' element={<Navigate to='/' replace />} />
         </Routes>
         <Toaster />

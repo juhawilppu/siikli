@@ -1,3 +1,9 @@
+export interface GetCurrentUserDto {
+  userId: string
+  tenantId: string
+  initials: string
+}
+
 export interface ProductOrderDto {
   id: string
   productId: string
