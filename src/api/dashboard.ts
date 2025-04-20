@@ -12,7 +12,6 @@ dashboardRoute.get(`/api/dashboard`, isAuthenticated, setSentryUser, async (req,
     const tenantId = getTenantId(req)
 
     const now = new Date()
-    throw new Error('test')
 
     console.log('getting dashboard data')
     const result = await prisma.customer.findMany({
