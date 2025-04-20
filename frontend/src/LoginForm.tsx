@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useToast } from "@/hooks/use-toast"
+import axios from "axios"
 
 export default function LoginForm() {
     const [email, setEmail] = useState("")
@@ -20,7 +21,7 @@ export default function LoginForm() {
         window.location.href = "/auth/google"
     }
 
-    const handleSendPin = (e: React.FormEvent) => {
+    const handleSendPin = async (e: React.FormEvent) => {
         e.preventDefault()
         if (!email || !email.includes("@")) {
             toast({
@@ -33,14 +34,23 @@ export default function LoginForm() {
 
         setIsLoading(true)
 
-        setTimeout(() => {
-            setIsLoading(false)
+        try {
+            await axios.post('/auth/email/create-pin', {
+                email
+            })
             setPinSent(true)
             toast({
                 title: "PIN-koodi lähetetty",
                 description: `PIN-koodi on lähetetty osoitteeseen ${email}.`,
             })
-        }, 1500)
+        } catch (error) {
+            toast({
+                title: "Virhe",
+                description: "Virheellinen sähköpostiosoite.",
+            })
+        } finally {
+            setIsLoading(false)
+        }
     }
 
     // Käsittele PIN-koodin syöttö
@@ -63,11 +73,10 @@ export default function LoginForm() {
         setPin(newPin)
     }
 
-    // Käsittele PIN-koodin lähetys
-    const handlePinSubmit = (e: React.FormEvent) => {
+    // Check pin code
+    const handlePinSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         const pinCode = pin.join("")
-
         if (pinCode.length !== 6) {
             toast({
                 title: "Virheellinen PIN-koodi",
@@ -78,16 +87,20 @@ export default function LoginForm() {
         }
 
         setIsLoading(true)
-        // Tässä olisi oikea PIN-koodin vahvistuslogiikka
-        setTimeout(() => {
-            setIsLoading(false)
-            toast({
-                title: "Kirjautuminen onnistui",
-                description: "PIN-koodi vahvistettu.",
+        try {
+            await axios.post('/auth/email/check-pin', {
+                email,
+                pinCode
             })
-            // Ohjaa käyttäjä sovellukseen
-            window.location.href = "/asiakkaat"
-        }, 1500)
+        } catch (error) {
+            toast({
+                title: "Virhe",
+                description: "Virheellinen PIN-koodi.",
+                variant: "destructive",
+            })
+        } finally {
+            setIsLoading(false)
+        }
     }
 
     // Käsittele näppäimistötapahtumat PIN-koodikentissä

@@ -1,7 +1,8 @@
 const passport = require('passport')
 
+import { PrismaClient } from '@prisma/client'
 import express from 'express'
-
+const prisma = new PrismaClient()
 export const authRoute = express.Router()
 
 authRoute.get(
@@ -24,6 +25,39 @@ authRoute.get(
     }
   }
 )
+
+authRoute.post('/api/auth/email/create-pin', async (req, res, next) => {
+  const body = req.body
+  console.log(body)
+  const pin = Math.floor(100000 + Math.random() * 900000)
+  console.log('pin', pin)
+  await prisma.emailLoginPinCode.deleteMany({
+    where: {
+      email: body.email,
+    },
+  })
+  await prisma.emailLoginPinCode.create({
+    data: {
+      email: body.email,
+      pinCode: pin.toString(),
+    },
+  })
+  console.log(`pin ${pin} sent to email ${body.email}`)
+  res.status(200).json({ message: 'OK' })
+})
+
+authRoute.post('/api/auth/email/check-pin', passport.authenticate('local', {
+  failureMessage: true,
+  session: false
+}), (req, res, next) => {
+  try {
+    console.log('callback here')
+    res.redirect('/')
+  } catch (error) {
+    console.log('login error', error)
+    next(error)
+  }
+})
 
 authRoute.post('/api/auth/logout', (req, res) => {
   console.log('logout here')

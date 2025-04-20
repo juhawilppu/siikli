@@ -1,7 +1,8 @@
-import { PrismaClient, User } from '@prisma/client'
-
+import { PrismaClient, User } from '@prisma/client';
+import { Strategy as LocalStrategy } from 'passport-local';
 const passport = require('passport')
 const GoogleStrategy = require('passport-google-oidc')
+
 const prisma = new PrismaClient()
 
 
@@ -67,6 +68,34 @@ const init = () => {
       }
     )
   )
+
+  passport.use(
+    new LocalStrategy(
+      { usernameField: 'email', passwordField: 'pinCode' },
+      async (email, pinCode, done) => {
+        try {
+          console.log('LocalStrategy here')
+          const emailLoginPinCode = await prisma.emailLoginPinCode.findUnique({ where: { email } });
+          console.log('emailLoginPinCode.pinCode', emailLoginPinCode?.pinCode)
+          console.log('pinCode', pinCode)
+          if (!emailLoginPinCode) return done(null, false, { message: 'Email has no active pin code' });
+
+          const user = await prisma.user.findUnique({ where: { email } });
+
+          // Compare pin directly (or use bcrypt.compare if hashed)
+          if (emailLoginPinCode.pinCode !== pinCode) {
+            return done(null, false, { message: 'Incorrect PIN' });
+          }
+          console.log('LocalStrategy success')
+          return done(null, user);
+        } catch (err) {
+          console.log('LocalStrategy error', err)
+          return done(err);
+        }
+      }
+    )
+  );
+
 }
 
 export default init

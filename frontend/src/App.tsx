@@ -58,11 +58,14 @@ function App() {
     )
   } else if (!user) {
     return (
-      <Routes>
-        <Route path='/' element={<Landing />} />
-        <Route path='/error' element={<Error />} />
-        <Route path='*' element={<Navigate to='/' replace />} />
-      </Routes>
+      <>
+        <Routes>
+          <Route path='/' element={<Landing />} />
+          <Route path='/error' element={<Error />} />
+          <Route path='*' element={<Navigate to='/' replace />} />
+        </Routes>
+        <Toaster />
+      </>
     )
   } else {
     return (<>

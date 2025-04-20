@@ -41,6 +41,14 @@ model User {
   @@map("user")
 }
 
+model EmailLoginPinCode {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  pinCode   String
+  createdAt DateTime @default(now())
+}
+
+
 model Customer {
   id String @id @default(uuid()) @db.Uuid
   chain                  String   @db.VarChar(3)
