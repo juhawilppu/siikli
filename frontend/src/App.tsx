@@ -28,6 +28,7 @@ import { ProductPage } from './pages/ProductPage'
 import TuoteryhmatJarjestely from './pages/ProductTypeReorder'
 import Products from './pages/Products'
 import { SalesReport } from './pages/SalesReport'
+import SelfSignup from "./pages/SelfSignup"
 import { GetCurrentUserDto } from "./types/types"
 
 axios.defaults.baseURL = 'http://localhost:5173/api'
@@ -76,6 +77,14 @@ function App() {
           <Route path='*' element={<Navigate to='/' replace />} />
         </Routes>
         <Toaster />
+      </>
+    )
+  } else if (!user.signupCompleted) {
+    return (
+      <>
+        <Routes>
+          <Route path='*' element={<SelfSignup />} />
+        </Routes>
       </>
     )
   } else {

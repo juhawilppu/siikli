@@ -4,6 +4,7 @@ import { PrismaClient } from '@prisma/client'
 import express from 'express'
 import { GetCurrentUserDto } from '../../frontend/src/types/types'
 import { rateLimit } from '../../middlewares/rateLimit'
+import { UserWithTenant } from '../passportConfig'
 const prisma = new PrismaClient()
 export const authRoute = express.Router()
 
@@ -72,7 +73,7 @@ authRoute.post('/api/auth/logout', (req, res) => {
 authRoute.get('/api/auth/current-user', (req, res) => {
   console.log('auth/current-user here')
   if (req.user) {
-    const user = req.user as any
+    const user = req.user as UserWithTenant
     const initials = user.email
       .split('@')[0] // Take part before @
       .includes('.')
@@ -86,7 +87,7 @@ authRoute.get('/api/auth/current-user', (req, res) => {
         .split('@')[0]
         .slice(0, 2)
         .toUpperCase()
-    res.status(200).send({ userId: user.id, tenantId: user.tenantId, initials } satisfies GetCurrentUserDto)
+    res.status(200).send({ userId: user.id, tenantId: user.tenantId, initials, signupCompleted: user.tenant.signupCompleted } satisfies GetCurrentUserDto)
   } else {
     res.status(404).end()
   }

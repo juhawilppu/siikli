@@ -1,10 +1,13 @@
-import { PrismaClient, User } from '@prisma/client';
+import { PrismaClient, Tenant, User } from '@prisma/client';
 import { Strategy as LocalStrategy } from 'passport-local';
 const passport = require('passport')
 const GoogleStrategy = require('passport-google-oidc')
 
 const prisma = new PrismaClient()
 
+export interface UserWithTenant extends User {
+  tenant: Tenant
+}
 
 const init = () => {
   passport.serializeUser((user: User, done: any) => {
@@ -17,10 +20,10 @@ const init = () => {
   passport.deserializeUser(async (id: string, done: any) => {
     console.log('deserialize', id)
 
-    const user = await prisma.user.findFirst({ where: { id } })
+    const user = await prisma.user.findFirst({ where: { id }, include: { tenant: true } })
     console.log('user from db')
     console.log(user)
-    done(null, user)
+    done(null, user as UserWithTenant)
   })
 
   const clientID = process.env.GOOGLE_CLIENT_ID

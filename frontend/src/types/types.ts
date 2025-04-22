@@ -2,6 +2,7 @@ export interface GetCurrentUserDto {
   userId: string
   tenantId: string
   initials: string
+  signupCompleted: boolean
 }
 
 export interface ProductOrderDto {
@@ -279,5 +280,13 @@ export interface ReorderDto {
   second: {
     id: string
     orderIndex: number
+  }
+}
+
+export interface CreateTenantDto {
+  name: string
+  businessId: string
+  user: {
+    marketingConsent: boolean
   }
 }

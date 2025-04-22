@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "tenant" ADD COLUMN     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ADD COLUMN     "signup_completed" BOOLEAN NOT NULL DEFAULT false;

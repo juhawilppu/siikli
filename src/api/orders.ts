@@ -194,7 +194,11 @@ ordersRoute.get(`/api/orders/cargo_reports`, isAuthenticated, async (req, res) =
     },
   })
 
-  const company = prisma.tenant.findFirstOrThrow()
+  const company = await prisma.tenant.findFirstOrThrow({
+    where: {
+      id: tenantId
+    }
+  })
 
   const promises = orders.map((order, index) =>
     require('../services/cargo_report')(company, order, index === 0)

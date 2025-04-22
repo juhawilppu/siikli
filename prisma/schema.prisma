@@ -22,6 +22,8 @@ model Tenant {
   invoiceSwiftBic String? @db.VarChar(255) @map("invoice_swift_bic")
   invoiceReference   String? @db.VarChar(255) @map("invoice_reference")
   invoiceSumRow     String? @db.VarChar(255) @map("invoice_sum_row")
+  signupCompleted   Boolean @default(false) @map("signup_completed")
+  createdAt DateTime @default(now()) @map("created_at")
   customers            Customer[]
   orders               Order[]
   users               User[]
@@ -39,6 +41,7 @@ model User {
   tenantId  String @db.Uuid
   tenant Tenant @relation(fields: [tenantId], references: [id])
   logs Log[]
+  marketingConsent Boolean @default(false)
   @@map("user")
 }
 
