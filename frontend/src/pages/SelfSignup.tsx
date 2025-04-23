@@ -74,6 +74,11 @@ export default function SelfSignup() {
         }
     }
 
+    const logout = async () => {
+        await axios.post("/auth/logout")
+        window.location.href = "/"
+    }
+
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col">
             <header className="sticky top-0 z-50 w-full border-b bg-white">
@@ -98,7 +103,7 @@ export default function SelfSignup() {
                                 </AlertDialogHeader>
                                 <AlertDialogFooter>
                                     <AlertDialogCancel>Jatka perustamista</AlertDialogCancel>
-                                    <AlertDialogAction onClick={() => (window.location.href = "/")}>
+                                    <AlertDialogAction onClick={() => logout()}>
                                         Peruuta ja kirjaudu ulos
                                     </AlertDialogAction>
                                 </AlertDialogFooter>
