@@ -92,6 +92,7 @@ export default function LoginForm() {
                 email,
                 pinCode
             })
+            window.location.href = "/"
         } catch (error) {
             console.log('error.status', (error as any).status)
             if ((error as any).status === 429) {

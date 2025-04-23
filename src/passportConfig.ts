@@ -83,7 +83,23 @@ const init = () => {
           console.log('pinCode', pinCode)
           if (!emailLoginPinCode) return done(null, false, { message: 'Email has no active pin code' });
 
-          const user = await prisma.user.findUnique({ where: { email } });
+          let user = await prisma.user.findUnique({ where: { email } });
+          console.log('user', user)
+
+          if (!user) {
+            const tenant = await prisma.tenant.create({
+              data: {
+                name: '',
+                signupCompleted: false
+              },
+            })
+            user = await prisma.user.create({
+              data: {
+                email,
+                tenantId: tenant.id,
+              },
+            })
+          }
 
           // Compare pin directly (or use bcrypt.compare if hashed)
           if (emailLoginPinCode.pinCode !== pinCode) {

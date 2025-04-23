@@ -45,14 +45,12 @@ authRoute.post('/api/auth/email/create-pin', rateLimit(5, 10), async (req, res, 
       pinCode: pin.toString(),
     },
   })
+
   console.log(`pin ${pin} sent to email ${body.email}`)
   res.status(200).json({ message: 'OK' })
 })
 
-authRoute.post('/api/auth/email/check-pin', rateLimit(5, 1), passport.authenticate('local', {
-  failureMessage: true,
-  session: false
-}), (req, res, next) => {
+authRoute.post('/api/auth/email/check-pin', rateLimit(10, 1), passport.authenticate('local'), (req, res, next) => {
   try {
     console.log('callback here')
     res.redirect('/')
