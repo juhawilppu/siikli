@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client'
 import express from 'express'
-import { CreateTenantDto } from '../../frontend/src/types/types'
+import { CreateTenantDto, PostCompanySettings } from '../../frontend/src/types/types'
 import { getUser, isAuthenticated } from '../middlewares/permissions'
 const companiesRoute = express.Router()
 const prisma = new PrismaClient()
@@ -17,15 +17,16 @@ companiesRoute.get(`/api/tenants`, isAuthenticated, async (req, res) => {
 
 companiesRoute.post(`/api/tenants`, isAuthenticated, async (req, res) => {
   const { tenantId, userId } = getUser(req)
+  const body = req.body as PostCompanySettings
   const result = await prisma.tenant.update({
     data: {
-      name: req.body.companyName,
-      businessId: req.body.businessId,
-      streetAddress: req.body.address1,
-      invoiceBankName: req.body.invoiceBankName,
-      invoiceBankAccount: req.body.invoiceBankNumber,
-      invoiceReference: req.body.invoiceReference,
-      invoiceSumRow: req.body.invoiceSumRow,
+      name: body.name,
+      businessId: body.businessId,
+      streetAddress: body.address1,
+      invoiceBankName: body.invoiceBankName,
+      invoiceBankAccount: body.invoiceBankNumber,
+      invoiceReference: body.invoiceReference,
+      invoiceSumRow: body.invoiceSumRow,
     },
     where: {
       id: tenantId

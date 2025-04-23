@@ -290,3 +290,13 @@ export interface CreateTenantDto {
     marketingConsent: boolean
   }
 }
+
+export interface PostCompanySettings {
+  name: string
+  businessId: string
+  address1: string
+  invoiceBankName: string
+  invoiceBankNumber: string
+  invoiceReference: string
+  invoiceSumRow: string
+}

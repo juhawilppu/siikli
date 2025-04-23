@@ -11,7 +11,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { GetCompanySettings } from "@/types/types"
+import { toast } from "@/hooks/use-toast"
+import { GetCompanySettings, PostCompanySettings } from "@/types/types"
 import axios from "axios"
 
 export default function CompanySettings() {
@@ -25,11 +26,17 @@ export default function CompanySettings() {
     }))
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     // Here you would typically save the data to your backend
     console.log("Saving company data:", companyData)
     // Show success message or handle errors
+    await axios.post<PostCompanySettings>("/tenants", companyData)
+    toast({
+      title: "Yritys tiedot tallennettu",
+      description: "Yrityksesi tiedot on tallennettu",
+      variant: "success",
+    })
   }
 
 
@@ -65,7 +72,7 @@ export default function CompanySettings() {
               <CardHeader>
                 <CardTitle>Yritys</CardTitle>
                 <CardDescription>
-                  Update your company details. This information will appear on invoices and other documents.
+                  Päivitä yrityksesi tiedot. Tiedot näytetään kuormakirjoissa ja maksutilauksissa.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
@@ -116,10 +123,12 @@ export default function CompanySettings() {
                   </div>
 
                   <Separator className="my-4" />
-                  <h3 className="text-lg font-medium">Banking Information</h3>
-
+                  <h3 className="text-lg font-medium">Pankkitiedot</h3>
+                  <CardDescription>
+                    Pankkitietoja käytetään laskuissa.
+                  </CardDescription>
                   <div className="space-y-2">
-                    <Label htmlFor="bankName">Bank Name</Label>
+                    <Label htmlFor="bankName">Pankin nimi</Label>
                     <Input
                       id="bankName"
                       name="bankName"
@@ -130,7 +139,7 @@ export default function CompanySettings() {
 
                   <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div className="space-y-2">
-                      <Label htmlFor="bankAccount">Bank Account (IBAN)</Label>
+                      <Label htmlFor="bankAccount">Pankkitilin numero (IBAN)</Label>
                       <Input
                         id="bankAccount"
                         name="bankAccount"
@@ -150,15 +159,17 @@ export default function CompanySettings() {
                   </div>
 
                   <Separator className="my-4" />
-                  <h3 className="text-lg font-medium">Contact Information</h3>
-
+                  <h3 className="text-lg font-medium">Yhteystiedot</h3>
+                  <CardDescription>
+                    Yhteystiedot näytetään laskuissa.
+                  </CardDescription>
                   <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div className="space-y-2">
-                      <Label htmlFor="phone">Phone</Label>
+                      <Label htmlFor="phone">Puhelinnumero</Label>
                       <Input id="phone" name="phone" value={companyData.phone} onChange={handleInputChange} />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="email">Email</Label>
+                      <Label htmlFor="email">Sähköposti</Label>
                       <Input
                         id="email"
                         name="email"
@@ -170,7 +181,7 @@ export default function CompanySettings() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="website">Website</Label>
+                    <Label htmlFor="website">WWW-sivu</Label>
                     <Input
                       id="website"
                       name="website"
@@ -180,11 +191,11 @@ export default function CompanySettings() {
                   </div>
                 </div>
               </CardContent>
-              <CardFooter className="flex justify-between">
-                <Button variant="outline">Cancel</Button>
+              <CardFooter className="flex justify-end gap-2">
+                <Button variant="outline">Peruuta</Button>
                 <Button type="submit">
                   <Save className="mr-2 h-4 w-4" />
-                  Save Changes
+                  Tallenna
                 </Button>
               </CardFooter>
             </Card>
@@ -194,8 +205,8 @@ export default function CompanySettings() {
         <TabsContent value="users">
           <Card>
             <CardHeader>
-              <CardTitle>User Management</CardTitle>
-              <CardDescription>Manage user accounts and permissions.</CardDescription>
+              <CardTitle>Käyttäjät</CardTitle>
+              <CardDescription>Hallitse käyttäjiä ja oikeuksia</CardDescription>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground">User management settings will appear here.</p>
@@ -206,8 +217,8 @@ export default function CompanySettings() {
         <TabsContent value="preferences">
           <Card>
             <CardHeader>
-              <CardTitle>System Preferences</CardTitle>
-              <CardDescription>Configure system-wide preferences and defaults.</CardDescription>
+              <CardTitle>Asetukset</CardTitle>
+              <CardDescription>Hallitse järjestelmän asetuksia.</CardDescription>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground">System preferences settings will appear here.</p>
