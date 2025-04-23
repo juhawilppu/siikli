@@ -9,6 +9,23 @@ export interface UserWithTenant extends User {
   tenant: Tenant
 }
 
+const createUserAndTenant = async (email: string, googleExternalId?: string) => {
+  const tenant = await prisma.tenant.create({
+    data: {
+      name: '',
+      signupCompleted: false
+    },
+  })
+  const user = await prisma.user.create({
+    data: {
+      email,
+      tenantId: tenant.id,
+      googleExternalId,
+    },
+  })
+  return user
+}
+
 const init = () => {
   passport.serializeUser((user: User, done: any) => {
     console.log('serialize')
@@ -51,22 +68,9 @@ const init = () => {
           console.log('done1')
           return cb(null, existingUser)
         } else {
-          return cb(null, false, { message: 'New user registration is not allowed', redirectTo: '/unauthorized' })
-
-          /*
-          // New user. Save it to db.
-          const tenant = await prisma.tenant.findFirstOrThrow()
-          const user = await prisma.user.create({
-            data: {
-              tenantId: tenant.id,
-              username: profile.displayName,
-              externalId: profile.id,
-              email: profile.emails[0].value,
-            },
-          })
+          const user = await createUserAndTenant(profile.emails[0].value, profile.id)
           console.log('done2')
           return cb(null, user)
-          */
         }
       }
     )
@@ -87,18 +91,7 @@ const init = () => {
           console.log('user', user)
 
           if (!user) {
-            const tenant = await prisma.tenant.create({
-              data: {
-                name: '',
-                signupCompleted: false
-              },
-            })
-            user = await prisma.user.create({
-              data: {
-                email,
-                tenantId: tenant.id,
-              },
-            })
+            user = await createUserAndTenant(email)
           }
 
           // Compare pin directly (or use bcrypt.compare if hashed)

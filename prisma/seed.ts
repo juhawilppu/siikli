@@ -54,14 +54,6 @@ async function main() {
         }
     })
 
-    await prisma.user.create({
-        data: {
-            email: 'rajajarvi@gmail.com',
-            googleExternalId: '118037848383891596587',
-            tenantId: tenant.id,
-        }
-    })
-
     // Create tenant 2
 
     const tenant2 = await prisma.tenant.create({
