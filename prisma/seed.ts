@@ -22,6 +22,7 @@ async function main() {
             invoiceSwiftBic: '1234567890',
             invoiceReference: '1234567890',
             invoiceSumRow: 'Test sum row',
+            signupCompleted: true,
         }
     })
 
@@ -71,6 +72,7 @@ async function main() {
             invoiceSwiftBic: '1111111111',
             invoiceReference: '1111111111',
             invoiceSumRow: 'Test sum row',
+            signupCompleted: true,
         }
     })
 
