@@ -1,5 +1,6 @@
 const passport = require('passport')
 
+import { SESClient, SendEmailCommand } from '@aws-sdk/client-ses'
 import { PrismaClient } from '@prisma/client'
 import express from 'express'
 import { GetCurrentUserDto } from '../../frontend/src/types/types'
@@ -88,7 +89,27 @@ authRoute.post('/api/auth/email/create-pin', rateLimit(5, 10), async (req, res, 
       },
     })
 
-    console.log(`pin ${pin} sent to email ${body.email}`)
+    // Send pin code via AWS SES
+    const client = new SESClient({ region: "eu-north-1" });
+
+    const command = new SendEmailCommand({
+      Source: 'noreply@siikli.fi',
+      Destination: {
+        ToAddresses: [body.email]
+      },
+      Message: {
+        Subject: {
+          Data: 'Your login PIN code'
+        },
+        Body: {
+          Text: {
+            Data: `Your PIN code is: ${pin}\n\nThis code will expire in 15 minutes.`
+          }
+        }
+      }
+    });
+    await client.send(command);
+    console.log(`Pin ${pin} sent to ${body.email} via AWS SES`);
     res.status(200).json({ message: 'OK' })
   } catch (error) {
     next(error)
