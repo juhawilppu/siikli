@@ -42,13 +42,22 @@ export default function LoginForm() {
             setPinSent(true)
             toast({
                 title: "PIN-koodi lähetetty",
-                description: `PIN-koodi on lähetetty osoitteeseen ${email}.`,
+                description: `PIN-koodi on lähetetty osoitteeseen ${email}.`
             })
         } catch (error) {
-            toast({
-                title: "Virhe",
-                description: "Virheellinen sähköpostiosoite.",
-            })
+            if ((error as any).response.status === 429) {
+                toast({
+                    title: "Virhe",
+                    description: "Olet yrittänyt liian monta kertaa. Yritä hetken kuluttua uudelleen.",
+                    variant: "destructive",
+                })
+            } else {
+                toast({
+                    title: "Virhe",
+                    description: "Virheellinen sähköpostiosoite.",
+                    variant: "destructive",
+                })
+            }
         } finally {
             setIsLoading(false)
         }
@@ -56,6 +65,7 @@ export default function LoginForm() {
 
     // Käsittele PIN-koodin syöttö
     const handlePinChange = (index: number, value: string) => {
+        // Handle single character input
         if (value.length > 1) {
             value = value.slice(0, 1)
         }
@@ -63,7 +73,7 @@ export default function LoginForm() {
         const newPin = [...pin]
         newPin[index] = value
 
-        // Siirrä fokus seuraavaan kenttään, jos syötetty merkki
+        // Move focus to next input if a character was entered
         if (value && index < 5) {
             const nextInput = document.getElementById(`pin-${index + 1}`)
             if (nextInput) {
@@ -72,6 +82,29 @@ export default function LoginForm() {
         }
 
         setPin(newPin)
+    }
+
+    const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+        e.preventDefault()
+        const pastedData = e.clipboardData.getData('text')
+        const digits = pastedData.replace(/\D/g, '').split('').slice(0, 6)
+        const newPin = [...pin]
+
+        digits.forEach((digit, i) => {
+            if (i < 6) {
+                newPin[i] = digit
+            }
+        })
+
+        setPin(newPin)
+
+        // Focus the last filled input or the last input if all are filled
+        const lastFilledIndex = newPin.findIndex(p => p === '')
+        const focusIndex = lastFilledIndex === -1 ? 5 : lastFilledIndex
+        const nextInput = document.getElementById(`pin-${focusIndex}`)
+        if (nextInput) {
+            nextInput.focus()
+        }
     }
 
     // Check pin code
@@ -208,6 +241,7 @@ export default function LoginForm() {
                                         value={digit}
                                         onChange={(e) => handlePinChange(index, e.target.value)}
                                         onKeyDown={(e) => handleKeyDown(index, e)}
+                                        onPaste={handlePaste}
                                         autoFocus={index === 0}
                                     />
                                 ))}
