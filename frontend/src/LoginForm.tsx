@@ -35,6 +35,7 @@ export default function LoginForm() {
         setIsLoading(true)
 
         try {
+            setPin(Array(6).fill(""))
             await axios.post('/auth/email/create-pin', {
                 email
             })

@@ -16,11 +16,23 @@ const createUserAndTenant = async (email: string, googleExternalId?: string) => 
       signupCompleted: false
     },
   })
+  await prisma.log.create({
+    data: {
+      data: { email, tenantId: tenant.id },
+      event: 'tenant-created',
+    },
+  })
   const user = await prisma.user.create({
     data: {
       email,
       tenantId: tenant.id,
       googleExternalId,
+    },
+  })
+  await prisma.log.create({
+    data: {
+      data: { email, tenantId: tenant.id, googleExternalId },
+      event: 'user-created',
     },
   })
   return user
@@ -63,6 +75,13 @@ const init = () => {
         })
         console.log('existingUser', existingUser)
 
+        await prisma.log.create({
+          data: {
+            data: { email: profile.emails[0].value },
+            event: 'google-login-success',
+          },
+        })
+
         if (existingUser) {
           // We already have saved this customer to db
           console.log('done1')
@@ -82,10 +101,19 @@ const init = () => {
       async (email, pinCode, done) => {
         try {
           console.log('LocalStrategy here')
-          const emailLoginPinCode = await prisma.emailLoginPinCode.findUnique({ where: { email } });
-          console.log('emailLoginPinCode.pinCode', emailLoginPinCode?.pinCode)
+
+          const emailLoginPinCode = await prisma.emailLoginPinCode.findFirst({ where: { email, pinCode } });
+          console.log('emailLoginPinCode', emailLoginPinCode)
           console.log('pinCode', pinCode)
-          if (!emailLoginPinCode) return done(null, false, { message: 'Email has no active pin code' });
+          if (!emailLoginPinCode) {
+            await prisma.log.create({
+              data: {
+                data: { email },
+                event: 'pin-check-failed',
+              },
+            })
+            return done(null, false, { message: 'Email has no active pin code or wrong pin code' });
+          }
 
           let user = await prisma.user.findUnique({ where: { email } });
           console.log('user', user)
@@ -94,10 +122,13 @@ const init = () => {
             user = await createUserAndTenant(email)
           }
 
-          // Compare pin directly (or use bcrypt.compare if hashed)
-          if (emailLoginPinCode.pinCode !== pinCode) {
-            return done(null, false, { message: 'Incorrect PIN' });
-          }
+          await prisma.log.create({
+            data: {
+              data: { email },
+              event: 'pin-check-success',
+            },
+          })
+
           console.log('LocalStrategy success')
           return done(null, user);
         } catch (err) {

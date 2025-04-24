@@ -47,7 +47,7 @@ model User {
 
 model EmailLoginPinCode {
   id        String   @id @default(cuid())
-  email     String   @unique
+  email     String
   pinCode   String
   createdAt DateTime @default(now())
 }
@@ -170,10 +170,10 @@ model RateLimit {
 
 model Log {
   id String @id @default(uuid()) @db.Uuid
-  userId String @db.Uuid
-  user User @relation(fields: [userId], references: [id]) 
-  tenantId String @db.Uuid
-  tenant Tenant @relation(fields: [tenantId], references: [id])
+  userId String? @db.Uuid
+  user User? @relation(fields: [userId], references: [id]) 
+  tenantId String? @db.Uuid
+  tenant Tenant? @relation(fields: [tenantId], references: [id])
   event String @db.VarChar(255)
   data Json @default("{}")
   createdAt DateTime @default(now())
