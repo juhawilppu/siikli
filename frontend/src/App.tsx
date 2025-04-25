@@ -1,17 +1,14 @@
 import * as Sentry from "@sentry/react"
 import axios from 'axios'
-import { HelpCircle, LogOut, Search, Settings, User } from 'lucide-react'
+import { HelpCircle, Search } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { Navigate, Route, Routes } from 'react-router-dom'
+import { NavLink, Navigate, Route, Routes } from 'react-router-dom'
 import './App.css'
 import ErrorPage from './ErrorPage'
 import Landing from './Landing'
-import SiikliDrawer from './SiikliDrawer'
-import { Avatar, AvatarFallback, AvatarImage } from './components/ui/avatar'
 import { Button } from './components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from './components/ui/dropdown-menu'
 import { Input } from './components/ui/input'
-import { SidebarInset, SidebarProvider, SidebarTrigger } from './components/ui/sidebar'
 import { Toaster } from './components/ui/toaster'
 import CompanySettings from './pages/CompanySettings'
 import { CustomerPage } from './pages/CustomerPage'
@@ -19,7 +16,6 @@ import { Customers } from './pages/Customers'
 import { Dashboard } from './pages/Dashboard'
 import { Invoices } from './pages/Invoices'
 import NewCustomerForm from './pages/NewCustomer'
-import NewProduct from './pages/NewProduct'
 import Order from './pages/Order/Order'
 import Orders from './pages/Orders'
 import { PackageConfiguration } from './pages/PackageConfiguration'
@@ -31,12 +27,19 @@ import { SalesReport } from './pages/SalesReport'
 import SelfSignup from "./pages/SelfSignup"
 import { GetCurrentUserDto } from "./types/types"
 
+import {
+  Package
+} from "lucide-react"
+
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { navItems } from "./SiikliDrawer"
 axios.defaults.baseURL = 'http://localhost:5173/api'
 
 function App() {
   const [user, setUser] = useState<GetCurrentUserDto>()
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
+  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false)
 
   const logout = async () => {
     await axios.post('/auth/logout')
@@ -89,96 +92,191 @@ function App() {
     )
   } else {
     return (<>
-      <SidebarProvider>
-        <SiikliDrawer />
-        <SidebarInset>
-          <div className="flex flex-col w-full">
-            {/* Top bar */}
-            <header className="flex h-14 items-center gap-4 border-b bg-background px-6">
-              <SidebarTrigger />
-              <div className="flex-1 flex items-center justify-between">
-                <div className="relative w-full max-w-md">
-                  <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    type="search"
-                    placeholder="Search orders, invoices, customers..."
-                    className="w-full pl-8 md:w-[300px] lg:w-[400px]"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                  />
-                </div>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                      <Avatar className="h-8 w-8">
-                        <AvatarImage src="/placeholder-user.jpg" alt="User" />
-                        <AvatarFallback>{user?.initials}</AvatarFallback>
-                      </Avatar>
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuLabel>Oma tili</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-
-                    <DropdownMenuItem>
-                      <User className="mr-2 h-4 w-4" />
-                      <span>Profiili</span>
-                    </DropdownMenuItem>
-
-                    <DropdownMenuItem>
-                      <Settings className="mr-2 h-4 w-4" />
-                      <span>Asetukset</span>
-                    </DropdownMenuItem>
-
-                    <DropdownMenuItem>
-                      <HelpCircle className="mr-2 h-4 w-4" />
-                      <span>Ohje</span>
-                    </DropdownMenuItem>
-
-                    <DropdownMenuSeparator />
-
-                    <DropdownMenuItem onClick={logout}>
-                      <LogOut className="mr-2 h-4 w-4" />
-                      <span>Kirjaudu ulos</span>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-            </header>
-            <main className="flex-1 overflow-auto p-6">
-              <div className="space-y-6"></div>
-              <Routes>
-                <Route path='/' element={<Dashboard />} />
-                <Route path='/orders' element={<Orders />} />
-                <Route path='/orders/new' element={<Order />} />
-                <Route path='/orders/:orderId' element={<Order />} />
-                <Route path='/sales-report' element={<SalesReport />} />
-                <Route path='/packaging-list' element={<PackageList />} />
-                <Route path='/invoices' element={<Invoices />} />
-                <Route path='/customers' element={<Customers />} />
-                <Route path='/customers/new' element={<NewCustomerForm />} />
-                <Route path='/customers/:customerId' element={<CustomerPage />} />
-                <Route path='/customers/:customerId/:edit' element={<CustomerPage />} />
-                <Route path='/products' element={<Products />} />
-                <Route path='/products/new' element={<NewProduct />} />
-                <Route path='/products/reorder' element={<TuoteryhmatJarjestely />} />
-                <Route path='/products/:productId' element={<ProductPage />} />
-                <Route path='/products/:productId/:edit' element={<ProductPage />} />
-                <Route
-                  path='/package_configuration'
-                  element={<PackageConfiguration />}
-                />
-                <Route path='/own-company' element={<CompanySettings />} />
-                <Route path='*' element={<Navigate to='/' replace />} />
-              </Routes>
-            </main>
+      <div className="flex min-h-screen flex-col">
+        <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-blue-600 text-white px-4 md:px-6">
+          <Sheet open={isMobileNavOpen} onOpenChange={setIsMobileNavOpen}>
+            <SheetTrigger asChild>
+              <Button variant="outline" size="icon" className="md:hidden">
+                <Menu className="h-5 w-5" />
+                <span className="sr-only">Toggle Menu</span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="md:hidden">
+              <MobileSidebar />
+            </SheetContent>
+          </Sheet>
+          <div className="flex items-center gap-2">
+            <Package className="h-6 w-6" />
+            <span className="text-lg font-semibold">Siikli</span>
           </div>
-        </SidebarInset>
+          <div className="ml-auto flex items-center gap-4">
+            <form className="hidden md:block">
+              <div className="relative">
+                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input type="search" placeholder="Etsi..." className="w-64 rounded-lg bg-background pl-8 md:w-80" />
+              </div>
+            </form>
+            <Button variant="outline" size="icon" className="rounded-full">
+              <HelpCircle className="h-5 w-5" />
+              <span className="sr-only">Help</span>
+            </Button>
+            <Button variant="outline" size="icon" className="rounded-full">
+              <Bell className="h-5 w-5" />
+              <span className="sr-only">Notifications</span>
+            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="icon" className="rounded-full">
+                  <img
+                    src="/placeholder.svg?height=32&width=32"
+                    width="32"
+                    height="32"
+                    className="rounded-full"
+                    alt="Avatar"
+                  />
+                  <span className="sr-only">Toggle user menu</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>Profile</DropdownMenuItem>
+                <DropdownMenuItem>Settings</DropdownMenuItem>
+                <DropdownMenuItem>Support</DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>Logout</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </header>
+        <div className="flex flex-1">
+          {/* Desktop Sidebar */}
+          <aside className="hidden w-64 shrink-0 border-r bg-muted/40 md:block">
+            <DesktopSidebar />
+          </aside>
+
+          {/* Main Content */}
+          <main className="flex-1 overflow-auto">
+            <Routes>
+              <Route path='/' element={<Dashboard />} />
+              <Route path='/orders' element={<Orders />} />
+              <Route path='/orders/new' element={<Order />} />
+              <Route path='/orders/:orderId' element={<Order />} />
+              <Route path='/sales-report' element={<SalesReport />} />
+              <Route path='/packaging-list' element={<PackageList />} />
+              <Route path='/invoices' element={<Invoices />} />
+              <Route path='/customers' element={<Customers />} />
+              <Route path='/customers/new' element={<NewCustomerForm />} />
+              <Route path='/customers/:customerId' element={<CustomerPage />} />
+              <Route path='/customers/:customerId/:edit' element={<CustomerPage />} />
+              <Route path='/products' element={<Products />} />
+              <Route path='/products/reorder' element={<TuoteryhmatJarjestely />} />
+              <Route path='/products/:productId' element={<ProductPage />} />
+              <Route path='/products/:productId/:edit' element={<ProductPage />} />
+              <Route
+                path='/package_configuration'
+                element={<PackageConfiguration />}
+              />
+              <Route path='/own-company' element={<CompanySettings />} />
+              <Route path='*' element={<Navigate to='/' replace />} />
+            </Routes>
+          </main>
+        </div>
         <Toaster />
-      </SidebarProvider>
+      </div>
     </>
     )
   }
 }
 
 export default App
+
+function MobileSidebar() {
+  return (
+    <div className="flex h-full flex-col gap-2 overflow-auto">
+      <div className="flex h-14 items-center border-b px-4">
+        <NavLink href="/" className="flex items-center gap-2 font-semibold">
+          <Package className="h-6 w-6" />
+          <span>Siikli ERP</span>
+        </NavLink>
+      </div>
+      <div className="flex-1 overflow-auto py-2">
+        <nav className="grid gap-1 px-2">
+          {navItems.map((item) => (
+            <NavLink
+              to={item.href}
+              className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-foreground"
+            >
+              <item.icon className="h-4 w-4" />
+              {item.title}
+            </NavLink>
+          ))}
+        </nav>
+      </div>
+    </div>
+  )
+}
+
+// Desktop Sidebar Component
+function DesktopSidebar() {
+  return (
+    <div className="flex h-full flex-col gap-2">
+      <div className="flex-1 overflow-auto py-2">
+        <nav className="grid gap-1 px-2">
+          {navItems.map((item) => (
+            <NavLink
+              to={item.href}
+              className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-foreground"
+            >
+              <item.icon className="h-4 w-4" />
+              {item.title}
+            </NavLink>
+          ))}
+        </nav>
+      </div>
+    </div>
+  )
+}
+
+// Menu icon component
+function Menu(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <line x1="4" x2="20" y1="12" y2="12" />
+      <line x1="4" x2="20" y1="6" y2="6" />
+      <line x1="4" x2="20" y1="18" y2="18" />
+    </svg>
+  )
+}
+
+// Bell icon component
+function Bell(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+      <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+    </svg>
+  )
+}

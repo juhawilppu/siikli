@@ -32,11 +32,11 @@ export const SalesReport = () => {
 
     return (
         <>
-            <div>
-                <h1 className="text-2xl font-semibold tracking-tight">Myyntiraportti</h1>
-                <p className="text-muted-foreground">Tällä sivulla voit tulostaa koko myyntikannan Exceliin.</p>
-            </div>
-            <div className="space-y-2">
+            <div className="space-y-6">
+                <div>
+                    <h1 className="text-2xl font-semibold tracking-tight">Myyntiraportti</h1>
+                    <p className="text-muted-foreground">Tällä sivulla voit tulostaa koko myyntikannan Exceliin.</p>
+                </div>
                 <Card>
                     <CardHeader>
                         <CardTitle>Hakuehdot</CardTitle>

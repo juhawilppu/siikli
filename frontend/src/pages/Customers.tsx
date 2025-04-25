@@ -458,10 +458,10 @@ export const Customers = () => {
 
   return (
     <>
-      <div className="space-y-6 max-w-7xl mx-auto">
-        <div className="bg-white p-6 rounded-lg border shadow-sm">
-          <h1 className="text-2xl font-bold tracking-tight text-gray-900">Asiakkaat</h1>
-          <p className="text-gray-600 mt-1">Hallitse asiakastietoja ja asiakassuhteita</p>
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Asiakkaat</h1>
+          <p className="text-muted-foreground">Hallitse asiakastietoja ja asiakassuhteita.</p>
         </div>
 
         {/* Toiminnot ja suodattimet */}

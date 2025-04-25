@@ -3,24 +3,25 @@ import { Boxes, Building2, ClipboardList, FileText, Home, LineChart, PlusCircle,
 import { NavLink, useLocation } from "react-router-dom";
 import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarRail } from './components/ui/sidebar';
 
+export const navItems = [
+  { title: "Etusivu", href: '/', icon: Home },
+  { title: "Tilaukset", href: '/orders', icon: ClipboardList },
+  { title: "Uusi tilaus", href: '/orders/new', icon: PlusCircle },
+  { title: "Pakkauslista", href: '/packaging-list', icon: FileText },
+  { title: "Laskutus", href: '/invoices', icon: Receipt },
+  { title: "Myyntiraportti", href: '/sales-report', icon: LineChart },
+  { title: "Tuotteet", href: '/products', icon: ShoppingBasket },
+  { title: "Asiakkaat", href: '/customers', icon: Users },
+  { title: "Pakkausasetukset", href: '/packaging-settings', icon: Boxes },
+  { title: "Oma yritys", href: '/own-company', icon: Building2 },
+];
+
 const SiikliDrawer = () => {
 
   const location = useLocation();
 
   const isActive = (href: string) => location.pathname === href
 
-  const navItems = [
-    { title: "Etusivu", href: '/', icon: Home },
-    { title: "Tilaukset", href: '/orders', icon: ClipboardList },
-    { title: "Uusi tilaus", href: '/orders/new', icon: PlusCircle },
-    { title: "Pakkauslista", href: '/packaging-list', icon: FileText },
-    { title: "Laskutus", href: '/invoices', icon: Receipt },
-    { title: "Myyntiraportti", href: '/sales-report', icon: LineChart },
-    { title: "Tuotteet", href: '/products', icon: ShoppingBasket },
-    { title: "Asiakkaat", href: '/customers', icon: Users },
-    { title: "Pakkausasetukset", href: '/packaging-settings', icon: Boxes },
-    { title: "Oma yritys", href: '/own-company', icon: Building2 },
-  ];
 
   return (
     <Sidebar>
