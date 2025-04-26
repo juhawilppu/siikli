@@ -5,3 +5,11 @@ output "private_subnets" {
 output "security_groups" {
   value = aws_security_group.alb.*.id
 }   
+
+output "db_subnets" {
+  value = aws_subnet.db.*.id
+}
+
+output "vpc_id" {
+  value = aws_vpc.main.id
+}

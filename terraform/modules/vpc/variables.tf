@@ -18,7 +18,7 @@ variable "private_subnets" {
 
 variable "db_subnets" {
   type        = list(string)
-  default     = ["10.0.5.0/24"]
+  default     = ["10.0.5.0/24", "10.0.6.0/24"]
   description = "Database subnet CIDRs"
 }
 
@@ -26,4 +26,10 @@ variable "availability_zones" {
   type        = list(string)
   default     = ["eu-north-1a"]
   description = "AWS Availability Zones"
+}
+
+variable "db_availability_zones" {
+  type        = list(string)
+  default     = ["eu-north-1a", "eu-north-1b"]
+  description = "AWS Availability Zones for database"
 }

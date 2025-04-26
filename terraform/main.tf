@@ -46,3 +46,9 @@ module "ecs" {
   private_subnets = module.vpc.private_subnets
   security_groups = module.vpc.security_groups
 }
+
+module "rds" {
+  source = "./modules/rds"
+  vpc_id = module.vpc.vpc_id
+  db_subnets = module.vpc.db_subnets
+}
