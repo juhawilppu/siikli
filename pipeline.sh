@@ -6,6 +6,9 @@ cd ..
 cd backend
 export version=$(date +%s)
 docker build -t siikli-backend:$version .
-docker tag siikli-backend:$version 337909750746.dkr.ecr.eu-north-1.amazonaws.com/siikli-backend/siikli-backend:$version
-docker push 337909750746.dkr.ecr.eu-north-1.amazonaws.com/siikli-backend/siikli-backend:$version
+docker tag siikli-backend:$version 337909750746.dkr.ecr.eu-north-1.amazonaws.com/siikli-backend:$version
+
+aws ecr get-login-password --region eu-north-1 | docker login --username AWS --password-stdin 337909750746.dkr.ecr.eu-north-1.amazonaws.com
+
+docker push 337909750746.dkr.ecr.eu-north-1.amazonaws.com/siikli-backend:$version
 
