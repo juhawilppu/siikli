@@ -19,11 +19,14 @@ export default function CompanySettings() {
   const [companyData, setCompanyData] = useState<GetCompanySettings>()
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    setCompanyData((prev) => ({
-      ...prev,
-      [name]: value,
-    }))
+    const { name, value }: { name: string, value: string } = e.target
+    setCompanyData((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        [name]: typeof prev[name as keyof GetCompanySettings] === 'string' ? value : Number(value)
+      }
+    })
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -81,7 +84,7 @@ export default function CompanySettings() {
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                       <div className="space-y-2">
                         <Label htmlFor="name">Nimi</Label>
-                        <Input id="name" name="name" value={companyData?.name} onChange={handleInputChange} />
+                        <Input id="name" name="name" value={companyData.name} onChange={handleInputChange} />
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="businessId">Y-tunnus</Label>
@@ -144,7 +147,7 @@ export default function CompanySettings() {
                         <Input
                           id="bankAccount"
                           name="bankAccount"
-                          value={companyData.invoiceBankNumber}
+                          value={companyData.invoiceBankAccount}
                           onChange={handleInputChange}
                         />
                       </div>

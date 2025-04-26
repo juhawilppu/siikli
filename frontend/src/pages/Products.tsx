@@ -50,6 +50,8 @@ export default function TuotteetSivu() {
 
   const { toast } = useToast()
 
+  console.log('searchQuery', setSearchQuery)
+
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -214,8 +216,8 @@ export default function TuotteetSivu() {
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 {productTypes.map((productType) => (
-                  <DropdownMenuItem key={productType.type} onClick={() => setTypeFilter(productType.type)}>
-                    {productType.type}
+                  <DropdownMenuItem key={productType.name} onClick={() => setTypeFilter(productType.name)}>
+                    {productType.name}
                   </DropdownMenuItem>
                 ))}
               </DropdownMenuContent>

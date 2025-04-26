@@ -122,9 +122,8 @@ export default function Orders() {
                     <CalendarComponent
                       mode="single"
                       selected={startDate}
-                      onSelect={setStartDate}
+                      onSelect={(value) => setStartDate(value as Date)}
                       required
-                      autoFocus
                       locale={fi}
                     />
                   </PopoverContent>
@@ -141,7 +140,7 @@ export default function Orders() {
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0">
-                    <CalendarComponent mode="single" selected={endDate} onSelect={setEndDate} required locale={fi} />
+                    <CalendarComponent mode="single" selected={endDate} onSelect={(value) => setEndDate(value as Date)} required locale={fi} />
                   </PopoverContent>
                 </Popover>
               </div>

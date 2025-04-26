@@ -39,8 +39,8 @@ axios.defaults.baseURL = 'http://localhost:5173/api'
 function App() {
   const [user, setUser] = useState<GetCurrentUserDto>()
   const [loading, setLoading] = useState(true)
-  const [searchQuery, setSearchQuery] = useState('')
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false)
+
 
   const logout = async () => {
     await axios.post('/auth/logout')

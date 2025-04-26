@@ -1,11 +1,11 @@
 "use client"
 
 import {
-    closestCenter,
     DndContext,
     DragOverlay,
     KeyboardSensor,
     PointerSensor,
+    closestCenter,
     useSensor,
     useSensors,
     type DragEndEvent,
@@ -13,8 +13,8 @@ import {
     type UniqueIdentifier,
 } from "@dnd-kit/core"
 import {
-    arrayMove,
     SortableContext,
+    arrayMove,
     sortableKeyboardCoordinates,
     useSortable,
     verticalListSortingStrategy,
@@ -173,12 +173,10 @@ function SortableTuoteryhma({
 // Sortable Item komponentti alituoteryhmille
 function SortableAlituoteryhma({
     alituoteryhma,
-    tuoteryhmaId,
-    activeId,
+    tuoteryhmaId
 }: {
     alituoteryhma: Alituoteryhma
     tuoteryhmaId: string
-    activeId: UniqueIdentifier | null
 }) {
     const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
         id: alituoteryhma.id,
@@ -217,8 +215,7 @@ function SortableAlituoteryhma({
 // Container komponentti alituoteryhmille
 function SortableAlituoteryhmatContainer({
     tuoteryhmaId,
-    alituoteryhmat,
-    activeId,
+    alituoteryhmat
 }: {
     tuoteryhmaId: string
     alituoteryhmat: Alituoteryhma[]
@@ -231,7 +228,6 @@ function SortableAlituoteryhmatContainer({
                     key={alituoteryhma.id}
                     alituoteryhma={alituoteryhma}
                     tuoteryhmaId={tuoteryhmaId}
-                    activeId={activeId}
                 />
             ))}
         </SortableContext>
@@ -272,6 +268,8 @@ export default function TuoteryhmatJarjestely() {
     const [activeItem, setActiveItem] = useState<any | null>(null)
     const [activeItemType, setActiveItemType] = useState<"tuoteryhma" | "alituoteryhma" | null>(null)
     const [muutoksiaTehty, setMuutoksiaTehty] = useState(false)
+
+    console.log('searchQuery', setSearchQuery)
 
     const { toast } = useToast()
 

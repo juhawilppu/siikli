@@ -22,7 +22,7 @@ import { PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { toast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
-import { FullProductDto, ProductTypeResponse } from "@/types/types"
+import { GetProductResponseDto, ProductTypeResponse } from "@/types/types"
 import { Popover } from "@radix-ui/react-popover"
 import axios from "axios"
 import { useState } from "react"
@@ -30,9 +30,9 @@ import { useState } from "react"
 
 
 
-export default function NewProduct({ productToEdit, hide, onSave, productTypes, packageSizes, orderIndex }: { productToEdit?: FullProductDto, hide: () => void, onSave: (product: FullProductDto) => void, productTypes: ProductTypeResponse[], packageSizes: string[], orderIndex?: number }) {
+export default function NewProduct({ productToEdit, hide, onSave, productTypes, packageSizes, orderIndex }: { productToEdit?: GetProductResponseDto, hide: () => void, onSave: (product: GetProductResponseDto) => void, productTypes: ProductTypeResponse[], packageSizes: string[], orderIndex?: number }) {
     const mode = productToEdit ? 'edit' : 'create'
-    const [product, setProduct] = useState<Partial<FullProductDto>>(mode === 'edit' ? { ...productToEdit } : {
+    const [product, setProduct] = useState<Partial<GetProductResponseDto>>(mode === 'edit' ? { ...productToEdit } : {
         orderIndex
     })
     const [openType, setOpenType] = useState(false)
@@ -55,13 +55,13 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
             await axios.post('/products/' + product.id, {
                 ...product
             })
-            onSave({ ...product } as FullProductDto)
+            onSave({ ...product } as GetProductResponseDto)
         } else {
             const res = await axios.post<{ id: string }>('/products', {
                 ...product
             })
 
-            onSave({ id: res.data.id, ...product } as FullProductDto)
+            onSave({ id: res.data.id, ...product } as GetProductResponseDto)
         }
 
     }
