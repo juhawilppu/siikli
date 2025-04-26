@@ -40,3 +40,9 @@ module "cdn" {
 module "ecr" {
   source = "./modules/ecr"
 }
+
+module "ecs" {
+  source = "./modules/ecs"
+  private_subnets = module.vpc.private_subnets
+  security_groups = module.vpc.security_groups
+}
