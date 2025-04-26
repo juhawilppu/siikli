@@ -2,8 +2,8 @@ output "private_subnets" {
   value = aws_subnet.private.*.id
 }
 
-output "security_groups" {
-  value = aws_security_group.alb.*.id
+output "ecs_security_group_id" {
+  value = aws_security_group.ecs_task.id
 }   
 
 output "db_subnets" {

@@ -44,7 +44,7 @@ module "ecr" {
 module "ecs" {
   source = "./modules/ecs"
   private_subnets = module.vpc.private_subnets
-  security_groups = module.vpc.security_groups
+  security_group_id = module.vpc.ecs_security_group_id
 }
 
 module "rds" {

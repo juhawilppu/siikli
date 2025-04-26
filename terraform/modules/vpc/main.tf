@@ -147,3 +147,29 @@ resource "aws_security_group" "alb" {
     Name = "alb-sg"
   }
 }
+
+resource "aws_security_group" "ecs_task" {
+  name   = "siikli-sg-ecs-task"
+  vpc_id = aws_vpc.main.id
+
+  # Allow inbound traffic from ALB on application port
+  ingress {
+    protocol         = "tcp"
+    from_port        = 3004
+    to_port          = 3004
+    security_groups  = [aws_security_group.alb.id]
+  }
+
+  # Allow all outbound traffic
+  egress {
+    protocol         = "-1"
+    from_port        = 0
+    to_port          = 0
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+
+  tags = {
+    Name = "ecs-task-sg"
+  }
+}

@@ -3,3 +3,4 @@ terraform
 .git
 .env
 .vscode
+node_modules

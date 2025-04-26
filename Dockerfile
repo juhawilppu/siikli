@@ -5,7 +5,9 @@ COPY package.json ./
 RUN npm install -g pnpm
 RUN pnpm install
 COPY . .
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
 
 EXPOSE 3000
 
-CMD ["pnpm", "start"]
+CMD ["/docker-entrypoint.sh"]
