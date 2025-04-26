@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client'
 import { endOfDay, parse, startOfDay } from 'date-fns'
 import express from 'express'
-import pdf from 'html-pdf'
+import puppeteer from 'puppeteer'
 import {
   GetOrderDto,
   GetOrderList,
@@ -156,7 +156,6 @@ ordersRoute.get(`/api/orders`, isAuthenticated, async (req, res) => {
 ordersRoute.get(`/api/orders/cargo_reports`, isAuthenticated, async (req, res) => {
   console.log('getting orders')
 
-
   if (!req.query.startDate || !req.query.endDate) {
     return res.status(400)
   }
@@ -204,7 +203,7 @@ ordersRoute.get(`/api/orders/cargo_reports`, isAuthenticated, async (req, res) =
     require('../services/cargo_report')(company, order, index === 0)
   )
 
-  Promise.all(promises).then((htmls) => {
+  Promise.all(promises).then(async (htmls) => {
     const document = `
     <html>
         <head>
@@ -262,38 +261,32 @@ ordersRoute.get(`/api/orders/cargo_reports`, isAuthenticated, async (req, res) =
     </body>
 </html>`
 
-    pdf
-      .create(document, {
-        format: 'A5',
-        border: {
+    try {
+      const browser = await puppeteer.launch({ headless: true })
+      const page = await browser.newPage()
+      await page.setContent(document)
+
+      const pdfBuffer = await page.pdf({
+        format: 'a5',
+        margin: {
           top: '5mm',
           right: '5mm',
           bottom: '0mm',
-          left: '5mm',
+          left: '5mm'
         },
-        footer: {
-          height: '22mm',
-        },
+        displayHeaderFooter: true,
+        footerTemplate: '<div style="height: 22mm;"></div>'
       })
-      .toStream((err, pdfStream) => {
-        if (err) {
-          // handle error and return a error response code
-          console.log(err)
-          return res.sendStatus(500)
-        } else {
-          // send a status code of 200 OK
-          res.statusCode = 200
 
-          // once we are done reading end the response
-          pdfStream.on('end', () => {
-            // done reading
-            return res.end()
-          })
+      await browser.close()
 
-          // pipe the contents of the PDF directly to the response
-          pdfStream.pipe(res)
-        }
-      })
+      res.contentType('application/pdf')
+      res.status(200).send(pdfBuffer)
+
+    } catch (err) {
+      console.error(err)
+      res.sendStatus(500)
+    }
   })
 })
 
