@@ -33,6 +33,7 @@ import {
 
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { navItems } from "./SiikliDrawer"
+import { Avatar, AvatarFallback, AvatarImage } from "./components/ui/avatar"
 axios.defaults.baseURL = 'http://localhost:5173/api'
 
 function App() {
@@ -127,13 +128,10 @@ function App() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="icon" className="rounded-full">
-                  <img
-                    src="/placeholder.svg?height=32&width=32"
-                    width="32"
-                    height="32"
-                    className="rounded-full"
-                    alt="Avatar"
-                  />
+                  <Avatar className="h-8 w-8">
+                    <AvatarImage src="/placeholder-user.jpg" alt="User" />
+                    <AvatarFallback>{user?.initials}</AvatarFallback>
+                  </Avatar>
                   <span className="sr-only">Toggle user menu</span>
                 </Button>
               </DropdownMenuTrigger>
@@ -144,7 +142,7 @@ function App() {
                 <DropdownMenuItem>Settings</DropdownMenuItem>
                 <DropdownMenuItem>Support</DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>Logout</DropdownMenuItem>
+                <DropdownMenuItem onClick={logout}>Logout</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
