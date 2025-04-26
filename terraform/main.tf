@@ -36,3 +36,7 @@ module "cdn" {
   acm_certificate_arn = module.route53.certificate_arn
   route53_zone_id     = module.route53.zone_id
 }
+
+module "ecr" {
+  source = "./modules/ecr"
+}
