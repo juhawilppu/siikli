@@ -5,3 +5,11 @@ variable "private_subnets" {
 variable "ecs_security_group_id" {
   type = string
 }
+
+variable "alb_target_group_arn" {
+  type = string
+}
+
+variable "vpc_id" {
+  type = string
+}

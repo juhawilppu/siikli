@@ -45,7 +45,7 @@ resource "aws_subnet" "db" {
 
   vpc_id            = aws_vpc.main.id
   cidr_block        = element(var.db_subnets, count.index)
-  availability_zone = element(var.db_availability_zones, count.index)
+  availability_zone = element(var.availability_zones, count.index)
 
   tags = {
     Name = "db-subnet-${count.index}"
@@ -69,22 +69,22 @@ resource "aws_route_table_association" "public" {
 }
 
 resource "aws_eip" "nat" {
-  count  = length(var.public_subnets)
   domain = "vpc"
 
   tags = {
-    Name = "siikli-nat-eip-${count.index}"
+    Name = "siikli-nat-eip"
   }
 }
 
 resource "aws_nat_gateway" "main" {
-  count = length(var.public_subnets)
 
-  allocation_id = aws_eip.nat[count.index].id
-  subnet_id     = aws_subnet.public[count.index].id
+  allocation_id = aws_eip.nat.id
+
+  # To save money, we only create one NAT gateway and use it for all public subnets
+  subnet_id     = aws_subnet.public[0].id
 
   tags = {
-    Name = "siikli-nat-gateway-${count.index}"
+    Name = "siikli-nat-gateway"
   }
 
   depends_on = [aws_internet_gateway.main]
@@ -97,7 +97,7 @@ resource "aws_route_table" "private" {
 
   route {
     cidr_block     = "0.0.0.0/0"
-    nat_gateway_id = aws_nat_gateway.main[count.index].id
+    nat_gateway_id = aws_nat_gateway.main.id
   }
 
   tags = {

@@ -144,8 +144,14 @@ resource "aws_ecs_service" "backend" {
 
   network_configuration {
     subnets          = var.private_subnets
-    assign_public_ip = true
+    assign_public_ip = false # Changed to false since tasks in private subnets should not have public IPs
     security_groups  = [var.ecs_security_group_id]
+  }
+
+  load_balancer {
+    target_group_arn = var.alb_target_group_arn
+    container_name   = "backend"
+    container_port   = 3000
   }
 
   enable_execute_command = true

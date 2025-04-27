@@ -41,15 +41,24 @@ module "ecr" {
   source = "./modules/ecr"
 }
 
-module "ecs" {
-  source = "./modules/ecs"
-  private_subnets = module.vpc.private_subnets
-  ecs_security_group_id = module.vpc.ecs_security_group_id
-}
-
 module "rds" {
   source = "./modules/rds"
   vpc_id = module.vpc.vpc_id
   db_subnets = module.vpc.db_subnets
   rds_security_group_id = module.vpc.rds_security_group_id
+}
+
+module "alb" {
+  source = "./modules/alb"
+  alb_sg_id = module.vpc.alb_sg_id
+  public_subnet_ids = module.vpc.public_subnets
+  vpc_id = module.vpc.vpc_id
+}
+
+module "ecs" {
+  source = "./modules/ecs"
+  private_subnets = module.vpc.private_subnets
+  ecs_security_group_id = module.vpc.ecs_security_group_id
+  alb_target_group_arn = module.alb.alb_target_group_arn
+  vpc_id = module.vpc.vpc_id
 }
