@@ -30,13 +30,6 @@ module "route53" {
   }
 }
 
-module "cdn" {
-  source              = "./modules/cdn"
-  domain_name         = var.domain_name
-  acm_certificate_arn = module.route53.certificate_arn
-  route53_zone_id     = module.route53.zone_id
-}
-
 module "ecr" {
   source = "./modules/ecr"
 }
@@ -61,4 +54,12 @@ module "ecs" {
   ecs_security_group_id = module.vpc.ecs_security_group_id
   alb_target_group_arn = module.alb.alb_target_group_arn
   vpc_id = module.vpc.vpc_id
+}
+
+module "cdn" {
+  source              = "./modules/cdn"
+  domain_name         = var.domain_name
+  acm_certificate_arn = module.route53.certificate_arn
+  route53_zone_id     = module.route53.zone_id
+  alb_dns_name        = module.alb.alb_dns_name
 }

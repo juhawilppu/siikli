@@ -44,6 +44,18 @@ resource "aws_cloudfront_distribution" "cdn" {
     }
   }
 
+  origin {
+    domain_name = var.alb_dns_name
+    origin_id   = "alb-siikli-backend"
+
+    custom_origin_config {
+      origin_protocol_policy = "http-only"
+      http_port              = 80
+      https_port             = 443
+      origin_ssl_protocols   = ["TLSv1.2"]
+    }
+  }
+
   enabled             = true
   is_ipv6_enabled     = true
   comment             = "CDN for ${var.domain_name}"
@@ -63,6 +75,22 @@ resource "aws_cloudfront_distribution" "cdn" {
       query_string = false
       cookies {
         forward = "none"
+      }
+    }
+  }
+
+  ordered_cache_behavior {
+    path_pattern     = "/api/*"
+    target_origin_id = "alb-siikli-backend"
+    viewer_protocol_policy = "redirect-to-https"
+    allowed_methods  = ["HEAD", "GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"]
+    cached_methods   = ["GET", "HEAD", "OPTIONS"]
+
+    forwarded_values {
+      query_string = true
+      headers      = ["Authorization", "Content-Type"]
+      cookies {
+        forward = "all"
       }
     }
   }

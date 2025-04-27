@@ -12,3 +12,8 @@ variable "route53_zone_id" {
   description = "Route53 zone ID"
   type        = string
 }
+
+variable "alb_dns_name" {
+  description = "ALB DNS name"
+  type        = string
+}
