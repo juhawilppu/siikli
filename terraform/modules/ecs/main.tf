@@ -145,7 +145,7 @@ resource "aws_ecs_service" "backend" {
   network_configuration {
     subnets          = var.private_subnets
     assign_public_ip = true
-    security_groups  = [var.security_group_id]
+    security_groups  = [var.ecs_security_group_id]
   }
 
   enable_execute_command = true

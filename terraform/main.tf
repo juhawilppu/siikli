@@ -44,11 +44,12 @@ module "ecr" {
 module "ecs" {
   source = "./modules/ecs"
   private_subnets = module.vpc.private_subnets
-  security_group_id = module.vpc.ecs_security_group_id
+  ecs_security_group_id = module.vpc.ecs_security_group_id
 }
 
 module "rds" {
   source = "./modules/rds"
   vpc_id = module.vpc.vpc_id
   db_subnets = module.vpc.db_subnets
+  rds_security_group_id = module.vpc.rds_security_group_id
 }
