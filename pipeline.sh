@@ -11,3 +11,4 @@ aws ecr get-login-password --region eu-north-1 | docker login --username AWS --p
 
 docker push 337909750746.dkr.ecr.eu-north-1.amazonaws.com/siikli-backend:$version
 
+echo "Pushed siikli-backend:$version to ECR"

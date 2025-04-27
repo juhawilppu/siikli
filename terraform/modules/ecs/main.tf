@@ -33,7 +33,8 @@ resource "aws_iam_role_policy" "ecs_task_execution_ecr" {
           "ecr:GetAuthorizationToken",
           "ecr:BatchCheckLayerAvailability",
           "ecr:GetDownloadUrlForLayer",
-          "ecr:BatchGetImage"
+          "ecr:BatchGetImage",
+          "secretsmanager:GetSecretValue"
         ]
         Resource = "*"
       }
@@ -44,6 +45,14 @@ resource "aws_iam_role_policy" "ecs_task_execution_ecr" {
 resource "aws_cloudwatch_log_group" "backend" {
   name              = "/ecs/backend"
   retention_in_days = 30
+}
+
+data "aws_secretsmanager_secret" "ecs_secrets" {
+  name = "ecs-secrets"
+}
+
+data "aws_secretsmanager_secret_version" "ecs_secrets_version" {
+  secret_id     = data.aws_secretsmanager_secret.ecs_secrets.id
 }
 
 resource "aws_ecs_cluster" "main" {
@@ -62,17 +71,17 @@ resource "aws_ecs_task_definition" "backend" {
   container_definitions = jsonencode([
     {
       name      = "backend"
-      image     = "337909750746.dkr.ecr.eu-north-1.amazonaws.com/siikli-backend:1745697383"
+      image     = "337909750746.dkr.ecr.eu-north-1.amazonaws.com/siikli-backend:1745740323"
       portMappings = [
         {
           containerPort = 3000
           protocol      = "tcp"
         }
       ]
-      environment = [
+      secrets = [
         {
-          name  = "DATABASE_URL"
-          value = "postgres://...x"
+          name = "DATABASE_URL"
+          valueFrom = "${data.aws_secretsmanager_secret_version.ecs_secrets_version.arn}:DATABASE_URL::"
         }
       ]
       logConfiguration = {
@@ -117,7 +126,8 @@ resource "aws_iam_role_policy" "ecs_task_role_policy" {
           "ssmmessages:CreateControlChannel",
           "ssmmessages:CreateDataChannel",
           "ssmmessages:OpenControlChannel",
-          "ssmmessages:OpenDataChannel"
+          "ssmmessages:OpenDataChannel",
+          "secretsmanager:GetSecretValue"
         ]
         Resource = "*"
       }

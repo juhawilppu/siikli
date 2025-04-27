@@ -2,10 +2,8 @@
 
 echo "Starting Siikli backend..."
 
-# Wait for the database to be ready
-echo "Waiting for database to be ready..."
-
-npm run db:migrate
+echo "Deploying database migrations..."
+npx prisma migrate deploy
 
 echo "Database ready, starting server..."
 
