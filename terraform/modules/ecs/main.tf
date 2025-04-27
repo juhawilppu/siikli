@@ -71,7 +71,7 @@ resource "aws_ecs_task_definition" "backend" {
   container_definitions = jsonencode([
     {
       name      = "backend"
-      image     = "337909750746.dkr.ecr.eu-north-1.amazonaws.com/siikli-backend:1745776858"
+      image     = "337909750746.dkr.ecr.eu-north-1.amazonaws.com/siikli-backend:1745783195"
       portMappings = [
         {
           containerPort = 3000

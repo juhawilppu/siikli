@@ -14,7 +14,7 @@ export default defineConfig({
     proxy: {
       // Proxying API requests to the first backend service
       '/api': {
-        target: 'http://localhost:3033',
+        target: 'http://localhost:3000',
         changeOrigin: true,
         configure: (proxy) => {
           // Apply middleware to the proxy to modify the proxied requests
@@ -31,7 +31,7 @@ export default defineConfig({
       },
       // Proxying API requests to the second backend service
       '/auth': {
-        target: 'http://localhost:3033',
+        target: 'http://localhost:3000',
         changeOrigin: false,
       },
     },

@@ -137,8 +137,8 @@ resource "aws_security_group" "alb" {
   # ALB needs outbound access to ECS tasks
   egress {
     protocol         = "tcp"
-    from_port        = 3004
-    to_port          = 3004
+    from_port        = 3000
+    to_port          = 3000
     cidr_blocks      = ["0.0.0.0/0"]
     ipv6_cidr_blocks = ["::/0"]
   }
@@ -155,8 +155,8 @@ resource "aws_security_group" "ecs_task" {
   # Allow inbound traffic from ALB on application port
   ingress {
     protocol         = "tcp"
-    from_port        = 3004
-    to_port          = 3004
+    from_port        = 3000
+    to_port          = 3000
     security_groups  = [aws_security_group.alb.id]
   }
 
@@ -173,6 +173,7 @@ resource "aws_security_group" "ecs_task" {
     Name = "ecs-task-sg"
   }
 }
+
 resource "aws_security_group" "rds_sg" {
   name        = "siikli-rds-sg"
   description = "Security group for RDS instance"

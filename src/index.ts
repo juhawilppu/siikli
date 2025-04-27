@@ -124,6 +124,11 @@ async function startServer() {
   app.use(warehouseRoute)
   app.use(dashboardRoute)
 
+  app.get('/api/health', (req, res) => {
+    console.log('health check')
+    res.status(200).send({ message: 'OK' })
+  })
+
   if (process.env.NODE_ENV === 'production') {
     // Express will serve the client main.js etc.
     app.use(express.static('client/build'))
@@ -173,8 +178,8 @@ async function startServer() {
     }
   })
 
-  const server = app.listen(3033, () => {
-    console.log(`🚀 Server ready at: http://localhost:3033`)
+  const server = app.listen(3000, () => {
+    console.log(`🚀 Server ready at: http://localhost:3000`)
     console.log(
       `⭐️ See sample requests: http://pris.ly/e/ts/rest-express#3-using-the-rest-api`
     )
