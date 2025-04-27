@@ -191,3 +191,38 @@ resource "aws_security_group_rule" "allow_ecs_to_rds" {
   security_group_id = aws_security_group.rds_sg.id
   source_security_group_id = aws_security_group.ecs_task.id
 }
+
+resource "aws_security_group" "valkey_sg" {
+  name        = "siikli-valkey-sg"
+  description = "Security group for Valkey (Redis compatible)"
+  vpc_id      = aws_vpc.main.id
+
+  ingress {
+    description              = "Allow ECS to connect to Valkey"
+    from_port                = 6379
+    to_port                  = 6379
+    protocol                 = "tcp"
+    security_groups          = [aws_security_group.ecs_task.id]
+  }
+
+  egress {
+    description = "Allow all outbound traffic"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "siikli-valkey-sg"
+  }
+}
+
+resource "aws_elasticache_subnet_group" "valkey_subnet_group" {
+  name       = "siikli-valkey-subnet-group"
+  subnet_ids = aws_subnet.private[*].id
+
+  tags = {
+    Name = "siikli-valkey-subnet-group"
+  }
+}

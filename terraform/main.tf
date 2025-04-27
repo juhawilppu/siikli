@@ -63,3 +63,9 @@ module "cdn" {
   route53_zone_id     = module.route53.zone_id
   alb_dns_name        = module.alb.alb_dns_name
 }
+
+module "redis" {
+  source = "./modules/redis"
+  valkey_subnet_group_name = module.vpc.valkey_subnet_group_name
+  valkey_sg_id = module.vpc.valkey_sg_id
+}

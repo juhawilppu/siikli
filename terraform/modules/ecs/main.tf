@@ -71,17 +71,39 @@ resource "aws_ecs_task_definition" "backend" {
   container_definitions = jsonencode([
     {
       name      = "backend"
-      image     = "337909750746.dkr.ecr.eu-north-1.amazonaws.com/siikli-backend:1745742309"
+      image     = "337909750746.dkr.ecr.eu-north-1.amazonaws.com/siikli-backend:1745776858"
       portMappings = [
         {
           containerPort = 3000
           protocol      = "tcp"
         }
       ]
+      environment = [
+        {
+          name = "cache"
+          value = "3"
+        }
+      ]
       secrets = [
         {
           name = "DATABASE_URL"
           valueFrom = "${data.aws_secretsmanager_secret_version.ecs_secrets_version.arn}:DATABASE_URL::"
+        },
+        {
+          name = "SESSION_SECRET"
+          valueFrom = "${data.aws_secretsmanager_secret_version.ecs_secrets_version.arn}:SESSION_SECRET::"
+        },
+        {
+          name = "REDIS_URL"
+          valueFrom = "${data.aws_secretsmanager_secret_version.ecs_secrets_version.arn}:REDIS_URL::"
+        },
+        {
+          name = "GOOGLE_CLIENT_ID"
+          valueFrom = "${data.aws_secretsmanager_secret_version.ecs_secrets_version.arn}:GOOGLE_CLIENT_ID::"
+        },
+        {
+          name = "GOOGLE_CLIENT_SECRET"
+          valueFrom = "${data.aws_secretsmanager_secret_version.ecs_secrets_version.arn}:GOOGLE_CLIENT_SECRET::"
         }
       ]
       logConfiguration = {

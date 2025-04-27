@@ -15,8 +15,18 @@ services:
     networks:
       - siikli
 
+  redis:
+    image: redis:latest
+    command: ['redis-server', '/etc/redis/redis.conf']
+    ports:
+      - 6380:6379
+    volumes:
+      - redis_data:/data
+      - ./redis.conf:/etc/redis/redis.conf
+
 volumes:
   db_postgres:
+  redis_data:
 
 networks:
   siikli:

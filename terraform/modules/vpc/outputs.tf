@@ -25,3 +25,11 @@ output "ecs_security_group_id" {
 output "alb_sg_id" {
   value = aws_security_group.alb.id
 }
+
+output "valkey_subnet_group_name" {
+  value = aws_elasticache_subnet_group.valkey_subnet_group.name
+}
+
+output "valkey_sg_id" {
+  value = aws_security_group.valkey_sg.id
+}

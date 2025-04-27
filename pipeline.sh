@@ -5,6 +5,7 @@ cd ..
 
 export version=$(date +%s)
 docker build --platform linux/amd64 -t siikli-backend:$version .
+# docker run --platform linux/arm64 -e DATABASE_URL="postgresql://siikli:testpassword@host.docker.internal:5432/siikli" -p 3000:3000 siikli-backend:$version
 docker tag siikli-backend:$version 337909750746.dkr.ecr.eu-north-1.amazonaws.com/siikli-backend:$version
 
 aws ecr get-login-password --region eu-north-1 | docker login --username AWS --password-stdin 337909750746.dkr.ecr.eu-north-1.amazonaws.com
