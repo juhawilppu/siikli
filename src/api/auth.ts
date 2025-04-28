@@ -10,14 +10,14 @@ const prisma = new PrismaClient()
 export const authRoute = express.Router()
 
 authRoute.get(
-  '/auth/google',
+  '/api/auth/google',
   passport.authenticate('google', {
     scope: ['email', 'profile'],
   })
 )
 
 authRoute.get(
-  '/auth/google/callback',
+  '/api/auth/google/callback',
   passport.authenticate('google', { failureRedirect: '/error' }),
   (req, res, next) => {
     try {

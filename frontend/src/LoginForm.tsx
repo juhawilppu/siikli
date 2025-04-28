@@ -18,7 +18,7 @@ export default function LoginForm() {
 
     const handleGoogleLogin = () => {
         setIsLoading(true)
-        window.location.href = "/auth/google"
+        window.location.href = "/api/auth/google"
     }
 
     const handleSendPin = async (e: React.FormEvent) => {

@@ -34,7 +34,7 @@ import {
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { navItems } from "./SiikliDrawer"
 import { Avatar, AvatarFallback, AvatarImage } from "./components/ui/avatar"
-axios.defaults.baseURL = 'http://localhost:5173/api'
+axios.defaults.baseURL = '/api'
 
 function App() {
   const [user, setUser] = useState<GetCurrentUserDto>()

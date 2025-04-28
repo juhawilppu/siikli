@@ -63,15 +63,15 @@ resource "aws_ecs_task_definition" "backend" {
   family                   = "backend-task"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  cpu                      = 256
-  memory                   = 512
+  cpu                      = 512
+  memory                   = 1024
   execution_role_arn       = aws_iam_role.ecs_task_execution.arn
   task_role_arn           = aws_iam_role.ecs_task_role.arn
 
   container_definitions = jsonencode([
     {
       name      = "backend"
-      image     = "337909750746.dkr.ecr.eu-north-1.amazonaws.com/siikli-backend:1745783195"
+      image     = "337909750746.dkr.ecr.eu-north-1.amazonaws.com/siikli-backend:1745801095"
       portMappings = [
         {
           containerPort = 3000
@@ -80,9 +80,13 @@ resource "aws_ecs_task_definition" "backend" {
       ]
       environment = [
         {
-          name = "cache"
-          value = "3"
-        }
+            name = "cache"
+            value = "3"
+        },
+        {
+            name = "PRIMARY_URL"
+            value = "https://v2.siikli.fi"
+        }   
       ]
       secrets = [
         {

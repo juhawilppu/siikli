@@ -63,7 +63,7 @@ const init = () => {
       {
         clientID: clientID,
         clientSecret: clientSecret,
-        callbackURL: 'http://localhost:5173/auth/google/callback',
+        callbackURL: process.env.PRIMARY_URL + '/api/auth/google/callback',
       },
       async (issuer: any, profile: any, cb: any) => {
         console.log('GoogleStrategy')
