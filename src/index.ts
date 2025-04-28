@@ -129,17 +129,6 @@ async function startServer() {
     res.status(200).send({ message: 'OK' })
   })
 
-  if (process.env.NODE_ENV === 'production') {
-    // Express will serve the client main.js etc.
-    app.use(express.static('client/build'))
-
-    // Express will redirect to / if it's doesn't recognize the route
-    const path = require('path')
-    app.get('*', (req, res) => {
-      res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'))
-    })
-  }
-
   Sentry.setupExpressErrorHandler(app);
 
   app.use((req, res, next) => {
