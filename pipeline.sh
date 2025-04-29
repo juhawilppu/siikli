@@ -15,4 +15,5 @@ docker push 337909750746.dkr.ecr.eu-north-1.amazonaws.com/siikli-backend:$versio
 echo "Pushed siikli-backend:$version to ECR"
 
 cd terraform
+export TF_VAR_app_version=$version
 ./deploy_to_prod.sh

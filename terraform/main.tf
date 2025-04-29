@@ -54,6 +54,7 @@ module "ecs" {
   ecs_security_group_id = module.vpc.ecs_security_group_id
   alb_target_group_arn = module.alb.alb_target_group_arn
   vpc_id = module.vpc.vpc_id
+  app_version = var.app_version
 }
 
 module "cdn" {

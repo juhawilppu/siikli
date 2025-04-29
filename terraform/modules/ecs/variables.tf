@@ -13,3 +13,7 @@ variable "alb_target_group_arn" {
 variable "vpc_id" {
   type = string
 }
+
+variable "app_version" {
+  type = string
+}

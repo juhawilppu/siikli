@@ -71,7 +71,7 @@ resource "aws_ecs_task_definition" "backend" {
   container_definitions = jsonencode([
     {
       name      = "backend"
-      image     = "337909750746.dkr.ecr.eu-north-1.amazonaws.com/siikli-backend:1745801095"
+      image     = "337909750746.dkr.ecr.eu-north-1.amazonaws.com/siikli-backend:${var.app_version}"
       portMappings = [
         {
           containerPort = 3000
@@ -153,7 +153,9 @@ resource "aws_iam_role_policy" "ecs_task_role_policy" {
           "ssmmessages:CreateDataChannel",
           "ssmmessages:OpenControlChannel",
           "ssmmessages:OpenDataChannel",
-          "secretsmanager:GetSecretValue"
+          "secretsmanager:GetSecretValue",
+          "ses:SendEmail",
+          "ses:SendRawEmail"
         ]
         Resource = "*"
       }
