@@ -93,7 +93,7 @@ authRoute.post('/api/auth/email/create-pin', rateLimit(5, 10), async (req, res, 
     const client = new SESClient({ region: "eu-north-1" });
 
     const command = new SendEmailCommand({
-      Source: 'noreply@siikli.fi',
+      Source: 'no-reply@siikli.fi',
       Destination: {
         ToAddresses: [body.email]
       },
