@@ -1,8 +1,8 @@
 import * as Sentry from "@sentry/react"
 import axios from 'axios'
-import { HelpCircle, Search } from 'lucide-react'
+import { Boxes, Building2, ClipboardList, FileText, HelpCircle, Home, LineChart, PlusCircle, Receipt, Search, ShoppingBasket, Users } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { NavLink, Navigate, Route, Routes } from 'react-router-dom'
+import { NavLink, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import './App.css'
 import ErrorPage from './ErrorPage'
 import Landing from './Landing'
@@ -32,14 +32,28 @@ import {
 } from "lucide-react"
 
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { navItems } from "./SiikliDrawer"
+
 axios.defaults.baseURL = '/api'
+
+const navItems = [
+  { title: "Dashboards", href: '/', icon: Home },
+  { title: "Orders", href: '/orders', icon: ClipboardList },
+  { title: "Uusi tilaus", href: '/orders/new', icon: PlusCircle },
+  { title: "Pakkauslista", href: '/packaging-list', icon: FileText },
+  { title: "Laskutus", href: '/invoices', icon: Receipt },
+  { title: "Myyntiraportti", href: '/sales-report', icon: LineChart },
+  { title: "Tuotteet", href: '/products', icon: ShoppingBasket },
+  { title: "Asiakkaat", href: '/customers', icon: Users },
+  { title: "Pakkausasetukset", href: '/packaging-settings', icon: Boxes },
+  { title: "Oma yritys", href: '/own-company', icon: Building2 },
+];
 
 function App() {
   const [user, setUser] = useState<GetCurrentUserDto>()
   const [loading, setLoading] = useState(true)
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false)
 
+  const location = useLocation();
 
   const logout = async () => {
     await axios.post('/auth/logout')
@@ -115,7 +129,7 @@ function App() {
                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-blue-200" />
                 <Input
                   type="search"
-                  placeholder="Search..."
+                  placeholder="Etsi..."
                   className="w-64 rounded-lg bg-blue-700 border-blue-500 text-white placeholder:text-blue-200 pl-8 md:w-80"
                 />
               </div>
@@ -161,8 +175,8 @@ function App() {
         </header>
         <div className="flex flex-1">
           {/* Desktop Sidebar */}
-          <aside className="hidden w-64 shrink-0 border-r bg-muted/40 md:block">
-            <DesktopSidebar />
+          <aside className="hidden w-64 shrink-0 border-r bg-muted md:block">
+            <DesktopSidebar currentPath={location.pathname} />
           </aside>
 
           {/* Main Content */}
@@ -228,7 +242,7 @@ function MobileSidebar() {
 }
 
 // Desktop Sidebar Component
-function DesktopSidebar() {
+function DesktopSidebar({ currentPath }: { currentPath: string }) {
   return (
     <div className="flex h-full flex-col gap-2">
       <div className="flex-1 overflow-auto py-2">
@@ -236,7 +250,7 @@ function DesktopSidebar() {
           {navItems.map((item) => (
             <NavLink
               to={item.href}
-              className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-foreground"
+              className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${currentPath === item.href ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:text-foreground'}`}
             >
               <item.icon className="h-4 w-4" />
               {item.title}
