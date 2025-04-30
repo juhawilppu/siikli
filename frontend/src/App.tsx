@@ -40,7 +40,7 @@ const navItems = [
   { title: "Tilaukset", href: '/orders', icon: ClipboardList },
   { title: "Uusi tilaus", href: '/orders/new', icon: PlusCircle },
   { title: "Pakkauslista", href: '/packaging-list', icon: FileText },
-  { title: "Laskutus", href: '/invoices', icon: Receipt },
+  { title: "Laskut", href: '/invoices', icon: Receipt },
   { title: "Myyntiraportti", href: '/sales-report', icon: LineChart },
   { title: "Tuotteet", href: '/products', icon: ShoppingBasket },
   { title: "Asiakkaat", href: '/customers', icon: Users },

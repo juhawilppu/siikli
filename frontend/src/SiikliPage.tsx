@@ -1,5 +1,5 @@
 
-export default function SiikliPage({ children, title, description, mainAction }: { children: React.ReactNode, title: string, description: string, mainAction?: React.ReactNode }) {
+export default function SiikliPage({ children, title, description, mainAction, loading }: { children: React.ReactNode, title: string, description: string, mainAction?: React.ReactNode, loading?: boolean }) {
     return (
         <div className="container mx-auto p-4 md:p-6">
             <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
@@ -9,7 +9,7 @@ export default function SiikliPage({ children, title, description, mainAction }:
                 </div>
                 {mainAction}
             </div>
-            {children}
+            {loading ? <div></div> : children}
         </div>
     )
 }
