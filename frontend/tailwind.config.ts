@@ -13,6 +13,10 @@ const config = {
 			},
 		},
 		extend: {
+			fontFamily: {
+				sans: ['Geist', 'sans-serif'],
+				geist: ['Geist', 'sans-serif'],
+			},
 			colors: {
 				border: "hsl(var(--border))",
 				input: "hsl(var(--input))",
