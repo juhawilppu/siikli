@@ -84,9 +84,7 @@ export default function Orders() {
     }
   }
 
-  if (isLoading) {
-    return <div></div>
-  }
+  if (isLoading) return <SiikliPage title="Tilaukset" description="Hallitse tilauksia tällä sivulla." />
 
   return (
     <>

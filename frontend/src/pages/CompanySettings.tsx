@@ -52,9 +52,7 @@ export default function CompanySettings() {
       })
   }, [])
 
-  if (!companyData) {
-    return <div></div>
-  }
+  if (!companyData) return <SiikliPage title="Oma yritys" description="Voit hallinnoida yrityksesi asetuksia täällä." />
 
   return (
     <>

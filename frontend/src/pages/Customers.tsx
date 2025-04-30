@@ -454,11 +454,12 @@ export const Customers = () => {
     }
   }
 
+  if (loading) return <SiikliPage title="Asiakkaat" description="Hallitse asiakastietoja ja asiakassuhteita." />
   if (!customers) return <div>Ei asiakkaita</div>
 
   return (
     <>
-      <SiikliPage title="Asiakkaat" description="Hallitse asiakastietoja ja asiakassuhteita." loading={loading}>
+      <SiikliPage title="Asiakkaat" description="Hallitse asiakastietoja ja asiakassuhteita.">
 
         {/* Toiminnot ja suodattimet */}
         <div className="flex flex-col sm:flex-row gap-4 justify-between">

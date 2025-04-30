@@ -61,7 +61,7 @@ export const Invoices = () => {
             .finally(() => setLoading(false))
     }, [])
 
-    if (loading) return <></>
+    if (loading) return <SiikliPage title="Laskut" description="Tällä sivulla voit tulostaa laskut." />
     if (!customers) return <div>Ei tuotteita</div>
 
     const selectedCustomer = customers.find(c => c.id == customerId)

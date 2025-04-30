@@ -189,7 +189,7 @@ export default function CreateOrder() {
   }
 
   if (isLoading || !customers || !products) {
-    return <div></div>
+    return <SiikliPage title={orderId ? 'Tilaus' : 'Uusi tilaus'} description="Tilauksen tiedot." />
   }
 
   const selectedCustomer = customers.find((c) => c.id === customerId)
@@ -201,7 +201,6 @@ export default function CreateOrder() {
         Peruuta
       </Button>
     }>
-
       <form onSubmit={handleSubmit}>
         <div className="space-y-6">
           {/* Customer and Delivery Information */}

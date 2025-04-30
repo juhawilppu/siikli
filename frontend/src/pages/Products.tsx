@@ -189,9 +189,7 @@ export default function TuotteetSivu() {
     }
   }
 
-  if (loading) {
-    return <div></div>
-  }
+  if (loading) return <SiikliPage title="Tuotteet" description="Hallitse tuotteita ja hintoja." />
 
   return (
     <>
