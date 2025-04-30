@@ -10,6 +10,7 @@ import {
 } from "lucide-react"
 import { useEffect, useState } from "react"
 
+import SiikliPage from "@/SiikliPage"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import {
@@ -194,11 +195,7 @@ export default function TuotteetSivu() {
 
   return (
     <>
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Tuotteet</h1>
-          <p className="text-muted-foreground">Hallitse tuotteita ja hintoja.</p>
-        </div>
+      <SiikliPage title="Tuotteet" description="Hallitse tuotteita ja hintoja.">
 
         {/* Toiminnot ja suodattimet */}
         <div className="flex flex-col sm:flex-row gap-4 justify-between">
@@ -402,7 +399,7 @@ export default function TuotteetSivu() {
             </div>
           </CardFooter>
         </Card>
-      </div>
+      </SiikliPage>
       < Dialog open={editProductId !== undefined} onOpenChange={() => setEditProductId(undefined)} >
         {editProductId &&
           <NewProduct productToEdit={products.find(p => p.id === editProductId)} hide={() => setEditProductId(undefined)} onSave={onProductSaved} productTypes={productTypes} packageSizes={pakkausvaihtoehdot} />}

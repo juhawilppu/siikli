@@ -16,6 +16,7 @@ import { GetOrderList } from "@/types/types"
 import { dateToString, formatDate } from "@/utils/date"
 import printJS from 'print-js'
 
+import SiikliPage from "@/SiikliPage"
 import { formatMoneyFi } from "@/utils/money"
 import axios from "axios"
 import { fi } from "date-fns/locale"
@@ -89,17 +90,10 @@ export default function Orders() {
 
   return (
     <>
-      <div className="space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight">Tilaukset</h1>
-            <p className="text-muted-foreground">Hallitse tilauksia tällä sivulla.</p>
-          </div>
-          <Button onClick={() => (window.location.href = "/orders/new")}>
-            <Package className="mr-2 h-4 w-4" />
-            Uusi tilaus
-          </Button>
-        </div>
+      <SiikliPage title="Tilaukset" description="Hallitse tilauksia tällä sivulla." mainAction={<Button onClick={() => (window.location.href = "/orders/new")}>
+        <Package className="mr-2 h-4 w-4" />
+        Uusi tilaus
+      </Button>}>
 
         {/* Filters */}
         <Card>
@@ -273,7 +267,7 @@ export default function Orders() {
             </CardFooter>
           </Card>
         </div>
-      </div>
+      </SiikliPage>
     </>
   )
 }

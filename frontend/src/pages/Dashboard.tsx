@@ -1,3 +1,4 @@
+import SiikliPage from "@/SiikliPage"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -40,11 +41,7 @@ export const Dashboard = () => {
     ]
     return (
         <>
-            <div className="space-y-6">
-                <div>
-                    <h1 className="text-2xl font-semibold tracking-tight">Etusivu</h1>
-                    <p className="text-muted-foreground">Tervetuloa Siikliin! Katso viimeaikaiset tapahtumat tästä.</p>
-                </div>
+            <SiikliPage title="Etusivu" description="Tervetuloa Siikliin! Katso viimeaikaiset tapahtumat tästä.">
                 <div className="space-y-5">
 
                     {/* Metrics */}
@@ -129,7 +126,7 @@ export const Dashboard = () => {
                         </CardFooter>
                     </Card>
                 </div>
-            </div>
+            </SiikliPage >
         </>
     )
 }

@@ -1,3 +1,4 @@
+import SiikliPage from "@/SiikliPage"
 import { Button } from "@/components/ui/button"
 import { Calendar as CalendarComponent } from "@/components/ui/calendar"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -36,11 +37,7 @@ export const PackageList = () => {
 
     return (
         <>
-            <div className="space-y-6">
-                <div>
-                    <h1 className="text-2xl font-semibold tracking-tight">Pakkauslista</h1>
-                    <p className="text-muted-foreground">Voit tulostaa pakkauslistan täältä.</p>
-                </div>
+            <SiikliPage title="Pakkauslista" description="Voit tulostaa pakkauslistan täältä.">
                 <Card>
                     <CardHeader className="border-b bg-gray-50">
                         <CardTitle>Luo pakkauslista</CardTitle>
@@ -135,7 +132,7 @@ export const PackageList = () => {
                         }
                     </Card>
                 )}
-            </div>
+            </SiikliPage >
         </>
     )
 }

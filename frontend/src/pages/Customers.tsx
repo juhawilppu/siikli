@@ -1,3 +1,4 @@
+import SiikliPage from "@/SiikliPage"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -453,16 +454,12 @@ export const Customers = () => {
     }
   }
 
-  if (loading) return <div>Loading</div>
+  if (loading) return <></>
   if (!customers) return <div>Ei asiakkaita</div>
 
   return (
     <>
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Asiakkaat</h1>
-          <p className="text-muted-foreground">Hallitse asiakastietoja ja asiakassuhteita.</p>
-        </div>
+      <SiikliPage title="Asiakkaat" description="Hallitse asiakastietoja ja asiakassuhteita.">
 
         {/* Toiminnot ja suodattimet */}
         <div className="flex flex-col sm:flex-row gap-4 justify-between">
@@ -1034,7 +1031,7 @@ export const Customers = () => {
             </Pagination>
           </CardFooter>
         </Card>
-      </div>
+      </SiikliPage>
 
       {/* Edit dialog */}
       <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>

@@ -5,6 +5,7 @@ import type React from "react"
 import { Save } from "lucide-react"
 import { useEffect, useState } from "react"
 
+import SiikliPage from "@/SiikliPage"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -57,11 +58,8 @@ export default function CompanySettings() {
 
   return (
     <>
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Oma yritys</h1>
-          <p className="text-muted-foreground">Voit hallinnoida yrityksesi asetuksia täällä.</p>
-        </div>
+      <SiikliPage title="Oma yritys" description="Voit hallinnoida yrityksesi asetuksia täällä.">
+
 
         <Tabs defaultValue="company" className="w-full">
           <TabsList className="grid w-full grid-cols-3 mb-6">
@@ -230,7 +228,7 @@ export default function CompanySettings() {
             </Card>
           </TabsContent>
         </Tabs>
-      </div>
+      </SiikliPage>
     </>
   )
 }

@@ -8,6 +8,7 @@ import {
 } from "lucide-react"
 import { useEffect, useState } from "react"
 
+import SiikliPage from "@/SiikliPage"
 import { Button } from "@/components/ui/button"
 import { Calendar as CalendarComponent } from "@/components/ui/calendar"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -194,18 +195,12 @@ export default function CreateOrder() {
   const selectedCustomer = customers.find((c) => c.id === customerId)
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">{orderId ? 'Tilaus' : 'Uusi tilaus'}</h1>
-          <p className="text-muted-foreground">Tilauksen tiedot.</p>
-        </div>
-        {!orderId &&
-          <Button variant="outline" onClick={() => window.history.back()}>
-            Peruuta
-          </Button>
-        }
-      </div>
+    <SiikliPage title={orderId ? 'Tilaus' : 'Uusi tilaus'} description="Tilauksen tiedot." mainAction={
+      !orderId &&
+      <Button variant="outline" onClick={() => window.history.back()}>
+        Peruuta
+      </Button>
+    }>
 
       <form onSubmit={handleSubmit}>
         <div className="space-y-6">
@@ -500,7 +495,7 @@ export default function CreateOrder() {
           </div>
         </div>
       </form>
-    </div>
+    </SiikliPage>
   )
 }
 
