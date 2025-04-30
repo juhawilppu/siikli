@@ -36,8 +36,8 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 axios.defaults.baseURL = '/api'
 
 const navItems = [
-  { title: "Dashboards", href: '/', icon: Home },
-  { title: "Orders", href: '/orders', icon: ClipboardList },
+  { title: "Etusivu", href: '/', icon: Home },
+  { title: "Tilaukset", href: '/orders', icon: ClipboardList },
   { title: "Uusi tilaus", href: '/orders/new', icon: PlusCircle },
   { title: "Pakkauslista", href: '/packaging-list', icon: FileText },
   { title: "Laskutus", href: '/invoices', icon: Receipt },
@@ -175,7 +175,7 @@ function App() {
         </header>
         <div className="flex flex-1">
           {/* Desktop Sidebar */}
-          <aside className="hidden w-64 shrink-0 border-r bg-muted md:block">
+          <aside className="hidden w-64 shrink-0 border-r bg-muted/40 md:block">
             <DesktopSidebar currentPath={location.pathname} />
           </aside>
 
