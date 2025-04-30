@@ -33,7 +33,6 @@ import {
 
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { navItems } from "./SiikliDrawer"
-import { Avatar, AvatarFallback, AvatarImage } from "./components/ui/avatar"
 axios.defaults.baseURL = '/api'
 
 function App() {
@@ -107,42 +106,55 @@ function App() {
             </SheetContent>
           </Sheet>
           <div className="flex items-center gap-2">
-            <Package className="h-6 w-6" />
-            <span className="text-lg font-semibold">Siikli</span>
+            <Package className="h-6 w-6 text-white" />
+            <span className="text-lg font-semibold text-white">Siikli ERP</span>
           </div>
           <div className="ml-auto flex items-center gap-4">
             <form className="hidden md:block">
               <div className="relative">
-                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input type="search" placeholder="Etsi..." className="w-64 rounded-lg bg-background pl-8 md:w-80" />
+                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-blue-200" />
+                <Input
+                  type="search"
+                  placeholder="Search..."
+                  className="w-64 rounded-lg bg-blue-700 border-blue-500 text-white placeholder:text-blue-200 pl-8 md:w-80"
+                />
               </div>
             </form>
-            <Button variant="outline" size="icon" className="rounded-full">
+            <Button
+              variant="outline"
+              size="icon"
+              className="rounded-full bg-blue-700 border-blue-500 text-white hover:bg-blue-800 hover:text-white"
+            >
               <HelpCircle className="h-5 w-5" />
-              <span className="sr-only">Help</span>
+              <span className="sr-only">Tuki</span>
             </Button>
-            <Button variant="outline" size="icon" className="rounded-full">
+            <Button
+              variant="outline"
+              size="icon"
+              className="rounded-full bg-blue-700 border-blue-500 text-white hover:bg-blue-800 hover:text-white"
+            >
               <Bell className="h-5 w-5" />
-              <span className="sr-only">Notifications</span>
+              <span className="sr-only">Ilmoitukset</span>
             </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="icon" className="rounded-full">
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage src="/placeholder-user.jpg" alt="User" />
-                    <AvatarFallback>{user?.initials}</AvatarFallback>
-                  </Avatar>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="rounded-full bg-blue-700 border-blue-500 hover:bg-blue-800"
+                >
+                  {user?.initials}
                   <span className="sr-only">Toggle user menu</span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuLabel>Tunnukseni</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>Profile</DropdownMenuItem>
-                <DropdownMenuItem>Settings</DropdownMenuItem>
-                <DropdownMenuItem>Support</DropdownMenuItem>
+                <DropdownMenuItem>Profiili</DropdownMenuItem>
+                <DropdownMenuItem>Asetukset</DropdownMenuItem>
+                <DropdownMenuItem>Tuki</DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={logout}>Logout</DropdownMenuItem>
+                <DropdownMenuItem onClick={logout}>Kirjaudu ulos</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
