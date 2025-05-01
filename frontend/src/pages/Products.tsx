@@ -48,7 +48,7 @@ export default function TuotteetSivu() {
 
   const [typeFilter, setTypeFilter] = useState<string>("all")
   const [orderDirection, setOrderDirection] = useState<"asc" | "desc">("asc")
-  const [orderByField, setOrderByField] = useState<keyof GetProductResponseDto>("orderIndex")
+  const [orderByField, setOrderByField] = useState<keyof GetProductResponseDto>("name")
 
   const { toast } = useToast()
 
