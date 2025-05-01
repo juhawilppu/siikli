@@ -7,6 +7,7 @@ import {
     Save
 } from "lucide-react"
 
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Button } from "@/components/ui/button"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command"
 import {
@@ -112,178 +113,191 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
                 </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                        <Label htmlFor="name" className="font-medium">
-                            Nimi *
-                        </Label>
-                        <Input
-                            id="name"
-                            value={product?.name || ""}
-                            onChange={(e) => setProduct({ ...product, name: e.target.value })}
-                        />
-                    </div>
-                    <div className="space-y-2">
-                        <Label htmlFor="variety" className="font-medium">
-                            Lajike
-                        </Label>
-                        <Input
-                            id="variety"
-                            value={product.variety || ""}
-                            onChange={(e) => setProduct({ ...product, variety: e.target.value })}
-                        />
-                    </div>
+                <div className="space-y-2">
+                    <Label htmlFor="name" className="text-base font-medium">
+                        Nimi <span className="text-red-500">*</span>
+                    </Label>
+                    <Input
+                        id="name"
+                        className="w-full"
+                        value={product?.name || ""}
+                        onChange={(e) => setProduct({ ...product, name: e.target.value })}
+                        placeholder="Syötä tuotteen nimi"
+                        required
+                    />
                 </div>
+                <Accordion type="single" collapsible className="w-full">
+                    {/* Grouping Section */}
+                    <AccordionItem value="grouping">
+                        <AccordionTrigger className="py-3 text-base font-medium">Ryhmittelytiedot</AccordionTrigger>
+                        <AccordionContent className="space-y-4 pt-2">
+                            <div className="space-y-2">
+                                <Label htmlFor="variety" className="font-medium">
+                                    Lajike
+                                </Label>
+                                <Input
+                                    id="variety"
+                                    value={product.variety || ""}
+                                    onChange={(e) => setProduct({ ...product, variety: e.target.value })}
+                                />
+                            </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                        <Label htmlFor="type" className="font-medium">
-                            Tuoteryhmä *
-                        </Label>
-                        <Popover open={openType} onOpenChange={setOpenType}>
-                            <PopoverTrigger asChild>
-                                <Button variant="outline" role="combobox" className="w-full justify-between">
-                                    {product.type || "Valitse tuoteryhmä"}
-                                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                                </Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-full p-0">
-                                <Command>
-                                    <CommandInput
-                                        placeholder="Hae tai lisää"
-                                        value={inputValueType}
-                                        onValueChange={setInputValueType}
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="type" className="font-medium">
+                                        Tuoteryhmä (pääryhmä)
+                                    </Label>
+                                    <Popover open={openType} onOpenChange={setOpenType}>
+                                        <PopoverTrigger asChild>
+                                            <Button variant="outline" role="combobox" className="w-full justify-between">
+                                                {product.type || "Valitse tuoteryhmä"}
+                                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                            </Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-full p-0">
+                                            <Command>
+                                                <CommandInput
+                                                    placeholder="Hae tai lisää"
+                                                    value={inputValueType}
+                                                    onValueChange={setInputValueType}
+                                                />
+                                                <CommandEmpty>
+                                                    <button onClick={handleCreateType} className="flex items-center space-x-2 text-sm p-2 hover:bg-muted w-full text-left">
+                                                        <Plus className="w-4 h-4" />
+                                                        <span>Luo: {inputValueType}</span>
+                                                    </button>
+                                                </CommandEmpty>
+                                                <CommandGroup>
+                                                    {productTypes.map((type) => (
+                                                        <CommandItem key={type.name} value={type.name} onSelect={handleSelectType}>
+                                                            <Check className={cn("mr-2 h-4 w-4", product.type === type.name ? "opacity-100" : "opacity-0")} />
+                                                            {type.name}
+                                                        </CommandItem>
+                                                    ))}
+                                                </CommandGroup>
+                                            </Command>
+                                        </PopoverContent>
+                                    </Popover>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="subtype" className="font-medium">
+                                        Tuoteryhmä (aliryhmä)
+                                    </Label>
+                                    <Popover open={openSubtype} onOpenChange={setOpenSubtype}>
+                                        <PopoverTrigger asChild>
+                                            <Button variant="outline" role="combobox" className="w-full justify-between">
+                                                {product.subtype || "Valitse aliryhmä"}
+                                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                            </Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-full p-0">
+                                            <Command>
+                                                <CommandInput
+                                                    placeholder="Hae tai lisää"
+                                                    value={inputValueSubtype}
+                                                    onValueChange={setInputValueSubtype}
+                                                />
+                                                <CommandEmpty>
+                                                    <button onClick={handleCreateSubtype} className="flex items-center space-x-2 text-sm p-2 hover:bg-muted w-full text-left">
+                                                        <Plus className="w-4 h-4" />
+                                                        <span>Luo: {inputValueSubtype}</span>
+                                                    </button>
+                                                </CommandEmpty>
+                                                <CommandGroup>
+                                                    {productTypes.find(p => p.name === product.type)?.subtypes.map((subtype) => (
+                                                        <CommandItem key={subtype.name} value={subtype.name} onSelect={handleSelectSubtype}>
+                                                            <Check className={cn("mr-2 h-4 w-4", product.subtype === subtype.name ? "opacity-100" : "opacity-0")} />
+                                                            {subtype.name}
+                                                        </CommandItem>
+                                                    ))}
+                                                </CommandGroup>
+                                            </Command>
+                                        </PopoverContent>
+                                    </Popover>
+                                </div>
+                            </div>
+                        </AccordionContent>
+                    </AccordionItem>
+                    <AccordionItem value="pricing">
+                        <AccordionTrigger className="py-3 text-base font-medium">Hinta- ja pakkaustiedot</AccordionTrigger>
+                        <AccordionContent className="space-y-4 pt-2">
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="packageSize" className="font-medium">
+                                        Pakkauskoko (kg)
+                                    </Label>
+                                    <Input
+                                        id="packageSize"
+                                        type="number"
+                                        step="0.01"
+                                        min="0"
+                                        value={product.packageSize || ""}
+                                        onChange={(e) =>
+                                            setProduct({
+                                                ...product,
+                                                packageSize: Number.parseFloat(e.target.value) || 0,
+                                            })
+                                        }
                                     />
-                                    <CommandEmpty>
-                                        <button onClick={handleCreateType} className="flex items-center space-x-2 text-sm p-2 hover:bg-muted w-full text-left">
-                                            <Plus className="w-4 h-4" />
-                                            <span>Luo: {inputValueType}</span>
-                                        </button>
-                                    </CommandEmpty>
-                                    <CommandGroup>
-                                        {productTypes.map((type) => (
-                                            <CommandItem key={type.name} value={type.name} onSelect={handleSelectType}>
-                                                <Check className={cn("mr-2 h-4 w-4", product.type === type.name ? "opacity-100" : "opacity-0")} />
-                                                {type.name}
-                                            </CommandItem>
-                                        ))}
-                                    </CommandGroup>
-                                </Command>
-                            </PopoverContent>
-                        </Popover>
-                    </div>
-                    <div className="space-y-2">
-                        <Label htmlFor="subtype" className="font-medium">
-                            Tuoteryhmä *
-                        </Label>
-                        <Popover open={openSubtype} onOpenChange={setOpenSubtype}>
-                            <PopoverTrigger asChild>
-                                <Button variant="outline" role="combobox" className="w-full justify-between">
-                                    {product.subtype || "Valitse aliryhmä"}
-                                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                                </Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-full p-0">
-                                <Command>
-                                    <CommandInput
-                                        placeholder="Hae tai lisää"
-                                        value={inputValueSubtype}
-                                        onValueChange={setInputValueSubtype}
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="packageType" className="font-medium">
+                                        Pakkaustyyppi
+                                    </Label>
+                                    <Select
+                                        value={product.packageType ?? undefined}
+                                        onValueChange={(value) => setProduct({ ...product, packageType: value })}
+                                    >
+                                        <SelectTrigger id="packageType">
+                                            <SelectValue placeholder="Valitse pakkaus" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {packageSizes.map((packageSize) => (
+                                                <SelectItem key={packageSize} value={packageSize}>
+                                                    {packageSize}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="price" className="font-medium">
+                                        Hinta ALV 14 % (€)
+                                    </Label>
+                                    <Input
+                                        id="price"
+                                        type="number"
+                                        step="0.01"
+                                        min="0"
+                                        value={product.price || ""}
+                                        onChange={(e) =>
+                                            setProduct({ ...product, price: toDecimal(Number.parseFloat(e.target.value) || 0), price0: toDecimal(Number.parseFloat(e.target.value) / 1.14) })
+                                        }
                                     />
-                                    <CommandEmpty>
-                                        <button onClick={handleCreateSubtype} className="flex items-center space-x-2 text-sm p-2 hover:bg-muted w-full text-left">
-                                            <Plus className="w-4 h-4" />
-                                            <span>Luo: {inputValueSubtype}</span>
-                                        </button>
-                                    </CommandEmpty>
-                                    <CommandGroup>
-                                        {productTypes.find(p => p.name === product.type)?.subtypes.map((subtype) => (
-                                            <CommandItem key={subtype.name} value={subtype.name} onSelect={handleSelectSubtype}>
-                                                <Check className={cn("mr-2 h-4 w-4", product.subtype === subtype.name ? "opacity-100" : "opacity-0")} />
-                                                {subtype.name}
-                                            </CommandItem>
-                                        ))}
-                                    </CommandGroup>
-                                </Command>
-                            </PopoverContent>
-                        </Popover>
-                    </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                        <Label htmlFor="packageSize" className="font-medium">
-                            Pakkauskoko (kg)
-                        </Label>
-                        <Input
-                            id="packageSize"
-                            type="number"
-                            step="0.01"
-                            min="0"
-                            value={product.packageSize || ""}
-                            onChange={(e) =>
-                                setProduct({
-                                    ...product,
-                                    packageSize: Number.parseFloat(e.target.value) || 0,
-                                })
-                            }
-                        />
-                    </div>
-                    <div className="space-y-2">
-                        <Label htmlFor="packageType" className="font-medium">
-                            Pakkaustyyppi
-                        </Label>
-                        <Select
-                            value={product.packageType ?? undefined}
-                            onValueChange={(value) => setProduct({ ...product, packageType: value })}
-                        >
-                            <SelectTrigger id="packageType">
-                                <SelectValue placeholder="Valitse pakkaus" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {packageSizes.map((packageSize) => (
-                                    <SelectItem key={packageSize} value={packageSize}>
-                                        {packageSize}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                        <Label htmlFor="price" className="font-medium">
-                            Hinta ALV 14 % (€)
-                        </Label>
-                        <Input
-                            id="price"
-                            type="number"
-                            step="0.01"
-                            min="0"
-                            value={product.price || ""}
-                            onChange={(e) =>
-                                setProduct({ ...product, price: toDecimal(Number.parseFloat(e.target.value) || 0), price0: toDecimal(Number.parseFloat(e.target.value) / 1.14) })
-                            }
-                        />
-                    </div>
-                    <div className="space-y-2">
-                        <Label htmlFor="price0" className="font-medium">
-                            Hinta ALV 0 % (€)
-                        </Label>
-                        <Input
-                            id="price0"
-                            type="number"
-                            step="0.01"
-                            min="0"
-                            value={product.price0 || ""}
-                            onChange={(e) =>
-                                setProduct({ ...product, price: toDecimal(Number.parseFloat(e.target.value) * 1.14 || 0), price0: toDecimal(Number.parseFloat(e.target.value)) })
-                            }
-                        />
-                        <p className="text-xs text-muted-foreground">Voit antaa joko ALV 14 % tai ALV 0 % hinnan. Toinen muuttaa toista.</p>
-                    </div>
-                </div>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="price0" className="font-medium">
+                                        Hinta ALV 0 % (€)
+                                    </Label>
+                                    <Input
+                                        id="price0"
+                                        type="number"
+                                        step="0.01"
+                                        min="0"
+                                        value={product.price0 || ""}
+                                        onChange={(e) =>
+                                            setProduct({ ...product, price: toDecimal(Number.parseFloat(e.target.value) * 1.14 || 0), price0: toDecimal(Number.parseFloat(e.target.value)) })
+                                        }
+                                    />
+                                    <p className="text-xs text-muted-foreground">Voit antaa joko ALV 14 % tai ALV 0 % hinnan. Toinen muuttaa toista.</p>
+                                </div>
+                            </div>
+                        </AccordionContent>
+                    </AccordionItem>
+                </Accordion>
             </div>
             <DialogFooter>
                 <Button variant="outline" onClick={hide}>
