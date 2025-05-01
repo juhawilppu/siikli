@@ -171,8 +171,10 @@ resource "aws_ecs_service" "backend" {
   launch_type     = "FARGATE"
 
   network_configuration {
-    subnets          = var.private_subnets
-    assign_public_ip = false # Changed to false since tasks in private subnets should not have public IPs
+    #subnets          = var.private_subnets
+    subnets          = var.public_subnets # Disabled NAT gateway and private subnets to save money
+    assign_public_ip = true
+
     security_groups  = [var.ecs_security_group_id]
   }
 

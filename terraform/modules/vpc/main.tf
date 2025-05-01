@@ -69,6 +69,7 @@ resource "aws_route_table_association" "public" {
 }
 
 resource "aws_eip" "nat" {
+  count = 0 # Disable NAT gateway to save money
   domain = "vpc"
 
   tags = {
@@ -77,8 +78,9 @@ resource "aws_eip" "nat" {
 }
 
 resource "aws_nat_gateway" "main" {
+  count = 0 # Disable NAT gateway to save money
 
-  allocation_id = aws_eip.nat.id
+  allocation_id = aws_eip.nat[0].id
 
   # To save money, we only create one NAT gateway and use it for all public subnets
   subnet_id     = aws_subnet.public[0].id
@@ -91,13 +93,15 @@ resource "aws_nat_gateway" "main" {
 }
 
 resource "aws_route_table" "private" {
-  count = length(var.private_subnets)
+  count = 0 # Disable NAT gateway and private subnet to save money
+
+  #count = length(var.private_subnets)
 
   vpc_id = aws_vpc.main.id
 
   route {
     cidr_block     = "0.0.0.0/0"
-    nat_gateway_id = aws_nat_gateway.main.id
+    nat_gateway_id = aws_nat_gateway.main[0].id
   }
 
   tags = {
@@ -106,7 +110,9 @@ resource "aws_route_table" "private" {
 }
 
 resource "aws_route_table_association" "private" {
-  count = length(var.private_subnets)
+  count = 0 # Disable NAT gateway to save money
+
+  #count = length(var.private_subnets)
 
   subnet_id      = aws_subnet.private[count.index].id
   route_table_id = aws_route_table.private[count.index].id
