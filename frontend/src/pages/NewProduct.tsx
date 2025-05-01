@@ -130,7 +130,10 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
                     {/* Grouping Section */}
                     <AccordionItem value="grouping">
                         <AccordionTrigger className="py-3 text-base font-medium">Ryhmittelytiedot</AccordionTrigger>
-                        <AccordionContent className="space-y-4 pt-2">
+                        <AccordionContent className="space-y-4">
+                            <p className="text-sm text-muted-foreground">
+                                Ryhmittelytiedot ovat vapaaehtoisia. Niitä käytetään ryhmittelyyn keräilylistoissa.
+                            </p>
                             <div className="space-y-2">
                                 <Label htmlFor="variety" className="font-medium">
                                     Lajike
@@ -220,7 +223,10 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
                     </AccordionItem>
                     <AccordionItem value="pricing">
                         <AccordionTrigger className="py-3 text-base font-medium">Hinta- ja pakkaustiedot</AccordionTrigger>
-                        <AccordionContent className="space-y-4 pt-2">
+                        <AccordionContent className="space-y-4">
+                            <p className="text-sm text-muted-foreground">
+                                Hinta- ja pakkaustiedot ovat vapaaehtoisia. Niiden avulla saat uusiin tilauksiin oletusarvot.
+                            </p>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <Label htmlFor="packageSize" className="font-medium">
