@@ -228,10 +228,52 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
                             </AccordionItem>
                         )}
                         <AccordionItem value="pricing">
-                            <AccordionTrigger className="py-3 text-base font-medium">Hinta- ja pakkaustiedot</AccordionTrigger>
+                            <AccordionTrigger className="py-3 text-base font-medium">Hinta</AccordionTrigger>
                             <AccordionContent className="space-y-4">
                                 <p className="text-sm text-muted-foreground">
-                                    Hinta- ja pakkaustiedot ovat vapaaehtoisia. Niiden avulla saat uusiin tilauksiin oletustiedot. Voit kuitenkin muokata niitä tilauksen yhteydessä.
+                                    Hinta on vapaaehtoinen tieto. Voit aina muokata hinnan tilauksen yhteydessä.
+                                </p>
+                                <div className="space-y-2">
+                                    <Label htmlFor="price" className="text-base font-medium">
+                                        Hinta ALV 14 % (€)
+                                    </Label>
+                                    <Input
+                                        id="price"
+                                        type="number"
+                                        step="0.01"
+                                        min="0"
+                                        className="ml-[1px]"
+                                        style={{ width: "calc(100% - 2px)" }}
+                                        value={product.price || ""}
+                                        onChange={(e) =>
+                                            setProduct({ ...product, price: toDecimal(Number.parseFloat(e.target.value) || 0), price0: toDecimal(Number.parseFloat(e.target.value) / 1.14) })
+                                        }
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="price0" className="text-base font-medium">
+                                        Hinta ALV 0 % (€)
+                                    </Label>
+                                    <Input
+                                        id="price0"
+                                        type="number"
+                                        step="0.01"
+                                        min="0"
+                                        className="ml-[1px]"
+                                        style={{ width: "calc(100% - 2px)" }}
+                                        value={product.price0 || ""}
+                                        onChange={(e) =>
+                                            setProduct({ ...product, price: toDecimal(Number.parseFloat(e.target.value) * 1.14 || 0), price0: toDecimal(Number.parseFloat(e.target.value)) })
+                                        }
+                                    />
+                                </div>
+                            </AccordionContent>
+                        </AccordionItem>
+                        <AccordionItem value="packaging">
+                            <AccordionTrigger className="py-3 text-base font-medium">Pakkaustiedot</AccordionTrigger>
+                            <AccordionContent className="space-y-4">
+                                <p className="text-sm text-muted-foreground">
+                                    Pakkaustiedot ovat vapaaehtoisia. Niitä käytetään tilauksen yhteydessä.
                                 </p>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-2">
@@ -243,6 +285,8 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
                                             type="number"
                                             step="0.01"
                                             min="0"
+                                            className="ml-[1px]"
+                                            style={{ width: "calc(100% - 2px)" }}
                                             value={product.packageSize || ""}
                                             onChange={(e) =>
                                                 setProduct({
@@ -271,40 +315,6 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
                                                 ))}
                                             </SelectContent>
                                         </Select>
-                                    </div>
-                                </div>
-
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="space-y-2">
-                                        <Label htmlFor="price" className="text-base font-medium">
-                                            Hinta ALV 14 % (€)
-                                        </Label>
-                                        <Input
-                                            id="price"
-                                            type="number"
-                                            step="0.01"
-                                            min="0"
-                                            value={product.price || ""}
-                                            onChange={(e) =>
-                                                setProduct({ ...product, price: toDecimal(Number.parseFloat(e.target.value) || 0), price0: toDecimal(Number.parseFloat(e.target.value) / 1.14) })
-                                            }
-                                        />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label htmlFor="price0" className="text-base font-medium">
-                                            Hinta ALV 0 % (€)
-                                        </Label>
-                                        <Input
-                                            id="price0"
-                                            type="number"
-                                            step="0.01"
-                                            min="0"
-                                            value={product.price0 || ""}
-                                            onChange={(e) =>
-                                                setProduct({ ...product, price: toDecimal(Number.parseFloat(e.target.value) * 1.14 || 0), price0: toDecimal(Number.parseFloat(e.target.value)) })
-                                            }
-                                        />
-                                        <p className="text-xs text-muted-foreground">Voit antaa joko ALV 14 % tai ALV 0 % hinnan. Toinen muuttaa toista.</p>
                                     </div>
                                 </div>
                             </AccordionContent>
