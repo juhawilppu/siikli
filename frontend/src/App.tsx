@@ -1,6 +1,6 @@
 import * as Sentry from "@sentry/react"
 import axios from 'axios'
-import { Boxes, Building2, ClipboardList, FileText, HelpCircle, Home, LineChart, PlusCircle, Receipt, Search, ShoppingBasket, Users } from 'lucide-react'
+import { Building2, ClipboardList, FileText, HelpCircle, Home, LineChart, PlusCircle, Receipt, Search, ShoppingBasket, Users } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { NavLink, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import './App.css'
@@ -44,7 +44,6 @@ const navItems = [
   { title: "Myyntiraportti", href: '/sales-report', icon: LineChart },
   { title: "Tuotteet", href: '/products', icon: ShoppingBasket },
   { title: "Asiakkaat", href: '/customers', icon: Users },
-  { title: "Pakkausasetukset", href: '/packaging-settings', icon: Boxes },
   { title: "Oma yritys", href: '/own-company', icon: Building2 },
 ];
 

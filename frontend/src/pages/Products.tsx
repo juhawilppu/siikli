@@ -220,7 +220,9 @@ export default function TuotteetSivu() {
                   ))}
                 </DropdownMenuContent>
               </DropdownMenu>
-              <Button variant='outline' onClick={() => navigate('/products/reorder')}>Järjestele ryhmät</Button>
+              {false && (
+                <Button variant='outline' onClick={() => navigate('/products/reorder')}>Järjestele ryhmät</Button>
+              )}
             </div>
             <Dialog open={showNewProductDialog} onOpenChange={setShowNewProductDialog}>
               <DialogTrigger asChild>
