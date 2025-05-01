@@ -247,7 +247,9 @@ export default function TuotteetSivu() {
               <Table>
                 <TableHeader className="bg-gray-50">
                   <TableRow>
+                    {/*
                     <TableHead className="w-[80px]">Järjestys</TableHead>
+                    */}
                     <TableHead className="cursor-pointer" onClick={() => vaihdaJarjestys("name")}>
                       <div className="flex items-center">
                         Nimi
@@ -259,6 +261,7 @@ export default function TuotteetSivu() {
                           ))}
                       </div>
                     </TableHead>
+                    { /*
                     <TableHead>Lajike</TableHead>
                     <TableHead className="cursor-pointer" onClick={() => vaihdaJarjestys("type")}>
                       <div className="flex items-center">
@@ -272,6 +275,7 @@ export default function TuotteetSivu() {
                       </div>
                     </TableHead>
                     <TableHead>Aliryhmä</TableHead>
+                    */}
                     <TableHead className="cursor-pointer" onClick={() => vaihdaJarjestys("price")}>
                       <div className="flex items-center">
                         Hinta ALV 14 % (€)
@@ -299,6 +303,7 @@ export default function TuotteetSivu() {
                   ) : (
                     filteredTuotteet.map((product, index) => (
                       <TableRow key={product.id} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+                        {/*
                         <TableCell>
                           <div className="flex items-center">
                             <span className="font-medium mr-2">{product.orderIndex + 1}</span>
@@ -342,11 +347,14 @@ export default function TuotteetSivu() {
                             </div>
                           </div>
                         </TableCell>
+                        */}
                         <TableCell className="font-medium">{product.name}</TableCell>
+                        { /*
                         <TableCell>{product.variety}</TableCell>
                         <TableCell>{product.type}</TableCell>
                         <TableCell>{product.subtype}</TableCell>
-                        <TableCell className="font-medium">{product.price ? formatMoneyFi(product.price) : ''}</TableCell>
+                        */}
+                        <TableCell className="font-medium" > {product.price ? formatMoneyFi(product.price) : ''}</TableCell>
                         <TableCell>{product.price0 ? formatMoneyFi(product.price0) : ''}</TableCell>
                         <TableCell>{product.packageSize ? product.packageSize + ' kg' : ''}</TableCell>
                         <TableCell>{product.packageType}</TableCell>
@@ -400,8 +408,8 @@ export default function TuotteetSivu() {
               </div>
             </CardFooter>
           </Card>
-        </div>
-      </SiikliPage>
+        </div >
+      </SiikliPage >
       < Dialog open={editProductId !== undefined} onOpenChange={() => setEditProductId(undefined)} >
         {editProductId &&
           <NewProduct productToEdit={products.find(p => p.id === editProductId)} hide={() => setEditProductId(undefined)} onSave={onProductSaved} productTypes={productTypes} packageSizes={pakkausvaihtoehdot} />}

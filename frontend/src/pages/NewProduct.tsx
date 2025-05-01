@@ -231,7 +231,7 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
                             <AccordionTrigger className="py-3 text-base font-medium">Hinta- ja pakkaustiedot</AccordionTrigger>
                             <AccordionContent className="space-y-4">
                                 <p className="text-sm text-muted-foreground">
-                                    Hinta- ja pakkaustiedot ovat vapaaehtoisia. Niiden avulla saat uusiin tilauksiin oletusarvot.
+                                    Hinta- ja pakkaustiedot ovat vapaaehtoisia. Niiden avulla saat uusiin tilauksiin oletustiedot. Voit kuitenkin muokata niitä tilauksen yhteydessä.
                                 </p>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-2">
