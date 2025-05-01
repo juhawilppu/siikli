@@ -153,6 +153,6 @@ authRoute.get('/api/auth/current-user', (req, res) => {
         .toUpperCase()
     res.status(200).send({ userId: user.id, tenantId: user.tenantId, initials, signupCompleted: user.tenant.signupCompleted } satisfies GetCurrentUserDto)
   } else {
-    res.status(404).end()
+    res.status(401).end()
   }
 })
