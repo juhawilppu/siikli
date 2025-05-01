@@ -45,10 +45,10 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
-        if (!product.name || !product.type) {
+        if (!product.name) {
             toast({
                 title: "Virhe",
-                description: "Nimi ja tuoteryhmä ovat pakollisia tietoja.",
+                description: "Nimi on pakollinen tieto.",
                 variant: "destructive",
             })
             return

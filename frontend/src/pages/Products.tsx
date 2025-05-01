@@ -73,8 +73,8 @@ export default function TuotteetSivu() {
       // Haku
       const matchesSearch =
         product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        product.variety.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        product.type.toLowerCase().includes(searchQuery.toLowerCase())
+        product.variety?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        product.type?.toLowerCase().includes(searchQuery.toLowerCase())
 
       // productryhmäsuodatus
       const matchesCategory = typeFilter === "all" || product.type === typeFilter
@@ -346,9 +346,9 @@ export default function TuotteetSivu() {
                         <TableCell>{product.variety}</TableCell>
                         <TableCell>{product.type}</TableCell>
                         <TableCell>{product.subtype}</TableCell>
-                        <TableCell className="font-medium">{formatMoneyFi(product.price)}</TableCell>
-                        <TableCell>{formatMoneyFi(product.price0)}</TableCell>
-                        <TableCell>{product.packageSize} kg</TableCell>
+                        <TableCell className="font-medium">{product.price ? formatMoneyFi(product.price) : ''}</TableCell>
+                        <TableCell>{product.price0 ? formatMoneyFi(product.price0) : ''}</TableCell>
+                        <TableCell>{product.packageSize ? product.packageSize + ' kg' : ''}</TableCell>
                         <TableCell>{product.packageType}</TableCell>
                         <TableCell className="text-right">
                           <div className="flex justify-end gap-2">

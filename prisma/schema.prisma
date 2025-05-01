@@ -109,16 +109,16 @@ model Product {
   id String @id @default(uuid()) @db.Uuid
   tenantId String @db.Uuid
   tenant Tenant @relation(fields: [tenantId], references: [id])
-  name           String         @db.VarChar(50)
-  type           String         @db.VarChar(20)
-  variety        String         @db.VarChar(20)
-  info           String?        @db.VarChar(20)
-  price          Float          
+  name           String         @db.VarChar(64)
+  variety        String?         @db.VarChar(32)
+  info           String?        @db.VarChar(32)
+  price          Float?          
   order_index    Int?
+  type           String?         @db.VarChar(32)
   subtype        String?        @db.VarChar(255)
   package_size   String?        @db.VarChar(255)
   package_type   String?        @db.VarChar(255)
-  price0         Float          @default(0)
+  price0         Float?          @default(0)
   customer_group String?        @db.VarChar(256)
   active         Boolean?       @default(true)
   order_product  OrderProduct[]

@@ -252,10 +252,10 @@ export interface GetProductResponseDto {
   chain: string | null
   name: string
   info: string | null
-  price: number
-  price0: number
-  variety: string
-  type: string
+  price: number | null
+  price0: number | null
+  variety: string | null
+  type: string | null
   subtype: string | null
   packageSize: number | null
   packageType: string | null
