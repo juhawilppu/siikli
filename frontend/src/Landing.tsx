@@ -7,7 +7,6 @@ import LoginForm from "./LoginForm"
 export default function LandingPage() {
   return (
     <div className="flex min-h-screen flex-col">
-      {/* Navigaatio */}
       <header className="sticky top-0 z-50 w-full border-b bg-white">
         <div className="container flex h-16 items-center justify-between">
           <div className="flex items-center gap-2 pl-6">
@@ -55,6 +54,7 @@ export default function LandingPage() {
       <section className="w-full py-12 md:py-24 lg:py-32 bg-gradient-to-b from-white to-gray-50">
         <div className="container px-4 md:px-6 flex flex-col md:flex-row items-center gap-8">
           <div className="flex flex-col gap-4 md:w-1/2">
+            <img src="/siikli-logo.png" alt="Siikli Logo" className="w-1/3" />
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight">
               Hallitse liiketoimintaasi tehokkaasti Siikli ERP:llä
             </h1>
