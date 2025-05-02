@@ -72,21 +72,23 @@ export default function LandingPage() {
                 <a href="#demo">Katso esittely</a>
               </Button>
             </div>
-            <div className="flex items-center gap-2 mt-4">
-              <div className="flex -space-x-2">
-                {[1, 2, 3, 4].map((i) => (
-                  <div
-                    key={i}
-                    className="h-8 w-8 rounded-full border-2 border-white bg-gray-200 flex items-center justify-center text-xs font-medium"
-                  >
-                    {String.fromCharCode(64 + i)}
-                  </div>
-                ))}
+            {false && (
+              <div className="flex items-center gap-2 mt-4">
+                <div className="flex -space-x-2">
+                  {[1, 2, 3, 4].map((i) => (
+                    <div
+                      key={i}
+                      className="h-8 w-8 rounded-full border-2 border-white bg-gray-200 flex items-center justify-center text-xs font-medium"
+                    >
+                      {String.fromCharCode(64 + i)}
+                    </div>
+                  ))}
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Yli <span className="font-medium">500+</span> yritystä käyttää Siikliä
+                </p>
               </div>
-              <p className="text-sm text-muted-foreground">
-                Yli <span className="font-medium">500+</span> yritystä käyttää Siikliä
-              </p>
-            </div>
+            )}
           </div>
           <div className="md:w-1/2" id="kirjaudu">
             <Card className="w-full max-w-md mx-auto">
