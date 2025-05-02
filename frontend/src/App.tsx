@@ -32,6 +32,7 @@ import {
 } from "lucide-react"
 
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import AboutUs from "./AboutUs"
 
 axios.defaults.baseURL = '/api'
 
@@ -89,6 +90,7 @@ function App() {
       <>
         <Routes>
           <Route path='/' element={<Landing />} />
+          <Route path='/tietoa-meista' element={<AboutUs />} />
           <Route path='/error' element={<ErrorPage />} />
           <Route path='*' element={<Navigate to='/' replace />} />
         </Routes>

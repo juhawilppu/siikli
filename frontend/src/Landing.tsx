@@ -582,7 +582,7 @@ export default function LandingPage() {
                 {["Tietoa meistä", "Blogi", "Työpaikat", "Kumppanit", "Lehdistö", "Yhteystiedot"].map((item) => (
                   <li key={item}>
                     <a
-                      href={`#${item.toLowerCase().replace(/\s+/g, "-")}`}
+                      href={`${item.toLowerCase().replace('ä', 'a').replace(/\s+/g, "-")}`}
                       className="text-gray-400 hover:text-white"
                     >
                       {item}
