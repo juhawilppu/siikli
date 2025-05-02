@@ -321,18 +321,20 @@ export default function AboutUsPage() {
                             Etsimme jatkuvasti uusia osaajia tiimiimme. Tutustu avoimiin työpaikkoihin ja lähetä hakemuksesi.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4 mt-4">
-                            <Button size="lg" variant="secondary" asChild>
-                                <NavLink href="#avoimet-tyopaikat">
-                                    Katso avoimet työpaikat <ArrowRight className="ml-2 h-4 w-4" />
-                                </NavLink>
-                            </Button>
+                            {false && (
+                                <Button size="lg" variant="secondary" asChild>
+                                    <NavLink href="#avoimet-tyopaikat">
+                                        Katso avoimet työpaikat <ArrowRight className="ml-2 h-4 w-4" />
+                                    </NavLink>
+                                </Button>
+                            )}
                             <Button
                                 size="lg"
                                 variant="outline"
                                 className="bg-transparent border-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/10"
                                 asChild
                             >
-                                <NavLink href="#ota-yhteytta">Ota yhteyttä</NavLink>
+                                <a href="mailto:juha.wilppu@gmail.com">Ota yhteyttä</a>
                             </Button>
                         </div>
                     </div>
