@@ -1,6 +1,6 @@
 import * as Sentry from "@sentry/react"
 import axios from 'axios'
-import { Building2, ClipboardList, FileText, HelpCircle, Home, LineChart, PlusCircle, Receipt, Search, ShoppingBasket, Users } from 'lucide-react'
+import { Building2, ClipboardList, FileText, HelpCircle, LineChart, PlusCircle, Receipt, Search, ShoppingBasket, Users } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { NavLink, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import './App.css'
@@ -13,7 +13,6 @@ import { Toaster } from './components/ui/toaster'
 import CompanySettings from './pages/CompanySettings'
 import { CustomerPage } from './pages/CustomerPage'
 import { Customers } from './pages/Customers'
-import { Dashboard } from './pages/Dashboard'
 import { Invoices } from './pages/Invoices'
 import NewCustomerForm from './pages/NewCustomer'
 import Order from './pages/Order/Order'
@@ -37,7 +36,7 @@ import AboutUs from "./AboutUs"
 axios.defaults.baseURL = '/api'
 
 const navItems = [
-  { title: "Etusivu", href: '/', icon: Home },
+  //{ title: "Etusivu", href: '/', icon: Home },
   { title: "Tilaukset", href: '/orders', icon: ClipboardList },
   { title: "Uusi tilaus", href: '/orders/new', icon: PlusCircle },
   { title: "Pakkauslista", href: '/packaging-list', icon: FileText },
@@ -183,7 +182,7 @@ function App() {
           {/* Main Content */}
           <main className="flex-1 overflow-auto">
             <Routes>
-              <Route path='/' element={<Dashboard />} />
+              <Route path='/' element={<Navigate to='/orders' replace />} />
               <Route path='/orders' element={<Orders />} />
               <Route path='/orders/new' element={<Order />} />
               <Route path='/orders/:orderId' element={<Order />} />
