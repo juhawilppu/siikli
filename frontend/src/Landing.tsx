@@ -2,55 +2,15 @@ import { ArrowRight, BarChart3, Box, Check, ChevronRight, FileText, Package, Shi
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import Footer from "./Footer"
 import LoginForm from "./LoginForm"
+import TopBar from "./TopBar"
 
 export default function LandingPage() {
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="sticky top-0 z-50 w-full border-b bg-white">
-        <div className="container flex h-16 items-center justify-between">
-          <div className="flex items-center gap-2 pl-6">
-            <span className="font-bold text-2xl text-primary">Siikli</span>
-            <span className="text-sm font-medium text-muted-foreground">ERP</span>
-          </div>
-          <nav className="hidden md:flex gap-6 items-center">
-            <a
-              href="#ominaisuudet"
-              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Ominaisuudet
-            </a>
-            <a
-              href="#hinnoittelu"
-              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Hinnoittelu
-            </a>
-            <a
-              href="#tuki"
-              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Tuki
-            </a>
-            <a
-              href="#yhteystiedot"
-              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Yhteystiedot
-            </a>
-          </nav>
-          <div className="flex items-center gap-4">
-            <Button variant="outline" size="sm" asChild>
-              <a href="#demo">Kokeile demoa</a>
-            </Button>
-            <Button size="sm" asChild>
-              <a href="#kirjaudu">Kirjaudu sisään</a>
-            </Button>
-          </div>
-        </div>
-      </header>
+      <TopBar />
 
-      {/* Hero-osio */}
       <section className="w-full py-12 md:py-24 lg:py-32 bg-gradient-to-b from-white to-gray-50">
         <div className="container px-4 md:px-6 flex flex-col md:flex-row items-center gap-8">
           <div className="flex flex-col gap-4 md:w-1/2">
@@ -533,96 +493,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="w-full py-12 bg-gray-900 text-gray-300" id="yhteystiedot">
-        <div className="container px-4 md:px-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div className="flex flex-col gap-4">
-              <div className="flex items-center gap-2">
-                <span className="font-bold text-2xl text-white">Siikli</span>
-                <span className="text-sm font-medium text-gray-400">ERP</span>
-              </div>
-              <p className="text-gray-400">Tehokas toiminnanohjausjärjestelmä suomalaisille yrityksille.</p>
-              <div className="flex gap-4 mt-2">
-                {["twitter", "facebook", "instagram", "aedin"].map((social) => (
-                  <a key={social} href={`#${social}`} className="text-gray-400 hover:text-white">
-                    <span className="sr-only">{social}</span>
-                    <div className="h-6 w-6 rounded-full bg-gray-800 flex items-center justify-center">
-                      {social.charAt(0).toUpperCase()}
-                    </div>
-                  </a>
-                ))}
-              </div>
-            </div>
-            <div className="flex flex-col gap-4">
-              <h3 className="text-lg font-medium text-white">Tuotteet</h3>
-              <ul className="space-y-2">
-                {[
-                  "Tilausten hallinta",
-                  "Asiakashallinta",
-                  "Tuotehallinta",
-                  "Laskutus",
-                  "Kuljetusten hallinta",
-                  "Raportit",
-                ].map((item) => (
-                  <li key={item}>
-                    <a
-                      href={`#${item.toLowerCase().replace(/\s+/g, "-")}`}
-                      className="text-gray-400 hover:text-white"
-                    >
-                      {item}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="flex flex-col gap-4">
-              <h3 className="text-lg font-medium text-white">Yritys</h3>
-              <ul className="space-y-2">
-                {["Tietoa meistä", "Blogi", "Työpaikat", "Kumppanit", "Lehdistö", "Yhteystiedot"].map((item) => (
-                  <li key={item}>
-                    <a
-                      href={`${item.toLowerCase().replace('ä', 'a').replace(/\s+/g, "-")}`}
-                      className="text-gray-400 hover:text-white"
-                    >
-                      {item}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="flex flex-col gap-4">
-              <h3 className="text-lg font-medium text-white">Tuki</h3>
-              <ul className="space-y-2">
-                {["Ohjeet", "Tukikeskus", "Yhteystiedot", "Koulutukset", "Webinaarit", "Kehittäjille"].map((item) => (
-                  <li key={item}>
-                    <a
-                      href={`#${item.toLowerCase().replace(/\s+/g, "-")}`}
-                      className="text-gray-400 hover:text-white"
-                    >
-                      {item}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-          <div className="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-sm text-gray-400">© 2025 Siikli Oy. Kaikki oikeudet pidätetään.</p>
-            <div className="flex gap-6">
-              <a href="#tietosuoja" className="text-sm text-gray-400 hover:text-white">
-                Tietosuoja
-              </a>
-              <a href="#kayttoehdot" className="text-sm text-gray-400 hover:text-white">
-                Käyttöehdot
-              </a>
-              <a href="#evasteet" className="text-sm text-gray-400 hover:text-white">
-                Evästeet
-              </a>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   )
 }
