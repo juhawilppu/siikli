@@ -61,11 +61,10 @@ export default function AboutUsPage() {
                 <div className="container px-4 md:px-6">
                     <div className="flex flex-col items-center text-center gap-4">
                         <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight">
-                            Tietoa Siikli Solutions Oy:stä
+                            Tietoa Siiklistä
                         </h1>
                         <p className="text-muted-foreground text-lg md:text-xl max-w-[800px]">
-                            Olemme suomalainen ohjelmistoyritys, joka on omistautunut auttamaan pienyrityksiä menestymään tehokkaiden
-                            ja helppokäyttöisten työkalujen avulla.
+                            Siikli on yhden kehittäjän intohimoprojekti, joka on tehty auttamaan pienyrityksiä menestymään tehokkaasti.
                         </p>
                     </div>
                 </div>
@@ -79,27 +78,19 @@ export default function AboutUsPage() {
                             <h2 className="text-3xl font-bold tracking-tight">Tarinamme</h2>
                             <div className="space-y-4 text-muted-foreground">
                                 <p>
-                                    Siikli Solutions Oy perustettiin vuonna 2018 vastauksena suomalaisten pienyritysten tarpeeseen saada
-                                    käyttöönsä helppokäyttöinen ja kustannustehokas toiminnanohjausjärjestelmä.
+                                    Siikli sai alkunsa vuonna 2017, kun Männistön Peruna (nykyään Aromäen tila) kaipasi yksinkertaista ja toimivaa järjestelmää laskutuksen hallintaan.
                                 </p>
                                 <p>
-                                    Perustajamme Matti Virtanen ja Liisa Korhonen huomasivat työskennellessään konsultteina, että
-                                    markkinoilla olevat ERP-järjestelmät olivat joko liian monimutkaisia tai liian kalliita
-                                    pienyrityksille. He päättivät luoda ratkaisun, joka olisi sekä helppokäyttöinen että edullinen.
+                                    Olen kokenut ohjelmistokehittäjä ja tiiminvetäjä, jolla on 13 vuoden kokemus ohjelmistojen suunnittelusta, rakentamisesta ja pyörittämisestä. Kehitin alkuperäisen version tuttavani maatalousyrityksen tarpeisiin — sama järjestelmä on sen jälkeen hoitanut yli 13 miljoonan euron laskutuksen ja ollut luotettavasti tuotantokäytössä jo seitsemän vuotta.
                                 </p>
                                 <p>
-                                    Ensimmäinen versio Siikli ERP:stä julkaistiin vuonna 2019, ja siitä lähtien olemme kasvaneet
-                                    tasaisesti. Tänään palvelemme yli 500 suomalaista yritystä ja työllistämme 25 ammattilaista.
+                                    Vuonna 2025 Siikli siirtyi uudelle tasolle: järjestelmä rakennettiin kokonaan uudelleen ja nyt se tukee multi-tenant-arkkitehtuuria. Tämä mahdollistaa sen, että uusia asiakkaita voidaan ottaa mukaan helposti ja turvallisesti.
                                 </p>
                             </div>
                         </div>
                         <div className="flex justify-center">
-                            <div className="relative w-full max-w-md aspect-video bg-gray-100 rounded-lg overflow-hidden">
-                                <img
-                                    src="/placeholder.svg?height=400&width=600"
-                                    alt="Siikli Solutions toimisto"
-                                    className="object-cover w-full h-full"
-                                />
+                            <div className="relative w-1/2 bg-gray-100 rounded-lg overflow-hidden">
+                                <img src="/juha.jpg" alt="Juha Wilppu" className="object-cover w-full h-full" />
                             </div>
                         </div>
                     </div>
@@ -181,51 +172,17 @@ export default function AboutUsPage() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                         {[
                             {
-                                name: "Matti Virtanen",
-                                title: "Toimitusjohtaja & Perustaja",
-                                bio: "Matilla on yli 15 vuoden kokemus ohjelmistoalalta ja intohimo auttaa pienyrityksiä menestymään.",
-                            },
-                            {
-                                name: "Liisa Korhonen",
-                                title: "Teknologiajohtaja & Perustaja",
-                                bio: "Liisa on kokenut ohjelmistokehittäjä, joka on erikoistunut käyttäjäystävällisten järjestelmien suunnitteluun.",
-                            },
-                            {
-                                name: "Juha Mäkinen",
-                                title: "Tuotepäällikkö",
-                                bio: "Juha vastaa tuotekehityksestä ja varmistaa, että Siikli ERP vastaa asiakkaidemme tarpeita.",
-                            },
-                            {
-                                name: "Anna Nieminen",
-                                title: "Asiakaspalvelupäällikkö",
-                                bio: "Anna johtaa asiakaspalvelutiimiämme ja varmistaa, että asiakkaamme saavat parasta mahdollista tukea.",
-                            },
-                            {
-                                name: "Pekka Heikkinen",
-                                title: "Myyntijohtaja",
-                                bio: "Pekka auttaa yrityksiä löytämään juuri heille sopivat ratkaisut Siikli ERP:n valikoimasta.",
-                            },
-                            {
-                                name: "Sari Laine",
-                                title: "Markkinointipäällikkö",
-                                bio: "Sari vastaa Siikli ERP:n markkinoinnista ja brändin kehittämisestä.",
-                            },
-                            {
-                                name: "Mikko Koskinen",
-                                title: "Kehitystiimin vetäjä",
-                                bio: "Mikko johtaa kehitystiimiämme ja varmistaa, että tuotteemme ovat teknisesti huippuluokkaa.",
-                            },
-                            {
-                                name: "Tiina Järvinen",
-                                title: "UX/UI Suunnittelija",
-                                bio: "Tiina vastaa käyttöliittymäsuunnittelusta ja varmistaa, että Siikli ERP on miellyttävä käyttää.",
+                                name: "Juha Wilppu",
+                                title: "Ohjelmistokehittäjä & perustaja",
+                                bio: "Juhalla on 13 vuoden kokemus ohjelmistojen suunnittelusta, rakentamisesta ja pyörittämisestä.",
+                                image: '/juha4.png'
                             },
                         ].map((member, i) => (
                             <Card key={i} className="bg-white border-none shadow-sm hover:shadow-md transition-shadow">
                                 <CardContent className="p-0">
                                     <div className="aspect-square bg-gray-100 relative">
                                         <img
-                                            src={`/placeholder.svg?height=300&width=300&text=${member.name.split(" ")[0][0]}${member.name.split(" ")[1][0]}`}
+                                            src={member.image}
                                             alt={member.name}
                                             className="object-cover w-full h-full"
                                         />
@@ -242,115 +199,118 @@ export default function AboutUsPage() {
                 </div>
             </section>
 
-            {/* Saavutukset */}
-            <section className="w-full py-12 md:py-24 bg-gray-50">
-                <div className="container px-4 md:px-6">
-                    <div className="flex flex-col items-center text-center gap-4 mb-12">
-                        <h2 className="text-3xl font-bold tracking-tight">Saavutuksemme</h2>
-                        <p className="text-muted-foreground text-lg max-w-[800px]">
-                            Olemme ylpeitä matkastamme ja saavutuksistamme tähän mennessä.
-                        </p>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <div className="relative pl-8 border-l-2 border-primary">
-                            <div className="absolute left-[-9px] top-0 w-4 h-4 rounded-full bg-primary"></div>
-                            <div className="mb-6">
-                                <h3 className="text-xl font-bold">2018</h3>
-                                <p className="text-muted-foreground">Siikli Solutions Oy perustetaan</p>
-                            </div>
-                            <div className="mb-6">
-                                <h3 className="text-xl font-bold">2019</h3>
-                                <p className="text-muted-foreground">Ensimmäinen versio Siikli ERP:stä julkaistaan</p>
-                            </div>
-                            <div className="mb-6">
-                                <h3 className="text-xl font-bold">2020</h3>
-                                <p className="text-muted-foreground">Saavutamme 100 asiakkaan rajapyykin</p>
-                            </div>
-                            <div>
-                                <h3 className="text-xl font-bold">2021</h3>
-                                <p className="text-muted-foreground">Laajennamme toimintaamme ja palkkaamme 10. työntekijämme</p>
-                            </div>
+            {false && (
+                <section className="w-full py-12 md:py-24 bg-gray-50">
+                    <div className="container px-4 md:px-6">
+                        <div className="flex flex-col items-center text-center gap-4 mb-12">
+                            <h2 className="text-3xl font-bold tracking-tight">Saavutuksemme</h2>
+                            <p className="text-muted-foreground text-lg max-w-[800px]">
+                                Olemme ylpeitä matkastamme ja saavutuksistamme tähän mennessä.
+                            </p>
                         </div>
-                        <div className="relative pl-8 border-l-2 border-primary">
-                            <div className="absolute left-[-9px] top-0 w-4 h-4 rounded-full bg-primary"></div>
-                            <div className="mb-6">
-                                <h3 className="text-xl font-bold">2022</h3>
-                                <p className="text-muted-foreground">Julkaisemme Siikli ERP 2.0:n uusilla ominaisuuksilla</p>
-                            </div>
-                            <div className="mb-6">
-                                <h3 className="text-xl font-bold">2023</h3>
-                                <p className="text-muted-foreground">Voitamme "Vuoden ohjelmistoyritys" -palkinnon</p>
-                            </div>
-                            <div className="mb-6">
-                                <h3 className="text-xl font-bold">2024</h3>
-                                <p className="text-muted-foreground">
-                                    Saavutamme 500 asiakkaan rajapyykin ja laajennamme toimintaamme Pohjoismaihin
-                                </p>
-                            </div>
-                            <div>
-                                <h3 className="text-xl font-bold">2025</h3>
-                                <p className="text-muted-foreground">
-                                    Tavoitteenamme on palvella 1000 yritystä ja laajentua Eurooppaan
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* Toimistomme */}
-            <section className="w-full py-12 md:py-24 bg-white">
-                <div className="container px-4 md:px-6">
-                    <div className="flex flex-col items-center text-center gap-4 mb-12">
-                        <h2 className="text-3xl font-bold tracking-tight">Toimistomme</h2>
-                        <p className="text-muted-foreground text-lg max-w-[800px]">
-                            Tervetuloa vierailemaan toimistollamme Helsingin keskustassa.
-                        </p>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <div className="h-[400px] bg-gray-100 rounded-lg overflow-hidden">
-                            <img
-                                src="/placeholder.svg?height=400&width=600&text=Kartta"
-                                alt="Toimiston sijainti kartalla"
-                                className="object-cover w-full h-full"
-                            />
-                        </div>
-                        <div className="flex flex-col justify-center gap-6">
-                            <div className="flex items-start gap-4">
-                                <MapPin className="h-6 w-6 text-primary mt-1" />
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div className="relative pl-8 border-l-2 border-primary">
+                                <div className="absolute left-[-9px] top-0 w-4 h-4 rounded-full bg-primary"></div>
+                                <div className="mb-6">
+                                    <h3 className="text-xl font-bold">2017</h3>
+                                    <p className="text-muted-foreground">Siikli sai alkunsa</p>
+                                </div>
+                                <div className="mb-6">
+                                    <h3 className="text-xl font-bold">2019</h3>
+                                    <p className="text-muted-foreground">Ensimmäinen versio Siikli ERP:stä julkaistaan</p>
+                                </div>
+                                <div className="mb-6">
+                                    <h3 className="text-xl font-bold">2020</h3>
+                                    <p className="text-muted-foreground">Saavutamme 100 asiakkaan rajapyykin</p>
+                                </div>
                                 <div>
-                                    <h3 className="text-xl font-bold">Päätoimisto - Helsinki</h3>
+                                    <h3 className="text-xl font-bold">2021</h3>
+                                    <p className="text-muted-foreground">Laajennamme toimintaamme ja palkkaamme 10. työntekijämme</p>
+                                </div>
+                            </div>
+                            <div className="relative pl-8 border-l-2 border-primary">
+                                <div className="absolute left-[-9px] top-0 w-4 h-4 rounded-full bg-primary"></div>
+                                <div className="mb-6">
+                                    <h3 className="text-xl font-bold">2022</h3>
+                                    <p className="text-muted-foreground">Julkaisemme Siikli ERP 2.0:n uusilla ominaisuuksilla</p>
+                                </div>
+                                <div className="mb-6">
+                                    <h3 className="text-xl font-bold">2023</h3>
+                                    <p className="text-muted-foreground">Voitamme "Vuoden ohjelmistoyritys" -palkinnon</p>
+                                </div>
+                                <div className="mb-6">
+                                    <h3 className="text-xl font-bold">2024</h3>
                                     <p className="text-muted-foreground">
-                                        Mannerheimintie 123
-                                        <br />
-                                        00100 Helsinki
-                                        <br />
-                                        Suomi
+                                        Saavutamme 500 asiakkaan rajapyykin ja laajennamme toimintaamme Pohjoismaihin
+                                    </p>
+                                </div>
+                                <div>
+                                    <h3 className="text-xl font-bold">2025</h3>
+                                    <p className="text-muted-foreground">
+                                        Tavoitteenamme on palvella 1000 yritystä ja laajentua Eurooppaan
                                     </p>
                                 </div>
                             </div>
-                            <div>
-                                <h3 className="text-xl font-bold mb-2">Aukioloajat</h3>
-                                <div className="grid grid-cols-2 gap-2">
-                                    <div className="text-muted-foreground">Maanantai - Perjantai</div>
-                                    <div>9:00 - 17:00</div>
-                                    <div className="text-muted-foreground">Lauantai - Sunnuntai</div>
-                                    <div>Suljettu</div>
-                                </div>
+                        </div>
+                    </div>
+                </section>
+            )}
+
+            {false && (
+                <section className="w-full py-12 md:py-24 bg-white">
+                    <div className="container px-4 md:px-6">
+                        <div className="flex flex-col items-center text-center gap-4 mb-12">
+                            <h2 className="text-3xl font-bold tracking-tight">Toimistomme</h2>
+                            <p className="text-muted-foreground text-lg max-w-[800px]">
+                                Tervetuloa vierailemaan toimistollamme Helsingin keskustassa.
+                            </p>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div className="h-[400px] bg-gray-100 rounded-lg overflow-hidden">
+                                <img
+                                    src="/placeholder.svg?height=400&width=600&text=Kartta"
+                                    alt="Toimiston sijainti kartalla"
+                                    className="object-cover w-full h-full"
+                                />
                             </div>
-                            <div>
-                                <h3 className="text-xl font-bold mb-2">Yhteystiedot</h3>
-                                <div className="grid grid-cols-2 gap-2">
-                                    <div className="text-muted-foreground">Puhelin</div>
-                                    <div>+358 10 123 4567</div>
-                                    <div className="text-muted-foreground">Sähköposti</div>
-                                    <div>info@siikli.fi</div>
+                            <div className="flex flex-col justify-center gap-6">
+                                <div className="flex items-start gap-4">
+                                    <MapPin className="h-6 w-6 text-primary mt-1" />
+                                    <div>
+                                        <h3 className="text-xl font-bold">Päätoimisto - Helsinki</h3>
+                                        <p className="text-muted-foreground">
+                                            Mannerheimintie 123
+                                            <br />
+                                            00100 Helsinki
+                                            <br />
+                                            Suomi
+                                        </p>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h3 className="text-xl font-bold mb-2">Aukioloajat</h3>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <div className="text-muted-foreground">Maanantai - Perjantai</div>
+                                        <div>9:00 - 17:00</div>
+                                        <div className="text-muted-foreground">Lauantai - Sunnuntai</div>
+                                        <div>Suljettu</div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h3 className="text-xl font-bold mb-2">Yhteystiedot</h3>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <div className="text-muted-foreground">Puhelin</div>
+                                        <div>+358 10 123 4567</div>
+                                        <div className="text-muted-foreground">Sähköposti</div>
+                                        <div>info@siikli.fi</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </section>
+                </section>
+            )
+            }
 
             {/* CTA */}
             <section className="w-full py-12 md:py-24 bg-primary text-primary-foreground">
@@ -458,7 +418,7 @@ export default function AboutUsPage() {
                         </div>
                     </div>
                     <div className="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-                        <p className="text-sm text-gray-400">© 2023 Siikli Solutions Oy. Kaikki oikeudet pidätetään.</p>
+                        <p className="text-sm text-gray-400">© 2025 Siikli</p>
                         <div className="flex gap-6">
                             <NavLink href="#tietosuoja" className="text-sm text-gray-400 hover:text-white">
                                 Tietosuoja
@@ -473,6 +433,6 @@ export default function AboutUsPage() {
                     </div>
                 </div>
             </footer>
-        </div>
+        </div >
     )
 }
