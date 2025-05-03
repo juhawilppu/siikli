@@ -26,9 +26,17 @@ export default function ContactPage() {
                         <div className="flex flex-col gap-6">
                             <h2 className="text-3xl font-bold tracking-tight">Yhteystiedot</h2>
                             <div className="space-y-4 text-muted-foreground">
-                                <p>
-                                    <a className="text-blue-500" href="mailto:juha.wilppu@gmail.com">juha.wilppu@gmail.com</a>
+                                <p>Ota yhteyttä matalalla kynnyksellä — vastaan mielelläni kysymyksiin ja kerron lisää Siiklistä.</p>
+
+                                <p>✉️ <a className="text-blue-500" href="mailto:juha.wilppu@gmail.com">juha.wilppu@gmail.com</a></p>
+                                <p> Voit ottaa yhteyttä sähköpostitse esimerkiksi, jos:
+                                    <ul>
+                                        <li className="pl-4">➡️ Haluat kokeilla Siikliä</li>
+                                        <li className="pl-4">➡️ Mietit sopiiko se teidän yritykselle</li>
+                                        <li className="pl-4">➡️ Sinulla on kysyttävää toiminnallisuuksista tai tietoturvasta</li>
+                                    </ul>
                                 </p>
+                                <p> Vastaan yleensä saman arkipäivän aikana. Viikonloppuisin luen viestejä satunnaisesti. </p>
                             </div>
                         </div>
                         <div className="flex justify-center">

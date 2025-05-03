@@ -26,12 +26,13 @@ export default function ContactPage() {
                         <div className="flex flex-col gap-6">
                             <h2 className="text-3xl font-bold tracking-tight">Tuki</h2>
                             <div className="space-y-4 text-muted-foreground">
-                                <p>
-                                    Ongelmatilanteissa ota yhteyttä:
-                                </p>
-                                <p>
-                                    <a className="text-blue-500" href="mailto:juha.wilppu@gmail.com">juha.wilppu@gmail.com</a>
-                                </p>
+                                <p>Tarvitsetko apua? Autan mielelläni.</p>
+
+                                <p> Jos kohtaat ongelmia tai sinulla on kysyttävää Siiklin käytöstä, ota rohkeasti yhteyttä sähköpostitse: </p>
+
+                                <p>✉️ <a className="text-blue-500" href="mailto:juha.wilppu@gmail.com">juha.wilppu@gmail.com</a></p>
+
+                                <p>Pyrin vastaamaan mahdollisimman nopeasti, yleensä saman arkipäivän aikana.</p>
                             </div>
                         </div>
                         <div className="flex justify-center">
