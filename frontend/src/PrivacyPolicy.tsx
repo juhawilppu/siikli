@@ -69,7 +69,16 @@ export default function PrivacyPolicy() {
                                 <p>Yhteydenpitoon</p>
                                 <p>Verkkosivun käytön analysointiin ja kehittämiseen</p>
 
-                                <p>Tietoja ei luovuteta kolmansille osapuolille ilman suostumustasi, ellei lainsäädäntö sitä edellytä.</p>
+                                <h2 className="text-l font-bold tracking-tight mt-4">4. Kolmannen osapuolen palvelut</h2>
+                                <p>Siikli käyttää seuraavia ulkopuolisia palveluita, jotka voivat käsitellä teknisiä tietoja palvelun käytöstä:</p>
+
+                                <p>PostHog</p>
+                                <p>Käytetään verkkosivun ja palvelun käytön analysointiin. PostHog voi asettaa evästeitä käyttäjän selaimeen.</p>
+                                <p>👉 <a className="text-blue-500" href="https://posthog.com/docs/privacy" target="_blank" rel="noopener noreferrer">Lue lisää PostHogin tietosuojakäytännöistä</a></p>
+
+                                <p>Sentry</p>
+                                <p>Käytetään ohjelmistovirheiden seurantaan ja diagnosointiin. Sentry ei aseta evästeitä eikä tallenna tietoja käyttäjän selaimeen.</p>
+                                <p>👉 <a className="text-blue-500" href="https://sentry.io/privacy/" target="_blank" rel="noopener noreferrer">Lue lisää Sentryn tietosuojakäytännöistä</a></p>
 
                                 <h2 className="text-l font-bold tracking-tight mt-4">4. Evästeet (cookies)</h2>
                                 <p>Sivustolla voidaan käyttää evästeitä, jotta sivusto toimisi teknisesti oikein ja jotta sen käyttöä voidaan analysoida. Voit halutessasi estää evästeet selaimesi asetuksista.</p>

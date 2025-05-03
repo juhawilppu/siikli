@@ -33,6 +33,7 @@ import {
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import AboutUs from "./AboutUs"
 import ContactPage from "./Contact"
+import Cookies from "./Cookies"
 import PrivacyPolicy from "./PrivacyPolicy"
 import Support from "./Support"
 import TermsOfService from "./TermsOfService"
@@ -97,6 +98,7 @@ function App() {
           <Route path='/yhteystiedot' element={<ContactPage />} />
           <Route path='/tietosuoja' element={<PrivacyPolicy />} />
           <Route path='/kayttoehdot' element={<TermsOfService />} />
+          <Route path='/evasteet' element={<Cookies />} />
           <Route path='/tuki' element={<Support />} />
           <Route path='/error' element={<ErrorPage />} />
           <Route path='*' element={<Navigate to='/' replace />} />
