@@ -80,13 +80,13 @@ export default function PrivacyPolicy() {
                                 <p>Käytetään ohjelmistovirheiden seurantaan ja diagnosointiin. Sentry ei aseta evästeitä eikä tallenna tietoja käyttäjän selaimeen.</p>
                                 <p>👉 <a className="text-blue-500" href="https://sentry.io/privacy/" target="_blank" rel="noopener noreferrer">Lue lisää Sentryn tietosuojakäytännöistä</a></p>
 
-                                <h2 className="text-l font-bold tracking-tight mt-4">4. Evästeet (cookies)</h2>
+                                <h2 className="text-l font-bold tracking-tight mt-4">5. Evästeet (cookies)</h2>
                                 <p>Sivustolla voidaan käyttää evästeitä, jotta sivusto toimisi teknisesti oikein ja jotta sen käyttöä voidaan analysoida. Voit halutessasi estää evästeet selaimesi asetuksista.</p>
 
-                                <h2 className="text-l font-bold tracking-tight mt-4">5. Tietojen säilytys</h2>
+                                <h2 className="text-l font-bold tracking-tight mt-4">6. Tietojen säilytys</h2>
                                 <p>Säilytämme henkilötietoja vain niin kauan kuin se on tarpeellista asiakassuhteen ylläpitämiseksi tai lain edellyttämien velvollisuuksien täyttämiseksi.</p>
 
-                                <h2 className="text-l font-bold tracking-tight mt-4">6. Oikeutesi</h2>
+                                <h2 className="text-l font-bold tracking-tight mt-4">7. Oikeutesi</h2>
                                 <p>Sinulla on oikeus:</p>
                                 <p>Tarkastaa itseäsi koskevat tiedot</p>
                                 <p>Pyytää virheellisten tietojen oikaisua</p>

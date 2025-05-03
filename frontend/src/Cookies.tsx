@@ -3,7 +3,7 @@ import { useEffect } from "react"
 import Footer from "./Footer"
 import TopBar from "./TopBar"
 
-export default function TermsOfService() {
+export default function Cookies() {
 
     useEffect(() => {
         scrollToTop()
