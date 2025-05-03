@@ -35,9 +35,10 @@ import AboutUs from "./AboutUs"
 import ContactPage from "./Contact"
 import Cookies from "./Cookies"
 import PrivacyPolicy from "./PrivacyPolicy"
+import SiikliCookieConsent from "./SiikliCookieConsent"
 import Support from "./Support"
 import TermsOfService from "./TermsOfService"
-
+import { initPosthog } from "./posthog"
 axios.defaults.baseURL = '/api'
 
 const navItems = [
@@ -64,6 +65,23 @@ function App() {
     setUser(undefined)
     Sentry.setUser(null)
   }
+
+  const handleCookieConsentAccept = () => {
+    initPosthog()
+    localStorage.setItem('cookie-consent', 'accepted')
+  }
+
+  const handleCookieConsentDecline = () => {
+    localStorage.setItem('cookie-consent', 'declined')
+  }
+
+  // If user has already given consent, initialize PostHog
+  useEffect(() => {
+    const consent = localStorage.getItem('cookie-consent')
+    if (consent === 'accepted') {
+      initPosthog()
+    }
+  }, [])
 
   useEffect(() => {
     axios
@@ -104,6 +122,7 @@ function App() {
           <Route path='*' element={<Navigate to='/' replace />} />
         </Routes>
         <Toaster />
+        <SiikliCookieConsent onAccept={handleCookieConsentAccept} onDecline={handleCookieConsentDecline} />
       </>
     )
   } else if (!user.signupCompleted) {
@@ -217,6 +236,7 @@ function App() {
           </main>
         </div>
         <Toaster />
+        <SiikliCookieConsent onAccept={handleCookieConsentAccept} onDecline={handleCookieConsentDecline} />
       </div>
     </>
     )
