@@ -359,73 +359,74 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Asiakaspalautteet */}
-      <section className="w-full py-12 md:py-24 bg-white">
-        <div className="container px-4 md:px-6">
-          <div className="flex flex-col items-center justify-center gap-4 text-center mb-12">
-            <h2 className="text-3xl font-bold tracking-tight">Mitä asiakkaamme sanovat</h2>
-            <p className="text-muted-foreground text-lg max-w-[800px]">
-              Tuhannet yritykset ovat tehostaneet toimintaansa Siikli ERP:n avulla.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[
-              {
-                name: "Matti Meikäläinen",
-                company: "Leipomo Leivonnainen",
-                quote:
-                  "Siikli on mullistanut yrityksemme tilausten käsittelyn. Säästämme aikaa ja virheet ovat vähentyneet merkittävästi.",
-              },
-              {
-                name: "Liisa Lahtinen",
-                company: "Kukkakauppa Kukoistus",
-                quote:
-                  "Asiakashallinta ja laskutus toimivat nyt saumattomasti. Voin lämpimästi suositella Siikliä kaikille pienyrittäjille.",
-              },
-              {
-                name: "Juha Jokinen",
-                company: "Kuljetusliike Kiitäjä",
-                quote:
-                  "Kuljetusten suunnittelu on nyt tehokkaampaa kuin koskaan. Siikli maksoi itsensä takaisin jo ensimmäisen kuukauden aikana.",
-              },
-            ].map((testimonial, i) => (
-              <Card key={i} className="bg-gray-50 border-none">
-                <CardContent className="pt-6">
-                  <div className="flex flex-col gap-4">
-                    <div className="flex items-center gap-1">
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <svg
-                          key={star}
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 24 24"
-                          fill="currentColor"
-                          className="w-5 h-5 text-yellow-500"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                      ))}
-                    </div>
-                    <p className="text-muted-foreground italic">"{testimonial.quote}"</p>
-                    <div className="flex items-center gap-4 mt-4">
-                      <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-sm font-medium">
-                        {testimonial.name.charAt(0)}
+      {false && (
+        <section className="w-full py-12 md:py-24 bg-white">
+          <div className="container px-4 md:px-6">
+            <div className="flex flex-col items-center justify-center gap-4 text-center mb-12">
+              <h2 className="text-3xl font-bold tracking-tight">Mitä asiakkaamme sanovat</h2>
+              <p className="text-muted-foreground text-lg max-w-[800px]">
+                Tuhannet yritykset ovat tehostaneet toimintaansa Siikli ERP:n avulla.
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[
+                {
+                  name: "xxx",
+                  company: "xxx",
+                  quote:
+                    "xxx",
+                },
+                {
+                  name: "xxx",
+                  company: "xxx",
+                  quote:
+                    "xxx",
+                },
+                {
+                  name: "xxx",
+                  company: "xxx",
+                  quote:
+                    "xxx",
+                },
+              ].map((testimonial, i) => (
+                <Card key={i} className="bg-gray-50 border-none">
+                  <CardContent className="pt-6">
+                    <div className="flex flex-col gap-4">
+                      <div className="flex items-center gap-1">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <svg
+                            key={star}
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            fill="currentColor"
+                            className="w-5 h-5 text-yellow-500"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                        ))}
                       </div>
-                      <div>
-                        <p className="font-medium">{testimonial.name}</p>
-                        <p className="text-sm text-muted-foreground">{testimonial.company}</p>
+                      <p className="text-muted-foreground italic">"{testimonial.quote}"</p>
+                      <div className="flex items-center gap-4 mt-4">
+                        <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-sm font-medium">
+                          {testimonial.name.charAt(0)}
+                        </div>
+                        <div>
+                          <p className="font-medium">{testimonial.name}</p>
+                          <p className="text-sm text-muted-foreground">{testimonial.company}</p>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* CTA */}
       <section className="w-full py-12 md:py-24 bg-primary text-primary-foreground">
