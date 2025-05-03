@@ -11,6 +11,12 @@ export default function LandingPage() {
 
   const pricingRef = useRef<HTMLDivElement>(null)
   const featuresRef = useRef<HTMLDivElement>(null)
+  const ordersRef = useRef<HTMLDivElement>(null)
+  const customersRef = useRef<HTMLDivElement>(null)
+  const productsRef = useRef<HTMLDivElement>(null)
+  const invoicesRef = useRef<HTMLDivElement>(null)
+  const shippingRef = useRef<HTMLDivElement>(null)
+  const reportsRef = useRef<HTMLDivElement>(null)
 
   const scrollToPricing = () => {
     pricingRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -20,11 +26,48 @@ export default function LandingPage() {
     featuresRef.current?.scrollIntoView({ behavior: 'smooth' })
   }
 
+  const scrollToOrders = () => {
+    ordersRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }
+
+  const scrollToCustomers = () => {
+    customersRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }
+
+  const scrollToProducts = () => {
+    productsRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }
+
+  const scrollToInvoices = () => {
+    invoicesRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }
+
+  const scrollToShipping = () => {
+    shippingRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }
+
+  const scrollToReports = () => {
+    reportsRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }
+
+
   useEffect(() => {
     if (window.location.hash === '#hinnoittelu') {
       scrollToPricing()
     } else if (window.location.hash === '#ominaisuudet') {
       scrollToFeatures()
+    } else if (window.location.hash === '#tilaukset') {
+      scrollToOrders()
+    } else if (window.location.hash === '#asiakashallinta') {
+      scrollToCustomers()
+    } else if (window.location.hash === '#tuotehallinta') {
+      scrollToProducts()
+    } else if (window.location.hash === '#laskutus') {
+      scrollToInvoices()
+    } else if (window.location.hash === '#kuljetukset') {
+      scrollToShipping()
+    } else if (window.location.hash === '#raportit') {
+      scrollToReports()
     }
   }, [window.location.hash])
 
@@ -109,7 +152,7 @@ export default function LandingPage() {
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <Card>
+            <Card ref={ordersRef}>
               <CardHeader className="pb-2">
                 <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
                   <Package className="h-6 w-6 text-primary" />
@@ -141,7 +184,7 @@ export default function LandingPage() {
                 </CardFooter>
               )}
             </Card>
-            <Card>
+            <Card ref={customersRef}>
               <CardHeader className="pb-2">
                 <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
                   <Users className="h-6 w-6 text-primary" />
@@ -169,7 +212,7 @@ export default function LandingPage() {
                 </CardFooter>
               )}
             </Card>
-            <Card>
+            <Card ref={productsRef}>
               <CardHeader className="pb-2">
                 <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
                   <Box className="h-6 w-6 text-primary" />
@@ -199,7 +242,7 @@ export default function LandingPage() {
                 </CardFooter>
               )}
             </Card>
-            <Card>
+            <Card ref={invoicesRef}>
               <CardHeader className="pb-2">
                 <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
                   <FileText className="h-6 w-6 text-primary" />
@@ -227,7 +270,7 @@ export default function LandingPage() {
                 </CardFooter>
               )}
             </Card>
-            <Card>
+            <Card ref={shippingRef}>
               <CardHeader className="pb-2">
                 <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
                   <Truck className="h-6 w-6 text-primary" />
@@ -257,7 +300,7 @@ export default function LandingPage() {
                 </CardFooter>
               )}
             </Card>
-            <Card>
+            <Card ref={reportsRef}>
               <CardHeader className="pb-2">
                 <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
                   <BarChart3 className="h-6 w-6 text-primary" />

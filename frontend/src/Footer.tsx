@@ -25,22 +25,22 @@ export default function Footer() {
                         )}
                     </div>
                     <div className="flex flex-col gap-4">
-                        <h3 className="text-lg font-medium text-white">Tuotteet</h3>
+                        <h3 className="text-lg font-medium text-white">Ominaisuudet</h3>
                         <ul className="space-y-2">
                             {[
-                                "Tilausten hallinta",
-                                "Asiakashallinta",
-                                "Tuotehallinta",
-                                "Laskutus",
-                                "Kuljetusten hallinta",
-                                "Raportit",
+                                { name: "Tilausten hallinta", href: "/#tilaukset" },
+                                { name: "Asiakashallinta", href: "/#asiakashallinta" },
+                                { name: "Tuotehallinta", href: "/#tuotehallinta" },
+                                { name: "Laskutus", href: "/#laskutus" },
+                                { name: "Kuljetusten hallinta", href: "/#kuljetukset" },
+                                { name: "Raportit", href: "/#raportit" },
                             ].map((item) => (
-                                <li key={item}>
+                                <li key={item.name}>
                                     <NavLink
-                                        href={`/#${item.toLowerCase().replace(/\s+/g, "-")}`}
+                                        to={item.href}
                                         className="text-gray-400 hover:text-white"
                                     >
-                                        {item}
+                                        {item.name}
                                     </NavLink>
                                 </li>
                             ))}
