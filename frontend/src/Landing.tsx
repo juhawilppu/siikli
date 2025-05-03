@@ -2,10 +2,10 @@ import { ArrowRight, BarChart3, Box, Check, ChevronRight, FileText, Package, Shi
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { NavLink } from "react-router-dom"
 import Footer from "./Footer"
 import LoginForm from "./LoginForm"
 import TopBar from "./TopBar"
-
 export default function LandingPage() {
   return (
     <div className="flex min-h-screen flex-col">
@@ -61,20 +61,17 @@ export default function LandingPage() {
               </CardContent>
               <CardFooter className="flex flex-col items-start gap-2">
                 <div className="text-sm text-muted-foreground">
-                  Eikö sinulla ole vielä tunnuksia?{" "}
-                  <a href="#rekisteroidy" className="font-medium text-primary hover:underline">
-                    Rekisteröidy nyt
-                  </a>
+                  Eikö sinulla ole vielä tunnuksia? Voit kirjautua suoraan sisään.
                 </div>
                 <div className="text-xs text-muted-foreground">
                   Kirjautumalla hyväksyt{" "}
-                  <a href="#kayttoehdot" className="text-primary hover:underline">
+                  <NavLink to="/kayttoehdot" className="text-primary hover:underline">
                     käyttöehdot
-                  </a>{" "}
+                  </NavLink>{" "}
                   ja{" "}
-                  <a href="#tietosuoja" className="text-primary hover:underline">
+                  <NavLink to="/tietosuoja" className="text-primary hover:underline">
                     tietosuojakäytännön
-                  </a>
+                  </NavLink>.
                 </div>
               </CardFooter>
             </Card>
