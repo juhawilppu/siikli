@@ -32,6 +32,7 @@ import {
 
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import AboutUs from "./AboutUs"
+import ContactPage from "./Contact"
 
 axios.defaults.baseURL = '/api'
 
@@ -90,6 +91,7 @@ function App() {
         <Routes>
           <Route path='/' element={<Landing />} />
           <Route path='/tietoa-meista' element={<AboutUs />} />
+          <Route path='/yhteystiedot' element={<ContactPage />} />
           <Route path='/error' element={<ErrorPage />} />
           <Route path='*' element={<Navigate to='/' replace />} />
         </Routes>

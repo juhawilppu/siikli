@@ -30,7 +30,7 @@ export default function TopBar() {
                         Tuki
                     </a>
                     <a
-                        href="#yhteystiedot"
+                        href="/yhteystiedot"
                         className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
                     >
                         Yhteystiedot
