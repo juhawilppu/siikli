@@ -3,7 +3,7 @@ import { useEffect } from "react"
 import Footer from "./Footer"
 import TopBar from "./TopBar"
 
-export default function AboutUsPage() {
+export default function PrivacyPolicy() {
 
     useEffect(() => {
         scrollToTop()
@@ -28,7 +28,7 @@ export default function AboutUsPage() {
                             Tietosuoja
                         </h1>
                         <p className="text-muted-foreground text-lg md:text-xl max-w-[800px]">
-                            Siikli on yhden kehittäjän intohimoprojekti, joka on tehty auttamaan pienyrityksiä menestymään tehokkaasti.
+                            Tällä sivulla kerrotaan, mitä henkilötietoja Siikli kerää, mihin niitä käytetään ja miten tietosi suojataan. Tietosuoja on minulle tärkeää, ja pyrin käsittelemään tietoja selkeästi, turvallisesti ja lakien mukaisesti.
                         </p>
                     </div>
                 </div>
