@@ -125,7 +125,7 @@ async function startServer() {
   app.use(dashboardRoute)
 
   app.get('/api/health', (req, res) => {
-    console.log('health check')
+    // console.log('health check')
     res.status(200).send({ message: 'OK' })
   })
 
