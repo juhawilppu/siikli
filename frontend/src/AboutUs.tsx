@@ -2,10 +2,24 @@ import { ArrowRight, MapPin } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
+import { useEffect } from "react"
 import { NavLink } from "react-router-dom"
 import Footer from "./Footer"
 import TopBar from "./TopBar"
+
 export default function AboutUsPage() {
+
+    useEffect(() => {
+        scrollToTop()
+    }, [])
+
+    const scrollToTop = () => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    }
+
     return (
         <div className="flex min-h-screen flex-col">
             <TopBar />
