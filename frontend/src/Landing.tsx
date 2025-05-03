@@ -1,4 +1,4 @@
-import { ArrowRight, BarChart3, Box, Check, ChevronRight, FileText, Package, Shield, Truck, Users } from "lucide-react"
+import { ArrowRight, BarChart3, Box, Check, ChevronRight, FileText, Package, Truck, Users } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -460,20 +460,16 @@ export default function LandingPage() {
         <div className="container px-4 md:px-6">
           <div className="flex flex-col md:flex-row items-center gap-8">
             <div className="md:w-1/2 flex flex-col gap-4">
-              <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                <Shield className="h-6 w-6 text-primary" />
-              </div>
               <h2 className="text-3xl font-bold tracking-tight">Tietosi ovat turvassa</h2>
               <p className="text-muted-foreground text-lg">
-                Siikli ERP on rakennettu alusta alkaen tietoturva huomioiden. Kaikki data on salattua ja säilytetään
-                EU:n alueella GDPR-säädösten mukaisesti.
+                Siikli ERP on rakennettu alusta alkaen tietoturva edellä. Kaikki data on salattua ja säilytetään EU:n alueella GDPR-säädösten mukaisesti. Järjestelmässä sovelletaan käytäntöjä, joita olen oppinut toimiessani tietoturvavastaavana päivittäisessä työssäni ohjelmistokehityksen parissa.
               </p>
               <ul className="mt-4 space-y-2">
                 {[
                   "256-bittinen salaus kaikelle datalle",
-                  "Säännölliset tietoturva-auditoinnit",
                   "Automaattiset varmuuskopiot",
                   "GDPR-yhteensopiva",
+                  "Tietoturvaa ylläpitää kokenut asiantuntija"
                 ].map((feature) => (
                   <li key={feature} className="flex items-center gap-2">
                     <Check className="h-4 w-4 text-primary" />
@@ -482,9 +478,9 @@ export default function LandingPage() {
                 ))}
               </ul>
             </div>
-            <div className="md:w-1/2 flex justify-center">
-              <div className="w-full max-w-md aspect-video bg-gray-100 rounded-lg flex items-center justify-center">
-                <img src="/placeholder.svg?height=300&width=500" alt="Tietoturva" className="rounded-lg" />
+            <div className="md:w-1/3 flex justify-center">
+              <div className="md:w-1/2 max-w-md aspect-video rounded-lg flex items-center justify-center">
+                <img src="/shield.svg" alt="Tietoturva" className="rounded-lg" />
               </div>
             </div>
           </div>
