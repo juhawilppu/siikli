@@ -27,10 +27,10 @@ export default function ContactPage() {
                             <h2 className="text-3xl font-bold tracking-tight">Tuki</h2>
                             <div className="space-y-4 text-muted-foreground">
                                 <p>
-                                    <a href="mailto:tuki@siikli.fi">tuki@siikli.fi</a>
+                                    Ongelmatilanteissa ota yhteyttä:
                                 </p>
                                 <p>
-                                    050 xxx xx xx
+                                    <a className="text-blue-500" href="mailto:juha.wilppu@gmail.com">juha.wilppu@gmail.com</a>
                                 </p>
                             </div>
                         </div>
