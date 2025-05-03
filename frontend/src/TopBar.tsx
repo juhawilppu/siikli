@@ -13,23 +13,23 @@ export default function TopBar() {
                 </NavLink>
                 <nav className="hidden md:flex gap-6 items-center">
                     <a
-                        href="#ominaisuudet"
+                        href="/#ominaisuudet"
                         className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
                     >
                         Ominaisuudet
                     </a>
                     <a
-                        href="#hinnoittelu"
+                        href="/#hinnoittelu"
                         className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
                     >
                         Hinnoittelu
                     </a>
-                    <a
-                        href="#tuki"
+                    <NavLink
+                        to="/tuki"
                         className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
                     >
                         Tuki
-                    </a>
+                    </NavLink>
                     <NavLink
                         to="/yhteystiedot"
                         className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
