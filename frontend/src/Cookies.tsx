@@ -2,8 +2,11 @@
 import { useEffect } from "react"
 import Footer from "./Footer"
 import TopBar from "./TopBar"
+import { Button } from "./components/ui/button"
+import { Separator } from "./components/ui/separator"
 
 export default function Cookies() {
+
 
     useEffect(() => {
         scrollToTop()
@@ -74,6 +77,16 @@ export default function Cookies() {
 
                                 <h2 className="text-l font-bold tracking-tight mt-4">Evästeiden hallinta</h2>
                                 <p>Voit halutessasi estää tai poistaa evästeet selaimesi asetuksista. Huomioithan kuitenkin, että välttämättömien evästeiden estäminen voi estää palvelun käytön.</p>
+                                <Separator />
+                                <Button
+                                    variant="outline"
+                                    onClick={() => {
+                                        document.cookie = "CookieConsent=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                                        window.location.reload();
+                                    }}
+                                >
+                                    Muuta evästeasetuksia
+                                </Button>
                             </div>
                         </div>
                     </div>

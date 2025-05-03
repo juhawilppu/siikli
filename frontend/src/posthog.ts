@@ -7,7 +7,7 @@ export function initPosthog() {
         capture_pageview: true,
         disable_session_recording: true,
         debug: import.meta.env.MODE === "development",
-        loaded: (ph: any) => {
+        loaded: () => {
             console.log('PostHog loaded')
         },
     })
