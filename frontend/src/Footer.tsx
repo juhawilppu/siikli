@@ -79,13 +79,13 @@ export default function Footer() {
                 <div className="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
                     <p className="text-sm text-gray-400">© 2025 Siikli</p>
                     <div className="flex gap-6">
-                        <NavLink href="#tietosuoja" className="text-sm text-gray-400 hover:text-white">
+                        <NavLink to="/tietosuoja" className="text-sm text-gray-400 hover:text-white">
                             Tietosuoja
                         </NavLink>
-                        <NavLink href="#kayttoehdot" className="text-sm text-gray-400 hover:text-white">
+                        <NavLink to="/kayttoehdot" className="text-sm text-gray-400 hover:text-white">
                             Käyttöehdot
                         </NavLink>
-                        <NavLink href="#evasteet" className="text-sm text-gray-400 hover:text-white">
+                        <NavLink to="/evasteet" className="text-sm text-gray-400 hover:text-white">
                             Evästeet
                         </NavLink>
                     </div>
