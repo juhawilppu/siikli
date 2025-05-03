@@ -2,11 +2,32 @@ import { ArrowRight, BarChart3, Box, Check, ChevronRight, FileText, Package, Tru
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { useEffect, useRef } from "react"
 import { NavLink } from "react-router-dom"
 import Footer from "./Footer"
 import LoginForm from "./LoginForm"
 import TopBar from "./TopBar"
 export default function LandingPage() {
+
+  const pricingRef = useRef<HTMLDivElement>(null)
+  const featuresRef = useRef<HTMLDivElement>(null)
+
+  const scrollToPricing = () => {
+    pricingRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }
+
+  const scrollToFeatures = () => {
+    featuresRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }
+
+  useEffect(() => {
+    if (window.location.hash === '#hinnoittelu') {
+      scrollToPricing()
+    } else if (window.location.hash === '#ominaisuudet') {
+      scrollToFeatures()
+    }
+  }, [window.location.hash])
+
   return (
     <div className="flex min-h-screen flex-col">
       <TopBar />
@@ -79,8 +100,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Ominaisuudet */}
-      <section className="w-full py-12 md:py-24 bg-white" id="ominaisuudet">
+      <section className="w-full py-12 md:py-24 bg-white" id="ominaisuudet" ref={featuresRef}>
         <div className="container px-4 md:px-6">
           <div className="flex flex-col items-center justify-center gap-4 text-center mb-12">
             <h2 className="text-3xl font-bold tracking-tight">Kaikki mitä tarvitset liiketoimintasi hallintaan</h2>
@@ -111,13 +131,15 @@ export default function LandingPage() {
                   )}
                 </ul>
               </CardContent>
-              <CardFooter>
-                <Button variant="ghost" size="sm" className="gap-1" asChild>
-                  <a href="#tilaukset">
-                    Lue lisää <ChevronRight className="h-4 w-4" />
-                  </a>
-                </Button>
-              </CardFooter>
+              {false && (
+                <CardFooter>
+                  <Button variant="ghost" size="sm" className="gap-1" asChild>
+                    <a href="#tilaukset">
+                      Lue lisää <ChevronRight className="h-4 w-4" />
+                    </a>
+                  </Button>
+                </CardFooter>
+              )}
             </Card>
             <Card>
               <CardHeader className="pb-2">
@@ -137,13 +159,15 @@ export default function LandingPage() {
                   ))}
                 </ul>
               </CardContent>
-              <CardFooter>
-                <Button variant="ghost" size="sm" className="gap-1" asChild>
-                  <a href="#asiakkaat">
-                    Lue lisää <ChevronRight className="h-4 w-4" />
-                  </a>
-                </Button>
-              </CardFooter>
+              {false && (
+                <CardFooter>
+                  <Button variant="ghost" size="sm" className="gap-1" asChild>
+                    <a href="#asiakkaat">
+                      Lue lisää <ChevronRight className="h-4 w-4" />
+                    </a>
+                  </Button>
+                </CardFooter>
+              )}
             </Card>
             <Card>
               <CardHeader className="pb-2">
@@ -165,13 +189,15 @@ export default function LandingPage() {
                   ))}
                 </ul>
               </CardContent>
-              <CardFooter>
-                <Button variant="ghost" size="sm" className="gap-1" asChild>
-                  <a href="#tuotteet">
-                    Lue lisää <ChevronRight className="h-4 w-4" />
-                  </a>
-                </Button>
-              </CardFooter>
+              {false && (
+                <CardFooter>
+                  <Button variant="ghost" size="sm" className="gap-1" asChild>
+                    <a href="#tuotteet">
+                      Lue lisää <ChevronRight className="h-4 w-4" />
+                    </a>
+                  </Button>
+                </CardFooter>
+              )}
             </Card>
             <Card>
               <CardHeader className="pb-2">
@@ -191,13 +217,15 @@ export default function LandingPage() {
                   ))}
                 </ul>
               </CardContent>
-              <CardFooter>
-                <Button variant="ghost" size="sm" className="gap-1" asChild>
-                  <a href="#laskutus">
-                    Lue lisää <ChevronRight className="h-4 w-4" />
-                  </a>
-                </Button>
-              </CardFooter>
+              {false && (
+                <CardFooter>
+                  <Button variant="ghost" size="sm" className="gap-1" asChild>
+                    <a href="#laskutus">
+                      Lue lisää <ChevronRight className="h-4 w-4" />
+                    </a>
+                  </Button>
+                </CardFooter>
+              )}
             </Card>
             <Card>
               <CardHeader className="pb-2">
@@ -219,13 +247,15 @@ export default function LandingPage() {
                   )}
                 </ul>
               </CardContent>
-              <CardFooter>
-                <Button variant="ghost" size="sm" className="gap-1" asChild>
-                  <a href="#kuljetukset">
-                    Lue lisää <ChevronRight className="h-4 w-4" />
-                  </a>
-                </Button>
-              </CardFooter>
+              {false && (
+                <CardFooter>
+                  <Button variant="ghost" size="sm" className="gap-1" asChild>
+                    <a href="#kuljetukset">
+                      Lue lisää <ChevronRight className="h-4 w-4" />
+                    </a>
+                  </Button>
+                </CardFooter>
+              )}
             </Card>
             <Card>
               <CardHeader className="pb-2">
@@ -245,20 +275,21 @@ export default function LandingPage() {
                   ))}
                 </ul>
               </CardContent>
-              <CardFooter>
-                <Button variant="ghost" size="sm" className="gap-1" asChild>
-                  <a href="#raportit">
-                    Lue lisää <ChevronRight className="h-4 w-4" />
-                  </a>
-                </Button>
-              </CardFooter>
+              {false && (
+                <CardFooter>
+                  <Button variant="ghost" size="sm" className="gap-1" asChild>
+                    <a href="#raportit">
+                      Lue lisää <ChevronRight className="h-4 w-4" />
+                    </a>
+                  </Button>
+                </CardFooter>
+              )}
             </Card>
           </div>
         </div>
       </section>
 
-      {/* Hinnoittelu */}
-      <section className="w-full py-12 md:py-24 bg-gray-50" id="hinnoittelu">
+      <section className="w-full py-12 md:py-24 bg-gray-50" id="hinnoittelu" ref={pricingRef}>
         <div className="container px-4 md:px-6">
           <div className="flex flex-col items-center justify-center gap-4 text-center mb-12">
             <h2 className="text-3xl font-bold tracking-tight">Selkeä hinnoittelu ilman yllätyksiä</h2>
@@ -289,7 +320,7 @@ export default function LandingPage() {
                 </ul>
               </CardContent>
               <CardFooter>
-                <Button className="w-full">Aloita 14 päivän kokeilu</Button>
+                <Button className="w-full">Aloita 1 kk kokeilu</Button>
               </CardFooter>
             </Card>
             <Card className="border-primary relative">
@@ -448,7 +479,7 @@ export default function LandingPage() {
                 className="bg-transparent border-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/10"
                 asChild
               >
-                <a href="#demo">Varaa esittely</a>
+                <NavLink to="/yhteystiedot">Kysy lisätietoja</NavLink>
               </Button>
             </div>
           </div>

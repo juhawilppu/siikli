@@ -12,18 +12,18 @@ export default function TopBar() {
                     </div>
                 </NavLink>
                 <nav className="hidden md:flex gap-6 items-center">
-                    <a
-                        href="/#ominaisuudet"
+                    <NavLink
+                        to="/#ominaisuudet"
                         className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
                     >
                         Ominaisuudet
-                    </a>
-                    <a
-                        href="/#hinnoittelu"
+                    </NavLink>
+                    <NavLink
+                        to="/#hinnoittelu"
                         className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
                     >
                         Hinnoittelu
-                    </a>
+                    </NavLink>
                     <NavLink
                         to="/tuki"
                         className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
