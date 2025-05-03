@@ -24,12 +24,11 @@ export default function AboutUsPage() {
         <div className="flex min-h-screen flex-col">
             <TopBar />
 
-            {/* Hero-osio */}
             <section className="w-full py-12 md:py-24 lg:py-32 bg-gradient-to-b from-white to-gray-50">
                 <div className="container px-4 md:px-6">
                     <div className="flex flex-col items-center text-center gap-4">
                         <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight">
-                            Tietoa Siiklistä
+                            Tietoa meistä
                         </h1>
                         <p className="text-muted-foreground text-lg md:text-xl max-w-[800px]">
                             Siikli on yhden kehittäjän intohimoprojekti, joka on tehty auttamaan pienyrityksiä menestymään tehokkaasti.
