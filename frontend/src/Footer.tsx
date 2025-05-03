@@ -63,13 +63,13 @@ export default function Footer() {
                     <div className="flex flex-col gap-4">
                         <h3 className="text-lg font-medium text-white">Tuki</h3>
                         <ul className="space-y-2">
-                            {["Yhteystiedot"].map((item) => (
-                                <li key={item}>
+                            {[{ name: "Yhteystiedot", href: "/yhteystiedot" }].map((item) => (
+                                <li key={item.name}>
                                     <NavLink
-                                        href={`/#${item.toLowerCase().replace(/\s+/g, "-")}`}
+                                        to={item.href}
                                         className="text-gray-400 hover:text-white"
                                     >
-                                        {item}
+                                        {item.name}
                                     </NavLink>
                                 </li>
                             ))}
