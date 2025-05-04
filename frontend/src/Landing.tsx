@@ -125,7 +125,7 @@ export default function LandingPage() {
               </CardContent>
               <CardFooter className="flex flex-col items-start gap-2">
                 <div className="text-sm text-muted-foreground">
-                  Eikö sinulla ole vielä tunnuksia? Voit kirjautua suoraan sisään.
+                  Eikö sinulla ole vielä tunnuksia? Voit kirjautua tästä ja luoda tunnuksen.
                 </div>
                 <div className="text-xs text-muted-foreground">
                   Kirjautumalla hyväksyt{" "}
