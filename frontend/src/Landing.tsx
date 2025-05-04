@@ -96,7 +96,7 @@ export default function LandingPage() {
                 </a>
               </Button>
               <Button variant="outline" size="lg" asChild>
-                <a href="#demo">Katso esittely</a>
+                <a href="#ominaisuudet">Tutustu ominaisuuksiin</a>
               </Button>
             </div>
             {false && (
@@ -117,7 +117,7 @@ export default function LandingPage() {
               </div>
             )}
           </div>
-          <div className="md:w-1/2" id="kirjaudu">
+          <div className="md:w-1/2 scroll-mt-24" id="kirjaudu">
             <Card className="w-full max-w-md mx-auto">
               <CardHeader>
                 <CardTitle>Kirjaudu Siikliin</CardTitle>
