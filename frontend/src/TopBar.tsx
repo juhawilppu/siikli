@@ -38,9 +38,6 @@ export default function TopBar() {
                     </NavLink>
                 </nav>
                 <div className="flex items-center gap-4">
-                    <Button variant="outline" size="sm" asChild>
-                        <a href="#demo">Kokeile demoa</a>
-                    </Button>
                     <Button size="sm" asChild>
                         <a href="#kirjaudu">Kirjaudu sisään</a>
                     </Button>
