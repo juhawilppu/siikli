@@ -313,22 +313,22 @@ export default function LandingPage() {
           <div className="flex flex-col items-center justify-center gap-4 text-center mb-12">
             <h2 className="text-3xl font-bold tracking-tight">Selkeä hinnoittelu ilman yllätyksiä</h2>
             <p className="text-muted-foreground text-lg max-w-[800px]">
-              Valitse yrityksellesi sopiva paketti ja aloita Siikli ERP:n käyttö heti.
+              Aloita ilmaiseksi ja päivitä tarvittaessa &ndash; maksat vain jos saat hyötyä.
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Card className="border-border">
+          <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Card className="border-border flex flex-col">
               <CardHeader>
-                <CardTitle>Aloituspaketti</CardTitle>
-                <CardDescription>Pienille yrityksille ja yrittäjille</CardDescription>
+                <CardTitle>Ilmaispaketti</CardTitle>
+                <CardDescription>Pienille yrityksille, joilla on yksinkertaiset tarpeet</CardDescription>
                 <div className="mt-4">
-                  <span className="text-3xl font-bold">29€</span>
+                  <span className="text-3xl font-bold">0 €</span>
                   <span className="text-muted-foreground">/kk</span>
                 </div>
               </CardHeader>
-              <CardContent>
+              <CardContent className="flex-1">
                 <ul className="space-y-2">
-                  {["1 käyttäjä", "Tilausten hallinta", "Asiakashallinta", "Tuotehallinta", "Perusraportit"].map(
+                  {["1 käyttäjä", "Asiakas- ja tuotehallinta", "Tilausten hallinta", "Perusraportit", "Ei luottokorttia, ei aikarajaa"].map(
                     (feature) => (
                       <li key={feature} className="flex items-center gap-2">
                         <Check className="h-4 w-4 text-primary" />
@@ -337,32 +337,33 @@ export default function LandingPage() {
                     ),
                   )}
                 </ul>
+                <p className="text-muted-foreground mt-4">🎉 Sisältää myös 3 kk kokeilun kaikilla ominaisuuksilla</p>
               </CardContent>
               <CardFooter>
-                <Button className="w-full">Aloita 1 kk kokeilu</Button>
+                <Button className="w-full">👉 Aloita heti ilman maksua</Button>
               </CardFooter>
             </Card>
-            <Card className="border-primary relative">
+            <Card className="border-primary relative border-border flex flex-col">
               <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-primary text-white text-xs font-medium px-3 py-1 rounded-full">
-                Suosituin
+                Suositeltu taso
               </div>
               <CardHeader>
-                <CardTitle>Yrityspaketti</CardTitle>
-                <CardDescription>Kasvaville yrityksille</CardDescription>
+                <CardTitle>Maksullinen taso</CardTitle>
+                <CardDescription>Kasvaville yrityksille, jotka haluavat mukaan laskutuksen ja tuen</CardDescription>
                 <div className="mt-4">
-                  <span className="text-3xl font-bold">79€</span>
+                  <span className="text-3xl font-bold">49 €</span>
                   <span className="text-muted-foreground">/kk</span>
                 </div>
               </CardHeader>
-              <CardContent>
+              <CardContent className="flex-1">
                 <ul className="space-y-2">
                   {[
                     "5 käyttäjää",
-                    "Kaikki Aloituspaketin ominaisuudet",
                     "Laskutus",
                     "Kuljetusten hallinta",
                     "Edistyneet raportit",
                     "Sähköposti- ja puhelintuki",
+                    "Kaikki ominaisuudet"
                   ].map((feature) => (
                     <li key={feature} className="flex items-center gap-2">
                       <Check className="h-4 w-4 text-primary" />
@@ -372,40 +373,11 @@ export default function LandingPage() {
                 </ul>
               </CardContent>
               <CardFooter>
-                <Button className="w-full">Aloita 14 päivän kokeilu</Button>
-              </CardFooter>
-            </Card>
-            <Card className="border-border">
-              <CardHeader>
-                <CardTitle>Laajapaketti</CardTitle>
-                <CardDescription>Suuremmille yrityksille</CardDescription>
-                <div className="mt-4">
-                  <span className="text-3xl font-bold">149€</span>
-                  <span className="text-muted-foreground">/kk</span>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-2">
-                  {[
-                    "Rajaton määrä käyttäjiä",
-                    "Kaikki Yrityspaketin ominaisuudet",
-                    "API-integraatiot",
-                    "Räätälöidyt raportit",
-                    "Henkilökohtainen tukihenkilö",
-                    "Koulutukset",
-                  ].map((feature) => (
-                    <li key={feature} className="flex items-center gap-2">
-                      <Check className="h-4 w-4 text-primary" />
-                      <span className="text-sm">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
-              <CardFooter>
-                <Button className="w-full">Aloita 14 päivän kokeilu</Button>
+                <Button className="w-full">👉 Aloita 3 kk kokeilu</Button>
               </CardFooter>
             </Card>
           </div>
+          <p className="text-sm text-muted-foreground mt-4 text-center">Hinnat ALV 0 %. Palvelu on tarkoitettu yrityskäyttöön.</p>
         </div>
       </section>
 
