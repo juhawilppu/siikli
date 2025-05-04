@@ -75,9 +75,9 @@ export default function AboutUsPage() {
                         <div className="flex flex-col gap-6">
                             <h2 className="text-3xl font-bold tracking-tight">Tekijä</h2>
                             <div className="space-y-4 text-muted-foreground">
-                                <p>Moikka! 👋</p>
+                                <p>Moi! 👋</p>
                                 <p>Olen Juha — Siiklin kehittäjä ja perustaja.</p>
-                                <p>Rakennan ohjelmistoja työkseen ja harrastuksena. Tykkään tehdä asiat selkeästi ja tehokkaasti. En kaipaa turhia palavereita tai raskaita rakenteita, vaan käytännöllisiä ratkaisuja, jotka toimivat oikeassa elämässä.</p>
+                                <p>Rakennan ohjelmistoja työkseni ja harrastuksena. Tykkään tehdä asiat selkeästi ja tehokkaasti. En kaipaa turhia palavereita tai raskaita rakenteita, vaan käytännöllisiä ratkaisuja, jotka toimivat oikeassa elämässä.</p>
                                 <p>Siikli on minulle paikka tehdä asioita kunnolla — omalla tavallani, mutta asiakkaita kuunnellen.</p>
                             </div>
                         </div>
@@ -312,7 +312,7 @@ export default function AboutUsPage() {
                         <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Haluatko rakentaa kanssani?</h2>
 
                         <p className="text-lg md:text-xl text-primary-foreground/80 max-w-[800px]">
-                            Siikli ei ole kasvuyritys, jolla on HR-tiimi ja rekryputki. Se on yhden kehittäjän kunnianhimoinen tuote, joka on jo ollut tuotannossa vuosia — ja nyt valmis kehittymään seuraavalle tasolle.</p>
+                            Siikli ei ole kasvuyritys, jolla on HR-tiimi ja rekryputki. Se on yhden kehittäjän tuote, joka on ollut toiminnassa jo vuosia — ja on nyt valmis kehittymään seuraavalle tasolle.</p>
 
                         <p className="text-lg md:text-xl text-primary-foreground/80 max-w-[800px]">Etsin rinnalle toista tekijää, jolla on kiinnostusta rakentaa jotain oikeaa ja kestävää. Tämä ei ole työpaikka vaan mahdollisuus: jos koodi, asiakasymmärrys ja omistajuus tuntuvat tutuilta sanoilta, ota yhteyttä. Katsotaan, voisimmeko tehdä jotain yhdessä.
                         </p>

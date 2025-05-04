@@ -29,7 +29,9 @@ export default function ContactPage() {
                                 <p>Ota yhteyttä matalalla kynnyksellä — vastaan mielelläni kysymyksiin ja kerron lisää Siiklistä.</p>
 
                                 <p>✉️ <a className="text-blue-500" href="mailto:juha.wilppu@gmail.com">juha.wilppu@gmail.com</a></p>
-                                <p> Voit ottaa yhteyttä sähköpostitse esimerkiksi, jos:
+                                <p>🔗 <a className="text-blue-500" href="https://www.linkedin.com/in/juhawilppu" target="_blank">LinkedIn-profiilini</a></p>
+
+                                <p> Voit ottaa yhteyttä, jos:
                                     <ul>
                                         <li className="pl-4">➡️ Haluat kokeilla Siikliä</li>
                                         <li className="pl-4">➡️ Mietit sopiiko se teidän yritykselle</li>
