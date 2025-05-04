@@ -38,7 +38,7 @@ export default function TopBar({ showBackButton, hideLoginButton }: { showBackBu
                         Yhteystiedot
                     </NavLink>
                 </nav>
-                <div className="flex items-center gap-4">
+                <div className="flex items-center justify-end w-[200px] gap-4">
                     {showBackButton && (
                         <Button variant="outline" size="sm" asChild>
                             <NavLink to="/">
