@@ -1,11 +1,10 @@
-import { ArrowRight, Check, HelpCircle } from "lucide-react"
+import { Check, HelpCircle } from "lucide-react"
 import { Link } from "react-router-dom"
 
 import Footer from "./Footer"
 import LoginForm from "./LoginForm"
 import TopBar from "./TopBar"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "./components/ui/accordion"
-import { Button } from "./components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "./components/ui/card"
 
 
@@ -21,7 +20,7 @@ export default function LoginPage2() {
                     <div className="container px-4 md:px-6">
                         <div className="flex flex-col items-center text-center space-y-4 mb-12">
                             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight">
-                                Kirjaudu Siikli ERP -järjestelmään
+                                Kirjaudu Siikli-järjestelmään
                             </h1>
                             <p className="text-muted-foreground text-lg md:text-xl max-w-[800px]">
                                 Hallitse liiketoimintaasi tehokkaasti ja helposti yhdestä paikasta.
@@ -30,7 +29,7 @@ export default function LoginPage2() {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
                             {/* Kirjautumislomake */}
-                            <Card className="w-full max-w-md mx-auto">
+                            <Card className="w-full mx-auto">
                                 <CardHeader>
                                     <CardTitle>Kirjaudu sisään</CardTitle>
                                     <CardDescription>Valitse kirjautumistapa ja pääset heti käyttämään järjestelmää</CardDescription>
@@ -40,10 +39,7 @@ export default function LoginPage2() {
                                 </CardContent>
                                 <CardFooter className="flex flex-col items-start gap-2">
                                     <div className="text-sm text-muted-foreground">
-                                        Eikö sinulla ole vielä tunnuksia?{" "}
-                                        <Link href="#rekisteroidy" className="font-medium text-primary hover:underline">
-                                            Rekisteröidy nyt
-                                        </Link>
+                                        Eikö sinulla ole vielä tunnuksia? Voit kirjautua tästä ja luoda tunnuksen.
                                     </div>
                                     <div className="text-xs text-muted-foreground">
                                         Kirjautumalla hyväksyt{" "}
@@ -53,20 +49,16 @@ export default function LoginPage2() {
                                         ja{" "}
                                         <Link href="#tietosuoja" className="text-primary hover:underline">
                                             tietosuojakäytännön
-                                        </Link>
+                                        </Link>.
                                     </div>
                                 </CardFooter>
                             </Card>
-
                             {/* Kokeilutiedot */}
                             <div className="flex flex-col space-y-8">
                                 <Card className="bg-primary/5 border-primary/20">
                                     <CardHeader>
                                         <CardTitle className="flex items-center gap-2">
-                                            <span className="bg-primary text-white p-1 rounded-full">
-                                                <Check className="h-4 w-4" />
-                                            </span>
-                                            Ilmainen 3 kuukauden kokeilu
+                                            🎉 Ilmainen 3 kk kokeilu
                                         </CardTitle>
                                     </CardHeader>
                                     <CardContent className="space-y-4">
@@ -76,10 +68,10 @@ export default function LoginPage2() {
                                         </p>
                                         <ul className="space-y-2">
                                             {[
-                                                "Ei luottokorttitietoja",
+                                                "Kirjautuminen ei sido mihinkään",
+                                                "Luottokorttia ei tarvita",
                                                 "Peruutus milloin tahansa",
-                                                "Kaikki ominaisuudet käytössä",
-                                                "Rajoittamaton käyttäjämäärä kokeilun aikana",
+                                                "Käytössäsi on kaikki ominaisuudet",
                                                 "Henkilökohtainen tuki käyttöönotossa",
                                             ].map((feature) => (
                                                 <li key={feature} className="flex items-center gap-2">
@@ -89,13 +81,6 @@ export default function LoginPage2() {
                                             ))}
                                         </ul>
                                     </CardContent>
-                                    <CardFooter>
-                                        <Button className="w-full" asChild>
-                                            <Link href="#rekisteroidy">
-                                                Aloita ilmainen kokeilu <ArrowRight className="ml-2 h-4 w-4" />
-                                            </Link>
-                                        </Button>
-                                    </CardFooter>
                                 </Card>
 
                                 {/* UKK */}
@@ -154,78 +139,6 @@ export default function LoginPage2() {
                     </div>
                 </section>
 
-                {/* Rekisteröitymiskehotus */}
-                <section className="w-full py-12 md:py-24 bg-white">
-                    <div className="container px-4 md:px-6">
-                        <div className="flex flex-col md:flex-row items-center justify-between gap-8">
-                            <div className="md:w-1/2 space-y-4">
-                                <h2 className="text-3xl font-bold tracking-tight">Etkö ole vielä rekisteröitynyt?</h2>
-                                <p className="text-muted-foreground text-lg">
-                                    Rekisteröityminen on helppoa ja nopeaa. Aloita ilmainen 3 kuukauden kokeilu jo tänään ja näe, miten
-                                    Siikli ERP voi tehostaa yrityksesi toimintaa.
-                                </p>
-                                <ul className="space-y-2">
-                                    {[
-                                        "Rekisteröityminen vie vain muutaman minuutin",
-                                        "Voit aloittaa järjestelmän käytön heti",
-                                        "Ei sitoutumista, ei piilokuluja",
-                                    ].map((item) => (
-                                        <li key={item} className="flex items-center gap-2">
-                                            <Check className="h-4 w-4 text-primary" />
-                                            <span>{item}</span>
-                                        </li>
-                                    ))}
-                                </ul>
-                                <div className="pt-4">
-                                    <Button size="lg" asChild>
-                                        <Link href="#rekisteroidy">
-                                            Rekisteröidy nyt <ArrowRight className="ml-2 h-4 w-4" />
-                                        </Link>
-                                    </Button>
-                                </div>
-                            </div>
-                            <div className="md:w-1/2">
-                                <Card>
-                                    <CardHeader>
-                                        <CardTitle>Mitä saat rekisteröityessäsi?</CardTitle>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <ul className="space-y-4">
-                                            {[
-                                                {
-                                                    title: "Täysi pääsy kaikkiin ominaisuuksiin",
-                                                    description: "Kokeile kaikkia Siikli ERP:n ominaisuuksia ilman rajoituksia.",
-                                                },
-                                                {
-                                                    title: "Henkilökohtainen käyttöönottotuki",
-                                                    description: "Asiantuntijamme auttavat sinua järjestelmän käyttöönotossa.",
-                                                },
-                                                {
-                                                    title: "Ilmaiset koulutukset",
-                                                    description: "Osallistu ilmaisiin verkkokoulutuksiin kokeilujakson aikana.",
-                                                },
-                                                {
-                                                    title: "Tietojen siirto",
-                                                    description: "Autamme siirtämään tietosi nykyisestä järjestelmästäsi Siikliin.",
-                                                },
-                                            ].map((item, i) => (
-                                                <li key={i} className="flex gap-4">
-                                                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                                                        <span className="font-medium text-primary">{i + 1}</span>
-                                                    </div>
-                                                    <div>
-                                                        <h3 className="font-medium">{item.title}</h3>
-                                                        <p className="text-sm text-muted-foreground">{item.description}</p>
-                                                    </div>
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </CardContent>
-                                </Card>
-                            </div>
-                        </div>
-                    </div>
-                </section>
             </main>
 
             <Footer />

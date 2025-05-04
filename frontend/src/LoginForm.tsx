@@ -169,7 +169,7 @@ export default function LoginForm() {
                     Kirjaudu sisään Google-tililläsi nopeasti ja turvallisesti.
                 </div>
                 <Button
-                    className="w-full flex items-center justify-center gap-2"
+                    className="w-full max-w-md mx-auto flex items-center justify-center gap-2"
                     onClick={handleGoogleLogin}
                     disabled={isLoading}
                 >
