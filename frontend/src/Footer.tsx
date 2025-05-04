@@ -2,7 +2,7 @@ import { NavLink } from "react-router-dom";
 
 export default function Footer() {
     return (
-        <footer className="w-full py-12 bg-gray-900 text-gray-300" id="yhteystiedot">
+        <footer className="w-full py-12 bg-gray-800 text-white" id="yhteystiedot">
             <div className="container px-4 md:px-6">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                     <div className="flex flex-col gap-4">
