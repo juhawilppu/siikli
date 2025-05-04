@@ -77,6 +77,7 @@ export default function LoginPage2() {
                                                 </li>
                                             ))}
                                         </ul>
+                                        <p>Jos olet epävarma, ota rohkeasti yhteyttä. Kerron mielelläni lisää ja voit vaikka kokeilla Siikliä kevyesti.</p>
                                     </CardContent>
                                 </Card>
 
