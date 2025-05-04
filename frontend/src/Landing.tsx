@@ -5,7 +5,6 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { useEffect, useRef } from "react"
 import { NavLink } from "react-router-dom"
 import Footer from "./Footer"
-import LoginForm from "./LoginForm"
 import TopBar from "./TopBar"
 export default function LandingPage() {
 
@@ -91,9 +90,9 @@ export default function LandingPage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 mt-4">
               <Button size="lg" asChild>
-                <a href="#kirjaudu">
+                <NavLink to="/kirjaudu">
                   Aloita ilmaiseksi <ArrowRight className="ml-2 h-4 w-4" />
-                </a>
+                </NavLink>
               </Button>
               <Button variant="outline" size="lg" asChild>
                 <a href="#ominaisuudet">Tutustu ominaisuuksiin</a>
@@ -116,32 +115,6 @@ export default function LandingPage() {
                 </p>
               </div>
             )}
-          </div>
-          <div className="md:w-1/2 scroll-mt-24" id="kirjaudu">
-            <Card className="w-full max-w-md mx-auto">
-              <CardHeader>
-                <CardTitle>Kirjaudu Siikliin</CardTitle>
-                <CardDescription>Valitse kirjautumistapa ja pääset heti käyttämään järjestelmää</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <LoginForm />
-              </CardContent>
-              <CardFooter className="flex flex-col items-start gap-2">
-                <div className="text-sm text-muted-foreground">
-                  Eikö sinulla ole vielä tunnuksia? Voit kirjautua tästä ja luoda tunnuksen.
-                </div>
-                <div className="text-xs text-muted-foreground">
-                  Kirjautumalla hyväksyt{" "}
-                  <NavLink to="/kayttoehdot" className="text-primary hover:underline">
-                    käyttöehdot
-                  </NavLink>{" "}
-                  ja{" "}
-                  <NavLink to="/tietosuoja" className="text-primary hover:underline">
-                    tietosuojakäytännön
-                  </NavLink>.
-                </div>
-              </CardFooter>
-            </Card>
           </div>
         </div>
       </section>
@@ -515,9 +488,9 @@ export default function LandingPage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 mt-4">
               <Button size="lg" variant="secondary" asChild>
-                <a href="#kirjaudu">
+                <NavLink to="/kirjaudu">
                   Aloita ilmainen 3 kk kokeilu <ArrowRight className="ml-2 h-4 w-4" />
-                </a>
+                </NavLink>
               </Button>
               <Button
                 size="lg"

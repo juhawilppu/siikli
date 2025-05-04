@@ -1,7 +1,8 @@
+import { ArrowLeft } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { Button } from "./components/ui/button";
 
-export default function TopBar() {
+export default function TopBar({ showBackButton, hideLoginButton }: { showBackButton?: boolean, hideLoginButton?: boolean }) {
     return (
         <header className="sticky top-0 z-50 w-full border-b bg-white">
             <div className="container flex h-16 items-center justify-between">
@@ -38,9 +39,20 @@ export default function TopBar() {
                     </NavLink>
                 </nav>
                 <div className="flex items-center gap-4">
-                    <Button size="sm" asChild>
-                        <a href="#kirjaudu">Kirjaudu sisään</a>
-                    </Button>
+                    {showBackButton && (
+                        <Button variant="outline" size="sm" asChild>
+                            <NavLink to="/">
+                                <ArrowLeft className="mr-2 h-4 w-4" />
+                                Takaisin etusivulle
+                            </NavLink>
+                        </Button>
+                    )}
+                    {!hideLoginButton && (
+                        <Button size="sm" asChild>
+                            <NavLink to="/kirjaudu">Kirjaudu sisään</NavLink>
+                        </Button>
+                    )}
+
                 </div>
             </div>
         </header>

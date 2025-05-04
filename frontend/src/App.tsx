@@ -34,6 +34,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import AboutUs from "./AboutUs"
 import ContactPage from "./Contact"
 import Cookies from "./Cookies"
+import LoginPage2 from "./LoginPage"
 import PrivacyPolicy from "./PrivacyPolicy"
 import SiikliCookieConsent from "./SiikliCookieConsent"
 import Support from "./Support"
@@ -117,6 +118,7 @@ function App() {
           <Route path='/tietosuoja' element={<PrivacyPolicy />} />
           <Route path='/kayttoehdot' element={<TermsOfService />} />
           <Route path='/evasteet' element={<Cookies />} />
+          <Route path='/kirjaudu' element={<LoginPage2 />} />
           <Route path='/tuki' element={<Support />} />
           <Route path='/error' element={<ErrorPage />} />
           <Route path='*' element={<Navigate to='/' replace />} />
