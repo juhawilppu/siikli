@@ -86,6 +86,9 @@ export default function LandingPage() {
               Siikli on helppokäyttöinen toiminnanohjausjärjestelmä, joka on suunniteltu erityisesti suomalaisten
               pienyritysten tarpeisiin.
             </p>
+            <p className="text-muted-foreground text-lg md:text-xl">
+              🎉 Ensimmäiset käyttäjät saavat 3 kuukautta täysin ilmaiseksi. Haen palautetta ja kehityskohteita – saat täyden version maksutta ja autat samalla tekemään siitä entistä paremman.
+            </p>
             <div className="flex flex-col sm:flex-row gap-4 mt-4">
               <Button size="lg" asChild>
                 <a href="#kirjaudu">
@@ -513,7 +516,7 @@ export default function LandingPage() {
             <div className="flex flex-col sm:flex-row gap-4 mt-4">
               <Button size="lg" variant="secondary" asChild>
                 <a href="#kirjaudu">
-                  Aloita ilmainen kokeilu <ArrowRight className="ml-2 h-4 w-4" />
+                  Aloita ilmainen 3 kk kokeilu <ArrowRight className="ml-2 h-4 w-4" />
                 </a>
               </Button>
               <Button
