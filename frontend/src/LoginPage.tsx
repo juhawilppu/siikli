@@ -1,4 +1,4 @@
-import { Check, HelpCircle } from "lucide-react"
+import { HelpCircle } from "lucide-react"
 import { Link } from "react-router-dom"
 
 import Footer from "./Footer"
@@ -20,10 +20,10 @@ export default function LoginPage2() {
                     <div className="container px-4 md:px-6">
                         <div className="flex flex-col items-center text-center space-y-4 mb-12">
                             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight">
-                                Kirjaudu Siikli-järjestelmään
+                                Kirjaudu Siikliin
                             </h1>
                             <p className="text-muted-foreground text-lg md:text-xl max-w-[800px]">
-                                Hallitse liiketoimintaasi tehokkaasti ja helposti yhdestä paikasta.
+                                Aloita ilmainen 3 kuukauden käyttöjakso &ndash; ilman sitoumuksia tai luottokorttia.
                             </p>
                         </div>
 
@@ -39,7 +39,7 @@ export default function LoginPage2() {
                                 </CardContent>
                                 <CardFooter className="flex flex-col items-start gap-2">
                                     <div className="text-sm text-muted-foreground">
-                                        Eikö sinulla ole vielä tunnuksia? Voit kirjautua tästä ja luoda tunnuksen.
+                                        Eikö sinulla ole vielä tunnuksia? ➡️ Voit kirjautua tästä ja luoda tunnuksen.
                                     </div>
                                     <div className="text-xs text-muted-foreground">
                                         Kirjautumalla hyväksyt{" "}
@@ -58,25 +58,22 @@ export default function LoginPage2() {
                                 <Card className="bg-primary/5 border-primary/20">
                                     <CardHeader>
                                         <CardTitle className="flex items-center gap-2">
-                                            🎉 Ilmainen 3 kk kokeilu
+                                            🎉 3 kuukauden ilmainen kokeilu
                                         </CardTitle>
                                     </CardHeader>
                                     <CardContent className="space-y-4">
                                         <p>
-                                            Aloita Siikli ERP:n käyttö ilmaisella 3 kuukauden kokeilujaksolla. Saat käyttöösi kaikki
-                                            järjestelmän ominaisuudet ilman rajoituksia.
+                                            Saat käyttöösi kaikki ominaisuudet ilman rajoituksia.
+                                            Luottokorttia ei kysytä. Voit peruuttaa milloin tahansa.
                                         </p>
                                         <ul className="space-y-2">
                                             {[
-                                                "Kirjautuminen ei sido mihinkään",
-                                                "Luottokorttia ei tarvita",
-                                                "Peruutus milloin tahansa",
-                                                "Käytössäsi on kaikki ominaisuudet",
-                                                "Henkilökohtainen tuki käyttöönotossa",
+                                                "Ei sitoutumista",
+                                                "Henkilökohtainen tuki",
+                                                "Kaikki ominaisuudet käytössä"
                                             ].map((feature) => (
                                                 <li key={feature} className="flex items-center gap-2">
-                                                    <Check className="h-4 w-4 text-primary flex-shrink-0" />
-                                                    <span>{feature}</span>
+                                                    <span>✅ {feature}</span>
                                                 </li>
                                             ))}
                                         </ul>
@@ -96,39 +93,31 @@ export default function LoginPage2() {
                                             <AccordionItem value="item-1">
                                                 <AccordionTrigger>Tarvitsenko luottokorttia kokeilun aloittamiseen?</AccordionTrigger>
                                                 <AccordionContent>
-                                                    Et tarvitse. Voit aloittaa 3 kuukauden ilmaisen kokeilun ilman luottokorttitietoja. Emme
-                                                    veloita sinua automaattisesti kokeilujakson päätyttyä.
+                                                    Et. Kokeilu on täysin maksuton eikä vaadi maksutietoja.
                                                 </AccordionContent>
                                             </AccordionItem>
                                             <AccordionItem value="item-2">
                                                 <AccordionTrigger>Miten voin perua kokeilun?</AccordionTrigger>
                                                 <AccordionContent>
-                                                    Voit perua kokeilun milloin tahansa kirjautumalla tilillesi ja valitsemalla "Peruuta kokeilu"
-                                                    asetuksista. Voit myös ottaa yhteyttä asiakaspalveluumme, joka auttaa sinua peruutuksessa.
+                                                    Voit lopettaa käytön milloin tahansa. Kokeilun päättyessä ei veloiteta mitään.
                                                 </AccordionContent>
                                             </AccordionItem>
                                             <AccordionItem value="item-3">
                                                 <AccordionTrigger>Mitä tapahtuu kokeilujakson päätyttyä?</AccordionTrigger>
                                                 <AccordionContent>
-                                                    Kokeilujakson päätyttyä saat ilmoituksen sähköpostiisi. Voit joko jatkaa palvelun käyttöä
-                                                    valitsemalla sopivan hinnoittelupaketin tai lopettaa käytön ilman lisäkustannuksia. Tietosi
-                                                    säilytetään 30 päivän ajan kokeilun päättymisen jälkeen.
+                                                    Saat muistutuksen sähköpostitse. Voit jatkaa valitsemalla hinnoittelupaketin tai lopettaa käytön. Tietosi säilytetään 30 päivän ajan.
                                                 </AccordionContent>
                                             </AccordionItem>
                                             <AccordionItem value="item-4">
                                                 <AccordionTrigger>Saanko tukea kokeilujakson aikana?</AccordionTrigger>
                                                 <AccordionContent>
-                                                    Kyllä, tarjoamme täyden tuen myös kokeilujakson aikana. Voit ottaa yhteyttä asiakaspalveluumme
-                                                    sähköpostitse, puhelimitse tai chat-palvelun kautta. Järjestämme myös ilmaisia
-                                                    käyttöönottokoulutuksia kokeilukäyttäjille.
+                                                    Kyllä. Autan mielelläni, jos sinulla on kysyttävää tai tarvitset apua käyttöönotossa.
                                                 </AccordionContent>
                                             </AccordionItem>
                                             <AccordionItem value="item-5">
                                                 <AccordionTrigger>Voinko siirtää tietoni toisesta järjestelmästä?</AccordionTrigger>
                                                 <AccordionContent>
-                                                    Kyllä, autamme sinua tietojen siirrossa muista järjestelmistä. Kokeilujakson aikana voit
-                                                    hyödyntää ilmaista tiedonsiirtopalveluamme, jossa asiantuntijamme auttavat siirtämään
-                                                    asiakastiedot, tuotetiedot ja muut tärkeät tiedot Siikli ERP:hen.
+                                                    Keskustellaan! Jos käytössäsi on nykyinen järjestelmä, katsotaan miten tiedot saadaan siirrettyä.
                                                 </AccordionContent>
                                             </AccordionItem>
                                         </Accordion>

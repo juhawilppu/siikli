@@ -161,13 +161,10 @@ export default function LoginForm() {
     return (
         <Tabs defaultValue="google" className="w-full">
             <TabsList className="grid w-full grid-cols-2 mb-4">
-                <TabsTrigger value="google">Google</TabsTrigger>
-                <TabsTrigger value="email">Sähköposti</TabsTrigger>
+                <TabsTrigger value="google">Kirjaudu Google-tilillä</TabsTrigger>
+                <TabsTrigger value="email">Kirjaudu sähköpostilla</TabsTrigger>
             </TabsList>
             <TabsContent value="google" className="space-y-4">
-                <div className="text-sm text-muted-foreground mb-4">
-                    Kirjaudu sisään Google-tililläsi nopeasti ja turvallisesti.
-                </div>
                 <Button
                     className="w-full max-w-md mx-auto flex items-center justify-center gap-2"
                     onClick={handleGoogleLogin}
