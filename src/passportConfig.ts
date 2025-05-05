@@ -1,3 +1,4 @@
+import { SESClient, SendEmailCommand } from '@aws-sdk/client-ses';
 import { PrismaClient, Tenant, User } from '@prisma/client';
 import { Strategy as LocalStrategy } from 'passport-local';
 const passport = require('passport')
@@ -35,6 +36,56 @@ const createUserAndTenant = async (email: string, googleExternalId?: string) => 
       event: 'user-created',
     },
   })
+  const client = new SESClient({ region: "eu-north-1" });
+
+  const command = new SendEmailCommand({
+    Source: 'Juha Wilppu <juha.wilppu@siikli.fi>',
+    Destination: {
+      ToAddresses: [email],
+    },
+    Message: {
+      Subject: {
+        Data: 'Tervetuloa Siikliin',
+      },
+      Body: {
+        Html: {
+          Data: `
+<div style="font-family: Arial, sans-serif; font-size: 16px; color: #333;">
+<p>Hei, ja tervetuloa Siikliin!</p>
+
+<p>Olen Juha, Siiklin kehittäjä. Seuraavien viikkojen aikana saatan lähettää sinulle muutamia vinkkejä ja päivityksiä (enintään yksi viesti viikossa, lupaan). Kerron tämän nyt, jotta voit halutessasi poistua listalta &ndash; ei pahalla.</p>
+
+<p>Parhaiten pääset alkuun kirjautumalla sisään ja luomalla ensimmäisen tilauksen tai tuotteen. Jos tarvitset apua, voit laittaa viestiä suoraan minulle.</p>
+
+<p>➡️ <a href="https://v2.siikli.fi" style="color: #1a73e8;">Kirjaudu Siikliin</a></p>
+
+<p>Kiitos että kokeilet &ndash; tämä auttaa minua kehittämään palvelusta entistä paremman.</p>
+
+<hr style="margin: 2em 0;" />
+
+ <p style="margin-top: 2em; font-size: 14px; color: #666;">
+Kyllä, tämä viesti on automatisoitu &ndash; mutta olen oikea ihminen ja luen jokaisen vastauksen.
+</p>
+
+<p style="margin-top: 1em;">
+Terveisin,<br />
+Juha Wilppu<br />
+Siikli
+</p>
+
+  <p style="font-size: 14px; margin-top: 2em;">
+    👉 <a href="https://v2.siikli.fi/api/unsubscribe?email=${encodeURIComponent(email)}" style="color: #888;">Poistu tältä listalta yhdellä klikkauksella</a>
+  </p>
+
+              </div>
+
+          `,
+        },
+      },
+    },
+  })
+
+  await client.send(command);
   return user
 }
 

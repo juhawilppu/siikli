@@ -117,7 +117,7 @@ authRoute.post('/api/auth/email/create-pin', rateLimit(5, 10), async (req, res, 
                 <p>Jos et pyytänyt tätä koodia, voit huoletta jättää viestin huomiotta.</p>
     
                 <p>Terveisin,<br />
-                Siikli-tiimi<br />
+                Siikli<br />
                 <a href="mailto:juha.wilppu@siikli.fi">juha.wilppu@siikli.fi</a><br />
                 <a href="https://v2.siikli.fi">https://v2.siikli.fi</a></p>
               </div>
