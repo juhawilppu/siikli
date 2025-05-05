@@ -95,19 +95,38 @@ authRoute.post('/api/auth/email/create-pin', rateLimit(5, 10), async (req, res, 
     const command = new SendEmailCommand({
       Source: 'no-reply@siikli.fi',
       Destination: {
-        ToAddresses: [body.email]
+        ToAddresses: [body.email],
       },
       Message: {
         Subject: {
-          Data: 'Your login PIN code'
+          Data: 'Kirjautumiskoodi Siikli-palveluun',
         },
         Body: {
-          Text: {
-            Data: `Your PIN code is: ${pin}\n\nThis code will expire in 15 minutes.`
-          }
-        }
-      }
-    });
+          Html: {
+            Data: `
+              <div style="font-family: Arial, sans-serif; font-size: 16px; color: #333;">
+                <p>Hei,</p>
+                <p>Tässä on kirjautumiskoodisi Siikli-palveluun:</p>
+    
+                <p style="font-size: 20px; font-weight: bold; color: #1a202c;">
+                  🔑 Koodi: ${pin}
+                </p>
+    
+                <p>(Koodi on voimassa 15 minuuttia.)</p>
+    
+                <p>Jos et pyytänyt tätä koodia, voit huoletta jättää viestin huomiotta.</p>
+    
+                <p>Terveisin,<br />
+                Siikli-tiimi<br />
+                <a href="mailto:juha.wilppu@siikli.fi">juha.wilppu@siikli.fi</a><br />
+                <a href="https://v2.siikli.fi">https://v2.siikli.fi</a></p>
+              </div>
+            `,
+          },
+        },
+      },
+    })
+
     await client.send(command);
     console.log(`Pin ${pin} sent to ${body.email} via AWS SES`);
     res.status(200).json({ message: 'OK' })
