@@ -47,7 +47,7 @@ export default function TermsOfService() {
 
                                 <h2 className="text-l font-bold tracking-tight mt-4">1. Palvelun tarjoaja</h2>
                                 <p>Siikli</p>
-                                <p>Y-tunnus: 2812416-4</p>
+                                <p>Y-tunnus: 2840288-8</p>
                                 <p>Sähköposti: juha.wilppu@gmail.com</p>
 
                                 <h2 className="text-l font-bold tracking-tight mt-4">2. Palvelun sisältö</h2>

@@ -45,7 +45,7 @@ export default function PrivacyPolicy() {
 
                                 <h2 className="text-l font-bold tracking-tight mt-4">1. Rekisterinpitäjä</h2>
                                 <p>Siikli</p>
-                                <p>Y-tunnus: 2812416-4</p>
+                                <p>Y-tunnus: 2840288-8</p>
                                 <p>Sähköposti: juha.wilppu@gmail.com</p>
                                 <p>Paikkakunta: Espoo</p>
 
