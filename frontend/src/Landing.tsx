@@ -6,6 +6,7 @@ import { useEffect, useRef } from "react"
 import { NavLink } from "react-router-dom"
 import Footer from "./Footer"
 import TopBar from "./TopBar"
+import UiCarousel from "./UiCarousel"
 export default function LandingPage() {
 
   const pricingRef = useRef<HTMLDivElement>(null)
@@ -75,7 +76,7 @@ export default function LandingPage() {
       <TopBar />
 
       <section className="w-full py-12 md:py-24 lg:py-32 bg-gradient-to-b from-white to-gray-50">
-        <div className="container px-4 md:px-6 flex flex-col md:flex-row items-center gap-8">
+        <div className="container px-4 md:px-6 flex flex-col md:flex-row items-center md:items-start gap-12">
           <div className="flex flex-col gap-4 md:w-1/2">
             <img src="/siikli-logo.png" alt="Siikli Logo" className="w-1/3" />
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight">
@@ -116,6 +117,10 @@ export default function LandingPage() {
               </div>
             )}
           </div>
+          <div className="w-full md:w-1/2">
+            <UiCarousel />
+          </div>
+
         </div>
       </section>
 
