@@ -133,7 +133,7 @@ export default function LandingPage() {
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <Card ref={ordersRef}>
+            <Card ref={ordersRef} className="rounded-xl border p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 bg-white">
               <CardHeader className="pb-2">
                 <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
                   <Package className="h-6 w-6 text-primary" />
@@ -145,7 +145,7 @@ export default function LandingPage() {
                   Hallitse tilauksia helposti, seuraa toimituksia ja pidä asiakkaat ajan tasalla.
                 </p>
                 <ul className="mt-4 space-y-2">
-                  {["Tilausten luonti ja seuranta", "Toimitusaikojen hallinta", "Automaattiset tilausvahvistukset"].map(
+                  {["Tilausten luonti", "Pakkauskoot", "Huomautukset ja kommentit"].map(
                     (feature) => (
                       <li key={feature} className="flex items-center gap-2">
                         <Check className="h-4 w-4 text-primary" />
@@ -165,7 +165,7 @@ export default function LandingPage() {
                 </CardFooter>
               )}
             </Card>
-            <Card ref={customersRef}>
+            <Card ref={customersRef} className="rounded-xl border p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 bg-white">
               <CardHeader className="pb-2">
                 <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
                   <Users className="h-6 w-6 text-primary" />
@@ -193,7 +193,7 @@ export default function LandingPage() {
                 </CardFooter>
               )}
             </Card>
-            <Card ref={productsRef}>
+            <Card ref={productsRef} className="rounded-xl border p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 bg-white">
               <CardHeader className="pb-2">
                 <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
                   <Box className="h-6 w-6 text-primary" />
@@ -202,10 +202,10 @@ export default function LandingPage() {
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
-                  Hallitse tuotevalikoimaa, hintoja ja varastosaldoja tehokkaasti.
+                  Hallitse tuotevalikoimaa ja hintoja tehokkaasti.
                 </p>
                 <ul className="mt-4 space-y-2">
-                  {["Tuoteryhmien hallinta", "Hinnoittelu", "Varastosaldojen seuranta"].map((feature) => (
+                  {["Tuoteryhmien hallinta", "Hinnoittelu", "Muokkaus"].map((feature) => (
                     <li key={feature} className="flex items-center gap-2">
                       <Check className="h-4 w-4 text-primary" />
                       <span className="text-sm">{feature}</span>
@@ -223,7 +223,7 @@ export default function LandingPage() {
                 </CardFooter>
               )}
             </Card>
-            <Card ref={invoicesRef}>
+            <Card ref={invoicesRef} className="rounded-xl border p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 bg-white">
               <CardHeader className="pb-2">
                 <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
                   <FileText className="h-6 w-6 text-primary" />
@@ -231,9 +231,9 @@ export default function LandingPage() {
                 <CardTitle>Laskutus</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground">Luo ja lähetä laskuja automaattisesti ja seuraa maksuja.</p>
+                <p className="text-muted-foreground">Luo ja lähetä laskuja.</p>
                 <ul className="mt-4 space-y-2">
-                  {["Automaattinen laskutus", "Maksumuistutukset", "Verkkolaskut"].map((feature) => (
+                  {["Laskujen luonti", "Massatoiminnot", "Tulostettava PDF"].map((feature) => (
                     <li key={feature} className="flex items-center gap-2">
                       <Check className="h-4 w-4 text-primary" />
                       <span className="text-sm">{feature}</span>
@@ -251,17 +251,17 @@ export default function LandingPage() {
                 </CardFooter>
               )}
             </Card>
-            <Card ref={shippingRef}>
+            <Card ref={shippingRef} className="rounded-xl border p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 bg-white">
               <CardHeader className="pb-2">
                 <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
                   <Truck className="h-6 w-6 text-primary" />
                 </div>
-                <CardTitle>Kuljetusten hallinta</CardTitle>
+                <CardTitle>Kuormakirjat</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">Suunnittele kuljetukset tehokkaasti ja seuraa toimituksia.</p>
                 <ul className="mt-4 space-y-2">
-                  {["Kuljetusreittien optimointi", "Toimitusaikojen hallinta", "Kuljettajien työlistat"].map(
+                  {["Hyväksyttävä formaatti", "Massatulostus", "Selkeä käyttöliittymä"].map(
                     (feature) => (
                       <li key={feature} className="flex items-center gap-2">
                         <Check className="h-4 w-4 text-primary" />
@@ -281,17 +281,17 @@ export default function LandingPage() {
                 </CardFooter>
               )}
             </Card>
-            <Card ref={reportsRef}>
+            <Card ref={reportsRef} className="rounded-xl border p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 bg-white">
               <CardHeader className="pb-2">
                 <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
                   <BarChart3 className="h-6 w-6 text-primary" />
                 </div>
-                <CardTitle>Raportit ja analytiikka</CardTitle>
+                <CardTitle>Raportit</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">Seuraa liiketoimintasi kehitystä kattavien raporttien avulla.</p>
                 <ul className="mt-4 space-y-2">
-                  {["Myyntiraportit", "Asiakasanalyysit", "Tuotekohtaiset raportit"].map((feature) => (
+                  {["Myyntiraportit", "Vie Exceliin", "Kattavat raportit"].map((feature) => (
                     <li key={feature} className="flex items-center gap-2">
                       <Check className="h-4 w-4 text-primary" />
                       <span className="text-sm">{feature}</span>
