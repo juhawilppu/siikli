@@ -14,6 +14,7 @@ import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { toast } from "@/hooks/use-toast"
 import { GetCompanySettings, PostCompanySettings } from "@/types/types"
+import { formatDate } from "@/utils/date"
 import axios from "axios"
 
 export default function CompanySettings() {
@@ -46,7 +47,7 @@ export default function CompanySettings() {
 
   useEffect(() => {
     axios
-      .get(`/tenants`)
+      .get<GetCompanySettings>(`/tenants`)
       .then((response) => {
         setCompanyData(response.data)
       })
@@ -60,10 +61,11 @@ export default function CompanySettings() {
 
 
         <Tabs defaultValue="company" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 mb-6">
+          <TabsList className="grid w-full grid-cols-4 mb-6">
             <TabsTrigger value="company">Yritys</TabsTrigger>
             <TabsTrigger value="users">Käyttäjät</TabsTrigger>
             <TabsTrigger value="preferences">Asetukset</TabsTrigger>
+            <TabsTrigger value="subscription">Tilaus</TabsTrigger>
           </TabsList>
 
           <TabsContent value="company">
@@ -223,6 +225,237 @@ export default function CompanySettings() {
               <CardContent>
                 <p className="text-sm text-muted-foreground">System preferences settings will appear here.</p>
               </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="subscription">
+            <Card>
+              <CardHeader>
+                <CardTitle>Tilaustiedot</CardTitle>
+                <CardDescription>Hallitse Siikli ERP -tilaustasi ja näe tilauksesi tila.</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="space-y-4">
+                  <div className="bg-blue-50 p-4 rounded-md border border-blue-200">
+                    <h3 className="text-lg font-medium text-blue-800 mb-2">
+                      Nykyinen tilaus: Free (Kokeilujakso)
+                    </h3>
+                    <p className="text-blue-700">
+                      Kokeilujakso päättyy: <span className="font-semibold">{formatDate(new Date(companyData.subscriptionEndDate))}</span>
+                    </p>
+                    <p className="text-sm text-blue-600 mt-2">
+                      Kokeilujakson päätyttyä tilauksesi muuttuu automaattisesti Free-tasolle. Voit milloin
+                      tahansa päivittää tilauksesi takaisin Premium-tasoon.
+                    </p>
+                  </div>
+
+                  <Separator className="my-4" />
+                  <h3 className="text-lg font-medium">Tilausvaihtoehdot</h3>
+
+                  <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                    {/* Free-taso */}
+                    <div className="border rounded-lg p-6 relative">
+                      <div className="absolute top-0 right-0 bg-gray-200 text-gray-800 px-3 py-1 rounded-bl-lg rounded-tr-lg text-sm font-medium">
+                        Free
+                      </div>
+                      <h3 className="text-xl font-semibold mb-4">Free</h3>
+                      <p className="text-2xl font-bold mb-6">
+                        0 €<span className="text-sm font-normal text-gray-500">/kk</span>
+                      </p>
+                      <ul className="space-y-3 mb-6">
+                        <li className="flex items-start">
+                          <svg
+                            className="h-5 w-5 text-green-500 mr-2 mt-0.5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M5 13l4 4L19 7"
+                            ></path>
+                          </svg>
+                          <span>Rajoitettu määrä käyttäjiä (1)</span>
+                        </li>
+                        <li className="flex items-start">
+                          <svg
+                            className="h-5 w-5 text-green-500 mr-2 mt-0.5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M5 13l4 4L19 7"
+                            ></path>
+                          </svg>
+                          <span>Perusominaisuudet</span>
+                        </li>
+                        <li className="flex items-start">
+                          <svg
+                            className="h-5 w-5 text-green-500 mr-2 mt-0.5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M5 13l4 4L19 7"
+                            ></path>
+                          </svg>
+                          <span>Rajoitettu määrä tilauksia (20/kk)</span>
+                        </li>
+                        <li className="flex items-start">
+                          <svg
+                            className="h-5 w-5 text-red-500 mr-2 mt-0.5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M6 18L18 6M6 6l12 12"
+                            ></path>
+                          </svg>
+                          <span className="text-gray-500">Ei edistyneitä raportteja</span>
+                        </li>
+                      </ul>
+                      <Button variant="outline" className="w-full" disabled>
+                        Nykyinen taso
+                      </Button>
+                    </div>
+
+                    {/* Premium-taso */}
+                    <div className="border border-blue-300 rounded-lg p-6 relative bg-blue-50">
+                      <div className="absolute top-0 right-0 bg-blue-600 text-white px-3 py-1 rounded-bl-lg rounded-tr-lg text-sm font-medium">
+                        Premium
+                      </div>
+                      <h3 className="text-xl font-semibold mb-4">Premium</h3>
+                      <p className="text-2xl font-bold mb-6">
+                        49,90 €<span className="text-sm font-normal text-gray-500">/kk</span>
+                      </p>
+                      <ul className="space-y-3 mb-6">
+                        <li className="flex items-start">
+                          <svg
+                            className="h-5 w-5 text-green-500 mr-2 mt-0.5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M5 13l4 4L19 7"
+                            ></path>
+                          </svg>
+                          <span>Rajoittamaton määrä käyttäjiä</span>
+                        </li>
+                        <li className="flex items-start">
+                          <svg
+                            className="h-5 w-5 text-green-500 mr-2 mt-0.5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M5 13l4 4L19 7"
+                            ></path>
+                          </svg>
+                          <span>Kaikki ominaisuudet</span>
+                        </li>
+                        <li className="flex items-start">
+                          <svg
+                            className="h-5 w-5 text-green-500 mr-2 mt-0.5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M5 13l4 4L19 7"
+                            ></path>
+                          </svg>
+                          <span>Rajoittamaton määrä tilauksia</span>
+                        </li>
+                        <li className="flex items-start">
+                          <svg
+                            className="h-5 w-5 text-green-500 mr-2 mt-0.5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M5 13l4 4L19 7"
+                            ></path>
+                          </svg>
+                          <span>Edistyneet raportit</span>
+                        </li>
+                      </ul>
+                      <Button className="w-full bg-blue-600 hover:bg-blue-700">Jatka Premium-tilausta</Button>
+                    </div>
+                  </div>
+
+                  <Separator className="my-4" />
+                  <h3 className="text-lg font-medium">Usein kysytyt kysymykset</h3>
+
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <h4 className="font-medium">Mitä tapahtuu kokeilujakson päätyttyä?</h4>
+                      <p className="text-sm text-gray-600">
+                        Kokeilujakson päätyttyä tilauksesi muuttuu automaattisesti Free-tasolle. Kaikki tietosi
+                        säilyvät, mutta käytössäsi on vain Free-tason ominaisuudet. Voit milloin tahansa
+                        päivittää tilauksesi takaisin Premium-tasolle.
+                      </p>
+                    </div>
+
+                    <div className="space-y-2">
+                      <h4 className="font-medium">Voinko perua tilaukseni milloin tahansa?</h4>
+                      <p className="text-sm text-gray-600">
+                        Kyllä, voit milloin tahansa vaihtaa Premium-tilauksesta Free-tasolle. Tilauksesi jatkuu
+                        sen laskutuskauden loppuun, jonka olet jo maksanut.
+                      </p>
+                    </div>
+
+                    <div className="space-y-2">
+                      <h4 className="font-medium">Miten voin päivittää tilaukseni Premium-tasolle?</h4>
+                      <p className="text-sm text-gray-600">
+                        Voit päivittää tilauksesi Premium-tasolle milloin tahansa klikkaamalla "Jatka
+                        Premium-tilausta" -painiketta. Tällä hetkellä maksutoimintoa ei ole vielä toteutettu,
+                        joten ota yhteyttä asiakaspalveluumme päivitystä varten.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+              <CardFooter className="flex justify-between">
+                <Button variant="outline">Peruuta</Button>
+                <Button>Tallenna muutokset</Button>
+              </CardFooter>
             </Card>
           </TabsContent>
         </Tabs>

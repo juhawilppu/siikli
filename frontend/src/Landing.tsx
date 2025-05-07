@@ -324,7 +324,7 @@ export default function LandingPage() {
           <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
             <Card className="border-border flex flex-col">
               <CardHeader>
-                <CardTitle>Ilmaispaketti</CardTitle>
+                <CardTitle>Free</CardTitle>
                 <CardDescription>Pienille yrityksille, joilla on yksinkertaiset tarpeet</CardDescription>
                 <div className="mt-4">
                   <span className="text-3xl font-bold">0 €</span>
@@ -353,7 +353,7 @@ export default function LandingPage() {
                 Suositeltu taso
               </div>
               <CardHeader>
-                <CardTitle>Maksullinen taso</CardTitle>
+                <CardTitle>Premium</CardTitle>
                 <CardDescription>Kasvaville yrityksille, jotka haluavat mukaan laskutuksen ja tuen</CardDescription>
                 <div className="mt-4">
                   <span className="text-3xl font-bold">49 €</span>

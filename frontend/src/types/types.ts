@@ -132,17 +132,20 @@ export interface WarehouseReportByProduct {
 export interface GetCompanySettings {
   id: string;
   name: string;
-  businessId: string;
-  streetAddress: string;
-  postalCode: string;
-  city: string;
-  invoiceBankName: string;
-  invoiceBankAccount: string;
-  invoiceReference: string;
-  invoiceSumRow: string;
-  phone: string;
-  email: string;
-  website: string;
+  businessId: string | null;
+  streetAddress: string | null;
+  postalCode: string | null;
+  city: string | null;
+  invoiceBankName: string | null;
+  invoiceBankAccount: string | null;
+  invoiceReference: string | null;
+  invoiceSumRow: string | null;
+  phone: string | null;
+  email: string | null;
+  website: string | null;
+  subscriptionType: string;
+  subscriptionEndDate: string;
+  trialEndDate: string;
 }
 
 export interface GetCustomersResponseDto {
