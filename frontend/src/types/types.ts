@@ -144,8 +144,9 @@ export interface GetCompanySettings {
   email: string | null;
   website: string | null;
   subscriptionType: string;
-  subscriptionEndDate: string;
-  trialEndDate: string;
+  subscriptionEndDate: string | null;
+  subscriptionStartDate: string | null;
+  trialEndDate: string | null;
 }
 
 export interface GetCustomersResponseDto {
@@ -302,4 +303,11 @@ export interface PostCompanySettings {
   invoiceBankNumber: string
   invoiceReference: string
   invoiceSumRow: string
+}
+
+export interface PostSubscriptionChangeRequest {
+  subscriptionType: string
+  subscriptionEndDate: string | null
+  subscriptionStartDate: string | null
+  trialEndDate: string | null
 }

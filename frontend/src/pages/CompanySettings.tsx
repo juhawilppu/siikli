@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { toast } from "@/hooks/use-toast"
-import { GetCompanySettings, PostCompanySettings } from "@/types/types"
+import { GetCompanySettings, PostCompanySettings, PostSubscriptionChangeRequest } from "@/types/types"
 import { formatDate } from "@/utils/date"
 import axios from "axios"
 
@@ -41,6 +41,27 @@ export default function CompanySettings() {
       title: "Yritys tiedot tallennettu",
       description: "Yrityksesi tiedot on tallennettu",
       variant: "success",
+    })
+  }
+
+  const switchSubscription = async (subscription: "FREE" | "PREMIUM") => {
+    const result = await axios.post<PostSubscriptionChangeRequest>("/tenants/subscription", {
+      subscription,
+    })
+    toast({
+      title: "Tilausvaihto",
+      description: "Tilausvaihto onnistui",
+      variant: "success",
+    })
+    setCompanyData((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        subscriptionType: result.data.subscriptionType,
+        trialEndDate: result.data.trialEndDate,
+        subscriptionStartDate: result.data.subscriptionStartDate,
+        subscriptionEndDate: result.data.subscriptionEndDate,
+      }
     })
   }
 
@@ -238,15 +259,30 @@ export default function CompanySettings() {
                 <div className="space-y-4">
                   <div className="bg-blue-50 p-4 rounded-md border border-blue-200">
                     <h3 className="text-lg font-medium text-blue-800 mb-2">
-                      Nykyinen tilaus: Free (Kokeilujakso)
+                      Nykyinen tilaus: {companyData.subscriptionStartDate || (companyData.subscriptionEndDate && new Date(companyData.subscriptionEndDate).getTime() > new Date().getTime()) || (companyData.trialEndDate && new Date(companyData.trialEndDate).getTime() > new Date().getTime()) ? "Premium" : "Free"}{companyData.trialEndDate && new Date(companyData.trialEndDate).getTime() > new Date().getTime() ? " (Kokeilujakso)" : ""}
                     </h3>
-                    <p className="text-blue-700">
-                      Kokeilujakso päättyy: <span className="font-semibold">{formatDate(new Date(companyData.subscriptionEndDate))}</span>
-                    </p>
-                    <p className="text-sm text-blue-600 mt-2">
-                      Kokeilujakson päätyttyä tilauksesi muuttuu automaattisesti Free-tasolle. Voit milloin
-                      tahansa päivittää tilauksesi takaisin Premium-tasoon.
-                    </p>
+                    {companyData.trialEndDate && (
+                      <>
+                        <p className="text-blue-700">
+                          Kokeilujakso päättyy: <span className="font-semibold">{formatDate(new Date(companyData.trialEndDate))}</span>
+                        </p>
+                        <p className="text-sm text-blue-600 mt-2">
+                          Kokeilujakson päätyttyä tilauksesi muuttuu automaattisesti Free-tasolle. Voit milloin
+                          tahansa päivittää tilauksesi Premium-tasoon.
+                        </p>
+                      </>)}
+                    {companyData.subscriptionEndDate && (
+                      <>
+                        <p className="text-blue-700">
+                          Tilausjakso päättyy: <span className="font-semibold">{formatDate(new Date(companyData.subscriptionEndDate))}</span>
+                        </p>
+                        <p className="text-sm text-blue-600 mt-2">
+                          Kokeilujakson päätyttyä tilauksesi muuttuu automaattisesti Free-tasolle. Voit milloin
+                          tahansa päivittää tilauksesi takaisin Premium-tasoon.
+                        </p>
+                      </>
+                    )}
+
                   </div>
 
                   <Separator className="my-4" />
@@ -260,7 +296,7 @@ export default function CompanySettings() {
                       </div>
                       <h3 className="text-xl font-semibold mb-4">Free</h3>
                       <p className="text-2xl font-bold mb-6">
-                        0 €<span className="text-sm font-normal text-gray-500">/kk</span>
+                        0,00 €<span className="text-sm font-normal text-gray-500">/kk</span>
                       </p>
                       <ul className="space-y-3 mb-6">
                         <li className="flex items-start">
@@ -332,8 +368,8 @@ export default function CompanySettings() {
                           <span className="text-gray-500">Ei edistyneitä raportteja</span>
                         </li>
                       </ul>
-                      <Button variant="outline" className="w-full" disabled>
-                        Nykyinen taso
+                      <Button onClick={() => switchSubscription("FREE")} variant="outline" className="w-full" disabled={companyData.subscriptionType === "FREE"}>
+                        {companyData.subscriptionType === "FREE" ? "Nykyinen taso" : "Vaihda tilaukseen"}
                       </Button>
                     </div>
 
@@ -416,7 +452,9 @@ export default function CompanySettings() {
                           <span>Edistyneet raportit</span>
                         </li>
                       </ul>
-                      <Button className="w-full bg-blue-600 hover:bg-blue-700">Jatka Premium-tilausta</Button>
+                      <Button onClick={() => switchSubscription("PREMIUM")} className="w-full bg-blue-600 hover:bg-blue-700" disabled={companyData.subscriptionType === "PREMIUM"}>
+                        {companyData.subscriptionType === "PREMIUM" ? "Nykyinen taso" : "Vaihda tilaukseen"}
+                      </Button>
                     </div>
                   </div>
 

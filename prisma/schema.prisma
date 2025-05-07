@@ -24,6 +24,10 @@ model Tenant {
   invoiceSumRow     String? @db.VarChar(255) @map("invoice_sum_row")
   signupCompleted   Boolean @default(false) @map("signup_completed")
   createdAt DateTime @default(now()) @map("created_at")
+  subscriptionType String @default("FREE") @map("subscription_type")
+  subscriptionEndDate DateTime? @map("subscription_end_date")
+  subscriptionStartDate DateTime? @map("subscription_start_date")
+  trialEndDate DateTime? @map("trial_end_date")
   customers            Customer[]
   orders               Order[]
   users               User[]

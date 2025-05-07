@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client"
+import { addMonths } from "date-fns"
 
 const prisma = new PrismaClient()
 
@@ -23,6 +24,10 @@ async function main() {
             invoiceReference: '1234567890',
             invoiceSumRow: 'Test sum row',
             signupCompleted: true,
+            subscriptionType: 'PREMIUM',
+            subscriptionEndDate: null,
+            subscriptionStartDate: null,
+            trialEndDate: addMonths(new Date(), 3).toISOString(),
         }
     })
 
@@ -73,6 +78,10 @@ async function main() {
             invoiceReference: '1111111111',
             invoiceSumRow: 'Test sum row',
             signupCompleted: true,
+            subscriptionType: 'PREMIUM',
+            subscriptionEndDate: null,
+            subscriptionStartDate: null,
+            trialEndDate: addMonths(new Date(), 3).toISOString(),
         }
     })
 

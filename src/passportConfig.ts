@@ -1,5 +1,6 @@
 import { SESClient, SendEmailCommand } from '@aws-sdk/client-ses';
 import { PrismaClient, Tenant, User } from '@prisma/client';
+import { addMonths } from 'date-fns';
 import { Strategy as LocalStrategy } from 'passport-local';
 const passport = require('passport')
 const GoogleStrategy = require('passport-google-oidc')
@@ -14,7 +15,10 @@ const createUserAndTenant = async (email: string, googleExternalId?: string) => 
   const tenant = await prisma.tenant.create({
     data: {
       name: '',
-      signupCompleted: false
+      signupCompleted: false,
+      subscriptionType: 'PREMIUM',
+      subscriptionEndDate: null,
+      trialEndDate: addMonths(new Date(), 3).toISOString(),
     },
   })
   await prisma.log.create({

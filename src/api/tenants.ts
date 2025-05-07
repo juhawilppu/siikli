@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client'
 import { addMonths } from 'date-fns'
 import express from 'express'
-import { CreateTenantDto, GetCompanySettings, PostCompanySettings } from '../../frontend/src/types/types'
+import { CreateTenantDto, GetCompanySettings, PostCompanySettings, PostSubscriptionChangeRequest } from '../../frontend/src/types/types'
 import { getUser, isAuthenticated } from '../middlewares/permissions'
 const companiesRoute = express.Router()
 const prisma = new PrismaClient()
@@ -30,9 +30,10 @@ companiesRoute.get(`/api/tenants`, isAuthenticated, async (req, res) => {
     phone: result.phone,
     email: result.email,
     website: result.website,
-    subscriptionType: 'PREMIUM',
-    subscriptionEndDate: addMonths(result.createdAt, 3).toISOString(),
-    trialEndDate: addMonths(result.createdAt, 3).toISOString(),
+    subscriptionType: result.subscriptionType,
+    subscriptionEndDate: result.subscriptionEndDate?.toISOString() ?? null,
+    subscriptionStartDate: result.subscriptionStartDate?.toISOString() ?? null,
+    trialEndDate: result.trialEndDate?.toISOString() ?? null,
   } satisfies GetCompanySettings)
 })
 
@@ -61,6 +62,33 @@ companiesRoute.post(`/api/tenants`, isAuthenticated, async (req, res) => {
     }
   })
   res.json(result)
+})
+
+companiesRoute.post(`/api/tenants/subscription`, isAuthenticated, async (req, res) => {
+  const { tenantId, userId } = getUser(req)
+  const body = req.body as { subscription: 'FREE' | 'PREMIUM' }
+  const currentSubscription = await prisma.tenant.findFirst({
+    where: {
+      id: tenantId
+    },
+  })
+  const result = await prisma.tenant.update({
+    data: {
+      subscriptionType: body.subscription,
+      subscriptionEndDate: body.subscription === "FREE" ? addMonths(currentSubscription?.subscriptionStartDate || new Date(), 1).toISOString() : null,
+      subscriptionStartDate: body.subscription === "PREMIUM" ? new Date().toISOString() : null,
+      trialEndDate: null
+    },
+    where: {
+      id: tenantId
+    },
+  })
+  res.status(200).json({
+    subscriptionType: result.subscriptionType,
+    subscriptionEndDate: result.subscriptionEndDate?.toISOString() ?? null,
+    subscriptionStartDate: result.subscriptionStartDate?.toISOString() ?? null,
+    trialEndDate: result.trialEndDate?.toISOString() ?? null,
+  } satisfies PostSubscriptionChangeRequest)
 })
 
 companiesRoute.post(`/api/tenants/create`, isAuthenticated, async (req, res) => {
