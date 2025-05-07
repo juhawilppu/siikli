@@ -65,10 +65,10 @@ export interface Customer {
   address: string | null;
   compensation: number;
   reference: string | null;
-  company_name: string | null;
-  order_index: number | null;
+  companyName: string | null;
+  orderIndex: number | null;
   city: string | null;
-  show_price_without_tax: boolean | null;
+  showPriceWithoutTax: boolean | null;
 }
 
 export interface Order {

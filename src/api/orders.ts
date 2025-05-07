@@ -126,7 +126,7 @@ ordersRoute.get(`/api/orders`, isAuthenticated, async (req, res) => {
 
       {
         customer: {
-          order_index: 'asc',
+          orderIndex: 'asc',
         },
       },
     ],
@@ -180,7 +180,7 @@ ordersRoute.get(`/api/orders/cargo_reports`, isAuthenticated, async (req, res) =
 
       {
         customer: {
-          order_index: 'asc',
+          orderIndex: 'asc',
         },
       },
     ],
@@ -308,7 +308,7 @@ ordersRoute.get(`/api/orders/:id`, isAuthenticated, async (req, res) => {
       },
       {
         customer: {
-          order_index: 'asc',
+          orderIndex: 'asc',
         },
       },
     ],

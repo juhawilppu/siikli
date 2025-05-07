@@ -83,18 +83,18 @@ invoiceRoute.get(`/api/invoices`, isAuthenticated, async (req, res) => {
             customer: {
                 chain: customer.chain,
                 name: customer.name,
-                companyName: customer.company_name,
-                businessId: customer.business_id,
+                companyName: customer.companyName,
+                businessId: customer.businessId,
                 address: customer.address,
-                postalCode: customer.postal_code,
+                postalCode: customer.postalCode,
                 city: customer.city,
-                showPriceWithoutTax: customer.show_price_without_tax
+                showPriceWithoutTax: customer.showPriceWithoutTax
             },
             company: {
                 name: company.name,
             },
             items,
-            totals: calculateTotals(items, customer.compensation, customer.show_price_without_tax)
+            totals: calculateTotals(items, customer.compensation, customer.showPriceWithoutTax)
         };
 
         return res.status(200).json(invoice satisfies InvoiceDto);

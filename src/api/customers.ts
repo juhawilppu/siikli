@@ -24,7 +24,7 @@ customersRoute.get(`/api/customers`, isAuthenticated, async (req, res) => {
       tenantId: tenantId
     },
     orderBy: {
-      order_index: 'asc',
+      orderIndex: 'asc',
     },
   })
   const chains = await prisma.customer.findMany({
@@ -39,18 +39,18 @@ customersRoute.get(`/api/customers`, isAuthenticated, async (req, res) => {
   const customerGroups = await prisma.customer.findMany({
     where: {
       tenantId: tenantId,
-      customer_group: {
+      customerGroup: {
         not: null
       }
     },
     select: {
-      customer_group: true
+      customerGroup: true
     },
-    distinct: ['customer_group'],
+    distinct: ['customerGroup'],
   })
 
   res.json({
-    customerGroups: customerGroups.map(r => r.customer_group as string),
+    customerGroups: customerGroups.map(r => r.customerGroup as string),
     chains: chains.map(r => r.chain as string),
     customers: result.map(r => {
       return {
@@ -59,18 +59,18 @@ customersRoute.get(`/api/customers`, isAuthenticated, async (req, res) => {
         name: r.name,
         streetAddress: r.address,
         streetAddress2: r.address2,
-        postalCode: r.postal_code,
+        postalCode: r.postalCode,
         compensation: r.compensation,
-        businessId: r.business_id,
+        businessId: r.businessId,
         city: r.city,
         email: r.email,
         phone: r.phone,
-        showPriceWithoutTax: r.show_price_without_tax,
+        showPriceWithoutTax: r.showPriceWithoutTax,
         tenantId: r.tenantId,
         reference: r.reference,
-        companyName: r.company_name,
-        orderIndex: r.order_index,
-        customerGroup: r.customer_group,
+        companyName: r.companyName,
+        orderIndex: r.orderIndex,
+        customerGroup: r.customerGroup,
       }
     })
   } satisfies GetCustomersResponseDto)
@@ -94,16 +94,16 @@ customersRoute.post(`/api/customers`, isAuthenticated, async (req, res) => {
       compensation: body.compensation,
       address: body.streetAddress,
       address2: body.streetAddress2,
-      postal_code: body.postalCode,
+      postalCode: body.postalCode,
       city: body.city,
       email: body.email,
       phone: body.phone,
-      show_price_without_tax: body.showPriceWithoutTax,
+      showPriceWithoutTax: body.showPriceWithoutTax,
       reference: body.reference,
-      company_name: body.companyName,
-      order_index: body.orderIndex,
-      business_id: body.businessId,
-      customer_group: body.customerGroup,
+      companyName: body.companyName,
+      orderIndex: body.orderIndex,
+      businessId: body.businessId,
+      customerGroup: body.customerGroup,
     }
   })
 
@@ -133,7 +133,7 @@ customersRoute.put(`/api/customers/reorder`, isAuthenticated, async (req, res) =
       customers.map(customer =>
         prisma.customer.update({
           where: { id: customer.id, tenantId: tenantId },
-          data: { order_index: customer.orderIndex }
+          data: { orderIndex: customer.orderIndex }
         })
       )
     )
@@ -170,16 +170,16 @@ customersRoute.put(`/api/customers/:id`, isAuthenticated, async (req, res) => {
       compensation: body.compensation,
       address: body.streetAddress,
       address2: body.streetAddress2,
-      postal_code: body.postalCode,
+      postalCode: body.postalCode,
       city: body.city,
       email: body.email,
       phone: body.phone,
-      show_price_without_tax: body.showPriceWithoutTax,
+      showPriceWithoutTax: body.showPriceWithoutTax,
       reference: body.reference,
-      company_name: body.companyName,
-      order_index: body.orderIndex,
-      business_id: body.businessId,
-      customer_group: body.customerGroup,
+      companyName: body.companyName,
+      orderIndex: body.orderIndex,
+      businessId: body.businessId,
+      customerGroup: body.customerGroup,
     }
   })
   await prisma.log.create({

@@ -23,13 +23,13 @@ productsRoute.get(`/api/products`, isAuthenticated, async (req, res) => {
       name: p.name,
       price: p.price,
       price0: p.price0,
-      packageSize: p.package_size ? parseInt(p.package_size) : null,
-      packageType: p.package_type,
-      chain: p.customer_group,
+      packageSize: p.packageSize ? parseInt(p.packageSize) : null,
+      packageType: p.packageType,
+      chain: p.customerGroup,
       variety: p.variety,
       type: p.type,
       subtype: p.subtype,
-      orderIndex: p.order_index || 0,
+      orderIndex: p.orderIndex || 0,
       info: p.info
     }
   }) satisfies GetProductResponseDto[])
@@ -43,7 +43,7 @@ productsRoute.get(`/api/products/product-types`, isAuthenticated, async (req, re
       tenantId
     },
     include: {
-      product_subtypes: true
+      productSubtypes: true
     }
   });
 
@@ -51,12 +51,12 @@ productsRoute.get(`/api/products/product-types`, isAuthenticated, async (req, re
     return {
       id: r.id,
       name: r.type!,
-      orderIndex: r.order_index,
-      subtypes: r.product_subtypes.map(s => {
+      orderIndex: r.orderIndex,
+      subtypes: r.productSubtypes.map(s => {
         return {
           id: s.id,
           name: s.subtype!,
-          orderIndex: s.order_index
+          orderIndex: s.orderIndex
         }
       })
     }
@@ -76,7 +76,7 @@ const verifyProductTypeAndSubtype = async (body: { type: string, subtype: string
       data: {
         tenantId,
         type: body.type,
-        order_index: 0
+        orderIndex: 0
       }
     })
   } else {
@@ -97,7 +97,7 @@ const verifyProductTypeAndSubtype = async (body: { type: string, subtype: string
         tenantId,
         type: body.type,
         subtype: body.subtype,
-        order_index: 0
+        orderIndex: 0
       }
     })
   } else {
@@ -119,11 +119,11 @@ productsRoute.post(`/api/products`, isAuthenticated, async (req, res) => {
       info: body.info,
       price0: body.price0,
       price: body.price,
-      order_index: body.orderIndex,
+      orderIndex: body.orderIndex,
       subtype: body.subtype,
-      package_size: body.packageSize + '',
-      package_type: body.packageType,
-      customer_group: body.chain,
+      packageSize: body.packageSize + '',
+      packageType: body.packageType,
+      customerGroup: body.chain,
       tenantId
     }
   })
@@ -174,7 +174,7 @@ productsRoute.post(`/api/products/reorder`, isAuthenticated, async (req, res) =>
   const { tenantId } = getUser(req)
   await prisma.product.update({
     data: {
-      order_index: body.first.orderIndex
+      orderIndex: body.first.orderIndex
     },
     where: {
       id: body.first.id,
@@ -184,7 +184,7 @@ productsRoute.post(`/api/products/reorder`, isAuthenticated, async (req, res) =>
   )
   await prisma.product.update({
     data: {
-      order_index: body.second.orderIndex
+      orderIndex: body.second.orderIndex
     },
     where: {
       id: body.second.id,
@@ -211,11 +211,11 @@ productsRoute.post(`/api/products/:id`, isAuthenticated, async (req, res) => {
       info: body.info,
       price0: body.price0,
       price: body.price,
-      order_index: 1,
+      orderIndex: 1,
       subtype: body.subtype,
-      package_size: body.packageSize + '',
-      package_type: body.packageType,
-      customer_group: body.chain
+      packageSize: body.packageSize + '',
+      packageType: body.packageType,
+      customerGroup: body.chain
     },
     where: {
       id,
