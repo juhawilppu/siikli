@@ -48,7 +48,7 @@ export default function TopBar({ showBackButton, hideLoginButton }: { showBackBu
                         </Button>
                     )}
                     {!hideLoginButton && (
-                        <Button size="sm" asChild>
+                        <Button size="sm" className="rounded-full" asChild>
                             <NavLink to="/kirjaudu">Kirjaudu sisään</NavLink>
                         </Button>
                     )}

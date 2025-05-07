@@ -90,12 +90,12 @@ export default function LandingPage() {
               🎉 Ensimmäiset käyttäjät saavat 3 kuukautta täysin ilmaiseksi. Haen palautetta ja kehityskohteita – saat täyden version maksutta ja autat samalla tekemään siitä entistä paremman.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 mt-4">
-              <Button size="lg" asChild>
+              <Button size="lg" className="rounded-full" asChild>
                 <NavLink to="/kirjaudu">
                   Aloita ilmaiseksi <ArrowRight className="ml-2 h-4 w-4" />
                 </NavLink>
               </Button>
-              <Button variant="outline" size="lg" asChild>
+              <Button variant="outline" size="lg" className="rounded-full" asChild>
                 <a href="#ominaisuudet">Tutustu ominaisuuksiin</a>
               </Button>
             </div>
