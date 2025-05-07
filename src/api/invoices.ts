@@ -1,13 +1,12 @@
-import { PrismaClient } from '@prisma/client'
 import { addDays } from 'date-fns'
 import Decimal from 'decimal.js'
 import express from 'express'
 import { InvoiceDto, InvoiceItemDto } from '../../frontend/src/types/types'
 import { dateToString } from '../../frontend/src/utils/date'
 import { getUser, isAuthenticated } from '../middlewares/permissions'
+import prisma from '../prisma'
 
 const invoiceRoute = express.Router()
-const prisma = new PrismaClient()
 
 invoiceRoute.get(`/api/invoices`, isAuthenticated, async (req, res) => {
     const { userId, tenantId } = getUser(req)

@@ -1,7 +1,5 @@
-import { PrismaClient } from '@prisma/client'
 import { NextFunction, Request, Response } from 'express'
-
-const prisma = new PrismaClient()
+import prisma from '../src/prisma'
 
 /***
  * Rate-limiting middleware based on client IP address. Rate-limiting is done per endpoint (method, url).

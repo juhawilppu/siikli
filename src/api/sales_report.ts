@@ -1,11 +1,10 @@
 // routes/export.ts or inside your Express app setup
-import { PrismaClient } from '@prisma/client';
 import ExcelJS from 'exceljs';
 import express from 'express';
 import { getUser, isAuthenticated } from '../middlewares/permissions';
+import prisma from '../prisma';
 
 const router = express.Router();
-const prisma = new PrismaClient();
 
 router.get('/api/sales-report', isAuthenticated, async (req, res) => {
     try {

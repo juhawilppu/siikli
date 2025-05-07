@@ -1,4 +1,3 @@
-import { PrismaClient } from '@prisma/client'
 import { endOfDay, parse, startOfDay } from 'date-fns'
 import express from 'express'
 import puppeteer from 'puppeteer'
@@ -9,6 +8,7 @@ import {
 } from '../../frontend/src/types/types'
 import { dateToString, formatDate, stringToDate } from '../../frontend/src/utils/date'
 import { getUser, isAuthenticated } from '../middlewares/permissions'
+import prisma from '../prisma'
 
 const defaultStyle = `
     <style type="text/css">
@@ -97,7 +97,6 @@ const defaultStyle = `
     `
 
 export const ordersRoute = express.Router()
-const prisma = new PrismaClient()
 
 ordersRoute.get(`/api/orders`, isAuthenticated, async (req, res) => {
   console.log('getting orders')

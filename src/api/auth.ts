@@ -1,12 +1,11 @@
 const passport = require('passport')
 
 import { SESClient, SendEmailCommand } from '@aws-sdk/client-ses'
-import { PrismaClient } from '@prisma/client'
 import express from 'express'
 import { GetCurrentUserDto } from '../../frontend/src/types/types'
 import { rateLimit } from '../../middlewares/rateLimit'
 import { UserWithTenant } from '../passportConfig'
-const prisma = new PrismaClient()
+import prisma from '../prisma'
 export const authRoute = express.Router()
 
 authRoute.get(

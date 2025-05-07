@@ -1,12 +1,11 @@
-import { PrismaClient } from '@prisma/client'
 import { addDays, endOfDay, startOfDay, startOfYear } from 'date-fns'
 import express from 'express'
 import { DashboardDataDto } from '../../frontend/src/types/types'
 import { getUser, isAuthenticated } from '../middlewares/permissions'
 import { setSentryUser } from '../middlewares/sentryUser'
+import prisma from '../prisma'
 
 export const dashboardRoute = express.Router()
-const prisma = new PrismaClient()
 
 dashboardRoute.get(`/api/dashboard`, isAuthenticated, setSentryUser, async (req, res) => {
     const { userId, tenantId } = getUser(req)

@@ -1,12 +1,14 @@
 // warehouseReport.routes.ts
-import { PrismaClient } from '@prisma/client';
 import express from 'express';
 import { WarehouseReportByCustomer, WarehouseReportByProduct } from '../../frontend/src/types/types';
+import { getUser } from '../middlewares/permissions';
+import prisma from '../prisma';
 
 const router = express.Router();
-const prisma = new PrismaClient();
 
 router.get('/api/warehouse-report/grouped-by/customer', async (req, res) => {
+  const { tenantId } = getUser(req)
+
   const query = req.query;
 
   if (!query.deliveryDate || typeof query.deliveryDate !== 'string') {
@@ -35,7 +37,7 @@ router.get('/api/warehouse-report/grouped-by/customer', async (req, res) => {
       LEFT JOIN customer c ON (c.id = o.customer_id)
       LEFT JOIN order_product op ON (op.order_id = o.id)
       LEFT JOIN product p ON (p.id = op.product_id)
-      WHERE DATE(delivery_date) = '${deliveryDate}'
+      WHERE DATE(delivery_date) = '${deliveryDate}' and o.tenant_id = '${tenantId}'
       GROUP BY
         customer_id,
         c.chain,
@@ -80,6 +82,8 @@ router.get('/api/warehouse-report/grouped-by/customer', async (req, res) => {
 });
 
 router.get('/api/warehouse-report/grouped-by/product', async (req, res) => {
+  const { tenantId } = getUser(req)
+
   const query = req.query;
 
   if (!query.deliveryDate || typeof query.deliveryDate !== 'string') {
@@ -105,7 +109,7 @@ router.get('/api/warehouse-report/grouped-by/product', async (req, res) => {
 		LEFT JOIN product p ON (p.id = op.product_id)
 		LEFT JOIN product_type pt ON (p.type = pt.type)
 		LEFT JOIN product_subtype pst ON (p.type = pst.type AND p.subtype = pst.subtype)
-		WHERE delivery_date = '${deliveryDate}'
+		WHERE delivery_date = '${deliveryDate}' and o.tenant_id = '${tenantId}'
 		GROUP BY
     product_id,
 		name,

@@ -1,10 +1,9 @@
-import { PrismaClient } from '@prisma/client'
 import { addMonths } from 'date-fns'
 import express from 'express'
 import { CreateTenantDto, GetCompanySettings, PostCompanySettings, PostSubscriptionChangeRequest } from '../../frontend/src/types/types'
 import { getUser, isAuthenticated } from '../middlewares/permissions'
+import prisma from '../prisma'
 const companiesRoute = express.Router()
-const prisma = new PrismaClient()
 
 companiesRoute.get(`/api/tenants`, isAuthenticated, async (req, res) => {
   const { tenantId } = getUser(req)
