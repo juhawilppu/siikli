@@ -6,7 +6,7 @@ import { Prisma } from '@prisma/client'
 
 export function requireTenantFilterMiddleware(): Prisma.Middleware {
     return async (params, next) => {
-        const isCustomerModel = params.model === 'Customer'
+        const isProtectedModel = ['User', 'Customer', 'Order', 'OrderProduct', 'Product', 'ProductType', 'ProductSubtypes'].includes(params.model as string)
         const isFindAction =
             params.action === 'findMany' ||
             params.action === 'findFirst' ||
@@ -15,7 +15,7 @@ export function requireTenantFilterMiddleware(): Prisma.Middleware {
             params.action === 'deleteMany' ||
             params.action === 'updateMany'
 
-        if (isCustomerModel && isFindAction) {
+        if (isProtectedModel && isFindAction) {
             const where = params.args?.where
 
             const hasTenantFilter =
@@ -24,7 +24,7 @@ export function requireTenantFilterMiddleware(): Prisma.Middleware {
                 (where?.OR && where.OR.some((cond: any) => cond.tenantId !== undefined))
 
             if (!hasTenantFilter) {
-                throw new Error(`Missing tenantId filter for Customer query`)
+                throw new Error(`Missing tenantId filter for ${params.model} query`)
             }
         }
 
