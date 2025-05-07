@@ -1,10 +1,9 @@
-import { PrismaClient } from '@prisma/client'
 import express from 'express'
 import { CustomerDto, DeleteCustomerResponseDto, GetCustomersResponseDto } from '../../frontend/src/types/types'
 import { getUser, isAuthenticated } from '../middlewares/permissions'
+import prisma from '../prisma'
 
 export const customersRoute = express.Router()
-const prisma = new PrismaClient()
 
 customersRoute.get(`/api/customers`, isAuthenticated, async (req, res) => {
   console.log('getting customers', req.user)

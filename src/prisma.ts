@@ -2,36 +2,37 @@ import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
-// Add middleware to validate tenant_id filtering
-prisma.$use(async (params, next) => {
-    // Check if this is a customer query
-    if (params.model === 'Customer') {
-        // For findMany and findFirst, ensure where clause includes tenantId
-        if (params.action === 'findMany' || params.action === 'findFirst') {
-            if (!params.args?.where?.tenantId) {
-                throw new Error('Customer queries must include tenantId filter')
-            }
-        }
-        // For create, ensure data includes tenantId
-        if (params.action === 'create') {
-            if (!params.args?.data?.tenantId) {
-                throw new Error('Customer creation must include tenantId')
-            }
-        }
-        // For update, ensure where clause includes tenantId
-        if (params.action === 'update') {
-            if (!params.args?.where?.tenantId) {
-                throw new Error('Customer updates must include tenantId filter')
-            }
-        }
-        // For delete, ensure where clause includes tenantId
-        if (params.action === 'delete') {
-            if (!params.args?.where?.tenantId) {
-                throw new Error('Customer deletions must include tenantId filter')
-            }
-        }
-    }
-    return next(params)
-})
+import { Prisma } from '@prisma/client'
 
-export default prisma 
+export function requireTenantFilterMiddleware(): Prisma.Middleware {
+    return async (params, next) => {
+        const isCustomerModel = params.model === 'Customer'
+        const isFindAction =
+            params.action === 'findMany' ||
+            params.action === 'findFirst' ||
+            params.action === 'findUnique' ||
+            params.action === 'count' ||
+            params.action === 'deleteMany' ||
+            params.action === 'updateMany'
+
+        if (isCustomerModel && isFindAction) {
+            const where = params.args?.where
+
+            const hasTenantFilter =
+                where?.tenantId !== undefined ||
+                (where?.AND && where.AND.some((cond: any) => cond.tenantId !== undefined)) ||
+                (where?.OR && where.OR.some((cond: any) => cond.tenantId !== undefined))
+
+            if (!hasTenantFilter) {
+                throw new Error(`Missing tenantId filter for Customer query`)
+            }
+        }
+
+        return next(params)
+    }
+}
+
+
+prisma.$use(requireTenantFilterMiddleware())
+
+export default prisma
