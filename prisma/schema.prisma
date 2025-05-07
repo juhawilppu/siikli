@@ -8,44 +8,46 @@ datasource db {
 }
 
 model Tenant {
-  id String @id @default(uuid()) @db.Uuid
-  name        String @db.VarChar(255) @map("name")
-  streetAddress            String? @db.VarChar(255)  @map("street_address")
-  postalCode            String? @db.VarChar(255) @map("postal_code")
-  city            String? @db.VarChar(255)
-  phone            String? @db.VarChar(255)
-  email            String? @db.VarChar(255)
-  website            String? @db.VarChar(255)
-  businessId         String? @db.VarChar(255) @map("business_id")
-  invoiceBankName   String? @db.VarChar(255) @map("invoice_bank_name")
-  invoiceBankAccount String? @db.VarChar(255) @map("invoice_bank_account")
-  invoiceSwiftBic String? @db.VarChar(255) @map("invoice_swift_bic")
-  invoiceReference   String? @db.VarChar(255) @map("invoice_reference")
-  invoiceSumRow     String? @db.VarChar(255) @map("invoice_sum_row")
-  signupCompleted   Boolean @default(false) @map("signup_completed")
-  createdAt DateTime @default(now()) @map("created_at")
-  subscriptionType String @default("FREE") @map("subscription_type")
-  subscriptionEndDate DateTime? @map("subscription_end_date")
-  subscriptionStartDate DateTime? @map("subscription_start_date")
-  trialEndDate DateTime? @map("trial_end_date")
-  customers            Customer[]
-  orders               Order[]
-  users               User[]
-  products             Product[]
-  productTypes         ProductType[]
-  productSubtypes      ProductSubtypes[]
-  logs Log[]
+  id                    String            @id @default(uuid()) @db.Uuid
+  name                  String            @map("name") @db.VarChar(255)
+  streetAddress         String?           @map("street_address") @db.VarChar(255)
+  postalCode            String?           @map("postal_code") @db.VarChar(255)
+  city                  String?           @db.VarChar(255)
+  phone                 String?           @db.VarChar(255)
+  email                 String?           @db.VarChar(255)
+  website               String?           @db.VarChar(255)
+  businessId            String?           @map("business_id") @db.VarChar(255)
+  invoiceBankName       String?           @map("invoice_bank_name") @db.VarChar(255)
+  invoiceBankAccount    String?           @map("invoice_bank_account") @db.VarChar(255)
+  invoiceSwiftBic       String?           @map("invoice_swift_bic") @db.VarChar(255)
+  invoiceReference      String?           @map("invoice_reference") @db.VarChar(255)
+  invoiceSumRow         String?           @map("invoice_sum_row") @db.VarChar(255)
+  signupCompleted       Boolean           @default(false) @map("signup_completed")
+  createdAt             DateTime          @default(now()) @map("created_at")
+  subscriptionType      String            @default("FREE") @map("subscription_type")
+  subscriptionEndDate   DateTime?         @map("subscription_end_date")
+  subscriptionStartDate DateTime?         @map("subscription_start_date")
+  trialEndDate          DateTime?         @map("trial_end_date")
+  customers             Customer[]
+  orders                Order[]
+  users                 User[]
+  products              Product[]
+  productTypes          ProductType[]
+  productSubtypes       ProductSubtypes[]
+  logs                  Log[]
+
   @@map("tenant")
 }
 
 model User {
-  id String @id @db.Uuid @default(uuid())
-  googleExternalId String?  @unique @db.VarChar(128)
-  email      String  @unique
-  tenantId  String @db.Uuid
-  tenant Tenant @relation(fields: [tenantId], references: [id])
-  logs Log[]
+  id               String  @id @default(uuid()) @db.Uuid
+  googleExternalId String? @unique @db.VarChar(128)
+  email            String  @unique
+  tenantId         String  @db.Uuid
+  tenant           Tenant  @relation(fields: [tenantId], references: [id])
+  logs             Log[]
   marketingConsent Boolean @default(false)
+
   @@map("user")
 }
 
@@ -56,52 +58,51 @@ model EmailLoginPinCode {
   createdAt DateTime @default(now())
 }
 
-
 model Customer {
-  id String @id @default(uuid()) @db.Uuid
-  chain                  String   @db.VarChar(3)
-  name                   String   @db.VarChar(50)
-  address                String?  @db.VarChar(255)
+  id                     String  @id @default(uuid()) @db.Uuid
+  chain                  String  @db.VarChar(3)
+  name                   String  @db.VarChar(50)
+  address                String? @db.VarChar(255)
   compensation           Float
-  reference              String?  @db.VarChar(255)
-  company_name           String?  @db.VarChar(255)
+  reference              String? @db.VarChar(255)
+  company_name           String? @db.VarChar(255)
   order_index            Int?
-  city                   String?  @db.VarChar(255)
-  email                  String?  @db.VarChar(255)
-  phone                  String?  @db.VarChar(255)
-  postal_code            String?  @db.VarChar(5)
-  address2               String?  @db.VarChar(255)
-  business_id            String?  @db.VarChar(255)
-  customer_group         String?  @db.VarChar(256)
+  city                   String? @db.VarChar(255)
+  email                  String? @db.VarChar(255)
+  phone                  String? @db.VarChar(255)
+  postal_code            String? @db.VarChar(5)
+  address2               String? @db.VarChar(255)
+  business_id            String? @db.VarChar(255)
+  customer_group         String? @db.VarChar(256)
   show_price_without_tax Boolean @default(false)
   orders                 Order[]
-  tenantId               String @db.Uuid
-  tenant                 Tenant @relation(fields: [tenantId], references: [id])
+  tenantId               String  @db.Uuid
+  tenant                 Tenant  @relation(fields: [tenantId], references: [id])
 
   @@map("customer")
 }
 
 model OrderProduct {
-  id String @id @default(uuid()) @db.Uuid
-  orderId          String @map("order_id") @db.Uuid
-  productId        String @map("product_id") @db.Uuid
-  amount           Int
-  price            Float
-  packageSize      Int @map("package_size")
-  freetext         String? @db.VarChar(500)
-  packageType      String? @db.VarChar(3) @map("package_type")
-  price0           Float   @default(0)
-  products         Product @relation(fields: [productId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FKo6helt0ucmegaeachjpx40xhe")
-  order            Order   @relation(fields: [orderId], references: [id])
+  id          String  @id @default(uuid()) @db.Uuid
+  orderId     String  @map("order_id") @db.Uuid
+  productId   String  @map("product_id") @db.Uuid
+  amount      Int
+  price       Float
+  packageSize Int     @map("package_size")
+  freetext    String? @db.VarChar(500)
+  packageType String? @map("package_type") @db.VarChar(3)
+  price0      Float   @default(0)
+  products    Product @relation(fields: [productId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FKo6helt0ucmegaeachjpx40xhe")
+  order       Order   @relation(fields: [orderId], references: [id])
 
   @@index([productId])
   @@map("order_product")
 }
 
 model ProductType {
-  id String @id @default(uuid()) @db.Uuid
-  tenantId String @db.Uuid
-  tenant Tenant @relation(fields: [tenantId], references: [id])
+  id               String            @id @default(uuid()) @db.Uuid
+  tenantId         String            @db.Uuid
+  tenant           Tenant            @relation(fields: [tenantId], references: [id])
   order_index      Int
   type             String?           @db.VarChar(255)
   product_subtypes ProductSubtypes[]
@@ -110,19 +111,19 @@ model ProductType {
 }
 
 model Product {
-  id String @id @default(uuid()) @db.Uuid
-  tenantId String @db.Uuid
-  tenant Tenant @relation(fields: [tenantId], references: [id])
+  id             String         @id @default(uuid()) @db.Uuid
+  tenantId       String         @db.Uuid
+  tenant         Tenant         @relation(fields: [tenantId], references: [id])
   name           String         @db.VarChar(64)
-  variety        String?         @db.VarChar(32)
+  variety        String?        @db.VarChar(32)
   info           String?        @db.VarChar(32)
-  price          Float?          
+  price          Float?
   order_index    Int?
-  type           String?         @db.VarChar(32)
+  type           String?        @db.VarChar(32)
   subtype        String?        @db.VarChar(255)
   package_size   String?        @db.VarChar(255)
   package_type   String?        @db.VarChar(255)
-  price0         Float?          @default(0)
+  price0         Float?         @default(0)
   customer_group String?        @db.VarChar(256)
   active         Boolean?       @default(true)
   order_product  OrderProduct[]
@@ -131,8 +132,8 @@ model Product {
 }
 
 model Order {
-  id String @id @default(uuid()) @db.Uuid
-  customerId          String          @map("customer_id") @db.Uuid
+  id                  String         @id @default(uuid()) @db.Uuid
+  customerId          String         @map("customer_id") @db.Uuid
   deliveryDate        DateTime       @map("delivery_date") @db.Date
   hasNote             Boolean        @map("has_note")
   noteBody            String?        @map("note_body") @db.VarChar(1000)
@@ -141,17 +142,17 @@ model Order {
   customerGroup       String?        @map("customer_group") @db.VarChar(256)
   customer            Customer       @relation(fields: [customerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   products            OrderProduct[]
-  tenantId            String @db.Uuid
-  tenant              Tenant @relation(fields: [tenantId], references: [id])
+  tenantId            String         @db.Uuid
+  tenant              Tenant         @relation(fields: [tenantId], references: [id])
 
   @@index([customerId], map: "customer_id")
   @@map("order")
 }
 
 model ProductSubtypes {
-  id String @id @default(uuid()) @db.Uuid
-  tenantId String @db.Uuid
-  tenant Tenant @relation(fields: [tenantId], references: [id])
+  id            String       @id @default(uuid()) @db.Uuid
+  tenantId      String       @db.Uuid
+  tenant        Tenant       @relation(fields: [tenantId], references: [id])
   order_index   Int
   subtype       String?      @db.VarChar(255)
   type          String?      @db.VarChar(255)
@@ -164,22 +165,22 @@ model ProductSubtypes {
 }
 
 model RateLimit {
-  id String @id @default(uuid()) @db.Uuid
-  ip String @db.VarChar(255)
-  key String @db.VarChar(255)
+  id        String   @id @default(uuid()) @db.Uuid
+  ip        String   @db.VarChar(255)
+  key       String   @db.VarChar(255)
   createdAt DateTime @default(now())
 
   @@map("rate_limit")
 }
 
 model Log {
-  id String @id @default(uuid()) @db.Uuid
-  userId String? @db.Uuid
-  user User? @relation(fields: [userId], references: [id]) 
-  tenantId String? @db.Uuid
-  tenant Tenant? @relation(fields: [tenantId], references: [id])
-  event String @db.VarChar(255)
-  data Json @default("{}")
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String?  @db.Uuid
+  user      User?    @relation(fields: [userId], references: [id])
+  tenantId  String?  @db.Uuid
+  tenant    Tenant?  @relation(fields: [tenantId], references: [id])
+  event     String   @db.VarChar(255)
+  data      Json     @default("{}")
   createdAt DateTime @default(now())
 
   @@map("log")

@@ -10,5 +10,8 @@
   "typescript.enablePromptUseWorkspaceTsdk": true,
   "prettier.jsxSingleQuote": true,
   "prettier.semi": false,
-  "prettier.singleQuote": true
+  "prettier.singleQuote": true,
+  "[prisma]": {
+    "editor.defaultFormatter": "Prisma.prisma"
+  }
 }
