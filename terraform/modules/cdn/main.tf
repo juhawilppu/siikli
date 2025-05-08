@@ -31,6 +31,46 @@ resource "aws_s3_bucket_policy" "site" {
   })
 }
 
+resource "aws_cloudfront_response_headers_policy" "csp" {
+  name = "siikli-csp-policy"
+
+  security_headers_config {
+
+    content_type_options {
+      override = true
+    }
+    
+    content_security_policy {
+      content_security_policy = "default-src 'self'; script-src 'self' https://eu-assets.i.posthog.com; style-src 'self' https://unpkg.com 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://eu-assets.i.posthog.com https://eu.i.posthog.com https://*.ingest.de.sentry.io; report-uri /csp-report"
+      override                = true
+    }
+    frame_options {
+      frame_option = "DENY"
+      override     = true
+    }
+
+    referrer_policy {
+      referrer_policy = "strict-origin-when-cross-origin"
+      override         = true
+    }
+
+    strict_transport_security {
+      access_control_max_age_sec = 31536000
+      include_subdomains         = true
+      preload                    = true
+      override                   = true
+    }
+  }
+
+  custom_headers_config {
+    items {
+      header   = "Permissions-Policy"
+      override = true
+      value    = "geolocation=(), microphone=(), camera=()"
+    }
+  }
+}
+
 # CloudFront distribution
 resource "aws_cloudfront_distribution" "cdn" {
   origin {
@@ -78,6 +118,7 @@ resource "aws_cloudfront_distribution" "cdn" {
   default_cache_behavior {
     target_origin_id       = "s3-${aws_s3_bucket.site.id}"
     viewer_protocol_policy = "redirect-to-https"
+    response_headers_policy_id = aws_cloudfront_response_headers_policy.csp.id
 
     allowed_methods = ["GET", "HEAD"]
     cached_methods  = ["GET", "HEAD"]
@@ -95,6 +136,9 @@ resource "aws_cloudfront_distribution" "cdn" {
     path_pattern     = "/api/*"
     target_origin_id = "alb-siikli-backend"
     viewer_protocol_policy = "redirect-to-https"
+    response_headers_policy_id = aws_cloudfront_response_headers_policy.csp.id
+
+
     allowed_methods  = ["HEAD", "GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"]
     cached_methods   = ["GET", "HEAD", "OPTIONS"]
 
