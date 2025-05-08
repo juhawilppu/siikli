@@ -8,7 +8,7 @@ export interface GetCurrentUserDto {
 export interface ProductOrderDto {
   id: string
   productId: string
-  price: number
+  price: number | null
   amount: number
   packages: number
   packageSize: number

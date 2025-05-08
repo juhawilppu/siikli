@@ -110,7 +110,7 @@ export default function CompanySettings() {
                         <Input
                           id="businessId"
                           name="businessId"
-                          value={companyData.businessId}
+                          value={companyData.businessId || ''}
                           onChange={handleInputChange}
                         />
                       </div>
@@ -124,7 +124,7 @@ export default function CompanySettings() {
                       <Input
                         id="streetAddress"
                         name="streetAddress"
-                        value={companyData.streetAddress}
+                        value={companyData.streetAddress || ''}
                         onChange={handleInputChange}
                       />
                     </div>
@@ -135,13 +135,13 @@ export default function CompanySettings() {
                         <Input
                           id="postalCode"
                           name="postalCode"
-                          value={companyData.postalCode}
+                          value={companyData.postalCode || ''}
                           onChange={handleInputChange}
                         />
                       </div>
                       <div className="space-y-2 sm:col-span-2">
                         <Label htmlFor="city">Kaupunki</Label>
-                        <Input id="city" name="city" value={companyData.city} onChange={handleInputChange} />
+                        <Input id="city" name="city" value={companyData.city || ''} onChange={handleInputChange} />
                       </div>
                     </div>
 
@@ -155,7 +155,7 @@ export default function CompanySettings() {
                       <Input
                         id="bankName"
                         name="bankName"
-                        value={companyData.invoiceBankName}
+                        value={companyData.invoiceBankName || ''}
                         onChange={handleInputChange}
                       />
                     </div>
@@ -166,7 +166,7 @@ export default function CompanySettings() {
                         <Input
                           id="bankAccount"
                           name="bankAccount"
-                          value={companyData.invoiceBankAccount}
+                          value={companyData.invoiceBankAccount || ''}
                           onChange={handleInputChange}
                         />
                       </div>
@@ -175,7 +175,7 @@ export default function CompanySettings() {
                         <Input
                           id="swiftBic"
                           name="swiftBic"
-                          value={companyData.invoiceReference}
+                          value={companyData.invoiceReference || ''}
                           onChange={handleInputChange}
                         />
                       </div>
@@ -189,7 +189,7 @@ export default function CompanySettings() {
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                       <div className="space-y-2">
                         <Label htmlFor="phone">Puhelinnumero</Label>
-                        <Input id="phone" name="phone" value={companyData.phone} onChange={handleInputChange} />
+                        <Input id="phone" name="phone" value={companyData.phone || ''} onChange={handleInputChange} />
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="email">Sähköposti</Label>
@@ -197,7 +197,7 @@ export default function CompanySettings() {
                           id="email"
                           name="email"
                           type="email"
-                          value={companyData.email}
+                          value={companyData.email || ''}
                           onChange={handleInputChange}
                         />
                       </div>
@@ -208,7 +208,7 @@ export default function CompanySettings() {
                       <Input
                         id="website"
                         name="website"
-                        value={companyData.website}
+                        value={companyData.website || ''}
                         onChange={handleInputChange}
                       />
                     </div>

@@ -28,7 +28,7 @@ import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { useToast } from "@/hooks/use-toast"
-import { GetProductResponseDto, ProductTypeResponse, ReorderDto } from "@/types/types"
+import { GetProductResponseDto, ProductTypeResponse } from "@/types/types"
 import { formatMoneyFi } from "@/utils/money"
 import axios from "axios"
 import { useNavigate } from "react-router-dom"
@@ -94,43 +94,6 @@ export default function TuotteetSivu() {
       }
     })
 
-  const changeOrderIndex = async (id: string, direction: "up" | "down") => {
-    const productIndex = products.find((t) => t.id === id)?.orderIndex as number
-    if (productIndex === -1) return
-
-    const indexToChange = direction === "up" ? productIndex - 1 : productIndex + 1
-
-    if (indexToChange < 0 || indexToChange >= products.length) return
-
-    const updatedProducts = [...products]
-
-    // Swap order indexes
-    const temp = updatedProducts[productIndex].orderIndex
-    updatedProducts[productIndex].orderIndex = updatedProducts[indexToChange].orderIndex
-    updatedProducts[indexToChange].orderIndex = temp
-
-    // Reorder products
-    updatedProducts.sort((a, b) => a.orderIndex - b.orderIndex)
-
-    const payload: ReorderDto = {
-      first: {
-        id: updatedProducts[productIndex].id,
-        orderIndex: updatedProducts[productIndex].orderIndex
-      },
-      second: {
-        id: updatedProducts[indexToChange].id,
-        orderIndex: updatedProducts[indexToChange].orderIndex
-      }
-    }
-    await axios.post('/products/reorder', payload)
-
-    setProducts(updatedProducts)
-
-    toast({
-      title: "Järjestys päivitetty",
-      description: `Tuotteen "${products[productIndex].name}" järjestys muutettu.`,
-    })
-  }
 
   const onProductSaved = async (product: GetProductResponseDto) => {
     if (showNewProductDialog) {

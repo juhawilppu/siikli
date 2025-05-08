@@ -142,7 +142,7 @@ export default function CreateOrder() {
   }
 
   const calculateTotal = () => {
-    return orderItems.reduce((sum, item) => sum + item.amount * item.price, 0)
+    return orderItems.reduce((sum, item) => sum + item.amount * (item.price || 0), 0)
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -434,7 +434,7 @@ export default function CreateOrder() {
 
                       <div className="mt-4 text-right">
                         <p className="text-sm font-medium">
-                          Tuote yhteensä: {formatMoneyFi(item.amount * item.price)}
+                          Tuote yhteensä: {formatMoneyFi(item.amount * (item.price || 0))}
                         </p>
                       </div>
                     </div>
