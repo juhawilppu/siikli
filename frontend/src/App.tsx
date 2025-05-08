@@ -282,6 +282,7 @@ function DesktopSidebar({ currentPath }: { currentPath: string }) {
           {navItems.map((item) => (
             <NavLink
               to={item.href}
+              key={item.href}
               className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${currentPath === item.href ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:text-foreground'}`}
             >
               <item.icon className="h-4 w-4" />

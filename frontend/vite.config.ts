@@ -11,6 +11,12 @@ export default defineConfig({
     },
   },
   server: {
+    port: 5173,
+    middlewareMode: false,
+    headers: {
+      'Content-Security-Policy':
+        "default-src 'self'; script-src 'self' https://eu-assets.i.posthog.com 'unsafe-inline'; style-src 'self' https://unpkg.com 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://eu-assets.i.posthog.com https://eu.i.posthog.com https://*.ingest.de.sentry.io; report-uri /csp-report"
+    },
     proxy: {
       // Proxying API requests to the first backend service
       '/api': {
