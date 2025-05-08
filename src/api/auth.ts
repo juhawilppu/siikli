@@ -61,7 +61,6 @@ authRoute.post('/api/auth/email/create-pin', rateLimit(5, 10), async (req, res, 
 
     // Generate new pin
     const pin = Math.floor(100000 + Math.random() * 900000)
-    console.log('pin', pin)
 
     // Delete pins older than 15 minutes
     await prisma.emailLoginPinCode.deleteMany({
@@ -92,7 +91,7 @@ authRoute.post('/api/auth/email/create-pin', rateLimit(5, 10), async (req, res, 
     const client = new SESClient({ region: "eu-north-1" });
 
     const command = new SendEmailCommand({
-      Source: 'no-reply@siikli.fi',
+      Source: 'Siikli <no-reply@siikli.fi>',
       Destination: {
         ToAddresses: [body.email],
       },
@@ -127,7 +126,30 @@ authRoute.post('/api/auth/email/create-pin', rateLimit(5, 10), async (req, res, 
     })
 
     await client.send(command);
+
+    await new Promise(resolve => setTimeout(resolve, 1500));
+
+    const command2 = new SendEmailCommand({
+      Source: 'Siikli Event <no-reply@siikli.fi>',
+      Destination: {
+        ToAddresses: ['juha.wilppu@gmail.com'],
+      },
+      Message: {
+        Subject: {
+          Data: 'New event: PIN code',
+        },
+        Body: {
+          Html: {
+            Data: `A pin code was just sent to ${body.email}`,
+          },
+        },
+      },
+    })
+    await client.send(command2);
+
     console.log(`Pin ${pin} sent to ${body.email} via AWS SES`);
+    console.log(`Event notified`);
+
     res.status(200).json({ message: 'OK' })
   } catch (error) {
     next(error)

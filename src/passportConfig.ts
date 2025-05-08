@@ -88,6 +88,27 @@ Siikli
   })
 
   await client.send(command);
+
+  await new Promise(resolve => setTimeout(resolve, 1500));
+
+  const command2 = new SendEmailCommand({
+    Source: 'Siikli Event <no-reply@siikli.fi>',
+    Destination: {
+      ToAddresses: ['juha.wilppu@gmail.com'],
+    },
+    Message: {
+      Subject: {
+        Data: 'New event: Welcome message',
+      },
+      Body: {
+        Html: {
+          Data: `A new welcome message was just sent to ${email}`,
+        },
+      },
+    },
+  })
+  await client.send(command2);
+
   return user
 }
 
