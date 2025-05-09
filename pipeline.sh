@@ -4,6 +4,7 @@ aws s3 sync ./dist/ s3://v2.siikli.fi --delete
 cd ..
 
 export version=$(date +%s)
+echo $version > terraform/version.txt
 docker build --platform linux/amd64 -t siikli-backend:$version .
 # docker run --platform linux/arm64 -e DATABASE_URL="postgresql://siikli:testpassword@host.docker.internal:5432/siikli" -p 3033:3033 siikli-backend:$version
 docker tag siikli-backend:$version 337909750746.dkr.ecr.eu-north-1.amazonaws.com/siikli-backend:$version
@@ -15,5 +16,4 @@ docker push 337909750746.dkr.ecr.eu-north-1.amazonaws.com/siikli-backend:$versio
 echo "Pushed siikli-backend:$version to ECR"
 
 cd terraform
-export TF_VAR_app_version=$version
 ./deploy_to_prod.sh
