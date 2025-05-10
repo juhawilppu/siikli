@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "customer" ALTER COLUMN "chain" SET DATA TYPE VARCHAR(32);

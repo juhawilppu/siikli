@@ -42,6 +42,7 @@ export default function CreateOrder() {
   const [hasWaybillNote, setHasWaybillNote] = useState<boolean>(false)
   const [waybillNote, setWaybillNote] = useState({ title: "", content: "" })
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [open, setOpen] = useState(false)
   const [orderItems, setOrderItems] = useState<ProductOrderDto[]>([
     {
       id: "1",
@@ -170,7 +171,7 @@ export default function CreateOrder() {
       await axios.post(`/orders/${orderId}`, data)
       toast({
         title: "Tilaus tallennettiin onnistuneesti",
-        description: `${customer.chain} ${customer.name} tilaus tallennettu.`,
+        description: `${customer.name} tilaus tallennettu.`,
         variant: "success",
 
       })
@@ -179,7 +180,7 @@ export default function CreateOrder() {
       await axios.post('/orders', data)
       toast({
         title: "Tilaus luotiin onnistuneesti",
-        description: `${customer.chain} ${customer.name} tilaus luotu.`,
+        description: `${customer.name} tilaus luotu.`,
         variant: "success",
       })
     }
@@ -189,13 +190,13 @@ export default function CreateOrder() {
   }
 
   if (isLoading || !customers || !products) {
-    return <SiikliPage title={orderId ? 'Tilaus' : 'Uusi tilaus'} description="Tilauksen tiedot." />
+    return <SiikliPage title={orderId ? 'Tilaus' : 'Uusi tilaus'} description="Tilauksen tiedot" />
   }
 
   const selectedCustomer = customers.find((c) => c.id === customerId)
 
   return (
-    <SiikliPage title={orderId ? 'Tilaus' : 'Uusi tilaus'} description="Tilauksen tiedot." mainAction={
+    <SiikliPage title={orderId ? 'Tilaus' : 'Uusi tilaus'} description="Tilauksen tiedot" mainAction={
       !orderId &&
       <Button variant="outline" onClick={() => window.history.back()}>
         Peruuta
@@ -206,25 +207,27 @@ export default function CreateOrder() {
           {/* Customer and Delivery Information */}
           <Card>
             <CardHeader>
-              <CardTitle>Tilaukset tiedot</CardTitle>
-              <CardDescription>Täytä tilaukset perustiedot</CardDescription>
+              <CardTitle>Tilauksen perustiedot</CardTitle>
+              <CardDescription>Valitse asiakas ja toimituspäivä</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="customer">Asiakas</Label>
-                  <Select value={customerId} onValueChange={setCustomerId}>
-                    <SelectTrigger id="customer">
-                      <SelectValue placeholder="Valitse asiakas" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {customers.map((customer) => (
-                        <SelectItem key={customer.id} value={customer.id}>
-                          {customer.chain} {customer.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <div className="flex gap-2">
+                    <Select value={customerId} onValueChange={setCustomerId}>
+                      <SelectTrigger id="customer">
+                        <SelectValue placeholder="Valitse asiakas" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {customers.map((customer) => (
+                          <SelectItem key={customer.id} value={customer.id}>
+                            {customer.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                   {selectedCustomer && (
                     <p className="text-xs text-muted-foreground mt-1">
                       {selectedCustomer.streetAddress}, {selectedCustomer.postalCode} {selectedCustomer.city}
@@ -234,7 +237,7 @@ export default function CreateOrder() {
 
                 <div className="space-y-2">
                   <Label htmlFor="delivery-date">Toimituspäivä</Label>
-                  <Popover>
+                  <Popover open={open} onOpenChange={setOpen}>
                     <PopoverTrigger asChild>
                       <Button
                         variant="outline"
@@ -248,7 +251,16 @@ export default function CreateOrder() {
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0">
-                      <CalendarComponent mode="single" selected={deliveryDate} onSelect={setDeliveryDate} initialFocus locale={fi} />
+                      <CalendarComponent
+                        mode="single"
+                        selected={deliveryDate}
+                        onSelect={(date) => {
+                          setDeliveryDate(date);
+                          setOpen(false); // Close popover on date select
+                        }}
+                        initialFocus
+                        locale={fi}
+                      />
                     </PopoverContent>
                   </Popover>
                 </div>
@@ -297,7 +309,7 @@ export default function CreateOrder() {
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
                 <CardTitle>Tuotteet</CardTitle>
-                <CardDescription>Täytä tilaukset tuotteet</CardDescription>
+                <CardDescription>Täytä tilauksen tuotteet</CardDescription>
               </div>
               <Button type="button" onClick={handleAddItem} size="sm">
                 <Plus className="mr-2 h-4 w-4" />

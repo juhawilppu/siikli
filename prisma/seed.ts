@@ -8,7 +8,7 @@ async function main() {
 
     const tenant = await prisma.tenant.create({
         data: {
-            name: 'Siikli Corporation',
+            name: 'Siikli Solutions Oy',
             businessId: 'Y-1234567-8',
             streetAddress: 'Test street 1',
             postalCode: '12345',
@@ -31,14 +31,35 @@ async function main() {
 
     await prisma.customer.create({
         data: {
-            name: 'Test customer',
+            name: 'Alepa Sello',
             tenantId: tenant.id,
-            chain: '001',
-            compensation: 100,
-            address: 'Test address',
-            postalCode: '12345',
-            city: 'Helsinki',
-            phone: '1234567890',
+            chain: 'Alepa',
+            compensation: 0,
+            address: 'Leppävaarankatu 3',
+            postalCode: '02600',
+            city: 'Espoo',
+            phone: '010 7669010',
+            email: 'test@example.com',
+            showPriceWithoutTax: true,
+            reference: '1234567890',
+            companyName: 'Test company',
+            orderIndex: 1,
+            businessId: '1234567890',
+            customerGroup: 'Test group',
+
+        }
+    })
+
+    await prisma.customer.create({
+        data: {
+            name: 'Alepa Lintuvaara',
+            tenantId: tenant.id,
+            chain: 'Alepa',
+            compensation: 0,
+            address: 'Linnuntie 2',
+            postalCode: '02660',
+            city: 'Espoo',
+            phone: '010 7669920',
             email: 'test@example.com',
             showPriceWithoutTax: true,
             reference: '1234567890',

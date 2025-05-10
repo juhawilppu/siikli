@@ -60,7 +60,7 @@ model EmailLoginPinCode {
 
 model Customer {
   id                  String  @id @default(uuid()) @map("id") @db.Uuid
-  chain               String  @map("chain") @db.VarChar(3)
+  chain               String  @map("chain") @db.VarChar(32)
   name                String  @map("name") @db.VarChar(50)
   address             String? @map("address") @db.VarChar(255)
   compensation        Float   @map("compensation")

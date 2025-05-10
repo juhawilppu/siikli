@@ -10,7 +10,6 @@ import { Button } from "@/components/ui/button"
 import { Calendar as CalendarComponent } from "@/components/ui/calendar"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { GetOrderList } from "@/types/types"
 import { dateToString, formatDate } from "@/utils/date"
@@ -20,6 +19,7 @@ import SiikliPage from "@/SiikliPage"
 import { formatMoneyFi } from "@/utils/money"
 import axios from "axios"
 import { fi } from "date-fns/locale"
+import { NavLink } from "react-router-dom"
 
 
 export default function Orders() {
@@ -27,7 +27,6 @@ export default function Orders() {
 
   const [startDate, setStartDate] = useState<Date>(startOfWeek(now, { weekStartsOn: 1 }))
   const [endDate, setEndDate] = useState<Date>(endOfWeek(now, { weekStartsOn: 1 }))
-  const [statusFilter, setStatusFilter] = useState<string>("all")
   const [isLoading, setIsLoading] = useState(false)
   const [isPrinting, setIsPrinting] = useState(false)
   const [orders, setOrders] = useState<GetOrderList[]>([])
@@ -84,11 +83,11 @@ export default function Orders() {
     }
   }
 
-  if (isLoading) return <SiikliPage title="Tilaukset" description="Hallitse tilauksia tällä sivulla." />
+  if (isLoading) return <SiikliPage title="Tilaukset" description="Hallitse tilauksia tällä sivulla" />
 
   return (
     <>
-      <SiikliPage title="Tilaukset" description="Hallitse tilauksia tällä sivulla." mainAction={<Button onClick={() => (window.location.href = "/orders/new")}>
+      <SiikliPage title="Tilaukset" description="Hallitse tilauksia tällä sivulla" mainAction={<Button onClick={() => (window.location.href = "/orders/new")}>
         <Package className="mr-2 h-4 w-4" />
         Uusi tilaus
       </Button>}>
@@ -135,22 +134,6 @@ export default function Orders() {
                     <CalendarComponent mode="single" selected={endDate} onSelect={(value) => setEndDate(value as Date)} required locale={fi} />
                   </PopoverContent>
                 </Popover>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Tila</label>
-                <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Valitse tila" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Kaikki</SelectItem>
-                    <SelectItem value="Delivered">Toimitettu</SelectItem>
-                    <SelectItem value="In Transit">Toimituksessa</SelectItem>
-                    <SelectItem value="Processing">Käsittelyssä</SelectItem>
-                    <SelectItem value="Cancelled">Peruttu</SelectItem>
-                  </SelectContent>
-                </Select>
               </div>
             </div>
           </CardContent>
@@ -209,7 +192,6 @@ export default function Orders() {
                     </TableHead>
                     <TableHead>Päivämäärä</TableHead>
                     <TableHead>Asiakas</TableHead>
-                    <TableHead>Tila</TableHead>
                     <TableHead>Summa</TableHead>
                     <TableHead className="text-right"></TableHead>
                   </TableRow>
@@ -218,7 +200,7 @@ export default function Orders() {
                   {orders.length === 0 ? (
                     <TableRow>
                       <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
-                        Ei tilauksia
+                        Sinulla ei ole tilauksia tällä aikavälillä. 👉 <NavLink to="/orders/new" className="text-blue-500">Luo uusi tilaus tästä</NavLink>.
                       </TableCell>
                     </TableRow>
                   ) : (
