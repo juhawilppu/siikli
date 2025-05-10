@@ -107,7 +107,7 @@ export default function CreateOrder() {
         const res = await axios.get<GetOrderDto>(`/orders/${orderId}`)
         setOrderItems(res.data.items.map((item) => ({
           ...item,
-          price: item.price?.toString() || "" // Use string to avoid floating point precision issues
+          price: item.price?.toFixed(2).toString() || "" // Use string to avoid floating point precision issues
         })))
         setCustomerId(res.data.customerId)
         console.log('settins customerId to ' + res.data.customerId)
