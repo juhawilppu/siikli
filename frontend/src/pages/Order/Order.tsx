@@ -21,7 +21,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Separator } from "@/components/ui/separator"
 import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/hooks/use-toast"
-import { CustomerDto, GetCustomersResponseDto, GetOrderDto, GetProductResponseDto, OrderProduct, PostOrderDto, PostOrderResponseDto, ProductOrderIdDto } from "@/types/types"
+import { CustomerDto, GetCustomersResponseDto, GetOrderDto, GetProductResponseDto, OrderProduct, PostOrderDto, PostOrderResponseDto } from "@/types/types"
 import { dateToString } from "@/utils/date"
 import { formatMoneyFi } from "@/utils/money"
 import axios from "axios"
@@ -43,16 +43,29 @@ export default function CreateOrder() {
   const [waybillNote, setWaybillNote] = useState({ title: "", content: "" })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [open, setOpen] = useState(false)
-  const [orderItems, setOrderItems] = useState<(Omit<ProductOrderIdDto, 'id'> & { id: string, unsaved?: boolean, deleted?: boolean })[]>([
+
+  const [orderItems, setOrderItems] = useState<{
+    id: string
+    deleted?: boolean
+    productId: string
+    price: string
+    amount: number
+    packages: number
+    packageSize: number
+    packageType: string
+    freetext: string
+    unsaved?: boolean
+  }[]>([
     {
       id: Date.now().toString(),
+      deleted: false,
       unsaved: true,
       productId: '',
       amount: 0,
       packages: 0,
       packageSize: 0,
       packageType: "",
-      price: 0,
+      price: "",
       freetext: "",
     },
   ])
@@ -72,7 +85,7 @@ export default function CreateOrder() {
         packages: 0,
         packageSize: 0,
         packageType: "",
-        price: 0,
+        price: "",
         freetext: "",
       },
     ])
@@ -92,7 +105,10 @@ export default function CreateOrder() {
       if (orderId) {
         console.log('has orderId')
         const res = await axios.get<GetOrderDto>(`/orders/${orderId}`)
-        setOrderItems(res.data.items)
+        setOrderItems(res.data.items.map((item) => ({
+          ...item,
+          price: item.price?.toString() || "" // Use string to avoid floating point precision issues
+        })))
         setCustomerId(res.data.customerId)
         console.log('settins customerId to ' + res.data.customerId)
         setDeliveryDate(new Date(res.data.deliveryDate))
@@ -128,7 +144,7 @@ export default function CreateOrder() {
           if (field === "productId") {
             const product = products.find((p) => p.id === value)
             if (product) {
-              updatedItem.price = product.price
+              updatedItem.price = product.price?.toString() || ""
               updatedItem.packageSize = product.packageSize || 0
               updatedItem.packageType = product.packageType || ''
             }
@@ -149,7 +165,7 @@ export default function CreateOrder() {
   }
 
   const calculateTotal = () => {
-    return orderItems.reduce((sum, item) => sum + (item.amount || 0) * (item.price || 0), 0)
+    return orderItems.reduce((sum, item) => sum + (item.amount || 0) * (Number.parseFloat(item.price || "0")), 0)
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -163,7 +179,7 @@ export default function CreateOrder() {
     setIsSubmitting(true)
     e.preventDefault()
     // Here you would typically save the order to your backend
-    const data = {
+    const data: PostOrderDto = {
       customerId: selectedCustomer.id,
       deliveryDate: dateToString(deliveryDate),
       hasNote: hasWaybillNote,
@@ -173,9 +189,10 @@ export default function CreateOrder() {
         if (item.unsaved) {
           item.id = undefined
         }
+        item.price = Number.parseFloat(item.price)
         return item
       })
-    } as PostOrderDto
+    }
     console.log("Saving order:", data)
     if (orderId) {
       // Save order
@@ -428,6 +445,10 @@ export default function CreateOrder() {
                             onChange={(e) =>
                               handleItemChange(item.id, "price", Number.parseFloat(e.target.value) || 0)
                             }
+                            onBlur={() => {
+                              console.log('onBlur', item.price)
+                              handleItemChange(item.id, "price", Number.parseFloat(item.price || "0").toFixed(2))
+                            }}
                           />
                         </div>
 
