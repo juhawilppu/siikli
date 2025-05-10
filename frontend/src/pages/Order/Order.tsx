@@ -43,7 +43,7 @@ export default function CreateOrder() {
   const [waybillNote, setWaybillNote] = useState({ title: "", content: "" })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [open, setOpen] = useState(false)
-  const [orderItems, setOrderItems] = useState<(ProductOrderIdDto & { unsaved?: boolean })[]>([
+  const [orderItems, setOrderItems] = useState<(ProductOrderIdDto & { unsaved?: boolean, deleted?: boolean })[]>([
     {
       id: Date.now().toString(),
       unsaved: true,
@@ -107,9 +107,12 @@ export default function CreateOrder() {
   }, [orderId])
 
   const handleRemoveItem = (id: string) => {
-    if (orderItems.length > 1) {
-      setOrderItems(orderItems.filter((item) => item.id !== id))
-    }
+    setOrderItems(orderItems.map((item) => {
+      if (item.id == id) {
+        item.deleted = true
+      }
+      return item
+    }))
   }
 
   const handleItemChange = (id: string, field: keyof OrderProduct, value: any) => {
@@ -356,7 +359,7 @@ export default function CreateOrder() {
                 <CardTitle>Tuotteet</CardTitle>
                 <CardDescription>Täytä tilauksen tuotteet</CardDescription>
               </div>
-              <Button type="button" onClick={handleAddItem} size="sm">
+              <Button variant="outline" type="button" onClick={handleAddItem} size="sm">
                 <Plus className="mr-2 h-4 w-4" />
                 Lisää tuote
               </Button>
@@ -364,7 +367,7 @@ export default function CreateOrder() {
             <CardContent>
               <ScrollArea>
                 <div className="space-y-4">
-                  {orderItems.map((item) => (
+                  {orderItems.filter((item) => !item.deleted).map((item) => (
                     <div key={item.id} className="rounded-lg border p-4 relative">
                       <Button
                         type="button"

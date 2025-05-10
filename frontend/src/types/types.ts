@@ -18,6 +18,7 @@ export interface ProductOrderDto {
 
 export interface ProductOrderIdDto {
   id: string | undefined
+  deleted?: boolean
   productId: string
   price: number
   amount: number

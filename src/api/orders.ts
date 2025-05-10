@@ -456,10 +456,20 @@ ordersRoute.post(`/api/orders/:id`, isAuthenticated, async (req, res) => {
         },
         where: {
           id: r.id as string,
+          orderId: result.id,
         },
       })
     })
-    await Promise.all(promises)
+
+    const promises2 = toUpdate.filter((r) => r.deleted).map((r) => {
+      return prisma.orderProduct.delete({
+        where: {
+          id: r.id as string,
+          orderId: result.id,
+        },
+      })
+    })
+    await Promise.all([...promises, ...promises2])
   }
 
   await prisma.log.create({
