@@ -1,9 +1,16 @@
 resource "aws_s3_bucket" "site" {
   bucket = var.domain_name
+}
 
-  website {
-    index_document = "index.html"
-    error_document = "error.html"
+resource "aws_s3_bucket_website_configuration" "site" {
+  bucket = aws_s3_bucket.site.bucket
+
+  index_document {
+    suffix = "index.html"
+  }
+
+  error_document {
+    key = "error.html"
   }
 }
 
@@ -74,7 +81,7 @@ resource "aws_cloudfront_response_headers_policy" "csp" {
 # CloudFront distribution
 resource "aws_cloudfront_distribution" "cdn" {
   origin {
-    domain_name = aws_s3_bucket.site.website_endpoint
+    domain_name = aws_s3_bucket_website_configuration.site.website_endpoint
     origin_id   = "s3-${aws_s3_bucket.site.id}"
     custom_origin_config {
       http_port              = 80
