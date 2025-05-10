@@ -512,7 +512,7 @@ export default function CreateOrder() {
 
                       <div className="mt-4 text-right">
                         <p className="text-sm font-medium">
-                          Tuote yhteensä: {formatMoneyFi(item.amount * (item.price || 0))}
+                          Tuote yhteensä: {formatMoneyFi(item.amount * (Number.parseFloat(item.price || "0")))}
                         </p>
                       </div>
                     </div>
