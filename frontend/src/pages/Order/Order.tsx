@@ -43,7 +43,7 @@ export default function CreateOrder() {
   const [waybillNote, setWaybillNote] = useState({ title: "", content: "" })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [open, setOpen] = useState(false)
-  const [orderItems, setOrderItems] = useState<(ProductOrderIdDto & { unsaved?: boolean, deleted?: boolean })[]>([
+  const [orderItems, setOrderItems] = useState<(Omit<ProductOrderIdDto, 'id'> & { id: string, unsaved?: boolean, deleted?: boolean })[]>([
     {
       id: Date.now().toString(),
       unsaved: true,
@@ -163,19 +163,19 @@ export default function CreateOrder() {
     setIsSubmitting(true)
     e.preventDefault()
     // Here you would typically save the order to your backend
-    const data: PostOrderDto = {
+    const data = {
       customerId: selectedCustomer.id,
       deliveryDate: dateToString(deliveryDate),
       hasNote: hasWaybillNote,
       noteBody: hasWaybillNote ? waybillNote.content : null,
       noteHeader: hasWaybillNote ? waybillNote.title : null,
-      items: orderItems.map((item) => {
+      items: [...orderItems as any].map((item) => {
         if (item.unsaved) {
           item.id = undefined
         }
         return item
       })
-    }
+    } as PostOrderDto
     console.log("Saving order:", data)
     if (orderId) {
       // Save order
