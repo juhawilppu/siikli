@@ -1,3 +1,4 @@
+import { captureException } from '@sentry/node'
 import { endOfDay, parse, startOfDay } from 'date-fns'
 import express from 'express'
 import puppeteer from 'puppeteer'
@@ -398,91 +399,97 @@ ordersRoute.post(`/api/orders`, isAuthenticated, async (req, res) => {
 ordersRoute.post(`/api/orders/:id`, isAuthenticated, async (req, res) => {
   console.log('saving order ' + req.params.id)
 
-  const data = req.body as PostOrderRequestDto
-  const { tenantId, userId } = getUser(req)
-  const result = await prisma.order.update({
-    data: {
-      deliveryDate: stringToDate(data.deliveryDate),
-      hasNote: data.hasNote,
-      noteHeader: data.hasNote ? data.noteHeader : undefined,
-      noteBody: data.hasNote ? data.noteBody : undefined,
-      showPriceWithoutTax: false,
-      customer: {
-        connect: {
-          id: data.customerId,
-        },
-      },
-      tenant: {
-        connect: {
-          id: tenantId
-        },
-      },
-    },
-    where: {
-      id: req.params.id as string,
-      tenantId
-    },
-  })
-  console.log(data.items)
-  const toCreate = data.items.filter((r) => !r.id)
-  if (toCreate.length > 0) {
-    await prisma.orderProduct.createMany({
-      data: toCreate.map((r) => {
-        return {
-          orderId: result.id,
-          productId: r.productId,
-          amount: r.amount,
-          price: r.price || 0,
-          freetext: r.freetext,
-          packageSize: r.packageSize,
-          packageType: r.packageType,
-        }
-      }),
-    })
-  }
-  const toUpdate = data.items.filter((r) => r.id)
-  if (toUpdate.length > 0) {
-    const promises = toUpdate.map((r) => {
-      console.log(r)
-      return prisma.orderProduct.update({
-        data: {
-          orderId: result.id,
-          productId: r.productId,
-          amount: r.amount,
-          price: r.price || 0,
-          freetext: r.freetext,
-          packageSize: r.packageSize,
-          packageType: r.packageType,
-        },
-        where: {
-          id: r.id as string,
-          orderId: result.id,
-        },
-      })
-    })
-
-    const promises2 = toUpdate.filter((r) => r.deleted).map((r) => {
-      return prisma.orderProduct.delete({
-        where: {
-          id: r.id as string,
-          orderId: result.id,
-        },
-      })
-    })
-    await Promise.all([...promises, ...promises2])
-  }
-
-  await prisma.log.create({
-    data: {
-      userId,
-      tenantId,
-      event: 'update_order',
+  try {
+    const data = req.body as PostOrderRequestDto
+    const { tenantId, userId } = getUser(req)
+    const result = await prisma.order.update({
       data: {
-        order: result.id,
-        customer: result.customerId,
-      }
+        deliveryDate: stringToDate(data.deliveryDate),
+        hasNote: data.hasNote,
+        noteHeader: data.hasNote ? data.noteHeader : undefined,
+        noteBody: data.hasNote ? data.noteBody : undefined,
+        showPriceWithoutTax: false,
+        customer: {
+          connect: {
+            id: data.customerId,
+          },
+        },
+        tenant: {
+          connect: {
+            id: tenantId
+          },
+        },
+      },
+      where: {
+        id: req.params.id as string,
+        tenantId
+      },
+    })
+    console.log(data.items)
+    const toCreate = data.items.filter((r) => !r.id)
+    if (toCreate.length > 0) {
+      await prisma.orderProduct.createMany({
+        data: toCreate.map((r) => {
+          return {
+            orderId: result.id,
+            productId: r.productId,
+            amount: r.amount,
+            price: r.price || 0,
+            freetext: r.freetext,
+            packageSize: r.packageSize,
+            packageType: r.packageType,
+          }
+        }),
+      })
     }
-  })
+    const toUpdate = data.items.filter((r) => r.id)
+    if (toUpdate.length > 0) {
+      const promises = toUpdate.map((r) => {
+        console.log(r)
+        return prisma.orderProduct.update({
+          data: {
+            orderId: result.id,
+            productId: r.productId,
+            amount: r.amount,
+            price: r.price || 0,
+            freetext: r.freetext,
+            packageSize: r.packageSize,
+            packageType: r.packageType,
+          },
+          where: {
+            id: r.id as string,
+            orderId: result.id,
+          },
+        })
+      })
 
-  res.status(200).json({ message: 'Saved' })
+      const promises2 = toUpdate.filter((r) => r.deleted).map((r) => {
+        return prisma.orderProduct.delete({
+          where: {
+            id: r.id as string,
+            orderId: result.id,
+          },
+        })
+      })
+      await Promise.all([...promises, ...promises2])
+    }
+
+    await prisma.log.create({
+      data: {
+        userId,
+        tenantId,
+        event: 'update_order',
+        data: {
+          order: result.id,
+          customer: result.customerId,
+        }
+      }
+    })
+
+    res.status(200).json({ message: 'Saved' })
+  } catch (err) {
+    console.error(err)
+    captureException(err);
+    res.status(500).json({ message: 'Failed to save order' })
+  }
 })

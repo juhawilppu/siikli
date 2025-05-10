@@ -57,12 +57,16 @@ async function startServer() {
 
   process.on("uncaughtException", (err) => {
     console.error("Uncaught Exception:", err);
+    Sentry.captureException(err);
+
     // You can decide whether to exit or not
     // process.exit(1);
   });
 
   process.on("unhandledRejection", (reason, promise) => {
     console.error("Unhandled Rejection:", reason);
+    Sentry.captureException(reason);
+
     // Same here, decide if you want to crash or just log
     // process.exit(1);
   });

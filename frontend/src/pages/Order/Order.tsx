@@ -24,6 +24,7 @@ import { useToast } from "@/hooks/use-toast"
 import { CustomerDto, GetCustomersResponseDto, GetOrderDto, GetProductResponseDto, OrderProduct, PostOrderRequestDto, PostOrderResponseDto } from "@/types/types"
 import { dateToString } from "@/utils/date"
 import { formatMoneyFi } from "@/utils/money"
+import { captureException } from "@sentry/react"
 import axios from "axios"
 import { format } from "date-fns"
 import { fi } from 'date-fns/locale'
@@ -195,23 +196,33 @@ export default function CreateOrder() {
       items
     }
     console.log("Saving order:", data)
-    if (orderId) {
-      // Update order
-      await axios.post(`/orders/${orderId}`, data)
+    try {
+      if (orderId) {
+        // Update order
+        await axios.post(`/orders/${orderId}`, data)
+        toast({
+          title: "Tilaus tallennettu",
+          description: `Tilaus asiakkaalle ${customer.name} tallennettiin onnistuneesti.`,
+          variant: "success",
+        })
+      } else {
+        // Create new order
+        const res = await axios.post<PostOrderResponseDto>('/orders', data)
+        toast({
+          title: "Tilaus luotu",
+          description: `Tilaus asiakkaalle ${customer.name} luotiin onnistuneesti.`,
+          variant: "success",
+        })
+        navigate(`/orders/${res.data.id}`, { replace: false });
+      }
+    } catch (err) {
+      console.error(err)
+      captureException(err)
       toast({
-        title: "Tilaus tallennettu",
-        description: `Tilaus asiakkaalle ${customer.name} tallennettiin onnistuneesti.`,
-        variant: "success",
+        title: "Tilauksen tallentaminen epäonnistui",
+        description: `Ylläpitomme saa tästä automaattisen virheviestin ja korjaa asian mahdollisimman pian.`,
+        variant: "destructive",
       })
-    } else {
-      // Create new order
-      const res = await axios.post<PostOrderResponseDto>('/orders', data)
-      toast({
-        title: "Tilaus luotu",
-        description: `Tilaus asiakkaalle ${customer.name} luotiin onnistuneesti.`,
-        variant: "success",
-      })
-      navigate(`/orders/${res.data.id}`, { replace: false });
     }
     setIsSubmitting(false)
 
