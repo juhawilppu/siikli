@@ -200,7 +200,7 @@ export default function Orders() {
                   {orders.length === 0 ? (
                     <TableRow>
                       <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
-                        Sinulla ei ole tilauksia tällä aikavälillä. 👉 <NavLink to="/orders/new" className="text-blue-500">Luo uusi tilaus tästä</NavLink>.
+                        Sinulla ei ole tilauksia tällä aikavälillä. 👉 <NavLink to="/orders/new" className="text-blue-500">Luo uusi tilaus</NavLink>.
                       </TableCell>
                     </TableRow>
                   ) : (

@@ -83,13 +83,13 @@ async function main() {
 
     const tenant2 = await prisma.tenant.create({
         data: {
-            name: 'Wilppu Yritys',
+            name: 'New company',
             businessId: 'Y-11111111-1',
             streetAddress: 'Testikatu 1',
             postalCode: '11111',
             city: 'Espoo',
             phone: '0500000000',
-            email: 'juha.wilppu@gmail.com',
+            email: 'rajajarvi@gmail.com',
             website: 'https://juhawilppu.fi',
             invoiceBankName: 'Danske Bank',
             invoiceBankAccount: '1111111111',
@@ -106,29 +106,9 @@ async function main() {
 
     await prisma.user.create({
         data: {
-            email: 'juha.wilppu+yritys@gmail.com',
-            googleExternalId: null,
+            email: 'rajajarvi@gmail.com',
+            googleExternalId: '118037848383891596587',
             tenantId: tenant2.id,
-        }
-    })
-
-    await prisma.customer.create({
-        data: {
-            name: 'Testiasiakas',
-            tenantId: tenant2.id,
-            chain: '001',
-            compensation: 100,
-            address: 'Testikatu 1',
-            postalCode: '12345',
-            city: 'Oulu',
-            phone: '1234567890',
-            email: 'test@example.com',
-            showPriceWithoutTax: true,
-            reference: '1234567890',
-            companyName: 'Test company',
-            orderIndex: 1,
-            businessId: '1234567890',
-            customerGroup: 'Test group',
         }
     })
 }

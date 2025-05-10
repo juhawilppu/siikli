@@ -27,7 +27,7 @@ import { formatMoneyFi } from "@/utils/money"
 import axios from "axios"
 import { format } from "date-fns"
 import { fi } from 'date-fns/locale'
-import { useParams } from "react-router-dom"
+import { NavLink, useParams } from "react-router-dom"
 
 const packageSizes = [12, 20, 25, 120, 200, 250]
 const packageTypes = ['Ltk', 'SS', 'A', 'Ap', 'P', 'Pnt', 'PSS', 'HYV']
@@ -190,13 +190,50 @@ export default function CreateOrder() {
   }
 
   if (isLoading || !customers || !products) {
-    return <SiikliPage title={orderId ? 'Tilaus' : 'Uusi tilaus'} description="Tilauksen tiedot" />
+    return <SiikliPage title={orderId ? 'Tilaus' : 'Uusi tilaus'} description="Täytä tilauksen tiedot" />
   }
+
+  if (customers.length === 0 || products.length === 0) {
+    return (
+      <SiikliPage
+        title={orderId ? 'Tilaus' : 'Uusi tilaus'}
+        description="Täytä tilauksen tiedot"
+        mainAction={
+          <Button variant="outline" onClick={() => window.history.back()}>
+            Peruuta
+          </Button>
+        }
+      >
+        <div className="flex flex-col items-center justify-center h-[60vh] space-y-6 text-center">
+          <div className="text-4xl">📦</div>
+          <div className="space-y-3">
+            {customers.length === 0 && (
+              <div className="text-sm bg-muted rounded-md px-4 py-2">
+                👤 Sinulla ei ole vielä asiakkaita.{" "}👉{" "}
+                <NavLink to="/customers" className="underline text-primary">
+                  Lisää ensimmäinen asiakas
+                </NavLink>.
+              </div>
+            )}
+            {products.length === 0 && (
+              <div className="text-sm bg-muted rounded-md px-4 py-2">
+                🥔 Sinulla ei ole vielä tuotteita.{" "}👉{" "}
+                <NavLink to="/products" className="underline text-primary">
+                  Lisää ensimmäinen tuote
+                </NavLink>.
+              </div>
+            )}
+          </div>
+        </div>
+      </SiikliPage>
+    );
+  }
+
 
   const selectedCustomer = customers.find((c) => c.id === customerId)
 
   return (
-    <SiikliPage title={orderId ? 'Tilaus' : 'Uusi tilaus'} description="Tilauksen tiedot" mainAction={
+    <SiikliPage title={orderId ? 'Tilaus' : 'Uusi tilaus'} description="Täytä tilauksen tiedot" mainAction={
       !orderId &&
       <Button variant="outline" onClick={() => window.history.back()}>
         Peruuta
