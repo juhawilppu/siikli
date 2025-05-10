@@ -17,10 +17,11 @@ export interface ProductOrderDto {
 }
 
 export interface ProductOrderIdDto {
-  id: string | null
+  id: string | undefined
   productId: string
   price: number
   amount: number
+  packages: number
   packageSize: number
   packageType: string
   freetext: string
@@ -32,7 +33,11 @@ export interface PostOrderDto {
   hasNote: boolean
   noteBody: string | null
   noteHeader: string | null
-  items: ProductOrderDto[]
+  items: ProductOrderIdDto[]
+}
+
+export interface PostOrderResponseDto {
+  id: string
 }
 
 export interface GetOrderDto {

@@ -71,6 +71,24 @@ async function main() {
         }
     })
 
+    await prisma.product.create({
+        data: {
+            name: 'Siikli',
+            tenantId: tenant.id,
+            price: 1.40,
+            price0: 1.23,
+        }
+    })
+
+    await prisma.product.create({
+        data: {
+            name: 'Rosamunda',
+            tenantId: tenant.id,
+            price: 1.60,
+            price0: 1.43,
+        }
+    })
+
     await prisma.user.create({
         data: {
             email: 'juha.wilppu@gmail.com',

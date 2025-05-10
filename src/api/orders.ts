@@ -4,7 +4,8 @@ import puppeteer from 'puppeteer'
 import {
   GetOrderDto,
   GetOrderList,
-  PostOrderDto
+  PostOrderDto,
+  PostOrderResponseDto
 } from '../../frontend/src/types/types'
 import { dateToString, formatDate, stringToDate } from '../../frontend/src/utils/date'
 import { getUser, isAuthenticated } from '../middlewares/permissions'
@@ -391,7 +392,7 @@ ordersRoute.post(`/api/orders`, isAuthenticated, async (req, res) => {
       }
     }
   })
-  res.json({ ...result, rows: result2 })
+  res.json({ id: result.id } satisfies PostOrderResponseDto)
 })
 
 ordersRoute.post(`/api/orders/:id`, isAuthenticated, async (req, res) => {

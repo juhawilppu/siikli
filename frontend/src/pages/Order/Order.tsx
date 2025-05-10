@@ -21,13 +21,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Separator } from "@/components/ui/separator"
 import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/hooks/use-toast"
-import { CustomerDto, GetCustomersResponseDto, GetOrderDto, GetProductResponseDto, OrderProduct, PostOrderDto, ProductOrderDto } from "@/types/types"
+import { CustomerDto, GetCustomersResponseDto, GetOrderDto, GetProductResponseDto, OrderProduct, PostOrderDto, PostOrderResponseDto, ProductOrderIdDto } from "@/types/types"
 import { dateToString } from "@/utils/date"
 import { formatMoneyFi } from "@/utils/money"
 import axios from "axios"
 import { format } from "date-fns"
 import { fi } from 'date-fns/locale'
-import { NavLink, useParams } from "react-router-dom"
+import { NavLink, useNavigate, useParams } from "react-router-dom"
 
 const packageSizes = [12, 20, 25, 120, 200, 250]
 const packageTypes = ['Ltk', 'SS', 'A', 'Ap', 'P', 'Pnt', 'PSS', 'HYV']
@@ -43,9 +43,10 @@ export default function CreateOrder() {
   const [waybillNote, setWaybillNote] = useState({ title: "", content: "" })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [open, setOpen] = useState(false)
-  const [orderItems, setOrderItems] = useState<ProductOrderDto[]>([
+  const [orderItems, setOrderItems] = useState<(ProductOrderIdDto & { unsaved?: boolean })[]>([
     {
-      id: "1",
+      id: Date.now().toString(),
+      unsaved: true,
       productId: '',
       amount: 0,
       packages: 0,
@@ -57,6 +58,7 @@ export default function CreateOrder() {
   ])
 
   const { orderId } = useParams()
+  const navigate = useNavigate()
   const { toast } = useToast()
 
   const handleAddItem = () => {
@@ -64,6 +66,7 @@ export default function CreateOrder() {
       ...orderItems,
       {
         id: Date.now().toString(),
+        unsaved: true,
         productId: '',
         amount: 0,
         packages: 0,
@@ -130,8 +133,8 @@ export default function CreateOrder() {
 
           // Recalculate packages if amount or package size changed
           if (field === "amount" || field === "packageSize") {
-            if (updatedItem.packageSize > 0) {
-              updatedItem.packages = Math.ceil(updatedItem.amount / updatedItem.packageSize)
+            if (updatedItem.packageSize && updatedItem.amount) {
+              updatedItem.packages = updatedItem.amount / updatedItem.packageSize
             }
           }
 
@@ -143,7 +146,7 @@ export default function CreateOrder() {
   }
 
   const calculateTotal = () => {
-    return orderItems.reduce((sum, item) => sum + item.amount * (item.price || 0), 0)
+    return orderItems.reduce((sum, item) => sum + (item.amount || 0) * (item.price || 0), 0)
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -163,26 +166,31 @@ export default function CreateOrder() {
       hasNote: hasWaybillNote,
       noteBody: hasWaybillNote ? waybillNote.content : null,
       noteHeader: hasWaybillNote ? waybillNote.title : null,
-      items: orderItems
+      items: orderItems.map((item) => {
+        if (item.unsaved) {
+          item.id = undefined
+        }
+        return item
+      })
     }
     console.log("Saving order:", data)
     if (orderId) {
       // Save order
       await axios.post(`/orders/${orderId}`, data)
       toast({
-        title: "Tilaus tallennettiin onnistuneesti",
-        description: `${customer.name} tilaus tallennettu.`,
+        title: "Tilaus tallennettu",
+        description: `Tilaus asiakkaalle ${customer.name} tallennettiin onnistuneesti.`,
         variant: "success",
-
       })
     } else {
       // Save new order
-      await axios.post('/orders', data)
+      const res = await axios.post<PostOrderResponseDto>('/orders', data)
       toast({
-        title: "Tilaus luotiin onnistuneesti",
-        description: `${customer.name} tilaus luotu.`,
+        title: "Tilaus luotu",
+        description: `Tilaus asiakkaalle ${customer.name} luotiin onnistuneesti.`,
         variant: "success",
       })
+      navigate(`/orders/${res.data.id}`, { replace: false });
     }
     setIsSubmitting(false)
 
@@ -354,7 +362,7 @@ export default function CreateOrder() {
               </Button>
             </CardHeader>
             <CardContent>
-              <ScrollArea className="max-h-[500px]">
+              <ScrollArea>
                 <div className="space-y-4">
                   {orderItems.map((item) => (
                     <div key={item.id} className="rounded-lg border p-4 relative">
@@ -455,19 +463,16 @@ export default function CreateOrder() {
                         </div>
 
                         <div className="space-y-2">
-                          <Label htmlFor={`packages-${item.id}`}>Kappaletta</Label>
+                          <Label htmlFor={`packages-${item.id}`}>Laatikkoa</Label>
                           <Input
                             id={`packages-${item.id}`}
                             type="number"
                             disabled
                             min="0"
-                            value={item.packages}
+                            value={item.packages.toFixed(2)}
                             readOnly
                             className="bg-muted"
                           />
-                          <p className="text-xs text-muted-foreground">
-                            Laskukaava: {item.amount} / {item.packageSize}
-                          </p>
                         </div>
 
                         <div className="space-y-2 sm:col-span-2 lg:col-span-3">

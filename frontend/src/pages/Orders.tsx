@@ -228,6 +228,7 @@ export default function Orders() {
                         <TableCell className="text-right">
                           <Button
                             variant="ghost"
+                            className="text-blue-500"
                             size="sm"
                             onClick={() => (window.location.href = `/orders/${order.id}`)}
                           >
