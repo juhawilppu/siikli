@@ -21,7 +21,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Separator } from "@/components/ui/separator"
 import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/hooks/use-toast"
-import { CustomerDto, GetCustomersResponseDto, GetOrderDto, GetProductResponseDto, OrderProduct, PostOrderDto, PostOrderResponseDto } from "@/types/types"
+import { CustomerDto, GetCustomersResponseDto, GetOrderDto, GetProductResponseDto, OrderProduct, PostOrderRequestDto, PostOrderResponseDto } from "@/types/types"
 import { dateToString } from "@/utils/date"
 import { formatMoneyFi } from "@/utils/money"
 import axios from "axios"
@@ -48,8 +48,8 @@ export default function CreateOrder() {
     id: string
     deleted?: boolean
     productId: string
-    price: string
-    amount: number
+    price: string // Use string to render with 2 decimal places and allow empty string
+    amount: string // Use string to render with 2 decimal places
     packages: number
     packageSize: number
     packageType: string
@@ -61,7 +61,7 @@ export default function CreateOrder() {
       deleted: false,
       unsaved: true,
       productId: '',
-      amount: 0,
+      amount: "",
       packages: 0,
       packageSize: 0,
       packageType: "",
@@ -81,7 +81,7 @@ export default function CreateOrder() {
         id: Date.now().toString(),
         unsaved: true,
         productId: '',
-        amount: 0,
+        amount: "",
         packages: 0,
         packageSize: 0,
         packageType: "",
@@ -107,7 +107,8 @@ export default function CreateOrder() {
         const res = await axios.get<GetOrderDto>(`/orders/${orderId}`)
         setOrderItems(res.data.items.map((item) => ({
           ...item,
-          price: item.price?.toFixed(2).toString() || "" // Use string to avoid floating point precision issues
+          price: item.price?.toFixed(2).toString() || "",
+          amount: item.amount?.toFixed(2).toString() || ""
         })))
         setCustomerId(res.data.customerId)
         console.log('settins customerId to ' + res.data.customerId)
@@ -153,7 +154,7 @@ export default function CreateOrder() {
           // Recalculate packages if amount or package size changed
           if (field === "amount" || field === "packageSize") {
             if (updatedItem.packageSize && updatedItem.amount) {
-              updatedItem.packages = updatedItem.amount / updatedItem.packageSize
+              updatedItem.packages = Number.parseFloat(updatedItem.amount) / updatedItem.packageSize
             }
           }
 
@@ -165,7 +166,7 @@ export default function CreateOrder() {
   }
 
   const calculateTotal = () => {
-    return orderItems.reduce((sum, item) => sum + (item.amount || 0) * (Number.parseFloat(item.price || "0")), 0)
+    return orderItems.reduce((sum, item) => sum + (Number.parseFloat(item.amount || "0")) * (Number.parseFloat(item.price || "0")), 0)
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -178,24 +179,24 @@ export default function CreateOrder() {
     }
     setIsSubmitting(true)
     e.preventDefault()
+
     // Here you would typically save the order to your backend
-    const data: PostOrderDto = {
+    const items = orderItems.map((item) => ({
+      ...item,
+      price: Number.parseFloat(item.price),
+      amount: Number.parseFloat(item.amount),
+    }))
+    const data: PostOrderRequestDto = {
       customerId: selectedCustomer.id,
       deliveryDate: dateToString(deliveryDate),
       hasNote: hasWaybillNote,
       noteBody: hasWaybillNote ? waybillNote.content : null,
       noteHeader: hasWaybillNote ? waybillNote.title : null,
-      items: [...orderItems as any].map((item) => {
-        if (item.unsaved) {
-          item.id = undefined
-        }
-        item.price = Number.parseFloat(item.price)
-        return item
-      })
+      items
     }
     console.log("Saving order:", data)
     if (orderId) {
-      // Save order
+      // Update order
       await axios.post(`/orders/${orderId}`, data)
       toast({
         title: "Tilaus tallennettu",
@@ -203,7 +204,7 @@ export default function CreateOrder() {
         variant: "success",
       })
     } else {
-      // Save new order
+      // Create new order
       const res = await axios.post<PostOrderResponseDto>('/orders', data)
       toast({
         title: "Tilaus luotu",
@@ -431,6 +432,10 @@ export default function CreateOrder() {
                             onChange={(e) =>
                               handleItemChange(item.id, "amount", Number.parseFloat(e.target.value) || 0)
                             }
+                            onBlur={() => {
+                              console.log('onBlur', item.amount)
+                              handleItemChange(item.id, "amount", Number.parseFloat(item.amount || "0").toFixed(2))
+                            }}
                           />
                         </div>
 
@@ -512,7 +517,7 @@ export default function CreateOrder() {
 
                       <div className="mt-4 text-right">
                         <p className="text-sm font-medium">
-                          Tuote yhteensä: {formatMoneyFi(item.amount * (Number.parseFloat(item.price || "0")))}
+                          Tuote yhteensä: {formatMoneyFi(Number.parseFloat(item.amount || "0") * (Number.parseFloat(item.price || "0")))}
                         </p>
                       </div>
                     </div>

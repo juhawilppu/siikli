@@ -4,7 +4,7 @@ import puppeteer from 'puppeteer'
 import {
   GetOrderDto,
   GetOrderList,
-  PostOrderDto,
+  PostOrderRequestDto,
   PostOrderResponseDto
 } from '../../frontend/src/types/types'
 import { dateToString, formatDate, stringToDate } from '../../frontend/src/utils/date'
@@ -345,7 +345,7 @@ ordersRoute.get(`/api/orders/:id`, isAuthenticated, async (req, res) => {
 ordersRoute.post(`/api/orders`, isAuthenticated, async (req, res) => {
   console.log('saving order')
 
-  const data = req.body as PostOrderDto
+  const data = req.body as PostOrderRequestDto
   const { tenantId, userId } = getUser(req)
 
   const result = await prisma.order.create({
@@ -398,7 +398,7 @@ ordersRoute.post(`/api/orders`, isAuthenticated, async (req, res) => {
 ordersRoute.post(`/api/orders/:id`, isAuthenticated, async (req, res) => {
   console.log('saving order ' + req.params.id)
 
-  const data = req.body as PostOrderDto
+  const data = req.body as PostOrderRequestDto
   const { tenantId, userId } = getUser(req)
   const result = await prisma.order.update({
     data: {

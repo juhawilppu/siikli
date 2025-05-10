@@ -16,7 +16,7 @@ export interface ProductOrderDto {
   freetext: string
 }
 
-export interface ProductOrderIdDto {
+export interface PostOrderItemRequestDto {
   id: string | undefined
   deleted?: boolean
   productId: string
@@ -28,13 +28,13 @@ export interface ProductOrderIdDto {
   freetext: string
 }
 
-export interface PostOrderDto {
+export interface PostOrderRequestDto {
   deliveryDate: string
   customerId: string
   hasNote: boolean
   noteBody: string | null
   noteHeader: string | null
-  items: ProductOrderIdDto[]
+  items: PostOrderItemRequestDto[]
 }
 
 export interface PostOrderResponseDto {
