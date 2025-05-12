@@ -44,21 +44,6 @@ export default function Orders() {
       }).then(res => setOrders(res.data)).finally(() => setIsLoading(false))
   }, [startDate, endDate])
 
-  const getStatusClass = (status: string) => {
-    switch (status) {
-      case "Delivered":
-        return "bg-blue-100 text-blue-800"
-      case "In Transit":
-        return "bg-emerald-100 text-emerald-800"
-      case "Processing":
-        return "bg-yellow-100 text-yellow-800"
-      case "Cancelled":
-        return "bg-red-100 text-red-800"
-      default:
-        return "bg-gray-100 text-gray-800"
-    }
-  }
-
   const handlePrintWaybills = () => {
     setIsPrinting(true)
     printJS({
@@ -217,13 +202,6 @@ export default function Orders() {
                         {/*<TableCell className="font-medium">{order.id}</TableCell>*/}
                         <TableCell>{order.deliveryDate}</TableCell>
                         <TableCell>{order.customer.chain} {order.customer.name}</TableCell>
-                        <TableCell>
-                          <span
-                            className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${getStatusClass('Processing')}`}
-                          >
-                            Kesken
-                          </span>
-                        </TableCell>
                         <TableCell>{formatMoneyFi(order.total)}</TableCell>
                         <TableCell className="text-right">
                           <Button
