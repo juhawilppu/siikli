@@ -171,22 +171,90 @@ export default function CreateOrder() {
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    if (!deliveryDate || !customers || !selectedCustomer) {
+    e.preventDefault()
+    setIsSubmitting(true)
+
+    if (!customers) {
+      return
+    }
+    if (!deliveryDate) {
+      toast({
+        title: "Toimituspäivä ei voi olla tyhjä",
+        description: "Valitse toimituspäivä",
+        variant: "destructive",
+      })
+      setIsSubmitting(false)
+      return
+    }
+    if (!selectedCustomer) {
+      toast({
+        title: "Asiakas ei voi olla tyhjä",
+        description: "Valitse asiakas",
+        variant: "destructive",
+      })
+      setIsSubmitting(false)
       return
     }
     const customer = customers.find((c) => c.id === customerId)
     if (!customer) {
       return
     }
-    setIsSubmitting(true)
-    e.preventDefault()
 
-    // Here you would typically save the order to your backend
     const items = orderItems.map((item) => ({
       ...item,
+      id: item.unsaved ? undefined : item.id,
       price: Number.parseFloat(item.price),
       amount: Number.parseFloat(item.amount),
     }))
+
+    for (const item of items) {
+      if (!item.productId) {
+        toast({
+          title: "Tuote ei voi olla tyhjä",
+          description: "Valitse tuote tai poista rivi",
+          variant: "destructive",
+        })
+        setIsSubmitting(false)
+        return
+      }
+      if (!item.amount) {
+        toast({
+          title: "Määrä ei voi olla tyhjä",
+          description: "Valitse määrä tai poista rivi",
+          variant: "destructive",
+        })
+        setIsSubmitting(false)
+        return
+      }
+      if (!item.price) {
+        toast({
+          title: "Hinta ei voi olla tyhjä",
+          description: "Valitse hinta tai poista rivi",
+          variant: "destructive",
+        })
+        setIsSubmitting(false)
+        return
+      }
+      if (!item.packageSize) {
+        toast({
+          title: "Pakkauskoko ei voi olla tyhjä",
+          description: "Valitse pakkauskoko tai poista rivi",
+          variant: "destructive",
+        })
+        setIsSubmitting(false)
+        return
+      }
+      if (!item.packageType) {
+        toast({
+          title: "Pakkaustyyppi ei voi olla tyhjä",
+          description: "Valitse pakkaustyyppi tai poista rivi",
+          variant: "destructive",
+        })
+        setIsSubmitting(false)
+        return
+      }
+    }
+
     const data: PostOrderRequestDto = {
       customerId: selectedCustomer.id,
       deliveryDate: dateToString(deliveryDate),
@@ -479,7 +547,7 @@ export default function CreateOrder() {
                             </SelectTrigger>
                             <SelectContent>
                               {packageSizes.map(type => (
-                                <SelectItem value={type + ''}>{type}</SelectItem>
+                                <SelectItem key={type} value={type + ''}>{type}</SelectItem>
                               ))}
                             </SelectContent>
                           </Select>
@@ -496,7 +564,7 @@ export default function CreateOrder() {
                             </SelectTrigger>
                             <SelectContent>
                               {packageTypes.map(type => (
-                                <SelectItem value={type}>{type}</SelectItem>
+                                <SelectItem key={type} value={type}>{type}</SelectItem>
                               ))}
                             </SelectContent>
                           </Select>
