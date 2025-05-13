@@ -343,6 +343,22 @@ ordersRoute.get(`/api/orders/:id`, isAuthenticated, async (req, res) => {
   } satisfies GetOrderDto)
 })
 
+ordersRoute.delete(`/api/orders/:id`, isAuthenticated, async (req, res) => {
+  console.log('deleting order ' + req.params.id)
+
+  const orderId = req.params.id
+  const { tenantId } = getUser(req)
+
+  await prisma.order.delete({
+    where: {
+      id: orderId,
+      tenantId: tenantId,
+    },
+  })
+
+  res.status(200).json({ message: 'Order deleted' })
+})
+
 ordersRoute.post(`/api/orders`, isAuthenticated, async (req, res) => {
   console.log('saving order')
 

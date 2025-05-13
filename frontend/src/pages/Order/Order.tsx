@@ -29,6 +29,7 @@ import axios from "axios"
 import { format } from "date-fns"
 import { fi } from 'date-fns/locale'
 import { NavLink, useNavigate, useParams } from "react-router-dom"
+import ConfirmDialog from "../ConfirmDialog"
 
 const packageSizes = [12, 20, 25, 120, 200, 250]
 const packageTypes = ['Ltk', 'SS', 'A', 'Ap', 'P', 'Pnt', 'PSS', 'HYV']
@@ -44,6 +45,7 @@ export default function CreateOrder() {
   const [waybillNote, setWaybillNote] = useState({ title: "", content: "" })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [open, setOpen] = useState(false)
+  const [confirmDialog, setConfirmDialog] = useState(false)
 
   const [orderItems, setOrderItems] = useState<{
     id: string
@@ -340,6 +342,16 @@ export default function CreateOrder() {
 
   const selectedCustomer = customers.find((c) => c.id === customerId)
 
+  const handleConfirmDelete = () => {
+    axios.delete(`/orders/${orderId}`)
+    toast({
+      title: "Tilaus poistettu",
+      description: "Tilaus poistettu onnistuneesti",
+      variant: "success",
+    })
+    navigate("/orders")
+  }
+
   return (
     <SiikliPage title={orderId ? 'Tilaus' : 'Uusi tilaus'} description="Täytä tilauksen tiedot" mainAction={
       !orderId &&
@@ -347,6 +359,15 @@ export default function CreateOrder() {
         Peruuta
       </Button>
     }>
+
+      {confirmDialog && (
+        <ConfirmDialog
+          title="Poista tilaus"
+          description="Haluatko varmasti poistaa koko tilauksen? Tämä toiminto poistaa tilauksen lopullisesti."
+          onConfirm={handleConfirmDelete}
+          onCancel={() => setConfirmDialog(false)}
+        />
+      )}
       <form onSubmit={handleSubmit}>
         <div className="space-y-6">
           {/* Customer and Delivery Information */}
@@ -618,8 +639,8 @@ export default function CreateOrder() {
           </Card>
 
           <div className="flex justify-end gap-4">
-            <Button variant="outline" type="button" onClick={() => window.history.back()}>
-              Peruuta
+            <Button variant="destructive" type="button" onClick={() => setConfirmDialog(true)}>
+              Poista
             </Button>
             <Button type="submit" disabled={isSubmitting}>
               {isSubmitting ? (

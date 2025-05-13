@@ -93,7 +93,7 @@ model OrderProduct {
   packageType String? @map("package_type") @db.VarChar(3)
   price0      Float   @default(0) @map("price0")
   products    Product @relation(fields: [productId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FKo6helt0ucmegaeachjpx40xhe")
-  order       Order   @relation(fields: [orderId], references: [id])
+  order       Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
   @@index([productId])
   @@map("order_product")
