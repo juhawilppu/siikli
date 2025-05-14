@@ -1,4 +1,5 @@
 import { WarehouseReportByProduct } from "@/types/types";
+import '../App.css';
 
 export const WarehouseReportByProductDocument = ({ report }: {
     report: WarehouseReportByProduct
@@ -23,9 +24,9 @@ export const WarehouseReportByProductDocument = ({ report }: {
 
     return (
         <div className="pdf">
-            <h1 className="md-display-1">Tuotekohtainen pakkauslista</h1>
+            <h1>Tuotekohtainen pakkauslista</h1>
             <br />
-            <b>Raportointipäivä:</b>{' '}
+            <b>Päivämäärä:</b>{' '}
             <span>{new Date(report.deliveryDate).toLocaleDateString('fi-FI')}</span>
             <br />
             <br />
@@ -64,41 +65,45 @@ export const WarehouseReportByProductDocument = ({ report }: {
                             })}
                         </tbody>
                     </table>
-                    <br />
-                    <br />
-                    <div style={{ pageBreakInside: 'avoid' }}>
-                        <b>Yhteensä lajikkeittain</b>
-                        <br />
-                        <br />
-                        <table style={{ pageBreakInside: 'avoid' }} className="border-bottom">
-                            <thead>
-                                <tr className="title border-top border-bottom">
-                                    <td className="align-left width-50">Lajike</td>
-                                    <td className="align-right width-50">Kokonaismäärä (kg)</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {Object.entries(groupedByproduct_type).map(([product_type, products]) => {
-                                    const groupedByVariety = groupBy(products, 'productVariety');
-
-                                    return (
-                                        <tr key={product_type} className="border-bottom">
-                                            <td className="width-50">
-                                                {Object.keys(groupedByVariety).map((variety) => (
-                                                    <div key={variety}>{variety}</div>
-                                                ))}
-                                            </td>
-                                            <td className="align-right width-50">
-                                                {Object.values(groupedByVariety).map((productsOfVariety, i) => (
-                                                    <div key={i}>{getSum(productsOfVariety, 'amount')}</div>
-                                                ))}
-                                            </td>
+                    {false && (
+                        <>
+                            <br />
+                            <br />
+                            <div style={{ pageBreakInside: 'avoid' }}>
+                                <b>Yhteensä lajikkeittain</b>
+                                <br />
+                                <br />
+                                <table style={{ pageBreakInside: 'avoid' }} className="border-bottom">
+                                    <thead>
+                                        <tr className="title border-top border-bottom">
+                                            <td className="align-left width-50">Lajike</td>
+                                            <td className="align-right width-50">Kokonaismäärä (kg)</td>
                                         </tr>
-                                    );
-                                })}
-                            </tbody>
-                        </table>
-                    </div>
+                                    </thead>
+                                    <tbody>
+                                        {Object.entries(groupedByproduct_type).map(([product_type, products]) => {
+                                            const groupedByVariety = groupBy(products, 'productVariety');
+
+                                            return (
+                                                <tr key={product_type} className="border-bottom">
+                                                    <td className="width-50">
+                                                        {Object.keys(groupedByVariety).map((variety) => (
+                                                            <div key={variety}>{variety}</div>
+                                                        ))}
+                                                    </td>
+                                                    <td className="align-right width-50">
+                                                        {Object.values(groupedByVariety).map((productsOfVariety, i) => (
+                                                            <div key={i}>{getSum(productsOfVariety, 'amount')}</div>
+                                                        ))}
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </>
+                    )}
                 </>
             )}
         </div>

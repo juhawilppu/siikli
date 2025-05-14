@@ -23,7 +23,7 @@ router.get('/api/warehouse-report/grouped-by/customer', async (req, res) => {
     const results = await prisma.$queryRawUnsafe<any>(`
       SELECT
         customer_id,
-        CONCAT(c.chain, ' ', c.name) AS customer_name,
+        c.name AS customer_name,
         c.order_index AS customer_order_index,
         product_id,
         p.name AS product_name,

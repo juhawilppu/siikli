@@ -18,9 +18,9 @@ export const WarehouseReportByCustomerDocument = ({ report }: {
 
     return (
         <div className="pdf">
-            <h1 className="md-display-1">Kauppakohtainen pakkauslista</h1>
+            <h1>Kauppakohtainen pakkauslista</h1>
             <br />
-            <b>Raportointipäivä:</b>{' '}
+            <b>Päivämäärä:</b>{' '}
             <span>{report.deliveryDate}</span>
 
             {!report.rows && <div>Ei tuotteita.</div>}
@@ -31,34 +31,33 @@ export const WarehouseReportByCustomerDocument = ({ report }: {
                     <table className="border-bottom">
                         <thead>
                             <tr className="title border-top border-bottom">
-                                <td className="align-left" style={{ width: '30%' }}>
+                                <td className="align-left" style={{ width: '20%' }}>
                                     Tuote
                                 </td>
-                                <td className="align-center" colSpan={2} style={{ width: '10%' }}>
+                                <td className="align-center" style={{ width: '15%' }}>
                                     Pakkaus
                                 </td>
-                                <td className="align-right" style={{ width: '10%' }}>
-                                    Kappaletta
+                                <td className="align-right" style={{ width: '15%' }}>
+                                    Kappa&shy;letta
                                 </td>
                                 <td className="align-right" style={{ width: '25%' }}>
-                                    Kokonaismäärä (kg)
+                                    Kokonais&shy;määrä (kg)
                                 </td>
                                 <td className="align-left" style={{ width: '25%' }}>
-                                    Lisätietoa
+                                    Lisä&shy;tietoa
                                 </td>
                             </tr>
                         </thead>
                         <tbody>
                             {rows.map((order, idx) => (
                                 <tr key={idx}>
-                                    <td className="align-left">{order.productName}</td>
-                                    <td className="align-right">{order.packageSize}</td>
-                                    <td className="align-left">{order.packageType}</td>
-                                    <td className="align-right">
-                                        {Math.ceil(order.amount / order.packageSize)}
+                                    <td className="align-left" style={{ width: '20%' }}>{order.productName}</td>
+                                    <td className="align-center" style={{ width: '15%' }}>{order.packageSize} {order.packageType}</td>
+                                    <td className="align-right" style={{ width: '15%' }}>
+                                        {order.amount / order.packageSize}
                                     </td>
-                                    <td className="align-right">{order.amount}</td>
-                                    <td className="align-left">{order.freetext}</td>
+                                    <td className="align-right" style={{ width: '25%' }}>{order.amount}</td>
+                                    <td className="align-left" style={{ width: '25%' }}>{order.freetext}</td>
                                 </tr>
                             ))}
                         </tbody>

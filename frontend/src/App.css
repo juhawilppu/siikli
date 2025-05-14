@@ -6,7 +6,7 @@
   font-weight: normal;
   margin-top: 1em;
   margin-bottom: 0.4em;
-  font-size: 24px;
+  font-size: 20px;
 }
 
 .pdf .border-bottom {
@@ -87,6 +87,7 @@
     width: 100%;
     padding: 0;
     margin: 0;
+    font-size: 14px !important;
   }
   .pdf {
     position: absolute;
