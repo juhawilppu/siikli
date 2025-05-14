@@ -179,19 +179,19 @@ export default function CreateOrder() {
     if (!customers) {
       return
     }
-    if (!deliveryDate) {
+    if (!selectedCustomer) {
       toast({
-        title: "Toimituspäivä ei voi olla tyhjä",
-        description: "Valitse toimituspäivä",
+        title: "Asiakas ei voi olla tyhjä",
+        description: "Valitse asiakas",
         variant: "destructive",
       })
       setIsSubmitting(false)
       return
     }
-    if (!selectedCustomer) {
+    if (!deliveryDate) {
       toast({
-        title: "Asiakas ei voi olla tyhjä",
-        description: "Valitse asiakas",
+        title: "Toimituspäivä ei voi olla tyhjä",
+        description: "Valitse toimituspäivä",
         variant: "destructive",
       })
       setIsSubmitting(false)
