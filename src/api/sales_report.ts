@@ -1,9 +1,8 @@
-// routes/export.ts or inside your Express app setup
 import ExcelJS from 'exceljs';
 import express from 'express';
+import { formatDate } from '../../frontend/src/utils/date';
 import { getUser, isAuthenticated } from '../middlewares/permissions';
 import prisma from '../prisma';
-
 const router = express.Router();
 
 router.get('/api/sales-report', isAuthenticated, async (req, res) => {
@@ -11,14 +10,26 @@ router.get('/api/sales-report', isAuthenticated, async (req, res) => {
         const { tenantId, userId } = getUser(req)
         const data = await prisma.orderProduct.findMany({
             where: {
+                tenantId,
                 order: {
+                    tenantId
+                },
+                products: {
                     tenantId
                 }
             },
             include: {
-                order: true,
-                products: true,
-            },
+                order: {
+                    include: {
+                        customer: {
+                            select: {
+                                name: true
+                            }
+                        }
+                    }
+                },
+                products: true
+            }
         });
 
         const workbook = new ExcelJS.Workbook();
@@ -26,40 +37,36 @@ router.get('/api/sales-report', isAuthenticated, async (req, res) => {
 
         // Define headers
         sheet.columns = [
-            { header: 'ID', key: 'id' },
-            { header: 'Date', key: 'date' },
-            { header: 'Order ID', key: 'orderId' },
-            { header: 'Product ID', key: 'productId' },
-            { header: 'Product Name', key: 'productName' },
-            { header: 'Amount', key: 'amount' },
-            { header: 'Price', key: 'price' },
-            { header: 'Package Size', key: 'packageSize' },
-            { header: 'Package Type', key: 'packageType' },
-            { header: 'Freetext', key: 'freetext' },
-            { header: 'Price0', key: 'price0' },
+            { header: 'Päivämäärä', key: 'date' },
+            { header: 'Tilaus', key: 'orderId' },
+            { header: 'Asiakas', key: 'customerName' },
+            { header: 'Tuote', key: 'productName' },
+            { header: 'Määrä', key: 'amount' },
+            { header: 'Hinta', key: 'price' },
+            { header: 'Pakkauskoko', key: 'packageSize' },
+            { header: 'Pakkaustyyppi', key: 'packageType' },
+            { header: 'Lisätieto', key: 'freetext' },
         ];
 
         // Add rows
         data.forEach((item) => {
             sheet.addRow({
-                id: item.id,
-                date: item.order.deliveryDate,
+                date: formatDate(item.order.deliveryDate),
                 orderId: item.orderId,
-                productId: item.productId,
+                customerName: item.order.customer.name,
                 productName: item.products.name,
                 amount: item.amount,
                 price: item.price,
                 packageSize: item.packageSize,
                 packageType: item.packageType,
                 freetext: item.freetext,
-                price0: item.price0,
             });
         });
 
         // Set headers for file download
         res.setHeader(
             'Content-Disposition',
-            'attachment; filename="sales-report.xlsx"'
+            'attachment; filename="myyntiraportti.xlsx"'
         );
         res.setHeader(
             'Content-Type',

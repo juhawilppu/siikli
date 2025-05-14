@@ -30,6 +30,7 @@ model Tenant {
   trialEndDate          DateTime?         @map("trial_end_date")
   customers             Customer[]
   orders                Order[]
+  orderProducts         OrderProduct[]
   users                 User[]
   products              Product[]
   productTypes          ProductType[]
@@ -85,6 +86,8 @@ model Customer {
 model OrderProduct {
   id          String   @id @default(uuid()) @map("id") @db.Uuid
   orderId     String   @map("order_id") @db.Uuid
+  tenantId    String   @map("tenant_id") @db.Uuid
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
   productId   String   @map("product_id") @db.Uuid
   amount      Int      @map("amount")
   price       Float    @map("price")

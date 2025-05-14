@@ -389,6 +389,7 @@ ordersRoute.post(`/api/orders`, isAuthenticated, async (req, res) => {
     data: data.items.map((r) => {
       return {
         orderId: result.id,
+        tenantId,
         productId: r.productId,
         amount: r.amount,
         price: r.price || 0,
@@ -449,6 +450,7 @@ ordersRoute.post(`/api/orders/:id`, isAuthenticated, async (req, res) => {
         data: toCreate.map((r) => {
           return {
             orderId: result.id,
+            tenantId,
             productId: r.productId,
             amount: r.amount,
             price: r.price || 0,
