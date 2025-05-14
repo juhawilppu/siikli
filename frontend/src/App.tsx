@@ -215,8 +215,8 @@ function App() {
             <Routes>
               <Route path='/' element={<Navigate to='/orders' replace />} />
               <Route path='/orders' element={<Orders />} />
-              <Route path='/orders/new' element={<Order />} />
-              <Route path='/orders/:orderId' element={<Order />} />
+              <Route path='/orders/new' element={<Order key="new" />} />
+              <Route path='/orders/:orderId' element={<Order key="edit" />} />
               <Route path='/sales-report' element={<SalesReport />} />
               <Route path='/packaging-list' element={<PackageList />} />
               <Route path='/invoices' element={<Invoices />} />
