@@ -58,6 +58,7 @@ export default function CreateOrder() {
     packageType: string
     freetext: string
     unsaved?: boolean
+    createdAt: Date
   }[]>([
     {
       id: Date.now().toString(),
@@ -70,6 +71,7 @@ export default function CreateOrder() {
       packageType: "",
       price: "",
       freetext: "",
+      createdAt: new Date(),
     },
   ])
 
@@ -90,6 +92,7 @@ export default function CreateOrder() {
         packageType: "",
         price: "",
         freetext: "",
+        createdAt: new Date(),
       },
     ])
   }
@@ -111,7 +114,8 @@ export default function CreateOrder() {
         setOrderItems(res.data.items.map((item) => ({
           ...item,
           price: item.price?.toFixed(2).toString() || "",
-          amount: item.amount?.toFixed(2).toString() || ""
+          amount: item.amount?.toFixed(2).toString() || "",
+          createdAt: new Date(item.createdAt)
         })))
         setCustomerId(res.data.customerId)
         console.log('settins customerId to ' + res.data.customerId)
@@ -485,7 +489,7 @@ export default function CreateOrder() {
             <CardContent>
               <ScrollArea>
                 <div className="space-y-4">
-                  {orderItems.filter((item) => !item.deleted).map((item) => (
+                  {orderItems.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime()).filter((item) => !item.deleted).map((item) => (
                     <div key={item.id} className="rounded-lg border p-4 relative">
                       <Button
                         type="button"

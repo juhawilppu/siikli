@@ -14,6 +14,7 @@ export interface ProductOrderDto {
   packageSize: number
   packageType: string
   freetext: string
+  createdAt: Date
 }
 
 export interface PostOrderItemRequestDto {
