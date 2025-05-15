@@ -33,10 +33,26 @@ export default function CompanySettings() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    if (!companyData) return
+
     // Here you would typically save the data to your backend
     console.log("Saving company data:", companyData)
-    // Show success message or handle errors
-    await axios.post<PostCompanySettings>("/tenants", companyData)
+    const data: PostCompanySettings = {
+      name: companyData.name,
+      businessId: companyData.businessId,
+      streetAddress: companyData.streetAddress,
+      postalCode: companyData.postalCode,
+      city: companyData.city,
+      invoiceBankName: companyData.invoiceBankName,
+      invoiceBankAccount: companyData.invoiceBankAccount,
+      invoiceReference: companyData.invoiceReference,
+      invoiceSumRow: companyData.invoiceSumRow,
+      phone: companyData.phone,
+      email: companyData.email,
+      website: companyData.website
+    }
+    await axios.post("/tenants", data)
     toast({
       title: "Yritys tiedot tallennettu",
       description: "Yrityksesi tiedot on tallennettu",
@@ -84,8 +100,9 @@ export default function CompanySettings() {
         <Tabs defaultValue="company" className="w-full">
           <TabsList className="grid w-full grid-cols-4 mb-6">
             <TabsTrigger value="company">Yritys</TabsTrigger>
-            <TabsTrigger value="users">Käyttäjät</TabsTrigger>
-            <TabsTrigger value="preferences">Asetukset</TabsTrigger>
+            {false && (
+              <TabsTrigger value="users">Käyttäjät</TabsTrigger>
+            )}
             <TabsTrigger value="subscription">Tilaus</TabsTrigger>
           </TabsList>
 
@@ -151,10 +168,10 @@ export default function CompanySettings() {
                       Pankkitietoja käytetään laskuissa.
                     </CardDescription>
                     <div className="space-y-2">
-                      <Label htmlFor="bankName">Pankin nimi</Label>
+                      <Label htmlFor="invoice-bank-name">Pankin nimi</Label>
                       <Input
-                        id="bankName"
-                        name="bankName"
+                        id="invoice-bank-name"
+                        name="invoiceBankName"
                         value={companyData.invoiceBankName || ''}
                         onChange={handleInputChange}
                       />
@@ -162,19 +179,19 @@ export default function CompanySettings() {
 
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                       <div className="space-y-2">
-                        <Label htmlFor="bankAccount">Pankkitilin numero (IBAN)</Label>
+                        <Label htmlFor="invoice-bank-account">Pankkitilin numero (IBAN)</Label>
                         <Input
-                          id="bankAccount"
-                          name="bankAccount"
+                          id="invoice-bank-account"
+                          name="invoiceBankAccount"
                           value={companyData.invoiceBankAccount || ''}
                           onChange={handleInputChange}
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="swiftBic">SWIFT/BIC</Label>
+                        <Label htmlFor="nvoice-reference">SWIFT/BIC</Label>
                         <Input
-                          id="swiftBic"
-                          name="swiftBic"
+                          id="invoice-reference"
+                          name="invoiceReference"
                           value={companyData.invoiceReference || ''}
                           onChange={handleInputChange}
                         />
@@ -225,29 +242,19 @@ export default function CompanySettings() {
             </form>
           </TabsContent>
 
-          <TabsContent value="users">
-            <Card>
-              <CardHeader>
-                <CardTitle>Käyttäjät</CardTitle>
-                <CardDescription>Hallitse käyttäjiä ja oikeuksia</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">User management settings will appear here.</p>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="preferences">
-            <Card>
-              <CardHeader>
-                <CardTitle>Asetukset</CardTitle>
-                <CardDescription>Hallitse järjestelmän asetuksia.</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">System preferences settings will appear here.</p>
-              </CardContent>
-            </Card>
-          </TabsContent>
+          {false && (
+            <TabsContent value="users">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Käyttäjät</CardTitle>
+                  <CardDescription>Hallitse käyttäjiä ja oikeuksia</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground">User management settings will appear here.</p>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          )}
 
           <TabsContent value="subscription">
             <Card>

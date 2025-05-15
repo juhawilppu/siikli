@@ -304,12 +304,17 @@ export interface CreateTenantDto {
 
 export interface PostCompanySettings {
   name: string
-  businessId: string
-  address1: string
-  invoiceBankName: string
-  invoiceBankNumber: string
-  invoiceReference: string
-  invoiceSumRow: string
+  businessId: string | null
+  streetAddress: string | null
+  postalCode: string | null
+  city: string | null
+  invoiceBankName: string | null
+  invoiceBankAccount: string | null
+  invoiceReference: string | null
+  invoiceSumRow: string | null
+  phone: string | null
+  email: string | null
+  website: string | null
 }
 
 export interface PostSubscriptionChangeRequest {

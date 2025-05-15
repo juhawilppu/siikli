@@ -43,11 +43,16 @@ companiesRoute.post(`/api/tenants`, isAuthenticated, async (req, res) => {
     data: {
       name: body.name,
       businessId: body.businessId,
-      streetAddress: body.address1,
+      streetAddress: body.streetAddress,
+      postalCode: body.postalCode,
+      city: body.city,
       invoiceBankName: body.invoiceBankName,
-      invoiceBankAccount: body.invoiceBankNumber,
+      invoiceBankAccount: body.invoiceBankAccount,
       invoiceReference: body.invoiceReference,
       invoiceSumRow: body.invoiceSumRow,
+      phone: body.phone,
+      email: body.email,
+      website: body.website,
     },
     where: {
       id: tenantId
