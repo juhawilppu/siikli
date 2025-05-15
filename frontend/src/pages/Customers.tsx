@@ -148,8 +148,6 @@ export const Customers = () => {
   const [customerIdToDelete, setCustomerIdToDelete] = useState<string | null>(null)
   const [customerGroupFilter, setCustomerGroupFilter] = useState<string>("all")
   const [chainFilter, setChainFilter] = useState<string>("all")
-  const [orderDirection, setOrderDirection] = useState<"asc" | "desc">("asc")
-  const [fieldToSortBy, setFieldToSortBy] = useState<keyof CustomerDto>("orderIndex")
   const [page, setPage] = useState(1)
   const rowsPerPage = 20
   const { toast } = useToast()
@@ -230,22 +228,6 @@ export const Customers = () => {
       const matchesChain = chainFilter === "all" || customer.chain === chainFilter
 
       return matchesSearch && matchesGroup && matchesChain
-    })
-    .sort((a, b) => {
-      // Sorting
-      const aValue = a[fieldToSortBy]
-      const bValue = b[fieldToSortBy]
-
-      if (aValue === undefined || bValue === undefined) return 0
-
-      if (typeof aValue === "string" && typeof bValue === "string") {
-        return orderDirection === "asc" ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue)
-      } else if (typeof aValue === "number" && typeof bValue === "number") {
-        return orderDirection === "asc" ? aValue - bValue : bValue - aValue
-      } else if (typeof aValue === "boolean" && typeof bValue === "boolean") {
-        return orderDirection === "asc" ? (aValue ? 1 : -1) : bValue ? 1 : -1
-      }
-      return 0
     })
 
   // Pagination
@@ -355,16 +337,6 @@ export const Customers = () => {
       })
   }
 
-  // Change order direction
-  const changeOrderDirection = (kentta: keyof CustomerDto) => {
-    if (fieldToSortBy === kentta) {
-      setOrderDirection(orderDirection === "asc" ? "desc" : "asc")
-    } else {
-      setFieldToSortBy(kentta)
-      setOrderDirection("asc")
-    }
-  }
-
 
   if (loading) return <SiikliPage title="Asiakkaat" description="Hallitse asiakastietoja ja asiakassuhteita." />
   if (!customers) return <div>Ei asiakkaita</div>
@@ -374,7 +346,7 @@ export const Customers = () => {
       <SiikliPage title="Asiakkaat" description="Hallitse asiakastietoja ja asiakassuhteita.">
 
         {/* Toiminnot ja suodattimet */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-between">
+        <div className="mb-4 flex flex-col sm:flex-row gap-4 justify-between">
           <div className="flex flex-wrap gap-2">
             <Input
               type="text"
