@@ -36,6 +36,8 @@ model Tenant {
   productTypes          ProductType[]
   productSubtypes       ProductSubtypes[]
   logs                  Log[]
+  PackageType           PackageType[]
+  PackageSize           PackageSize[]
 
   @@map("tenant")
 }
@@ -188,4 +190,22 @@ model Log {
   createdAt DateTime @default(now()) @map("created_at")
 
   @@map("log")
+}
+
+model PackageType {
+  id       String @id @default(uuid()) @map("id") @db.Uuid
+  name     String @map("name") @db.VarChar(255)
+  tenantId String @map("tenant_id") @db.Uuid
+  tenant   Tenant @relation(fields: [tenantId], references: [id])
+
+  @@map("package_type")
+}
+
+model PackageSize {
+  id       String @id @default(uuid()) @map("id") @db.Uuid
+  size     Int    @map("size")
+  tenantId String @map("tenant_id") @db.Uuid
+  tenant   Tenant @relation(fields: [tenantId], references: [id])
+
+  @@map("package_size")
 }

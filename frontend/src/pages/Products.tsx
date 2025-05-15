@@ -28,20 +28,18 @@ import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { useToast } from "@/hooks/use-toast"
-import { GetProductResponseDto, ProductTypeResponse } from "@/types/types"
+import { GetPackageSettings, GetProductResponseDto, ProductTypeResponse } from "@/types/types"
 import { formatMoneyFi } from "@/utils/money"
 import axios from "axios"
 import { useNavigate } from "react-router-dom"
 import NewProduct from "./NewProduct"
-
-// Pakkausvaihtoehdot
-const pakkausvaihtoehdot = ["S", "A", "Ltk"]
 
 export default function TuotteetSivu() {
   const [searchQuery, setSearchQuery] = useState("")
   const [loading, setLoading] = useState(true)
   const [products, setProducts] = useState<GetProductResponseDto[]>([])
   const [productTypes, setProductTypes] = useState<ProductTypeResponse[]>([])
+  const [packageSettings, setPackageSettings] = useState<GetPackageSettings>()
 
   const [showNewProductDialog, setShowNewProductDialog] = useState(false)
   const [editProductId, setEditProductId] = useState<string>()
@@ -58,9 +56,14 @@ export default function TuotteetSivu() {
 
   useEffect(() => {
     const loadData = async () => {
-      const promises = await Promise.all([axios.get<GetProductResponseDto[]>('/products'), axios.get<ProductTypeResponse[]>('/products/product-types')])
+      const promises = await Promise.all([
+        axios.get<GetProductResponseDto[]>('/products'),
+        axios.get<ProductTypeResponse[]>('/products/product-types'),
+        axios.get<GetPackageSettings>('/tenants/package-settings')
+      ])
       setProducts(promises[0].data)
       setProductTypes(promises[1].data)
+      setPackageSettings(promises[2].data)
       setLoading(false)
     }
     loadData()
@@ -153,14 +156,13 @@ export default function TuotteetSivu() {
     }
   }
 
-  if (loading) return <SiikliPage title="Tuotteet" description="Hallitse tuotteita ja hintoja." />
+  if (loading || !packageSettings) return <SiikliPage title="Tuotteet" description="Hallitse tuotteita ja hintoja." />
 
   return (
     <>
       <SiikliPage title="Tuotteet" description="Hallitse tuotteita ja hintoja.">
 
         <div className="space-y-4">
-          {/* Toiminnot ja suodattimet */}
           <div className="flex flex-col gap-4 md:flex-row md:items-center">
             <div className="flex flex-1 items-center gap-2">
               <Input className="h-8 w-full md:w-[300px]" placeholder="Hae tuotetta" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
@@ -195,12 +197,10 @@ export default function TuotteetSivu() {
                 </Button>
               </DialogTrigger>
               {showNewProductDialog &&
-                <NewProduct hide={() => setShowNewProductDialog(false)} onSave={onProductSaved} productTypes={productTypes} packageSizes={pakkausvaihtoehdot} orderIndex={Math.max(...products.map(p => p.orderIndex)) + 1} />}
+                <NewProduct hide={() => setShowNewProductDialog(false)} onSave={onProductSaved} productTypes={productTypes} packageSizes={packageSettings.packageSizes} packageTypes={packageSettings?.packageTypes} orderIndex={Math.max(...products.map(p => p.orderIndex)) + 1} />}
             </Dialog>
           </div>
 
-
-          {/* producttaulukko */}
           <Card className="shadow-md">
             <CardHeader className="border-b bg-gray-50 py-4">
               <CardTitle>Tuoteluettelo</CardTitle>

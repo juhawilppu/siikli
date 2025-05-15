@@ -21,7 +21,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Separator } from "@/components/ui/separator"
 import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/hooks/use-toast"
-import { CustomerDto, GetCustomersResponseDto, GetOrderDto, GetProductResponseDto, OrderProduct, PostOrderRequestDto, PostOrderResponseDto } from "@/types/types"
+import { CustomerDto, GetCustomersResponseDto, GetOrderDto, GetPackageSettings, GetProductResponseDto, OrderProduct, PostOrderRequestDto, PostOrderResponseDto } from "@/types/types"
 import { dateToString } from "@/utils/date"
 import { formatMoneyFi } from "@/utils/money"
 import { captureException } from "@sentry/react"
@@ -30,9 +30,6 @@ import { format } from "date-fns"
 import { fi } from 'date-fns/locale'
 import { NavLink, useNavigate, useParams } from "react-router-dom"
 import ConfirmDialog from "../ConfirmDialog"
-
-const packageSizes = [12, 20, 25, 120, 200, 250]
-const packageTypes = ['Ltk', 'SS', 'A', 'Ap', 'P', 'Pnt', 'PSS', 'HYV']
 
 
 export default function CreateOrder() {
@@ -46,6 +43,7 @@ export default function CreateOrder() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [open, setOpen] = useState(false)
   const [confirmDialog, setConfirmDialog] = useState(false)
+  const [packageSettings, setPackageSettings] = useState<GetPackageSettings>()
 
   const [orderItems, setOrderItems] = useState<{
     id: string
@@ -102,12 +100,13 @@ export default function CreateOrder() {
 
       const promises = await Promise.all([
         axios.get<GetCustomersResponseDto>('/customers'),
-        axios.get<GetProductResponseDto[]>('/products')
+        axios.get<GetProductResponseDto[]>('/products'),
+        axios.get<GetPackageSettings>('/tenants/package-settings')
       ])
 
       setCustomers(promises[0].data.customers)
       setProducts(promises[1].data)
-
+      setPackageSettings(promises[2].data)
       if (orderId) {
         console.log('has orderId')
         const res = await axios.get<GetOrderDto>(`/orders/${orderId}`)
@@ -303,7 +302,7 @@ export default function CreateOrder() {
     // Show success message or handle errors
   }
 
-  if (isLoading || !customers || !products) {
+  if (isLoading || !customers || !products || !packageSettings) {
     return <SiikliPage title={orderId ? 'Tilaus' : 'Uusi tilaus'} description="Täytä tilauksen tiedot" />
   }
 
@@ -571,7 +570,7 @@ export default function CreateOrder() {
                               <SelectValue placeholder="Valitse pakkauskoko" />
                             </SelectTrigger>
                             <SelectContent>
-                              {packageSizes.map(type => (
+                              {packageSettings.packageSizes.map(type => (
                                 <SelectItem key={type} value={type + ''}>{type}</SelectItem>
                               ))}
                             </SelectContent>
@@ -588,7 +587,7 @@ export default function CreateOrder() {
                               <SelectValue placeholder="Valitse pakkaustyyppi" />
                             </SelectTrigger>
                             <SelectContent>
-                              {packageTypes.map(type => (
+                              {packageSettings.packageTypes.map(type => (
                                 <SelectItem key={type} value={type}>{type}</SelectItem>
                               ))}
                             </SelectContent>

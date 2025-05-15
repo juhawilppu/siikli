@@ -1,6 +1,6 @@
 import { addMonths } from 'date-fns'
 import express from 'express'
-import { CreateTenantDto, GetCompanySettings, PostCompanySettings, PostSubscriptionChangeRequest } from '../../frontend/src/types/types'
+import { CreateTenantDto, GetCompanySettings, GetPackageSettings, PostCompanySettings, PostSubscriptionChangeRequest } from '../../frontend/src/types/types'
 import { getUser, isAuthenticated } from '../middlewares/permissions'
 import prisma from '../prisma'
 const companiesRoute = express.Router()
@@ -34,6 +34,24 @@ companiesRoute.get(`/api/tenants`, isAuthenticated, async (req, res) => {
     subscriptionStartDate: result.subscriptionStartDate?.toISOString() ?? null,
     trialEndDate: result.trialEndDate?.toISOString() ?? null,
   } satisfies GetCompanySettings)
+})
+
+companiesRoute.get(`/api/tenants/package-settings`, isAuthenticated, async (req, res) => {
+  const { tenantId } = getUser(req)
+  const packageTypes = await prisma.packageType.findMany({
+    where: {
+      tenantId
+    }
+  })
+  const packageSizes = await prisma.packageSize.findMany({
+    where: {
+      tenantId
+    }
+  })
+  res.json({
+    packageTypes: packageTypes.map(row => row.name),
+    packageSizes: packageSizes.map(row => row.size)
+  } satisfies GetPackageSettings)
 })
 
 companiesRoute.post(`/api/tenants`, isAuthenticated, async (req, res) => {

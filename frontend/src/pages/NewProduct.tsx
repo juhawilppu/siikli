@@ -30,9 +30,7 @@ import axios from "axios"
 import { useState } from "react"
 
 
-
-
-export default function NewProduct({ productToEdit, hide, onSave, productTypes, packageSizes, orderIndex }: { productToEdit?: GetProductResponseDto, hide: () => void, onSave: (product: GetProductResponseDto) => void, productTypes: ProductTypeResponse[], packageSizes: string[], orderIndex?: number }) {
+export default function NewProduct({ productToEdit, hide, onSave, productTypes, packageTypes, packageSizes, orderIndex }: { productToEdit?: GetProductResponseDto, hide: () => void, onSave: (product: GetProductResponseDto) => void, productTypes: ProductTypeResponse[], packageTypes: string[], packageSizes: number[], orderIndex?: number }) {
     const mode = productToEdit ? 'edit' : 'create'
     const [product, setProduct] = useState<Partial<GetProductResponseDto>>(mode === 'edit' ? { ...productToEdit } : {
         orderIndex
@@ -308,9 +306,9 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
                                                 <SelectValue placeholder="Valitse pakkaus" />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                {packageSizes.map((packageSize) => (
-                                                    <SelectItem key={packageSize} value={packageSize}>
-                                                        {packageSize}
+                                                {packageTypes.map((packageType) => (
+                                                    <SelectItem key={packageType} value={packageType}>
+                                                        {packageType}
                                                     </SelectItem>
                                                 ))}
                                             </SelectContent>

@@ -317,6 +317,11 @@ export interface PostCompanySettings {
   website: string | null
 }
 
+export interface GetPackageSettings {
+  packageTypes: string[]
+  packageSizes: number[]
+}
+
 export interface PostSubscriptionChangeRequest {
   subscriptionType: string
   subscriptionEndDate: string | null
