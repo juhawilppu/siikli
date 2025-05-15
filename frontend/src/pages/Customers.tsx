@@ -338,12 +338,12 @@ export const Customers = () => {
   }
 
 
-  if (loading) return <SiikliPage title="Asiakkaat" description="Hallitse asiakastietoja ja asiakassuhteita." />
+  if (loading) return <SiikliPage title="Asiakkaat" description="Hallitse asiakastietoja" />
   if (!customers) return <div>Ei asiakkaita</div>
 
   return (
     <>
-      <SiikliPage title="Asiakkaat" description="Hallitse asiakastietoja ja asiakassuhteita.">
+      <SiikliPage title="Asiakkaat" description="Hallitse asiakastietoja">
 
         {/* Toiminnot ja suodattimet */}
         <div className="mb-4 flex flex-col sm:flex-row gap-4 justify-between">
