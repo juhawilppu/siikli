@@ -66,7 +66,8 @@ const verifyProductTypeAndSubtype = async (body: { type: string, subtype: string
   console.log('checking type', body.type)
   const type = await prisma.productType.findFirst({
     where: {
-      type: body.type
+      type: body.type,
+      tenantId
     }
   })
   if (!type) {
@@ -86,7 +87,8 @@ const verifyProductTypeAndSubtype = async (body: { type: string, subtype: string
   const subtype = await prisma.productSubtypes.findFirst({
     where: {
       type: body.type,
-      subtype: body.subtype
+      subtype: body.subtype,
+      tenantId
     }
   })
   if (!subtype) {
