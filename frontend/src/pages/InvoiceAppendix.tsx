@@ -31,16 +31,16 @@ export function InvoiceAppendix({
             <table className="border-all">
                 <thead>
                     <tr className="md-title border-top border-bottom">
-                        <th className="align-left width-10">Toimituspäivä</th>
-                        <th className="align-left width-10">Tilausnumero</th>
-                        <th className="align-left width-20">Tuotenimike</th>
+                        <th className="align-left width-20">Toimitus&shy;päivä</th>
+                        <th className="align-left width-20">Tilaus&shy;numero</th>
+                        <th className="align-left width-20">Tuote&shy;nimike</th>
                         <th className="align-right width-20">Määrä (kg/kpl)</th>
-                        <th className="align-right">
-                            Yksikköhinta (€/kg/kpl)<br />
+                        <th className="align-right width-10">
+                            Yksikkö&shy;hinta (€/kg/kpl)<br />
                             {invoice.customer.showPriceWithoutTax ? 'ALV 0 %' : 'sis. ALV 14 %'}
                         </th>
-                        <th className="align-right">
-                            Kokonaishinta (€)<br />
+                        <th className="align-right width-10">
+                            Kokonais&shy;hinta (€)<br />
                             {invoice.customer.showPriceWithoutTax ? 'ALV 0 %' : 'sis. ALV 14 %'}
                         </th>
                     </tr>
@@ -48,19 +48,19 @@ export function InvoiceAppendix({
                 <tbody>
                     {invoice.items.sort((a, b) => new Date(a.deliveryDate).getTime() - new Date(b.deliveryDate).getTime()).map((item, idx) => (
                         <tr key={idx} className="border-bottom">
-                            <td className="align-left width-10">{formatDate(item.deliveryDate)}</td>
-                            <td className="align-left width-10">{item.orderNumber}</td>
-                            <td className="align-left width-30">{item.productName}</td>
+                            <td className="align-left width-20">{formatDate(item.deliveryDate)}</td>
+                            <td className="align-left width-20">{item.orderNumber}</td>
+                            <td className="align-left width-20">{item.productName}</td>
                             <td className="align-right width-20">{item.amount}</td>
                             {invoice.customer.showPriceWithoutTax ? (
                                 <>
-                                    <td className="align-right">{formatMoneyFi(item.price0)}</td>
-                                    <td className="align-right">{formatMoneyFi(item.amount * item.price0)}</td>
+                                    <td className="align-right width-10">{formatMoneyFi(item.price0)}</td>
+                                    <td className="align-right width-10">{formatMoneyFi(item.amount * item.price0)}</td>
                                 </>
                             ) : (
                                 <>
-                                    <td className="align-right">{formatMoneyFi(item.price)}</td>
-                                    <td className="align-right">{formatMoneyFi(item.amount * item.price)}</td>
+                                    <td className="align-right width-10">{formatMoneyFi(item.price)}</td>
+                                    <td className="align-right width-10">{formatMoneyFi(item.amount * item.price)}</td>
                                 </>
                             )}
                         </tr>

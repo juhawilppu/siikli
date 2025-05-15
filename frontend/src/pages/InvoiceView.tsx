@@ -1,9 +1,5 @@
-// NOTE: This is a simplified React translation of your Angular invoice layout.
-// Some logic (like page numbers, datepickers, etc.) will need additional handling or libraries.
-
 import { InvoiceDto } from "@/types/types";
 import { formatMoneyFi } from "@/utils/money";
-
 
 export interface CustomerInvoiceDto {
     longName: string,
