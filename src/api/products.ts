@@ -67,7 +67,7 @@ const verifyProductTypeAndSubtype = async (body: { packageType: string, packageS
 
   const packageType = await prisma.packageType.findFirst({
     where: {
-      id: body.packageType,
+      name: body.packageType,
       tenantId
     }
   })

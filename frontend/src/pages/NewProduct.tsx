@@ -20,7 +20,6 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Separator } from "@/components/ui/separator"
 import { toast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
@@ -42,7 +41,7 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
     const [inputValueSubtype, setInputValueSubtype] = useState("")
 
     const [openPackageSize, setOpenPackageSize] = useState(false)
-
+    const [openPackageType, setOpenPackageType] = useState(false)
     const [packageSizes, setPackageSizes] = useState<number[]>([...refPackageSizes])
     const [packageTypes, setPackageTypes] = useState<string[]>([...refPackageTypes])
 
@@ -301,43 +300,46 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
                                                         placeholder="Syötä pakkauskoko..."
                                                         onValueChange={(value) => setInputValueType(value)}
                                                     />
-                                                    <CommandEmpty>
-                                                        <button
-                                                            onClick={() => {
-                                                                const size = Number(inputValueType);
-                                                                if (!isNaN(size) && size > 0) {
-                                                                    setProduct({ ...product, packageSize: size });
-                                                                    setPackageSizes([...packageSizes, size]);
-                                                                    setOpenPackageSize(false);
-                                                                }
-                                                            }}
-                                                            className="flex items-center space-x-2 text-sm p-2 hover:bg-muted w-full text-left"
-                                                        >
-                                                            <Plus className="w-4 h-4" />
-                                                            <span>Lisää: {inputValueType} kg</span>
-                                                        </button>
-                                                    </CommandEmpty>
                                                     <CommandGroup>
-                                                        {packageSizes.map((size) => (
-                                                            <CommandItem
-                                                                key={size}
-                                                                value={size.toString()}
-                                                                onSelect={() => {
-                                                                    setProduct({ ...product, packageSize: size });
-
-                                                                    setOpenPackageSize(false);
-                                                                }}
-                                                            >
-                                                                <Check
-                                                                    className={cn(
-                                                                        "mr-2 h-4 w-4",
-                                                                        product.packageSize === size ? "opacity-100" : "opacity-0"
-                                                                    )}
-                                                                />
-                                                                {size} kg
-                                                            </CommandItem>
-                                                        ))}
+                                                        {packageSizes
+                                                            .filter(size => size.toString().includes(inputValueType))
+                                                            .map((size) => (
+                                                                <CommandItem
+                                                                    key={size}
+                                                                    value={size.toString()}
+                                                                    onSelect={() => {
+                                                                        setProduct({ ...product, packageSize: size });
+                                                                        setOpenPackageSize(false);
+                                                                    }}
+                                                                >
+                                                                    <Check
+                                                                        className={cn(
+                                                                            "mr-2 h-4 w-4",
+                                                                            product.packageSize === size ? "opacity-100" : "opacity-0"
+                                                                        )}
+                                                                    />
+                                                                    {size} kg
+                                                                </CommandItem>
+                                                            ))}
                                                     </CommandGroup>
+                                                    {(!inputValueType || !packageSizes.some(size => size.toString() === inputValueType)) && (
+                                                        <CommandEmpty>
+                                                            <button
+                                                                onClick={() => {
+                                                                    const size = Number(inputValueType);
+                                                                    if (!isNaN(size) && size > 0) {
+                                                                        setProduct({ ...product, packageSize: size });
+                                                                        setPackageSizes([...packageSizes, size]);
+                                                                        setOpenPackageSize(false);
+                                                                    }
+                                                                }}
+                                                                className="flex items-center space-x-2 text-sm p-2 hover:bg-muted w-full text-left"
+                                                            >
+                                                                <Plus className="w-4 h-4" />
+                                                                <span>Lisää: {inputValueType} kg</span>
+                                                            </button>
+                                                        </CommandEmpty>
+                                                    )}
                                                 </Command>
                                             </PopoverContent>
                                         </Popover>
@@ -346,21 +348,63 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
                                         <Label htmlFor="packageType" className="text-base font-medium">
                                             Pakkaustyyppi
                                         </Label>
-                                        <Select
-                                            value={product.packageType ?? undefined}
-                                            onValueChange={(value) => setProduct({ ...product, packageType: value })}
-                                        >
-                                            <SelectTrigger id="packageType">
-                                                <SelectValue placeholder="Valitse pakkaus" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                {packageTypes.map((packageType) => (
-                                                    <SelectItem key={packageType} value={packageType}>
-                                                        {packageType}
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
+                                        <Popover open={openPackageType} onOpenChange={setOpenPackageType}>
+                                            <PopoverTrigger asChild>
+                                                <Button
+                                                    variant="outline"
+                                                    role="combobox"
+                                                    aria-expanded={openPackageType}
+                                                    className="w-full justify-between"
+                                                >
+                                                    {product.packageType ?? "Valitse pakkaus"}
+                                                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                                </Button>
+                                            </PopoverTrigger>
+                                            <PopoverContent className="w-full p-0">
+                                                <Command>
+                                                    <CommandInput
+                                                        placeholder="Syötä pakkaustyyppi..."
+                                                        onValueChange={(value) => setInputValueType(value)}
+                                                    />
+                                                    <CommandEmpty>
+                                                        <button
+                                                            onClick={() => {
+                                                                const type = inputValueType.trim();
+                                                                if (type) {
+                                                                    setProduct({ ...product, packageType: type });
+                                                                    setPackageTypes([...packageTypes, type]);
+                                                                    setOpenPackageType(false);
+                                                                }
+                                                            }}
+                                                            className="flex items-center space-x-2 text-sm p-2 hover:bg-muted w-full text-left"
+                                                        >
+                                                            <Plus className="w-4 h-4" />
+                                                            <span>Lisää: {inputValueType}</span>
+                                                        </button>
+                                                    </CommandEmpty>
+                                                    <CommandGroup>
+                                                        {packageTypes.map((packageType) => (
+                                                            <CommandItem
+                                                                key={packageType}
+                                                                value={packageType}
+                                                                onSelect={() => {
+                                                                    setProduct({ ...product, packageType });
+                                                                    setOpenPackageType(false);
+                                                                }}
+                                                            >
+                                                                <Check
+                                                                    className={cn(
+                                                                        "mr-2 h-4 w-4",
+                                                                        product.packageType === packageType ? "opacity-100" : "opacity-0"
+                                                                    )}
+                                                                />
+                                                                {packageType}
+                                                            </CommandItem>
+                                                        ))}
+                                                    </CommandGroup>
+                                                </Command>
+                                            </PopoverContent>
+                                        </Popover>
                                     </div>
                                 </div>
                             </AccordionContent>
