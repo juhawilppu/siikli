@@ -39,7 +39,8 @@ export default function TuotteetSivu() {
   const [loading, setLoading] = useState(true)
   const [products, setProducts] = useState<GetProductResponseDto[]>([])
   const [productTypes, setProductTypes] = useState<ProductTypeResponse[]>([])
-  const [packageSettings, setPackageSettings] = useState<GetPackageSettings>()
+  const [packageTypes, setPackageTypes] = useState<string[]>([])
+  const [packageSizes, setPackageSizes] = useState<number[]>([])
 
   const [showNewProductDialog, setShowNewProductDialog] = useState(false)
   const [editProductId, setEditProductId] = useState<string>()
@@ -63,7 +64,8 @@ export default function TuotteetSivu() {
       ])
       setProducts(promises[0].data)
       setProductTypes(promises[1].data)
-      setPackageSettings(promises[2].data)
+      setPackageTypes(promises[2].data.packageTypes)
+      setPackageSizes(promises[2].data.packageSizes)
       setLoading(false)
     }
     loadData()
@@ -117,6 +119,12 @@ export default function TuotteetSivu() {
       })
     }
 
+    if (product.packageType && !packageTypes.find(t => t === product.packageType)) {
+      setPackageTypes([...packageTypes, product.packageType])
+    }
+    if (product.packageSize && !packageSizes.find(s => s === product.packageSize)) {
+      setPackageSizes([...packageSizes, product.packageSize])
+    }
 
   }
 
@@ -156,7 +164,7 @@ export default function TuotteetSivu() {
     }
   }
 
-  if (loading || !packageSettings) return <SiikliPage title="Tuotteet" description="Hallitse tuotteita ja hintoja." />
+  if (loading || !packageTypes || !packageSizes) return <SiikliPage title="Tuotteet" description="Hallitse tuotteita ja hintoja." />
 
   return (
     <>
@@ -197,7 +205,7 @@ export default function TuotteetSivu() {
                 </Button>
               </DialogTrigger>
               {showNewProductDialog &&
-                <NewProduct hide={() => setShowNewProductDialog(false)} onSave={onProductSaved} productTypes={productTypes} refPackageSizes={packageSettings?.packageSizes} refPackageTypes={packageSettings?.packageTypes} orderIndex={Math.max(...products.map(p => p.orderIndex)) + 1} />}
+                <NewProduct hide={() => setShowNewProductDialog(false)} onSave={onProductSaved} productTypes={productTypes} refPackageSizes={packageSizes} refPackageTypes={packageTypes} orderIndex={Math.max(...products.map(p => p.orderIndex)) + 1} />}
             </Dialog>
           </div>
 
@@ -377,7 +385,7 @@ export default function TuotteetSivu() {
       </SiikliPage >
       < Dialog open={editProductId !== undefined} onOpenChange={() => setEditProductId(undefined)} >
         {editProductId &&
-          <NewProduct productToEdit={products.find(p => p.id === editProductId)} hide={() => setEditProductId(undefined)} onSave={onProductSaved} productTypes={productTypes} refPackageTypes={packageSettings?.packageTypes} refPackageSizes={packageSettings?.packageSizes} />}
+          <NewProduct productToEdit={products.find(p => p.id === editProductId)} hide={() => setEditProductId(undefined)} onSave={onProductSaved} productTypes={productTypes} refPackageTypes={packageTypes} refPackageSizes={packageSizes} />}
       </Dialog>
     </>
   )
