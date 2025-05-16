@@ -47,9 +47,11 @@ export default function CreateOrder() {
   const [open, setOpen] = useState(false)
   const [confirmDialog, setConfirmDialog] = useState(false)
   const [inputValuePackageType, setInputValuePackageType] = useState("")
+  const [inputValuePackageSize, setInputValuePackageSize] = useState("")
   const [packageTypes, setPackageTypes] = useState<string[]>()
   const [packageSizes, setPackageSizes] = useState<number[]>()
   const [openPackageType, setOpenPackageType] = useState<string>()
+  const [openPackageSize, setOpenPackageSize] = useState<string>()
   const [orderItems, setOrderItems] = useState<{
     id: string
     deleted?: boolean
@@ -567,20 +569,65 @@ export default function CreateOrder() {
                         </div>
 
                         <div className="space-y-2">
-                          <Label htmlFor={`package-type-${item.id}`}>Pakkauskoko</Label>
-                          <Select
-                            value={item.packageSize + ''}
-                            onValueChange={(value) => handleItemChange(item.id, "packageSize", parseInt(value))}
-                          >
-                            <SelectTrigger id={`package-size-${item.id}`}>
-                              <SelectValue placeholder="Valitse pakkauskoko" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {packageSizes.map(type => (
-                                <SelectItem key={type} value={type + ''}>{type}</SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
+                          <Label htmlFor={`package-size-${item.id}`}>Pakkauskoko</Label>
+                          <Popover open={openPackageSize == item.id} onOpenChange={(open) => setOpenPackageSize(open ? item.id : undefined)}>
+                            <PopoverTrigger asChild>
+                              <Button
+                                variant="outline"
+                                role="combobox"
+                                className="w-full justify-between"
+                              >
+                                {item.packageSize || "Valitse pakkauskoko"}
+                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-full p-0">
+                              <Command>
+                                <CommandInput placeholder="Syötä pakkauskoko..."
+                                  onValueChange={(value) => setInputValuePackageSize(value)} />
+                                {(!inputValuePackageSize || !packageSizes.some(size => size === Number(inputValuePackageSize))) && (
+                                  <CommandEmpty>
+                                    <button
+                                      onClick={() => {
+                                        const size = Number(inputValuePackageSize.trim());
+                                        if (size && !isNaN(size)) {
+                                          handleItemChange(item.id, "packageSize", size)
+                                          setPackageSizes([...packageSizes, size]);
+                                          setOpenPackageSize(undefined);
+                                        }
+                                      }}
+                                      className="flex items-center space-x-2 text-sm p-2 hover:bg-muted w-full text-left"
+                                    >
+                                      <Plus className="w-4 h-4" />
+                                      <span>Lisää: {inputValuePackageSize}</span>
+                                    </button>
+                                  </CommandEmpty>
+                                )}
+                                <CommandGroup>
+                                  {packageSizes
+                                    .filter(size => size.toString().includes(inputValuePackageSize))
+                                    .sort((a, b) => a - b)
+                                    .map((size) => (
+                                      <CommandItem
+                                        key={size}
+                                        onSelect={() => {
+                                          handleItemChange(item.id, "packageSize", size)
+                                          setOpenPackageSize(undefined)
+                                        }}
+                                      >
+                                        <Check
+                                          className={cn(
+                                            "mr-2 h-4 w-4",
+                                            item.packageSize === size ? "opacity-100" : "opacity-0"
+                                          )}
+                                        />
+                                        {size}
+                                      </CommandItem>
+                                    ))}
+                                </CommandGroup>
+                              </Command>
+                            </PopoverContent>
+                          </Popover>
                         </div>
 
                         <div className="space-y-2">
@@ -625,7 +672,10 @@ export default function CreateOrder() {
                                     .map((type) => (
                                       <CommandItem
                                         key={type}
-                                        onSelect={() => handleItemChange(item.id, "packageType", type)}
+                                        onSelect={() => {
+                                          handleItemChange(item.id, "packageType", type)
+                                          setOpenPackageType(undefined)
+                                        }}
                                       >
                                         <Check
                                           className={cn(
