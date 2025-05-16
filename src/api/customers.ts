@@ -1,5 +1,5 @@
+import type { CustomerDto, DeleteCustomerResponseDto, GetCustomersResponseDto } from '../../frontend/src/types/types'
 import express from 'express'
-import { CustomerDto, DeleteCustomerResponseDto, GetCustomersResponseDto } from '../../frontend/src/types/types'
 import { getUser, isAuthenticated } from '../middlewares/permissions'
 import prisma from '../prisma'
 
@@ -14,13 +14,13 @@ customersRoute.get(`/api/customers`, isAuthenticated, async (req, res) => {
     data: {
       userId,
       tenantId,
-      event: 'get_customers'
-    }
+      event: 'get_customers',
+    },
   })
 
   const result = await prisma.customer.findMany({
     where: {
-      tenantId: tenantId
+      tenantId,
     },
     orderBy: {
       orderIndex: 'asc',
@@ -28,22 +28,22 @@ customersRoute.get(`/api/customers`, isAuthenticated, async (req, res) => {
   })
   const chains = await prisma.customer.findMany({
     where: {
-      tenantId: tenantId
+      tenantId,
     },
     select: {
-      chain: true
+      chain: true,
     },
     distinct: ['chain'],
   })
   const customerGroups = await prisma.customer.findMany({
     where: {
-      tenantId: tenantId,
+      tenantId,
       customerGroup: {
-        not: null
-      }
+        not: null,
+      },
     },
     select: {
-      customerGroup: true
+      customerGroup: true,
     },
     distinct: ['customerGroup'],
   })
@@ -51,7 +51,7 @@ customersRoute.get(`/api/customers`, isAuthenticated, async (req, res) => {
   res.json({
     customerGroups: customerGroups.map(r => r.customerGroup as string),
     chains: chains.map(r => r.chain as string),
-    customers: result.map(r => {
+    customers: result.map((r) => {
       return {
         id: r.id,
         chain: r.chain,
@@ -71,7 +71,7 @@ customersRoute.get(`/api/customers`, isAuthenticated, async (req, res) => {
         orderIndex: r.orderIndex,
         customerGroup: r.customerGroup,
       }
-    })
+    }),
   } satisfies GetCustomersResponseDto)
 })
 
@@ -85,8 +85,8 @@ customersRoute.post(`/api/customers`, isAuthenticated, async (req, res) => {
     data: {
       tenant: {
         connect: {
-          id: tenantId
-        }
+          id: tenantId,
+        },
       },
       chain: body.chain,
       name: body.name,
@@ -103,7 +103,7 @@ customersRoute.post(`/api/customers`, isAuthenticated, async (req, res) => {
       orderIndex: body.orderIndex,
       businessId: body.businessId,
       customerGroup: body.customerGroup,
-    }
+    },
   })
 
   await prisma.log.create({
@@ -114,8 +114,8 @@ customersRoute.post(`/api/customers`, isAuthenticated, async (req, res) => {
       data: {
         customer: result.id,
         name: result.name,
-      }
-    }
+      },
+    },
   })
   res.json(result)
 })
@@ -131,18 +131,19 @@ customersRoute.put(`/api/customers/reorder`, isAuthenticated, async (req, res) =
     await prisma.$transaction(
       customers.map(customer =>
         prisma.customer.update({
-          where: { id: customer.id, tenantId: tenantId },
-          data: { orderIndex: customer.orderIndex }
-        })
-      )
+          where: { id: customer.id, tenantId },
+          data: { orderIndex: customer.orderIndex },
+        }),
+      ),
     )
 
     res.json({ success: true })
-  } catch (error) {
+  }
+  catch (error) {
     console.error('Failed to reorder customers:', error)
     res.status(500).json({
       success: false,
-      error: 'Failed to update customer order'
+      error: 'Failed to update customer order',
     })
   }
 })
@@ -155,14 +156,14 @@ customersRoute.put(`/api/customers/:id`, isAuthenticated, async (req, res) => {
   const body = req.body as CustomerDto
   const result = await prisma.customer.update({
     where: {
-      id: id,
-      tenantId: tenantId
+      id,
+      tenantId,
     },
     data: {
       tenant: {
         connect: {
-          id: tenantId
-        }
+          id: tenantId,
+        },
       },
       chain: body.chain,
       name: body.name,
@@ -179,7 +180,7 @@ customersRoute.put(`/api/customers/:id`, isAuthenticated, async (req, res) => {
       orderIndex: body.orderIndex,
       businessId: body.businessId,
       customerGroup: body.customerGroup,
-    }
+    },
   })
   await prisma.log.create({
     data: {
@@ -189,8 +190,8 @@ customersRoute.put(`/api/customers/:id`, isAuthenticated, async (req, res) => {
       data: {
         customer: result.id,
         name: result.name,
-      }
-    }
+      },
+    },
   })
 
   res.json(result)
@@ -205,15 +206,15 @@ customersRoute.delete(`/api/customers/:id`, isAuthenticated, async (req, res) =>
   const deletedOrders = await prisma.order.deleteMany({
     where: {
       customerId: id,
-      tenantId: tenantId
-    }
+      tenantId,
+    },
   })
 
   const result = await prisma.customer.delete({
     where: {
-      id: id,
-      tenantId: tenantId
-    }
+      id,
+      tenantId,
+    },
   })
   await prisma.log.create({
     data: {
@@ -223,11 +224,11 @@ customersRoute.delete(`/api/customers/:id`, isAuthenticated, async (req, res) =>
       data: {
         customer: result.id,
         name: result.name,
-      }
-    }
+      },
+    },
   })
   res.json({
     deletedOrders: deletedOrders.count,
-    deletedCustomer: result.id
+    deletedCustomer: result.id,
   } satisfies DeleteCustomerResponseDto)
 })

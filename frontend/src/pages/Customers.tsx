@@ -1,51 +1,4 @@
-import SiikliPage from "@/SiikliPage"
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Checkbox } from "@/components/ui/checkbox"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger
-} from "@/components/ui/dropdown-menu"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { useToast } from "@/hooks/use-toast"
-import { cn } from "@/lib/utils"
-import { CustomerDto, GetCustomersResponseDto } from "@/types/types"
-import { formatPercentage } from "@/utils/money"
+import type { CustomerDto, GetCustomersResponseDto } from '@/types/types'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import axios from 'axios'
 import {
@@ -55,16 +8,62 @@ import {
   Filter,
   Plus,
   Save,
-  Trash2
-} from "lucide-react"
+  Trash2,
+} from 'lucide-react'
 import { useEffect, useState } from 'react'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { Checkbox } from '@/components/ui/checkbox'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { useToast } from '@/hooks/use-toast'
+import { cn } from '@/lib/utils'
+import SiikliPage from '@/SiikliPage'
+import { formatPercentage } from '@/utils/money'
 
-const SortableTableRow = ({ customer, onEdit, onDelete }: {
-  customer: CustomerDto,
-  onEdit: (customer: CustomerDto) => void,
-  onDelete: (id: string) => void,
-}) => {
-
+function SortableTableRow({ customer, onEdit, onDelete }: {
+  customer: CustomerDto
+  onEdit: (customer: CustomerDto) => void
+  onDelete: (id: string) => void
+}) {
   return (
     <TableRow>
       <TableCell className="font-medium">{customer.chain}</TableCell>
@@ -77,12 +76,16 @@ const SortableTableRow = ({ customer, onEdit, onDelete }: {
         <div className="text-sm">
           {customer.email && (
             <div>
-              <span className="text-gray-500">Email:</span> {customer.email}
+              <span className="text-gray-500">Email:</span>
+              {' '}
+              {customer.email}
             </div>
           )}
           {customer.phone && (
             <div>
-              <span className="text-gray-500">Puh:</span> {customer.phone}
+              <span className="text-gray-500">Puh:</span>
+              {' '}
+              {customer.phone}
             </div>
           )}
         </div>
@@ -129,45 +132,46 @@ const SortableTableRow = ({ customer, onEdit, onDelete }: {
   )
 }
 
-export const Customers = () => {
+export function Customers() {
   const [customers, setCustomers] = useState<CustomerDto[]>([])
   const [customerGroups, setCustomerGroups] = useState<string[]>([])
   const [chains, setChains] = useState<string[]>([])
 
   const [loading, setLoading] = useState(true)
-  const [searchQuery, setSearchQuery] = useState("")
+  const [searchQuery, setSearchQuery] = useState('')
   const [customerToEdit, setCustomerToEdit] = useState<CustomerDto>()
   const [customerToCreate, setCustomerToCreate] = useState<Partial<CustomerDto>>({
-    chain: "",
-    name: "",
+    chain: '',
+    name: '',
     compensation: 0,
-    showPriceWithoutTax: false
+    showPriceWithoutTax: false,
   })
   const [showCreateDialog, setShowCreateDialog] = useState(false)
   const [showEditDialog, setShowEditDialog] = useState(false)
   const [customerIdToDelete, setCustomerIdToDelete] = useState<string | null>(null)
-  const [customerGroupFilter, setCustomerGroupFilter] = useState<string>("all")
-  const [chainFilter, setChainFilter] = useState<string>("all")
+  const [customerGroupFilter, setCustomerGroupFilter] = useState<string>('all')
+  const [chainFilter, setChainFilter] = useState<string>('all')
   const [page, setPage] = useState(1)
   const rowsPerPage = 20
   const { toast } = useToast()
-  const [inputValueChain, setInputValueChain] = useState("")
-  const [inputValueCustomerGroup, setInputValueCustomerGroup] = useState("")
+  const [inputValueChain, setInputValueChain] = useState('')
+  const [inputValueCustomerGroup, setInputValueCustomerGroup] = useState('')
   const [isChainPopoverOpen, setIsChainPopoverOpen] = useState(false)
   const [isCustomerGroupPopoverOpen, setIsCustomerGroupPopoverOpen] = useState(false)
 
   const handleCreateChain = () => {
     if (inputValueChain && !chains.includes(inputValueChain)) {
-      console.log("Create chain", inputValueChain)
+      console.log('Create chain', inputValueChain)
       setChains([...chains, inputValueChain])
       if (showCreateDialog) {
         setCustomerToCreate({ ...customerToCreate, chain: inputValueChain })
-      } else if (showEditDialog) {
+      }
+      else if (showEditDialog) {
         if (customerToEdit) {
           setCustomerToEdit({ ...customerToEdit, chain: inputValueChain })
         }
       }
-      setInputValueChain("")
+      setInputValueChain('')
       setIsChainPopoverOpen(false)
     }
   }
@@ -179,16 +183,17 @@ export const Customers = () => {
 
   const handleCreateCustomerGroup = () => {
     if (inputValueCustomerGroup && !customerGroups.includes(inputValueCustomerGroup)) {
-      console.log("Create customer group", inputValueCustomerGroup)
+      console.log('Create customer group', inputValueCustomerGroup)
       setCustomerGroups([...customerGroups, inputValueCustomerGroup])
       if (showCreateDialog) {
         setCustomerToCreate({ ...customerToCreate, customerGroup: inputValueCustomerGroup })
-      } else if (showEditDialog) {
+      }
+      else if (showEditDialog) {
         if (customerToEdit) {
           setCustomerToEdit({ ...customerToEdit, customerGroup: inputValueCustomerGroup })
         }
       }
-      setInputValueCustomerGroup("")
+      setInputValueCustomerGroup('')
       setIsCustomerGroupPopoverOpen(false)
     }
   }
@@ -213,19 +218,19 @@ export const Customers = () => {
   const filteredCustomers = customers
     .filter((customer) => {
       // Searchs
-      const matchesSearch =
-        customer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        customer.companyName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        customer.city?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        customer.businessId?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        customer.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        customer.phone?.toLowerCase().includes(searchQuery.toLowerCase())
+      const matchesSearch
+        = customer.name.toLowerCase().includes(searchQuery.toLowerCase())
+          || customer.companyName?.toLowerCase().includes(searchQuery.toLowerCase())
+          || customer.city?.toLowerCase().includes(searchQuery.toLowerCase())
+          || customer.businessId?.toLowerCase().includes(searchQuery.toLowerCase())
+          || customer.email?.toLowerCase().includes(searchQuery.toLowerCase())
+          || customer.phone?.toLowerCase().includes(searchQuery.toLowerCase())
 
       // Customer group filter
-      const matchesGroup = customerGroupFilter === "all" || customer.customerGroup === customerGroupFilter
+      const matchesGroup = customerGroupFilter === 'all' || customer.customerGroup === customerGroupFilter
 
       // Chain filter
-      const matchesChain = chainFilter === "all" || customer.chain === chainFilter
+      const matchesChain = chainFilter === 'all' || customer.chain === chainFilter
 
       return matchesSearch && matchesGroup && matchesChain
     })
@@ -241,24 +246,25 @@ export const Customers = () => {
   }
 
   const saveCustomerToEdit = () => {
-    if (!customerToEdit) return
+    if (!customerToEdit)
+      return
 
     axios
       .put(`/customers/${customerToEdit.id}`, customerToEdit)
       .then(() => {
-        setCustomers(customers.map((a) => (a.id === customerToEdit.id ? customerToEdit : a)))
+        setCustomers(customers.map(a => (a.id === customerToEdit.id ? customerToEdit : a)))
         setShowEditDialog(false)
         toast({
-          title: "Asiakas päivitetty",
+          title: 'Asiakas päivitetty',
           description: `Asiakas "${customerToEdit.name}" on päivitetty onnistuneesti.`,
         })
       })
       .catch((error) => {
         console.error(error)
         toast({
-          title: "Virhe",
-          description: "Asiakkaan päivitys epäonnistui.",
-          variant: "destructive",
+          title: 'Virhe',
+          description: 'Asiakkaan päivitys epäonnistui.',
+          variant: 'destructive',
         })
       })
   }
@@ -267,14 +273,14 @@ export const Customers = () => {
   const createCustomer = () => {
     if (!customerToCreate.name) {
       toast({
-        title: "Virhe",
-        description: "Nimi on pakollinen tieto.",
-        variant: "destructive",
+        title: 'Virhe',
+        description: 'Nimi on pakollinen tieto.',
+        variant: 'destructive',
       })
       return
     }
 
-    const uusiJarjestys = Math.max(...customers.map((a) => a.orderIndex || 0), 0) + 1
+    const uusiJarjestys = Math.max(...customers.map(a => a.orderIndex || 0), 0) + 1
     const uusiAsiakasObjekti: CustomerDto = {
       ...customerToCreate,
       orderIndex: uusiJarjestys,
@@ -286,22 +292,22 @@ export const Customers = () => {
         setCustomers([...customers, response.data])
         setShowCreateDialog(false)
         setCustomerToCreate({
-          chain: "",
-          name: "",
+          chain: '',
+          name: '',
           compensation: 0,
-          showPriceWithoutTax: false
+          showPriceWithoutTax: false,
         })
         toast({
-          title: "Asiakas lisätty",
+          title: 'Asiakas lisätty',
           description: `Asiakas "${uusiAsiakasObjekti.name}" on lisätty onnistuneesti.`,
         })
       })
       .catch((error) => {
         console.error(error)
         toast({
-          title: "Virhe",
-          description: "Asiakkaan lisäys epäonnistui.",
-          variant: "destructive",
+          title: 'Virhe',
+          description: 'Asiakkaan lisäys epäonnistui.',
+          variant: 'destructive',
         })
       })
   }
@@ -312,34 +318,37 @@ export const Customers = () => {
   }
 
   const confirmCustomerDeletion = () => {
-    if (!customerIdToDelete) return
+    if (!customerIdToDelete)
+      return
 
-    const poistettava = customers.find((a) => a.id === customerIdToDelete)
-    if (!poistettava) return
+    const poistettava = customers.find(a => a.id === customerIdToDelete)
+    if (!poistettava)
+      return
 
     axios
       .delete(`/customers/${customerIdToDelete}`)
       .then(() => {
-        setCustomers(customers.filter((a) => a.id !== customerIdToDelete))
+        setCustomers(customers.filter(a => a.id !== customerIdToDelete))
         setCustomerIdToDelete(null)
         toast({
-          title: "Asiakas poistettu",
+          title: 'Asiakas poistettu',
           description: `Asiakas "${poistettava.name}" on poistettu onnistuneesti.`,
         })
       })
       .catch((error) => {
         console.error(error)
         toast({
-          title: "Virhe",
-          description: "Asiakkaan poisto epäonnistui.",
-          variant: "destructive",
+          title: 'Virhe',
+          description: 'Asiakkaan poisto epäonnistui.',
+          variant: 'destructive',
         })
       })
   }
 
-
-  if (loading) return <SiikliPage title="Asiakkaat" description="Hallitse asiakastietoja" />
-  if (!customers) return <div>Ei asiakkaita</div>
+  if (loading)
+    return <SiikliPage title="Asiakkaat" description="Hallitse asiakastietoja" />
+  if (!customers)
+    return <div>Ei asiakkaita</div>
 
   return (
     <>
@@ -359,15 +368,17 @@ export const Customers = () => {
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" className="gap-1">
                   <Filter className="h-4 w-4 mr-1" />
-                  Asiakasryhmä: {customerGroupFilter === "all" ? "Kaikki" : customerGroupFilter}
+                  Asiakasryhmä:
+                  {' '}
+                  {customerGroupFilter === 'all' ? 'Kaikki' : customerGroupFilter}
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <DropdownMenuItem onClick={() => setCustomerGroupFilter("all")}>
+                <DropdownMenuItem onClick={() => setCustomerGroupFilter('all')}>
                   Kaikki asiakasryhmät
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                {customerGroups.map((customerGroup) => (
+                {customerGroups.map(customerGroup => (
                   <DropdownMenuItem key={customerGroup} onClick={() => setCustomerGroupFilter(customerGroup)}>
                     {customerGroup}
                   </DropdownMenuItem>
@@ -379,13 +390,15 @@ export const Customers = () => {
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" className="gap-1">
                   <Filter className="h-4 w-4 mr-1" />
-                  Ketju: {chainFilter === "all" ? "Kaikki" : chainFilter}
+                  Ketju:
+                  {' '}
+                  {chainFilter === 'all' ? 'Kaikki' : chainFilter}
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <DropdownMenuItem onClick={() => setChainFilter("all")}>Kaikki ketjut</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setChainFilter('all')}>Kaikki ketjut</DropdownMenuItem>
                 <DropdownMenuSeparator />
-                {chains.map((chain) => (
+                {chains.map(chain => (
                   <DropdownMenuItem key={chain} onClick={() => setChainFilter(chain)}>
                     {chain}
                   </DropdownMenuItem>
@@ -408,7 +421,9 @@ export const Customers = () => {
                   Täytä asiakkaan tiedot. Pakolliset kentät on merkitty tähdellä (*).
                 </DialogDescription>
               </DialogHeader>
-              <div className="grid gap-4 py-4 max-h-[70vh] overflow-y-auto pl-[1px] pr-2"> {/* pl-[1px] to fix scrollbar width */}
+              <div className="grid gap-4 py-4 max-h-[70vh] overflow-y-auto pl-[1px] pr-2">
+                {' '}
+                {/* pl-[1px] to fix scrollbar width */}
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="name" className="font-medium">
@@ -416,8 +431,8 @@ export const Customers = () => {
                     </Label>
                     <Input
                       id="name"
-                      value={customerToCreate.name || ""}
-                      onChange={(e) => setCustomerToCreate({ ...customerToCreate, name: e.target.value })}
+                      value={customerToCreate.name || ''}
+                      onChange={e => setCustomerToCreate({ ...customerToCreate, name: e.target.value })}
                       maxLength={50}
                     />
                   </div>
@@ -428,7 +443,7 @@ export const Customers = () => {
                     <Popover open={isChainPopoverOpen} onOpenChange={setIsChainPopoverOpen}>
                       <PopoverTrigger asChild>
                         <Button variant="outline" role="combobox" className="w-full justify-between">
-                          {customerToCreate.chain || "Valitse ketju"}
+                          {customerToCreate.chain || 'Valitse ketju'}
                           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                         </Button>
                       </PopoverTrigger>
@@ -437,7 +452,7 @@ export const Customers = () => {
                           <Input
                             placeholder="Hae tai lisää"
                             value={inputValueChain}
-                            onChange={(e) => setInputValueChain(e.target.value)}
+                            onChange={e => setInputValueChain(e.target.value)}
                             className="mb-2"
                           />
                           {inputValueChain && !chains.includes(inputValueChain) && (
@@ -447,19 +462,21 @@ export const Customers = () => {
                               onClick={handleCreateChain}
                             >
                               <Plus className="w-4 h-4 mr-2" />
-                              Luo: {inputValueChain}
+                              Luo:
+                              {' '}
+                              {inputValueChain}
                             </Button>
                           )}
                         </div>
                         <div className="max-h-[200px] overflow-y-auto">
-                          {chains.map((chain) => (
+                          {chains.map(chain => (
                             <Button
                               key={chain}
                               variant="ghost"
                               className="w-full justify-start"
                               onClick={() => handleSelectChain(chain)}
                             >
-                              <Check className={cn("mr-2 h-4 w-4", customerToCreate.chain === chain ? "opacity-100" : "opacity-0")} />
+                              <Check className={cn('mr-2 h-4 w-4', customerToCreate.chain === chain ? 'opacity-100' : 'opacity-0')} />
                               {chain}
                             </Button>
                           ))}
@@ -476,8 +493,8 @@ export const Customers = () => {
                     </Label>
                     <Input
                       id="company_name"
-                      value={customerToCreate.companyName || ""}
-                      onChange={(e) => setCustomerToCreate({ ...customerToCreate, companyName: e.target.value })}
+                      value={customerToCreate.companyName || ''}
+                      onChange={e => setCustomerToCreate({ ...customerToCreate, companyName: e.target.value })}
                       maxLength={255}
                     />
                   </div>
@@ -487,8 +504,8 @@ export const Customers = () => {
                     </Label>
                     <Input
                       id="business_id"
-                      value={customerToCreate.businessId || ""}
-                      onChange={(e) => setCustomerToCreate({ ...customerToCreate, businessId: e.target.value })}
+                      value={customerToCreate.businessId || ''}
+                      onChange={e => setCustomerToCreate({ ...customerToCreate, businessId: e.target.value })}
                       maxLength={255}
                     />
                   </div>
@@ -502,7 +519,7 @@ export const Customers = () => {
                     <Popover open={isCustomerGroupPopoverOpen} onOpenChange={setIsCustomerGroupPopoverOpen}>
                       <PopoverTrigger asChild>
                         <Button variant="outline" role="combobox" className="w-full justify-between">
-                          {customerToCreate.customerGroup || "Valitse asiakasryhmä"}
+                          {customerToCreate.customerGroup || 'Valitse asiakasryhmä'}
                           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                         </Button>
                       </PopoverTrigger>
@@ -511,7 +528,7 @@ export const Customers = () => {
                           <Input
                             placeholder="Hae tai lisää"
                             value={inputValueCustomerGroup}
-                            onChange={(e) => setInputValueCustomerGroup(e.target.value)}
+                            onChange={e => setInputValueCustomerGroup(e.target.value)}
                             className="mb-2"
                           />
                           {inputValueCustomerGroup && !customerGroups.includes(inputValueCustomerGroup) && (
@@ -521,19 +538,21 @@ export const Customers = () => {
                               onClick={handleCreateCustomerGroup}
                             >
                               <Plus className="w-4 h-4 mr-2" />
-                              Luo: {inputValueCustomerGroup}
+                              Luo:
+                              {' '}
+                              {inputValueCustomerGroup}
                             </Button>
                           )}
                         </div>
                         <div className="max-h-[200px] overflow-y-auto">
-                          {customerGroups.map((customerGroup) => (
+                          {customerGroups.map(customerGroup => (
                             <Button
                               key={customerGroup}
                               variant="ghost"
                               className="w-full justify-start"
                               onClick={() => setCustomerToCreate({ ...customerToCreate, customerGroup })}
                             >
-                              <Check className={cn("mr-2 h-4 w-4", customerToCreate.customerGroup === customerGroup ? "opacity-100" : "opacity-0")} />
+                              <Check className={cn('mr-2 h-4 w-4', customerToCreate.customerGroup === customerGroup ? 'opacity-100' : 'opacity-0')} />
                               {customerGroup}
                             </Button>
                           ))}
@@ -550,13 +569,12 @@ export const Customers = () => {
                       type="number"
                       step="0.01"
                       min="0"
-                      value={customerToCreate.compensation || ""}
-                      onChange={(e) =>
+                      value={customerToCreate.compensation || ''}
+                      onChange={e =>
                         setCustomerToCreate({
                           ...customerToCreate,
                           compensation: Number.parseFloat(e.target.value) || 0,
-                        })
-                      }
+                        })}
                     />
                   </div>
                 </div>
@@ -568,8 +586,8 @@ export const Customers = () => {
                     </Label>
                     <Input
                       id="reference"
-                      value={customerToCreate.reference || ""}
-                      onChange={(e) => setCustomerToCreate({ ...customerToCreate, reference: e.target.value })}
+                      value={customerToCreate.reference || ''}
+                      onChange={e => setCustomerToCreate({ ...customerToCreate, reference: e.target.value })}
                       maxLength={255}
                     />
                   </div>
@@ -581,13 +599,12 @@ export const Customers = () => {
                       id="order_index"
                       type="number"
                       min="0"
-                      value={customerToCreate.orderIndex || ""}
-                      onChange={(e) =>
+                      value={customerToCreate.orderIndex || ''}
+                      onChange={e =>
                         setCustomerToCreate({
                           ...customerToCreate,
                           orderIndex: Number.parseInt(e.target.value) || undefined,
-                        })
-                      }
+                        })}
                     />
                   </div>
                 </div>
@@ -598,8 +615,8 @@ export const Customers = () => {
                   </Label>
                   <Input
                     id="address"
-                    value={customerToCreate.streetAddress || ""}
-                    onChange={(e) => setCustomerToCreate({ ...customerToCreate, streetAddress: e.target.value })}
+                    value={customerToCreate.streetAddress || ''}
+                    onChange={e => setCustomerToCreate({ ...customerToCreate, streetAddress: e.target.value })}
                     maxLength={255}
                   />
                 </div>
@@ -611,8 +628,8 @@ export const Customers = () => {
                     </Label>
                     <Input
                       id="postal_code"
-                      value={customerToCreate.postalCode || ""}
-                      onChange={(e) => setCustomerToCreate({ ...customerToCreate, postalCode: e.target.value })}
+                      value={customerToCreate.postalCode || ''}
+                      onChange={e => setCustomerToCreate({ ...customerToCreate, postalCode: e.target.value })}
                       maxLength={5}
                     />
                   </div>
@@ -622,8 +639,8 @@ export const Customers = () => {
                     </Label>
                     <Input
                       id="city"
-                      value={customerToCreate.city || ""}
-                      onChange={(e) => setCustomerToCreate({ ...customerToCreate, city: e.target.value })}
+                      value={customerToCreate.city || ''}
+                      onChange={e => setCustomerToCreate({ ...customerToCreate, city: e.target.value })}
                       maxLength={255}
                     />
                   </div>
@@ -637,8 +654,8 @@ export const Customers = () => {
                     <Input
                       id="email"
                       type="email"
-                      value={customerToCreate.email || ""}
-                      onChange={(e) => setCustomerToCreate({ ...customerToCreate, email: e.target.value })}
+                      value={customerToCreate.email || ''}
+                      onChange={e => setCustomerToCreate({ ...customerToCreate, email: e.target.value })}
                       maxLength={255}
                     />
                   </div>
@@ -648,8 +665,8 @@ export const Customers = () => {
                     </Label>
                     <Input
                       id="phone"
-                      value={customerToCreate.phone || ""}
-                      onChange={(e) => setCustomerToCreate({ ...customerToCreate, phone: e.target.value })}
+                      value={customerToCreate.phone || ''}
+                      onChange={e => setCustomerToCreate({ ...customerToCreate, phone: e.target.value })}
                       maxLength={255}
                     />
                   </div>
@@ -659,9 +676,8 @@ export const Customers = () => {
                   <Checkbox
                     id="show_price_without_tax"
                     checked={customerToCreate.showPriceWithoutTax}
-                    onCheckedChange={(checked) =>
-                      setCustomerToCreate({ ...customerToCreate, showPriceWithoutTax: checked as boolean })
-                    }
+                    onCheckedChange={checked =>
+                      setCustomerToCreate({ ...customerToCreate, showPriceWithoutTax: checked as boolean })}
                   />
                   <Label htmlFor="show_price_without_tax" className="font-medium">
                     Näytä hinnat ilman veroa
@@ -686,7 +702,12 @@ export const Customers = () => {
           <CardHeader className="border-b bg-gray-50 py-4">
             <CardTitle>Asiakasluettelo</CardTitle>
             <CardDescription>
-              {filteredCustomers.length} asiakasta {customers.length} asiakkaasta
+              {filteredCustomers.length}
+              {' '}
+              asiakasta
+              {customers.length}
+              {' '}
+              asiakkaasta
             </CardDescription>
           </CardHeader>
           <CardContent className="p-0">
@@ -711,27 +732,29 @@ export const Customers = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {paginatedCustomers.length === 0 ? (
-                    <TableRow>
-                      <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
-                        Ei asiakkaita hakuehdoilla
-                      </TableCell>
-                    </TableRow>
-                  ) : (
-                    <SortableContext
-                      items={paginatedCustomers.map(c => c.id)}
-                      strategy={verticalListSortingStrategy}
-                    >
-                      {paginatedCustomers.map((customer) => (
-                        <SortableTableRow
-                          key={customer.id}
-                          customer={customer}
-                          onEdit={startEdit}
-                          onDelete={deleteCustomer}
-                        />
-                      ))}
-                    </SortableContext>
-                  )}
+                  {paginatedCustomers.length === 0
+                    ? (
+                        <TableRow>
+                          <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                            Ei asiakkaita hakuehdoilla
+                          </TableCell>
+                        </TableRow>
+                      )
+                    : (
+                        <SortableContext
+                          items={paginatedCustomers.map(c => c.id)}
+                          strategy={verticalListSortingStrategy}
+                        >
+                          {paginatedCustomers.map(customer => (
+                            <SortableTableRow
+                              key={customer.id}
+                              customer={customer}
+                              onEdit={startEdit}
+                              onDelete={deleteCustomer}
+                            />
+                          ))}
+                        </SortableContext>
+                      )}
                 </TableBody>
               </Table>
             </div>
@@ -739,15 +762,23 @@ export const Customers = () => {
           </CardContent>
           <CardFooter className="flex justify-between border-t bg-gray-50 py-3">
             <div className="text-sm text-muted-foreground">
-              Näytetään {(page - 1) * rowsPerPage + 1}-
-              {Math.min(page * rowsPerPage, filteredCustomers.length)} / {filteredCustomers.length} asiakasta
+              Näytetään
+              {' '}
+              {(page - 1) * rowsPerPage + 1}
+              -
+              {Math.min(page * rowsPerPage, filteredCustomers.length)}
+              {' '}
+              /
+              {filteredCustomers.length}
+              {' '}
+              asiakasta
             </div>
             <Pagination>
               <PaginationContent>
                 <PaginationItem>
                   <PaginationPrevious
-                    onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-                    className={page === 1 ? "pointer-events-none opacity-50" : ""}
+                    onClick={() => setPage(prev => Math.max(prev - 1, 1))}
+                    className={page === 1 ? 'pointer-events-none opacity-50' : ''}
                   />
                 </PaginationItem>
                 {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
@@ -763,7 +794,7 @@ export const Customers = () => {
                       <PaginationLink
                         onClick={() => setPage(pageNum)}
                         isActive={page === pageNum}
-                        className={pageNum > totalPages ? "pointer-events-none opacity-50" : ""}
+                        className={pageNum > totalPages ? 'pointer-events-none opacity-50' : ''}
                       >
                         {pageNum}
                       </PaginationLink>
@@ -777,18 +808,18 @@ export const Customers = () => {
                 )}
                 <PaginationItem>
                   <PaginationNext
-                    onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
-                    className={page === totalPages || totalPages === 0 ? "pointer-events-none opacity-50" : ""}
+                    onClick={() => setPage(prev => Math.min(prev + 1, totalPages))}
+                    className={page === totalPages || totalPages === 0 ? 'pointer-events-none opacity-50' : ''}
                   />
                 </PaginationItem>
               </PaginationContent>
             </Pagination>
           </CardFooter>
         </Card>
-      </SiikliPage >
+      </SiikliPage>
 
       {/* Edit dialog */}
-      < Dialog open={showEditDialog} onOpenChange={setShowEditDialog} >
+      <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
         <DialogContent className="sm:max-w-[600px]">
           <DialogHeader>
             <DialogTitle>Muokkaa asiakasta</DialogTitle>
@@ -797,7 +828,9 @@ export const Customers = () => {
             </DialogDescription>
           </DialogHeader>
           {customerToEdit && (
-            <div className="grid gap-4 py-4 max-h-[70vh] overflow-y-auto pl-[1px] pr-2"> {/* pl-[1px] to fix scrollbar width */}
+            <div className="grid gap-4 py-4 max-h-[70vh] overflow-y-auto pl-[1px] pr-2">
+              {' '}
+              {/* pl-[1px] to fix scrollbar width */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="edit-name" className="font-medium">
@@ -806,7 +839,7 @@ export const Customers = () => {
                   <Input
                     id="edit-name"
                     value={customerToEdit.name}
-                    onChange={(e) => setCustomerToEdit({ ...customerToEdit, name: e.target.value })}
+                    onChange={e => setCustomerToEdit({ ...customerToEdit, name: e.target.value })}
                     maxLength={50}
                   />
                 </div>
@@ -817,7 +850,7 @@ export const Customers = () => {
                   <Popover open={isChainPopoverOpen} onOpenChange={setIsChainPopoverOpen}>
                     <PopoverTrigger asChild>
                       <Button variant="outline" role="combobox" className="w-full justify-between">
-                        {customerToEdit.chain || "Valitse ketju"}
+                        {customerToEdit.chain || 'Valitse ketju'}
                         <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                       </Button>
                     </PopoverTrigger>
@@ -826,7 +859,7 @@ export const Customers = () => {
                         <Input
                           placeholder="Hae tai lisää"
                           value={inputValueChain}
-                          onChange={(e) => setInputValueChain(e.target.value)}
+                          onChange={e => setInputValueChain(e.target.value)}
                           className="mb-2"
                         />
                         {inputValueChain && !chains.includes(inputValueChain) && (
@@ -836,19 +869,21 @@ export const Customers = () => {
                             onClick={handleCreateChain}
                           >
                             <Plus className="w-4 h-4 mr-2" />
-                            Luo: {inputValueChain}
+                            Luo:
+                            {' '}
+                            {inputValueChain}
                           </Button>
                         )}
                       </div>
                       <div className="max-h-[200px] overflow-y-auto">
-                        {chains.map((chain) => (
+                        {chains.map(chain => (
                           <Button
                             key={chain}
                             variant="ghost"
                             className="w-full justify-start"
                             onClick={() => setCustomerToEdit({ ...customerToEdit, chain })}
                           >
-                            <Check className={cn("mr-2 h-4 w-4", customerToEdit.chain === chain ? "opacity-100" : "opacity-0")} />
+                            <Check className={cn('mr-2 h-4 w-4', customerToEdit.chain === chain ? 'opacity-100' : 'opacity-0')} />
                             {chain}
                           </Button>
                         ))}
@@ -865,8 +900,8 @@ export const Customers = () => {
                   </Label>
                   <Input
                     id="edit-company_name"
-                    value={customerToEdit.companyName || ""}
-                    onChange={(e) => setCustomerToEdit({ ...customerToEdit, companyName: e.target.value })}
+                    value={customerToEdit.companyName || ''}
+                    onChange={e => setCustomerToEdit({ ...customerToEdit, companyName: e.target.value })}
                     maxLength={255}
                   />
                 </div>
@@ -876,8 +911,8 @@ export const Customers = () => {
                   </Label>
                   <Input
                     id="edit-business_id"
-                    value={customerToEdit.businessId || ""}
-                    onChange={(e) => setCustomerToEdit({ ...customerToEdit, businessId: e.target.value })}
+                    value={customerToEdit.businessId || ''}
+                    onChange={e => setCustomerToEdit({ ...customerToEdit, businessId: e.target.value })}
                     maxLength={255}
                   />
                 </div>
@@ -891,7 +926,7 @@ export const Customers = () => {
                   <Popover open={isCustomerGroupPopoverOpen} onOpenChange={setIsCustomerGroupPopoverOpen}>
                     <PopoverTrigger asChild>
                       <Button variant="outline" role="combobox" className="w-full justify-between">
-                        {customerToEdit.customerGroup || "Valitse asiakasryhmä"}
+                        {customerToEdit.customerGroup || 'Valitse asiakasryhmä'}
                         <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                       </Button>
                     </PopoverTrigger>
@@ -900,7 +935,7 @@ export const Customers = () => {
                         <Input
                           placeholder="Hae tai lisää"
                           value={inputValueCustomerGroup}
-                          onChange={(e) => setInputValueCustomerGroup(e.target.value)}
+                          onChange={e => setInputValueCustomerGroup(e.target.value)}
                           className="mb-2"
                         />
                         {inputValueCustomerGroup && !customerGroups.includes(inputValueCustomerGroup) && (
@@ -910,19 +945,21 @@ export const Customers = () => {
                             onClick={handleCreateCustomerGroup}
                           >
                             <Plus className="w-4 h-4 mr-2" />
-                            Luo: {inputValueCustomerGroup}
+                            Luo:
+                            {' '}
+                            {inputValueCustomerGroup}
                           </Button>
                         )}
                       </div>
                       <div className="max-h-[200px] overflow-y-auto">
-                        {customerGroups.map((customerGroup) => (
+                        {customerGroups.map(customerGroup => (
                           <Button
                             key={customerGroup}
                             variant="ghost"
                             className="w-full justify-start"
                             onClick={() => setCustomerToEdit({ ...customerToEdit, customerGroup })}
                           >
-                            <Check className={cn("mr-2 h-4 w-4", customerToEdit.customerGroup === customerGroup ? "opacity-100" : "opacity-0")} />
+                            <Check className={cn('mr-2 h-4 w-4', customerToEdit.customerGroup === customerGroup ? 'opacity-100' : 'opacity-0')} />
                             {customerGroup}
                           </Button>
                         ))}
@@ -940,16 +977,14 @@ export const Customers = () => {
                     step="0.01"
                     min="0"
                     value={customerToEdit.compensation}
-                    onChange={(e) =>
+                    onChange={e =>
                       setCustomerToEdit({
                         ...customerToEdit,
                         compensation: Number.parseFloat(e.target.value) || 0,
-                      })
-                    }
+                      })}
                   />
                 </div>
               </div>
-
 
               <div className="space-y-2">
                 <Label htmlFor="edit-reference" className="font-medium">
@@ -957,8 +992,8 @@ export const Customers = () => {
                 </Label>
                 <Input
                   id="edit-reference"
-                  value={customerToEdit.reference || ""}
-                  onChange={(e) => setCustomerToEdit({ ...customerToEdit, reference: e.target.value })}
+                  value={customerToEdit.reference || ''}
+                  onChange={e => setCustomerToEdit({ ...customerToEdit, reference: e.target.value })}
                   maxLength={255}
                 />
               </div>
@@ -969,8 +1004,8 @@ export const Customers = () => {
                 </Label>
                 <Input
                   id="edit-address"
-                  value={customerToEdit.streetAddress || ""}
-                  onChange={(e) => setCustomerToEdit({ ...customerToEdit, streetAddress: e.target.value })}
+                  value={customerToEdit.streetAddress || ''}
+                  onChange={e => setCustomerToEdit({ ...customerToEdit, streetAddress: e.target.value })}
                   maxLength={255}
                 />
               </div>
@@ -982,8 +1017,8 @@ export const Customers = () => {
                   </Label>
                   <Input
                     id="edit-postal_code"
-                    value={customerToEdit.postalCode || ""}
-                    onChange={(e) => setCustomerToEdit({ ...customerToEdit, postalCode: e.target.value })}
+                    value={customerToEdit.postalCode || ''}
+                    onChange={e => setCustomerToEdit({ ...customerToEdit, postalCode: e.target.value })}
                     maxLength={5}
                   />
                 </div>
@@ -993,8 +1028,8 @@ export const Customers = () => {
                   </Label>
                   <Input
                     id="edit-city"
-                    value={customerToEdit.city || ""}
-                    onChange={(e) => setCustomerToEdit({ ...customerToEdit, city: e.target.value })}
+                    value={customerToEdit.city || ''}
+                    onChange={e => setCustomerToEdit({ ...customerToEdit, city: e.target.value })}
                     maxLength={255}
                   />
                 </div>
@@ -1008,8 +1043,8 @@ export const Customers = () => {
                   <Input
                     id="edit-email"
                     type="email"
-                    value={customerToEdit.email || ""}
-                    onChange={(e) => setCustomerToEdit({ ...customerToEdit, email: e.target.value })}
+                    value={customerToEdit.email || ''}
+                    onChange={e => setCustomerToEdit({ ...customerToEdit, email: e.target.value })}
                     maxLength={255}
                   />
                 </div>
@@ -1019,8 +1054,8 @@ export const Customers = () => {
                   </Label>
                   <Input
                     id="edit-phone"
-                    value={customerToEdit.phone || ""}
-                    onChange={(e) => setCustomerToEdit({ ...customerToEdit, phone: e.target.value })}
+                    value={customerToEdit.phone || ''}
+                    onChange={e => setCustomerToEdit({ ...customerToEdit, phone: e.target.value })}
                     maxLength={255}
                   />
                 </div>
@@ -1030,9 +1065,8 @@ export const Customers = () => {
                 <Checkbox
                   id="edit-show_price_without_tax"
                   checked={customerToEdit.showPriceWithoutTax}
-                  onCheckedChange={(checked) =>
-                    setCustomerToEdit({ ...customerToEdit, showPriceWithoutTax: checked as boolean })
-                  }
+                  onCheckedChange={checked =>
+                    setCustomerToEdit({ ...customerToEdit, showPriceWithoutTax: checked as boolean })}
                 />
                 <Label htmlFor="edit-show_price_without_tax" className="font-medium">
                   Näytä hinnat ilman veroa
@@ -1050,10 +1084,10 @@ export const Customers = () => {
             </Button>
           </DialogFooter>
         </DialogContent>
-      </Dialog >
+      </Dialog>
 
       {/* Delete dialog */}
-      < AlertDialog open={!!customerIdToDelete} onOpenChange={(open) => !open && setCustomerIdToDelete(null)}>
+      <AlertDialog open={!!customerIdToDelete} onOpenChange={open => !open && setCustomerIdToDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Haluatko varmasti poistaa tämän asiakkaan?</AlertDialogTitle>
@@ -1069,7 +1103,7 @@ export const Customers = () => {
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
-      </AlertDialog >
+      </AlertDialog>
     </>
   )
 }

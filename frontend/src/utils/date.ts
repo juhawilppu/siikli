@@ -4,14 +4,14 @@ import { fi } from 'date-fns/locale'
 
 const TIMEZONE = 'Europe/Helsinki'
 
-export const dateToString = (date: Date) => {
-    const helsinkiDate = toZonedTime(date, TIMEZONE)
-    return format(helsinkiDate, 'yyyy-MM-dd', { locale: fi })
+export function dateToString(date: Date) {
+  const helsinkiDate = toZonedTime(date, TIMEZONE)
+  return format(helsinkiDate, 'yyyy-MM-dd', { locale: fi })
 }
 
-export const stringToDate = (str: string) => {
-    // Interpret 'str' as a date string in Helsinki time zone
-    return fromZonedTime(`${str}T12:00:00`, TIMEZONE)
+export function stringToDate(str: string) {
+  // Interpret 'str' as a date string in Helsinki time zone
+  return fromZonedTime(`${str}T12:00:00`, TIMEZONE)
 }
 
-export const formatDate = (date: Date) => format(date, "d.M.yyyy", { locale: fi })
+export const formatDate = (date: Date) => format(date, 'd.M.yyyy', { locale: fi })

@@ -1,21 +1,21 @@
+import type { WarehouseReportByCustomer, WarehouseReportByProduct } from '../../frontend/src/types/types'
 // warehouseReport.routes.ts
-import express from 'express';
-import { WarehouseReportByCustomer, WarehouseReportByProduct } from '../../frontend/src/types/types';
-import { getUser } from '../middlewares/permissions';
-import prisma from '../prisma';
+import express from 'express'
+import { getUser } from '../middlewares/permissions'
+import prisma from '../prisma'
 
-const router = express.Router();
+const router = express.Router()
 
 router.get('/api/warehouse-report/grouped-by/customer', async (req, res) => {
   const { tenantId } = getUser(req)
 
-  const query = req.query;
+  const query = req.query
 
   if (!query.deliveryDate || typeof query.deliveryDate !== 'string') {
-    return res.status(400).json({ error: 'Missing deliveryDate' });
+    return res.status(400).json({ error: 'Missing deliveryDate' })
   }
 
-  const deliveryDate = query.deliveryDate;
+  const deliveryDate = query.deliveryDate
 
   console.log('deliveryDate here', deliveryDate)
 
@@ -56,13 +56,13 @@ router.get('/api/warehouse-report/grouped-by/customer', async (req, res) => {
         op.package_size ASC,
         amount ASC,
         product_name ASC
-    `);
+    `)
     console.log('results', results)
 
     res.json({
       deliveryDate,
       groupedBy: 'customer',
-      rows: results.map(r => {
+      rows: results.map((r) => {
         return {
           customerId: r.customer_id,
           customerName: r.customer_name,
@@ -71,26 +71,27 @@ router.get('/api/warehouse-report/grouped-by/customer', async (req, res) => {
           packageSize: r.package_size,
           packageType: r.package_type,
           freetext: r.freetext,
-          amount: r.amount
+          amount: r.amount,
         }
-      })
-    } satisfies WarehouseReportByCustomer);
-  } catch (error) {
-    console.error('Error fetching warehouse report:', error);
-    res.status(500).json({ error: 'Internal server error' });
+      }),
+    } satisfies WarehouseReportByCustomer)
   }
-});
+  catch (error) {
+    console.error('Error fetching warehouse report:', error)
+    res.status(500).json({ error: 'Internal server error' })
+  }
+})
 
 router.get('/api/warehouse-report/grouped-by/product', async (req, res) => {
   const { tenantId } = getUser(req)
 
-  const query = req.query;
+  const query = req.query
 
   if (!query.deliveryDate || typeof query.deliveryDate !== 'string') {
-    return res.status(400).json({ error: 'Missing deliveryDate' });
+    return res.status(400).json({ error: 'Missing deliveryDate' })
   }
 
-  const deliveryDate = query.deliveryDate;
+  const deliveryDate = query.deliveryDate
 
   console.log('deliveryDate here', deliveryDate)
 
@@ -126,13 +127,13 @@ router.get('/api/warehouse-report/grouped-by/product', async (req, res) => {
 		op.package_type ASC,
 		op.package_size ASC,
 		amount ASC;
-    `);
+    `)
     console.log('results', results)
 
     res.json({
       deliveryDate,
       groupedBy: 'product',
-      rows: results.map(r => {
+      rows: results.map((r) => {
         return {
           productId: r.product_id,
           productName: r.product_name,
@@ -140,14 +141,15 @@ router.get('/api/warehouse-report/grouped-by/product', async (req, res) => {
           productVariety: r.product_variety,
           packageSize: r.package_size,
           packageType: r.package_type,
-          amount: r.amount
+          amount: r.amount,
         }
-      })
-    } satisfies WarehouseReportByProduct);
-  } catch (error) {
-    console.error('Error fetching warehouse report:', error);
-    res.status(500).json({ error: 'Internal server error' });
+      }),
+    } satisfies WarehouseReportByProduct)
   }
-});
+  catch (error) {
+    console.error('Error fetching warehouse report:', error)
+    res.status(500).json({ error: 'Internal server error' })
+  }
+})
 
-export default router;
+export default router

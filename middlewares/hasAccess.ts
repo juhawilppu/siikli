@@ -1,10 +1,6 @@
-import { NextFunction, Request, Response } from 'express'
+import type { NextFunction, Request, Response } from 'express'
 
-export const hasAccess = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export async function hasAccess(req: Request, res: Response, next: NextFunction) {
   console.log('user')
   console.log(req.user)
   if (req.headers.company) {

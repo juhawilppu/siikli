@@ -1,29 +1,28 @@
-import { endOfWeek, startOfWeek } from "date-fns"
+import type { GetOrderList } from '@/types/types'
+import axios from 'axios'
+import { endOfWeek, startOfWeek } from 'date-fns'
+
+import { fi } from 'date-fns/locale'
 import {
   Calendar,
   Package,
-  Printer
-} from "lucide-react"
-import { useEffect, useState } from "react"
-
-import { Button } from "@/components/ui/button"
-import { Calendar as CalendarComponent } from "@/components/ui/calendar"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { GetOrderList } from "@/types/types"
-import { dateToString, formatDate } from "@/utils/date"
+  Printer,
+} from 'lucide-react'
 import printJS from 'print-js'
+import { useEffect, useState } from 'react'
+import { NavLink } from 'react-router-dom'
+import { Button } from '@/components/ui/button'
+import { Calendar as CalendarComponent } from '@/components/ui/calendar'
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 
-import SiikliPage from "@/SiikliPage"
-import { formatMoneyFi } from "@/utils/money"
-import axios from "axios"
-import { fi } from "date-fns/locale"
-import { NavLink } from "react-router-dom"
-
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import SiikliPage from '@/SiikliPage'
+import { dateToString, formatDate } from '@/utils/date'
+import { formatMoneyFi } from '@/utils/money'
 
 export default function Orders() {
-  const now = new Date();
+  const now = new Date()
 
   const [startDate, setStartDate] = useState<Date>(startOfWeek(now, { weekStartsOn: 1 }))
   const [endDate, setEndDate] = useState<Date>(endOfWeek(now, { weekStartsOn: 1 }))
@@ -32,7 +31,6 @@ export default function Orders() {
   const [orders, setOrders] = useState<GetOrderList[]>([])
   const [selectedOrders, setSelectedOrders] = useState<string[]>([])
 
-
   useEffect(() => {
     setIsLoading(true)
     axios
@@ -40,8 +38,10 @@ export default function Orders() {
         params: {
           startDate: dateToString(startDate),
           endDate: dateToString(endDate),
-        }
-      }).then(res => setOrders(res.data)).finally(() => setIsLoading(false))
+        },
+      })
+      .then(res => setOrders(res.data))
+      .finally(() => setIsLoading(false))
   }, [startDate, endDate])
 
   const handlePrintWaybills = () => {
@@ -50,12 +50,12 @@ export default function Orders() {
       printable: `/api/orders/cargo_reports?startDate=${dateToString(startDate)}&endDate=${dateToString(endDate)}`,
       type: 'pdf',
       showModal: false,
-      onLoadingEnd: () => setIsPrinting(false)
+      onLoadingEnd: () => setIsPrinting(false),
     })
   }
 
   const toggleOrderSelection = (orderId: string) => {
-    setSelectedOrders((prev) => (prev.includes(orderId) ? prev.filter((id) => id !== orderId) : [...prev, orderId]))
+    setSelectedOrders(prev => (prev.includes(orderId) ? prev.filter(id => id !== orderId) : [...prev, orderId]))
   }
 
   const isAllSelected = orders.length > 0 && selectedOrders.length === orders.length
@@ -63,19 +63,27 @@ export default function Orders() {
   const toggleSelectAll = () => {
     if (isAllSelected) {
       setSelectedOrders([])
-    } else {
-      setSelectedOrders(orders.map((order) => order.id))
+    }
+    else {
+      setSelectedOrders(orders.map(order => order.id))
     }
   }
 
-  if (isLoading) return <SiikliPage title="Tilaukset" description="Hallitse tilauksia tällä sivulla" />
+  if (isLoading)
+    return <SiikliPage title="Tilaukset" description="Hallitse tilauksia tällä sivulla" />
 
   return (
     <>
-      <SiikliPage title="Tilaukset" description="Hallitse tilauksia tällä sivulla" mainAction={<Button onClick={() => (window.location.href = "/orders/new")}>
-        <Package className="mr-2 h-4 w-4" />
-        Uusi tilaus
-      </Button>}>
+      <SiikliPage
+        title="Tilaukset"
+        description="Hallitse tilauksia tällä sivulla"
+        mainAction={(
+          <Button onClick={() => (window.location.href = '/orders/new')}>
+            <Package className="mr-2 h-4 w-4" />
+            Uusi tilaus
+          </Button>
+        )}
+      >
 
         {/* Filters */}
         <Card>
@@ -98,7 +106,7 @@ export default function Orders() {
                     <CalendarComponent
                       mode="single"
                       selected={startDate}
-                      onSelect={(value) => setStartDate(value as Date)}
+                      onSelect={value => setStartDate(value as Date)}
                       required
                       locale={fi}
                     />
@@ -116,7 +124,7 @@ export default function Orders() {
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0">
-                    <CalendarComponent mode="single" selected={endDate} onSelect={(value) => setEndDate(value as Date)} required locale={fi} />
+                    <CalendarComponent mode="single" selected={endDate} onSelect={value => setEndDate(value as Date)} required locale={fi} />
                   </PopoverContent>
                 </Popover>
               </div>
@@ -130,36 +138,40 @@ export default function Orders() {
             <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div className="flex flex-wrap gap-2">
                 <Button variant="outline" onClick={handlePrintWaybills} disabled={isPrinting}>
-                  {isPrinting ? (
-                    <>
-                      <svg
-                        className="mr-2 h-4 w-4 animate-spin"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                      >
-                        <circle
-                          className="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          strokeWidth="4"
-                        ></circle>
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                        ></path>
-                      </svg>
-                      Tulosta kuormakirjat
-                    </>
-                  ) : (
-                    <>
-                      <Printer className="mr-2 h-4 w-4" />
-                      Tulosta kuormakirjat
-                    </>
-                  )}
+                  {isPrinting
+                    ? (
+                        <>
+                          <svg
+                            className="mr-2 h-4 w-4 animate-spin"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                          >
+                            <circle
+                              className="opacity-25"
+                              cx="12"
+                              cy="12"
+                              r="10"
+                              stroke="currentColor"
+                              strokeWidth="4"
+                            >
+                            </circle>
+                            <path
+                              className="opacity-75"
+                              fill="currentColor"
+                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                            >
+                            </path>
+                          </svg>
+                          Tulosta kuormakirjat
+                        </>
+                      )
+                    : (
+                        <>
+                          <Printer className="mr-2 h-4 w-4" />
+                          Tulosta kuormakirjat
+                        </>
+                      )}
                 </Button>
               </div>
             </CardHeader>
@@ -185,11 +197,14 @@ export default function Orders() {
                   {orders.length === 0 ? (
                     <TableRow>
                       <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
-                        Sinulla ei ole tilauksia tällä aikavälillä. 👉 <NavLink to="/orders/new" className="text-blue-500">Luo uusi tilaus</NavLink>.
+                        Sinulla ei ole tilauksia tällä aikavälillä. 👉
+                        {' '}
+                        <NavLink to="/orders/new" className="text-blue-500">Luo uusi tilaus</NavLink>
+                        .
                       </TableCell>
                     </TableRow>
                   ) : (
-                    orders.map((order) => (
+                    orders.map(order => (
                       <TableRow key={order.id}>
                         <TableCell>
                           <input
@@ -199,9 +214,13 @@ export default function Orders() {
                             onChange={() => toggleOrderSelection(order.id)}
                           />
                         </TableCell>
-                        {/*<TableCell className="font-medium">{order.id}</TableCell>*/}
+                        {/* <TableCell className="font-medium">{order.id}</TableCell> */}
                         <TableCell>{order.deliveryDate}</TableCell>
-                        <TableCell>{order.customer.chain} {order.customer.name}</TableCell>
+                        <TableCell>
+                          {order.customer.chain}
+                          {' '}
+                          {order.customer.name}
+                        </TableCell>
                         <TableCell>{formatMoneyFi(order.total)}</TableCell>
                         <TableCell className="text-right">
                           <Button
@@ -221,7 +240,9 @@ export default function Orders() {
             </CardContent>
             <CardFooter className="flex items-center justify-between">
               <div className="text-sm text-muted-foreground">
-                <strong>{orders.length}</strong> {orders.length === 1 ? 'tilaus' : 'tilausta'}
+                <strong>{orders.length}</strong>
+                {' '}
+                {orders.length === 1 ? 'tilaus' : 'tilausta'}
               </div>
             </CardFooter>
           </Card>

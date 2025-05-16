@@ -1,51 +1,51 @@
-
-import { useEffect } from "react"
-import Footer from "./Footer"
-import TopBar from "./TopBar"
+import { useEffect } from 'react'
+import Footer from './Footer'
+import TopBar from './TopBar'
 
 export default function ContactPage() {
+  useEffect(() => {
+    scrollToTop()
+  }, [])
 
-    useEffect(() => {
-        scrollToTop()
-    }, [])
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    })
+  }
 
-    const scrollToTop = () => {
-        window.scrollTo({
-            top: 0,
-            behavior: 'smooth'
-        });
-    }
+  return (
+    <div className="flex min-h-screen flex-col">
+      <TopBar />
 
-    return (
-        <div className="flex min-h-screen flex-col">
-            <TopBar />
+      <section className="w-full py-12 md:py-24 bg-white">
+        <div className="container px-4 md:px-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+            <div className="flex flex-col gap-6">
+              <h2 className="text-3xl font-bold tracking-tight">Tuki</h2>
+              <div className="space-y-4 text-muted-foreground">
+                <p>Tarvitsetko apua? Autan mielelläni.</p>
 
-            <section className="w-full py-12 md:py-24 bg-white">
-                <div className="container px-4 md:px-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-                        <div className="flex flex-col gap-6">
-                            <h2 className="text-3xl font-bold tracking-tight">Tuki</h2>
-                            <div className="space-y-4 text-muted-foreground">
-                                <p>Tarvitsetko apua? Autan mielelläni.</p>
+                <p> Jos kohtaat ongelmia tai sinulla on kysyttävää Siiklin käytöstä, ota rohkeasti yhteyttä sähköpostitse: </p>
 
-                                <p> Jos kohtaat ongelmia tai sinulla on kysyttävää Siiklin käytöstä, ota rohkeasti yhteyttä sähköpostitse: </p>
+                <p>
+                  ✉️
+                  <a className="text-blue-500" href="mailto:juha.wilppu@gmail.com">juha.wilppu@gmail.com</a>
+                </p>
 
-                                <p>✉️ <a className="text-blue-500" href="mailto:juha.wilppu@gmail.com">juha.wilppu@gmail.com</a></p>
+                <p>Pyrin vastaamaan mahdollisimman nopeasti, yleensä saman arkipäivän aikana.</p>
+              </div>
+            </div>
+            <div className="flex justify-center">
+              <div className="relative w-1/2 bg-gray-100 rounded-lg overflow-hidden">
+                <img src="/juha.jpg" alt="Juha Wilppu" className="object-cover w-full h-full" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
-                                <p>Pyrin vastaamaan mahdollisimman nopeasti, yleensä saman arkipäivän aikana.</p>
-                            </div>
-                        </div>
-                        <div className="flex justify-center">
-                            <div className="relative w-1/2 bg-gray-100 rounded-lg overflow-hidden">
-                                <img src="/juha.jpg" alt="Juha Wilppu" className="object-cover w-full h-full" />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-
-            <Footer />
-        </div >
-    )
+      <Footer />
+    </div>
+  )
 }

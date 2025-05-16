@@ -1,15 +1,18 @@
-import { SESClient, SendEmailCommand } from '@aws-sdk/client-ses';
-import { Tenant, User } from '@prisma/client';
-import { addMonths } from 'date-fns';
-import { Strategy as LocalStrategy } from 'passport-local';
-import prisma from './prisma';
+import type { Tenant, User } from '@prisma/client'
+import { SendEmailCommand, SESClient } from '@aws-sdk/client-ses'
+import { addMonths } from 'date-fns'
+
+import { Strategy as LocalStrategy } from 'passport-local'
+import prisma from './prisma'
+
 const passport = require('passport')
 const GoogleStrategy = require('passport-google-oidc')
+
 export interface UserWithTenant extends User {
   tenant: Tenant
 }
 
-const createUserAndTenant = async (email: string, googleExternalId?: string) => {
+async function createUserAndTenant(email: string, googleExternalId?: string) {
   const tenant = await prisma.tenant.create({
     data: {
       name: '',
@@ -38,7 +41,7 @@ const createUserAndTenant = async (email: string, googleExternalId?: string) => 
       event: 'user-created',
     },
   })
-  const client = new SESClient({ region: "eu-north-1" });
+  const client = new SESClient({ region: 'eu-north-1' })
 
   const command = new SendEmailCommand({
     Source: 'Juha Wilppu <juha.wilppu@siikli.fi>',
@@ -87,9 +90,9 @@ Siikli
     },
   })
 
-  await client.send(command);
+  await client.send(command)
 
-  await new Promise(resolve => setTimeout(resolve, 1500));
+  await new Promise(resolve => setTimeout(resolve, 1500))
 
   const command2 = new SendEmailCommand({
     Source: 'Siikli Event <no-reply@siikli.fi>',
@@ -107,12 +110,12 @@ Siikli
       },
     },
   })
-  await client.send(command2);
+  await client.send(command2)
 
   return user
 }
 
-const init = () => {
+function init() {
   passport.serializeUser((user: User, done: any) => {
     console.log('serialize')
     console.log(user)
@@ -135,9 +138,9 @@ const init = () => {
   passport.use(
     new GoogleStrategy(
       {
-        clientID: clientID,
-        clientSecret: clientSecret,
-        callbackURL: process.env.PRIMARY_URL + '/api/auth/google/callback',
+        clientID,
+        clientSecret,
+        callbackURL: `${process.env.PRIMARY_URL}/api/auth/google/callback`,
       },
       async (issuer: any, profile: any, cb: any) => {
         console.log('GoogleStrategy')
@@ -160,13 +163,14 @@ const init = () => {
           // We already have saved this customer to db
           console.log('done1')
           return cb(null, existingUser)
-        } else {
+        }
+        else {
           const user = await createUserAndTenant(profile.emails[0].value, profile.id)
           console.log('done2')
           return cb(null, user)
         }
-      }
-    )
+      },
+    ),
   )
 
   passport.use(
@@ -176,7 +180,7 @@ const init = () => {
         try {
           console.log('LocalStrategy here')
 
-          const emailLoginPinCode = await prisma.emailLoginPinCode.findFirst({ where: { email, pinCode } });
+          const emailLoginPinCode = await prisma.emailLoginPinCode.findFirst({ where: { email, pinCode } })
           console.log('emailLoginPinCode', emailLoginPinCode)
           console.log('pinCode', pinCode)
           if (!emailLoginPinCode) {
@@ -186,10 +190,10 @@ const init = () => {
                 event: 'pin-check-failed',
               },
             })
-            return done(null, false, { message: 'Email has no active pin code or wrong pin code' });
+            return done(null, false, { message: 'Email has no active pin code or wrong pin code' })
           }
 
-          let user = await prisma.user.findUnique({ where: { email } });
+          let user = await prisma.user.findUnique({ where: { email } })
           console.log('user', user)
 
           if (!user) {
@@ -204,15 +208,15 @@ const init = () => {
           })
 
           console.log('LocalStrategy success')
-          return done(null, user);
-        } catch (err) {
-          console.log('LocalStrategy error', err)
-          return done(err);
+          return done(null, user)
         }
-      }
-    )
-  );
-
+        catch (err) {
+          console.log('LocalStrategy error', err)
+          return done(err)
+        }
+      },
+    ),
+  )
 }
 
 export default init

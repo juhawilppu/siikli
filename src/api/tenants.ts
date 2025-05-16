@@ -1,15 +1,16 @@
+import type { CreateTenantDto, GetCompanySettings, GetPackageSettings, PostCompanySettings, PostSubscriptionChangeRequest } from '../../frontend/src/types/types'
 import { addMonths } from 'date-fns'
 import express from 'express'
-import { CreateTenantDto, GetCompanySettings, GetPackageSettings, PostCompanySettings, PostSubscriptionChangeRequest } from '../../frontend/src/types/types'
 import { getUser, isAuthenticated } from '../middlewares/permissions'
 import prisma from '../prisma'
+
 const companiesRoute = express.Router()
 
 companiesRoute.get(`/api/tenants`, isAuthenticated, async (req, res) => {
   const { tenantId } = getUser(req)
   const result = await prisma.tenant.findFirst({
     where: {
-      id: tenantId
+      id: tenantId,
     },
   })
   if (!result) {
@@ -40,17 +41,17 @@ companiesRoute.get(`/api/tenants/package-settings`, isAuthenticated, async (req,
   const { tenantId } = getUser(req)
   const packageTypes = await prisma.packageType.findMany({
     where: {
-      tenantId
-    }
+      tenantId,
+    },
   })
   const packageSizes = await prisma.packageSize.findMany({
     where: {
-      tenantId
-    }
+      tenantId,
+    },
   })
   res.json({
     packageTypes: packageTypes.map(row => row.name),
-    packageSizes: packageSizes.map(row => row.size)
+    packageSizes: packageSizes.map(row => row.size),
   } satisfies GetPackageSettings)
 })
 
@@ -73,7 +74,7 @@ companiesRoute.post(`/api/tenants`, isAuthenticated, async (req, res) => {
       website: body.website,
     },
     where: {
-      id: tenantId
+      id: tenantId,
     },
   })
   await prisma.log.create({
@@ -81,7 +82,7 @@ companiesRoute.post(`/api/tenants`, isAuthenticated, async (req, res) => {
       userId,
       tenantId,
       event: 'update_tenant',
-    }
+    },
   })
   res.json(result)
 })
@@ -91,18 +92,18 @@ companiesRoute.post(`/api/tenants/subscription`, isAuthenticated, async (req, re
   const body = req.body as { subscription: 'FREE' | 'PREMIUM' }
   const currentSubscription = await prisma.tenant.findFirst({
     where: {
-      id: tenantId
+      id: tenantId,
     },
   })
   const result = await prisma.tenant.update({
     data: {
       subscriptionType: body.subscription,
-      subscriptionEndDate: body.subscription === "FREE" ? addMonths(currentSubscription?.subscriptionStartDate || new Date(), 1).toISOString() : null,
-      subscriptionStartDate: body.subscription === "PREMIUM" ? new Date().toISOString() : null,
-      trialEndDate: null
+      subscriptionEndDate: body.subscription === 'FREE' ? addMonths(currentSubscription?.subscriptionStartDate || new Date(), 1).toISOString() : null,
+      subscriptionStartDate: body.subscription === 'PREMIUM' ? new Date().toISOString() : null,
+      trialEndDate: null,
     },
     where: {
-      id: tenantId
+      id: tenantId,
     },
   })
   res.status(200).json({
@@ -123,7 +124,7 @@ companiesRoute.post(`/api/tenants/create`, isAuthenticated, async (req, res) => 
       signupCompleted: true,
     },
     where: {
-      id: tenantId
+      id: tenantId,
     },
   })
   await prisma.user.update({
@@ -131,7 +132,7 @@ companiesRoute.post(`/api/tenants/create`, isAuthenticated, async (req, res) => 
       marketingConsent: body.user.marketingConsent,
     },
     where: {
-      id: userId
+      id: userId,
     },
   })
   await prisma.log.create({
@@ -139,10 +140,9 @@ companiesRoute.post(`/api/tenants/create`, isAuthenticated, async (req, res) => 
       userId,
       tenantId,
       event: 'create_tenant',
-    }
+    },
   })
   res.json(result)
 })
-
 
 export default companiesRoute

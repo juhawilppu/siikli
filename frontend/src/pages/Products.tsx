@@ -1,4 +1,7 @@
-"use client"
+'use client'
+
+import type { GetPackageSettings, GetProductResponseDto, ProductTypeResponse } from '@/types/types'
+import axios from 'axios'
 
 import {
   ChevronDown,
@@ -6,36 +9,33 @@ import {
   Edit,
   Filter,
   Plus,
-  Trash2
-} from "lucide-react"
-import { useEffect, useState } from "react"
-
-import SiikliPage from "@/SiikliPage"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+  Trash2,
+} from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Dialog,
-  DialogTrigger
-} from "@/components/ui/dialog"
+  DialogTrigger,
+} from '@/components/ui/dialog'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
-  DropdownMenuTrigger
-} from "@/components/ui/dropdown-menu"
-import { Input } from "@/components/ui/input"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { useToast } from "@/hooks/use-toast"
-import { GetPackageSettings, GetProductResponseDto, ProductTypeResponse } from "@/types/types"
-import { formatMoneyFi } from "@/utils/money"
-import axios from "axios"
-import { useNavigate } from "react-router-dom"
-import NewProduct from "./NewProduct"
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import { Input } from '@/components/ui/input'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { useToast } from '@/hooks/use-toast'
+import SiikliPage from '@/SiikliPage'
+import { formatMoneyFi } from '@/utils/money'
+import NewProduct from './NewProduct'
 
 export default function TuotteetSivu() {
-  const [searchQuery, setSearchQuery] = useState("")
+  const [searchQuery, setSearchQuery] = useState('')
   const [loading, setLoading] = useState(true)
   const [products, setProducts] = useState<GetProductResponseDto[]>([])
   const [productTypes, setProductTypes] = useState<ProductTypeResponse[]>([])
@@ -45,9 +45,9 @@ export default function TuotteetSivu() {
   const [showNewProductDialog, setShowNewProductDialog] = useState(false)
   const [editProductId, setEditProductId] = useState<string>()
 
-  const [typeFilter, setTypeFilter] = useState<string>("all")
-  const [orderDirection, setOrderDirection] = useState<"asc" | "desc">("asc")
-  const [orderByField, setOrderByField] = useState<keyof GetProductResponseDto>("name")
+  const [typeFilter, setTypeFilter] = useState<string>('all')
+  const [orderDirection, setOrderDirection] = useState<'asc' | 'desc'>('asc')
+  const [orderByField, setOrderByField] = useState<keyof GetProductResponseDto>('name')
 
   const { toast } = useToast()
 
@@ -60,7 +60,7 @@ export default function TuotteetSivu() {
       const promises = await Promise.all([
         axios.get<GetProductResponseDto[]>('/products'),
         axios.get<ProductTypeResponse[]>('/products/product-types'),
-        axios.get<GetPackageSettings>('/tenants/package-settings')
+        axios.get<GetPackageSettings>('/tenants/package-settings'),
       ])
       setProducts(promises[0].data)
       setProductTypes(promises[1].data)
@@ -69,52 +69,52 @@ export default function TuotteetSivu() {
       setLoading(false)
     }
     loadData()
-
   }, [])
 
   // Suodata ja järjestä tuotteet
   const filteredTuotteet = products
     .filter((product) => {
       // Haku
-      const matchesSearch =
-        product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        product.variety?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        product.type?.toLowerCase().includes(searchQuery.toLowerCase())
+      const matchesSearch
+        = product.name.toLowerCase().includes(searchQuery.toLowerCase())
+          || product.variety?.toLowerCase().includes(searchQuery.toLowerCase())
+          || product.type?.toLowerCase().includes(searchQuery.toLowerCase())
 
       // productryhmäsuodatus
-      const matchesCategory = typeFilter === "all" || product.type === typeFilter
+      const matchesCategory = typeFilter === 'all' || product.type === typeFilter
 
       return matchesSearch && matchesCategory
     })
     .sort((a, b) => {
       // Järjestäminen
-      if (typeof a[orderByField] === "string" && typeof b[orderByField] === "string") {
-        return orderDirection === "asc"
+      if (typeof a[orderByField] === 'string' && typeof b[orderByField] === 'string') {
+        return orderDirection === 'asc'
           ? (a[orderByField] as string).localeCompare(b[orderByField] as string)
           : (b[orderByField] as string).localeCompare(a[orderByField] as string)
-      } else {
-        return orderDirection === "asc"
+      }
+      else {
+        return orderDirection === 'asc'
           ? (a[orderByField] as number) - (b[orderByField] as number)
           : (b[orderByField] as number) - (a[orderByField] as number)
       }
     })
-
 
   const onProductSaved = async (product: GetProductResponseDto) => {
     if (showNewProductDialog) {
       setProducts([...products, product])
       setShowNewProductDialog(false)
       toast({
-        title: "Tuote luotu",
+        title: 'Tuote luotu',
         description: `Tuote "${product.name}" on tallennettu onnistuneesti.`,
-        variant: 'success'
+        variant: 'success',
       })
-    } else {
+    }
+    else {
       const newProducts = [...products.filter(p => p.id !== product.id), product]
       setProducts(newProducts)
       setEditProductId(undefined)
       toast({
-        title: "Muutokset tallennettu",
+        title: 'Muutokset tallennettu',
         description: `Tuote "${product.name}" on tallennettu onnistuneesti.`,
       })
     }
@@ -125,7 +125,6 @@ export default function TuotteetSivu() {
     if (product.packageSize && !packageSizes.find(s => s === product.packageSize)) {
       setPackageSizes([...packageSizes, product.packageSize])
     }
-
   }
 
   const deleteProduct = async (id: string) => {
@@ -135,21 +134,22 @@ export default function TuotteetSivu() {
     }
 
     try {
-      await axios.delete('/products/' + id)
+      await axios.delete(`/products/${id}`)
 
-      const newProductList = products.filter((t) => t.id !== id)
+      const newProductList = products.filter(t => t.id !== id)
 
       setProducts(newProductList)
 
       toast({
-        title: "Tuote poistettu",
+        title: 'Tuote poistettu',
         description: `Tuote "${product.name}" on poistettu onnistuneesti.`,
       })
-    } catch (e) {
+    }
+    catch (e) {
       toast({
-        title: "Poistaminen epäonnistui",
+        title: 'Poistaminen epäonnistui',
         description: `Tuotetta "${product.name}" ei voitu poistaa, koska se on jo lisätty tilaukseen.`,
-        variant: 'destructive'
+        variant: 'destructive',
       })
     }
   }
@@ -157,14 +157,16 @@ export default function TuotteetSivu() {
   // Järjestyksen vaihtaminen
   const vaihdaJarjestys = (kentta: keyof GetProductResponseDto) => {
     if (orderByField === kentta) {
-      setOrderDirection(orderDirection === "asc" ? "desc" : "asc")
-    } else {
+      setOrderDirection(orderDirection === 'asc' ? 'desc' : 'asc')
+    }
+    else {
       setOrderByField(kentta)
-      setOrderDirection("asc")
+      setOrderDirection('asc')
     }
   }
 
-  if (loading || !packageTypes || !packageSizes) return <SiikliPage title="Tuotteet" description="Hallitse tuotteita ja hintoja." />
+  if (loading || !packageTypes || !packageSizes)
+    return <SiikliPage title="Tuotteet" description="Hallitse tuotteita ja hintoja." />
 
   return (
     <>
@@ -173,20 +175,22 @@ export default function TuotteetSivu() {
         <div className="space-y-4">
           <div className="flex flex-col gap-4 md:flex-row md:items-center">
             <div className="flex flex-1 items-center gap-2">
-              <Input className="h-8 w-full md:w-[300px]" placeholder="Hae tuotetta" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+              <Input className="h-8 w-full md:w-[300px]" placeholder="Hae tuotetta" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" className="gap-1">
                     <Filter className="h-4 w-4 mr-1" />
-                    Tuoteryhmä: {typeFilter === "all" ? "Kaikki" : typeFilter}
+                    Tuoteryhmä:
+                    {' '}
+                    {typeFilter === 'all' ? 'Kaikki' : typeFilter}
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
-                  <DropdownMenuItem onClick={() => setTypeFilter("all")}>
+                  <DropdownMenuItem onClick={() => setTypeFilter('all')}>
                     Kaikki tuoteryhmät
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  {productTypes.map((productType) => (
+                  {productTypes.map(productType => (
                     <DropdownMenuItem key={productType.name} onClick={() => setTypeFilter(productType.name)}>
                       {productType.name}
                     </DropdownMenuItem>
@@ -194,7 +198,7 @@ export default function TuotteetSivu() {
                 </DropdownMenuContent>
               </DropdownMenu>
               {false && (
-                <Button variant='outline' onClick={() => navigate('/products/reorder')}>Järjestele ryhmät</Button>
+                <Button variant="outline" onClick={() => navigate('/products/reorder')}>Järjestele ryhmät</Button>
               )}
             </div>
             <Dialog open={showNewProductDialog} onOpenChange={setShowNewProductDialog}>
@@ -204,8 +208,8 @@ export default function TuotteetSivu() {
                   Lisää tuote
                 </Button>
               </DialogTrigger>
-              {showNewProductDialog &&
-                <NewProduct hide={() => setShowNewProductDialog(false)} onSave={onProductSaved} productTypes={productTypes} refPackageSizes={packageSizes} refPackageTypes={packageTypes} orderIndex={Math.max(...products.map(p => p.orderIndex)) + 1} />}
+              {showNewProductDialog
+                && <NewProduct hide={() => setShowNewProductDialog(false)} onSave={onProductSaved} productTypes={productTypes} refPackageSizes={packageSizes} refPackageTypes={packageTypes} orderIndex={Math.max(...products.map(p => p.orderIndex)) + 1} />}
             </Dialog>
           </div>
 
@@ -213,7 +217,12 @@ export default function TuotteetSivu() {
             <CardHeader className="border-b bg-gray-50 py-4">
               <CardTitle>Tuoteluettelo</CardTitle>
               <CardDescription>
-                {filteredTuotteet.length} tuotetta {products.length} tuotteesta
+                {filteredTuotteet.length}
+                {' '}
+                tuotetta
+                {products.length}
+                {' '}
+                tuotteesta
               </CardDescription>
             </CardHeader>
             <CardContent className="p-0">
@@ -223,15 +232,17 @@ export default function TuotteetSivu() {
                     {/*
                     <TableHead className="w-[80px]">Järjestys</TableHead>
                     */}
-                    <TableHead className="cursor-pointer" onClick={() => vaihdaJarjestys("name")}>
+                    <TableHead className="cursor-pointer" onClick={() => vaihdaJarjestys('name')}>
                       <div className="flex items-center">
                         Nimi
-                        {orderByField === "name" &&
-                          (orderDirection === "asc" ? (
-                            <ChevronUp className="ml-1 h-4 w-4" />
-                          ) : (
-                            <ChevronDown className="ml-1 h-4 w-4" />
-                          ))}
+                        {orderByField === 'name'
+                          && (orderDirection === 'asc'
+                            ? (
+                                <ChevronUp className="ml-1 h-4 w-4" />
+                              )
+                            : (
+                                <ChevronDown className="ml-1 h-4 w-4" />
+                              ))}
                       </div>
                     </TableHead>
                     { /*
@@ -249,15 +260,17 @@ export default function TuotteetSivu() {
                     </TableHead>
                     <TableHead>Aliryhmä</TableHead>
                     */}
-                    <TableHead className="cursor-pointer" onClick={() => vaihdaJarjestys("price")}>
+                    <TableHead className="cursor-pointer" onClick={() => vaihdaJarjestys('price')}>
                       <div className="flex items-center">
                         Hinta ALV 14 % (€)
-                        {orderByField === "price" &&
-                          (orderDirection === "asc" ? (
-                            <ChevronUp className="ml-1 h-4 w-4" />
-                          ) : (
-                            <ChevronDown className="ml-1 h-4 w-4" />
-                          ))}
+                        {orderByField === 'price'
+                          && (orderDirection === 'asc'
+                            ? (
+                                <ChevronUp className="ml-1 h-4 w-4" />
+                              )
+                            : (
+                                <ChevronDown className="ml-1 h-4 w-4" />
+                              ))}
                       </div>
                     </TableHead>
                     <TableHead>Hinta ALV 0 % (€)</TableHead>
@@ -275,7 +288,7 @@ export default function TuotteetSivu() {
                     </TableRow>
                   ) : (
                     filteredTuotteet.map((product, index) => (
-                      <TableRow key={product.id} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+                      <TableRow key={product.id} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
                         {/*
                         <TableCell>
                           <div className="flex items-center">
@@ -327,9 +340,12 @@ export default function TuotteetSivu() {
                         <TableCell>{product.type}</TableCell>
                         <TableCell>{product.subtype}</TableCell>
                         */}
-                        <TableCell className="font-medium" > {product.price ? formatMoneyFi(product.price) : ''}</TableCell>
+                        <TableCell className="font-medium">
+                          {' '}
+                          {product.price ? formatMoneyFi(product.price) : ''}
+                        </TableCell>
                         <TableCell>{product.price0 ? formatMoneyFi(product.price0) : ''}</TableCell>
-                        <TableCell>{product.packageSize ? product.packageSize + ' kg' : ''}</TableCell>
+                        <TableCell>{product.packageSize ? `${product.packageSize} kg` : ''}</TableCell>
                         <TableCell>{product.packageType}</TableCell>
                         <TableCell className="text-right">
                           <div className="flex justify-end gap-2">
@@ -377,15 +393,23 @@ export default function TuotteetSivu() {
             </CardContent>
             <CardFooter className="flex justify-between border-t bg-gray-50 py-3">
               <div className="text-sm text-muted-foreground">
-                Näytetään {filteredTuotteet.length} / {products.length} tuotetta
+                Näytetään
+                {' '}
+                {filteredTuotteet.length}
+                {' '}
+                /
+                {' '}
+                {products.length}
+                {' '}
+                tuotetta
               </div>
             </CardFooter>
           </Card>
-        </div >
-      </SiikliPage >
-      < Dialog open={editProductId !== undefined} onOpenChange={() => setEditProductId(undefined)} >
-        {editProductId &&
-          <NewProduct productToEdit={products.find(p => p.id === editProductId)} hide={() => setEditProductId(undefined)} onSave={onProductSaved} productTypes={productTypes} refPackageTypes={packageTypes} refPackageSizes={packageSizes} />}
+        </div>
+      </SiikliPage>
+      <Dialog open={editProductId !== undefined} onOpenChange={() => setEditProductId(undefined)}>
+        {editProductId
+          && <NewProduct productToEdit={products.find(p => p.id === editProductId)} hide={() => setEditProductId(undefined)} onSave={onProductSaved} productTypes={productTypes} refPackageTypes={packageTypes} refPackageSizes={packageSizes} />}
       </Dialog>
     </>
   )

@@ -1,15 +1,20 @@
-import * as Sentry from "@sentry/react"
+import type { GetCurrentUserDto } from './types/types'
+import * as Sentry from '@sentry/react'
 import axios from 'axios'
-import { Building2, ClipboardList, FileText, HelpCircle, LineChart, PlusCircle, Receipt, Search, ShoppingBasket, Users } from 'lucide-react'
+import { Building2, ClipboardList, FileText, HelpCircle, LineChart, Package, PlusCircle, Receipt, Search, ShoppingBasket, Users } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { NavLink, Navigate, Route, Routes, useLocation } from 'react-router-dom'
-import './App.css'
-import ErrorPage from './ErrorPage'
-import Landing from './Landing'
+import { Navigate, NavLink, Route, Routes, useLocation } from 'react-router-dom'
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
+import AboutUs from './AboutUs'
 import { Button } from './components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from './components/ui/dropdown-menu'
 import { Input } from './components/ui/input'
 import { Toaster } from './components/ui/toaster'
+import ContactPage from './Contact'
+import Cookies from './Cookies'
+import ErrorPage from './ErrorPage'
+import Landing from './Landing'
+import LoginPage2 from './LoginPage'
 import CompanySettings from './pages/CompanySettings'
 import { CustomerPage } from './pages/CustomerPage'
 import { Customers } from './pages/Customers'
@@ -20,46 +25,38 @@ import Orders from './pages/Orders'
 import { PackageConfiguration } from './pages/PackageConfiguration'
 import { PackageList } from './pages/PackageList'
 import { ProductPage } from './pages/ProductPage'
-import TuoteryhmatJarjestely from './pages/ProductTypeReorder'
+
 import Products from './pages/Products'
+import TuoteryhmatJarjestely from './pages/ProductTypeReorder'
 import { SalesReport } from './pages/SalesReport'
-import SelfSignup from "./pages/SelfSignup"
-import { GetCurrentUserDto } from "./types/types"
+import SelfSignup from './pages/SelfSignup'
+import { initPosthog } from './posthog'
+import PrivacyPolicy from './PrivacyPolicy'
+import SiikliCookieConsent from './SiikliCookieConsent'
+import Support from './Support'
+import TermsOfService from './TermsOfService'
+import './App.css'
 
-import {
-  Package
-} from "lucide-react"
-
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import AboutUs from "./AboutUs"
-import ContactPage from "./Contact"
-import Cookies from "./Cookies"
-import LoginPage2 from "./LoginPage"
-import PrivacyPolicy from "./PrivacyPolicy"
-import SiikliCookieConsent from "./SiikliCookieConsent"
-import Support from "./Support"
-import TermsOfService from "./TermsOfService"
-import { initPosthog } from "./posthog"
 axios.defaults.baseURL = '/api'
 
 const navItems = [
-  //{ title: "Etusivu", href: '/', icon: Home },
-  { title: "Tilaukset", href: '/orders', icon: ClipboardList },
-  { title: "Uusi tilaus", href: '/orders/new', icon: PlusCircle },
-  { title: "Pakkauslista", href: '/packaging-list', icon: FileText },
-  { title: "Laskut", href: '/invoices', icon: Receipt },
-  { title: "Myyntiraportti", href: '/sales-report', icon: LineChart },
-  { title: "Tuotteet", href: '/products', icon: ShoppingBasket },
-  { title: "Asiakkaat", href: '/customers', icon: Users },
-  { title: "Oma yritys", href: '/own-company', icon: Building2 },
-];
+  // { title: "Etusivu", href: '/', icon: Home },
+  { title: 'Tilaukset', href: '/orders', icon: ClipboardList },
+  { title: 'Uusi tilaus', href: '/orders/new', icon: PlusCircle },
+  { title: 'Pakkauslista', href: '/packaging-list', icon: FileText },
+  { title: 'Laskut', href: '/invoices', icon: Receipt },
+  { title: 'Myyntiraportti', href: '/sales-report', icon: LineChart },
+  { title: 'Tuotteet', href: '/products', icon: ShoppingBasket },
+  { title: 'Asiakkaat', href: '/customers', icon: Users },
+  { title: 'Oma yritys', href: '/own-company', icon: Building2 },
+]
 
 function App() {
   const [user, setUser] = useState<GetCurrentUserDto>()
   const [loading, setLoading] = useState(true)
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false)
 
-  const location = useLocation();
+  const location = useLocation()
 
   const logout = async () => {
     await axios.post('/auth/logout')
@@ -96,7 +93,7 @@ function App() {
         Sentry.setUser({
           id: userData.userId,
           initials: userData.initials,
-          tenantId: userData.tenantId
+          tenantId: userData.tenantId,
         })
       })
       .finally(() => setLoading(false))
@@ -108,139 +105,143 @@ function App() {
         <div></div>
       </div>
     )
-  } else if (!user) {
+  }
+  else if (!user) {
     return (
       <>
         <Routes>
-          <Route path='/' element={<Landing />} />
-          <Route path='/tietoa-meista' element={<AboutUs />} />
-          <Route path='/yhteystiedot' element={<ContactPage />} />
-          <Route path='/tietosuoja' element={<PrivacyPolicy />} />
-          <Route path='/kayttoehdot' element={<TermsOfService />} />
-          <Route path='/evasteet' element={<Cookies />} />
-          <Route path='/kirjaudu' element={<LoginPage2 />} />
-          <Route path='/tuki' element={<Support />} />
-          <Route path='/error' element={<ErrorPage />} />
-          <Route path='*' element={<Navigate to='/' replace />} />
+          <Route path="/" element={<Landing />} />
+          <Route path="/tietoa-meista" element={<AboutUs />} />
+          <Route path="/yhteystiedot" element={<ContactPage />} />
+          <Route path="/tietosuoja" element={<PrivacyPolicy />} />
+          <Route path="/kayttoehdot" element={<TermsOfService />} />
+          <Route path="/evasteet" element={<Cookies />} />
+          <Route path="/kirjaudu" element={<LoginPage2 />} />
+          <Route path="/tuki" element={<Support />} />
+          <Route path="/error" element={<ErrorPage />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
         <Toaster />
         <SiikliCookieConsent onAccept={handleCookieConsentAccept} onDecline={handleCookieConsentDecline} />
       </>
     )
-  } else if (!user.signupCompleted) {
+  }
+  else if (!user.signupCompleted) {
     return (
       <>
         <Routes>
-          <Route path='*' element={<SelfSignup />} />
+          <Route path="*" element={<SelfSignup />} />
         </Routes>
       </>
     )
-  } else {
-    return (<>
-      <div className="flex min-h-screen flex-col">
-        <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-blue-600 text-white px-4 md:px-6">
-          <Sheet open={isMobileNavOpen} onOpenChange={setIsMobileNavOpen}>
-            <SheetTrigger asChild>
-              <Button variant="outline" size="icon" className="md:hidden">
-                <Menu className="h-5 w-5" />
-                <span className="sr-only">Toggle Menu</span>
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="left" className="md:hidden">
-              <MobileSidebar />
-            </SheetContent>
-          </Sheet>
-          <div className="flex items-center gap-2">
-            <Package className="h-6 w-6 text-white" />
-            <span className="text-lg font-semibold text-white">Siikli ERP</span>
-          </div>
-          <div className="ml-auto flex items-center gap-4">
-            <form className="hidden md:block">
-              <div className="relative">
-                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-blue-200" />
-                <Input
-                  type="search"
-                  placeholder="Etsi..."
-                  className="w-64 rounded-lg bg-blue-700 border-blue-500 text-white placeholder:text-blue-200 pl-8 md:w-80"
-                />
-              </div>
-            </form>
-            <Button
-              variant="outline"
-              size="icon"
-              className="rounded-full bg-blue-700 border-blue-500 text-white hover:bg-blue-800 hover:text-white"
-            >
-              <HelpCircle className="h-5 w-5" />
-              <span className="sr-only">Tuki</span>
-            </Button>
-            <Button
-              variant="outline"
-              size="icon"
-              className="rounded-full bg-blue-700 border-blue-500 text-white hover:bg-blue-800 hover:text-white"
-            >
-              <Bell className="h-5 w-5" />
-              <span className="sr-only">Ilmoitukset</span>
-            </Button>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="rounded-full bg-blue-700 border-blue-500 hover:bg-blue-800"
-                >
-                  {user?.initials}
-                  <span className="sr-only">Toggle user menu</span>
+  }
+  else {
+    return (
+      <>
+        <div className="flex min-h-screen flex-col">
+          <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-blue-600 text-white px-4 md:px-6">
+            <Sheet open={isMobileNavOpen} onOpenChange={setIsMobileNavOpen}>
+              <SheetTrigger asChild>
+                <Button variant="outline" size="icon" className="md:hidden">
+                  <Menu className="h-5 w-5" />
+                  <span className="sr-only">Toggle Menu</span>
                 </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Tunnukseni</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>Profiili</DropdownMenuItem>
-                <DropdownMenuItem>Asetukset</DropdownMenuItem>
-                <DropdownMenuItem>Tuki</DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={logout}>Kirjaudu ulos</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </header>
-        <div className="flex flex-1">
-          {/* Desktop Sidebar */}
-          <aside className="hidden w-64 shrink-0 border-r bg-muted/40 md:block">
-            <DesktopSidebar currentPath={location.pathname} />
-          </aside>
+              </SheetTrigger>
+              <SheetContent side="left" className="md:hidden">
+                <MobileSidebar />
+              </SheetContent>
+            </Sheet>
+            <div className="flex items-center gap-2">
+              <Package className="h-6 w-6 text-white" />
+              <span className="text-lg font-semibold text-white">Siikli ERP</span>
+            </div>
+            <div className="ml-auto flex items-center gap-4">
+              <form className="hidden md:block">
+                <div className="relative">
+                  <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-blue-200" />
+                  <Input
+                    type="search"
+                    placeholder="Etsi..."
+                    className="w-64 rounded-lg bg-blue-700 border-blue-500 text-white placeholder:text-blue-200 pl-8 md:w-80"
+                  />
+                </div>
+              </form>
+              <Button
+                variant="outline"
+                size="icon"
+                className="rounded-full bg-blue-700 border-blue-500 text-white hover:bg-blue-800 hover:text-white"
+              >
+                <HelpCircle className="h-5 w-5" />
+                <span className="sr-only">Tuki</span>
+              </Button>
+              <Button
+                variant="outline"
+                size="icon"
+                className="rounded-full bg-blue-700 border-blue-500 text-white hover:bg-blue-800 hover:text-white"
+              >
+                <Bell className="h-5 w-5" />
+                <span className="sr-only">Ilmoitukset</span>
+              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="rounded-full bg-blue-700 border-blue-500 hover:bg-blue-800"
+                  >
+                    {user?.initials}
+                    <span className="sr-only">Toggle user menu</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuLabel>Tunnukseni</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem>Profiili</DropdownMenuItem>
+                  <DropdownMenuItem>Asetukset</DropdownMenuItem>
+                  <DropdownMenuItem>Tuki</DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={logout}>Kirjaudu ulos</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          </header>
+          <div className="flex flex-1">
+            {/* Desktop Sidebar */}
+            <aside className="hidden w-64 shrink-0 border-r bg-muted/40 md:block">
+              <DesktopSidebar currentPath={location.pathname} />
+            </aside>
 
-          {/* Main Content */}
-          <main className="flex-1 overflow-auto">
-            <Routes>
-              <Route path='/' element={<Navigate to='/orders' replace />} />
-              <Route path='/orders' element={<Orders />} />
-              <Route path='/orders/new' element={<Order key="new" />} />
-              <Route path='/orders/:orderId' element={<Order key="edit" />} />
-              <Route path='/sales-report' element={<SalesReport />} />
-              <Route path='/packaging-list' element={<PackageList />} />
-              <Route path='/invoices' element={<Invoices />} />
-              <Route path='/customers' element={<Customers />} />
-              <Route path='/customers/new' element={<NewCustomerForm />} />
-              <Route path='/customers/:customerId' element={<CustomerPage />} />
-              <Route path='/customers/:customerId/:edit' element={<CustomerPage />} />
-              <Route path='/products' element={<Products />} />
-              <Route path='/products/reorder' element={<TuoteryhmatJarjestely />} />
-              <Route path='/products/:productId' element={<ProductPage />} />
-              <Route path='/products/:productId/:edit' element={<ProductPage />} />
-              <Route
-                path='/package_configuration'
-                element={<PackageConfiguration />}
-              />
-              <Route path='/own-company' element={<CompanySettings />} />
-              <Route path='*' element={<Navigate to='/' replace />} />
-            </Routes>
-          </main>
+            {/* Main Content */}
+            <main className="flex-1 overflow-auto">
+              <Routes>
+                <Route path="/" element={<Navigate to="/orders" replace />} />
+                <Route path="/orders" element={<Orders />} />
+                <Route path="/orders/new" element={<Order key="new" />} />
+                <Route path="/orders/:orderId" element={<Order key="edit" />} />
+                <Route path="/sales-report" element={<SalesReport />} />
+                <Route path="/packaging-list" element={<PackageList />} />
+                <Route path="/invoices" element={<Invoices />} />
+                <Route path="/customers" element={<Customers />} />
+                <Route path="/customers/new" element={<NewCustomerForm />} />
+                <Route path="/customers/:customerId" element={<CustomerPage />} />
+                <Route path="/customers/:customerId/:edit" element={<CustomerPage />} />
+                <Route path="/products" element={<Products />} />
+                <Route path="/products/reorder" element={<TuoteryhmatJarjestely />} />
+                <Route path="/products/:productId" element={<ProductPage />} />
+                <Route path="/products/:productId/:edit" element={<ProductPage />} />
+                <Route
+                  path="/package_configuration"
+                  element={<PackageConfiguration />}
+                />
+                <Route path="/own-company" element={<CompanySettings />} />
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Routes>
+            </main>
+          </div>
+          <Toaster />
+          <SiikliCookieConsent onAccept={handleCookieConsentAccept} onDecline={handleCookieConsentDecline} />
         </div>
-        <Toaster />
-        <SiikliCookieConsent onAccept={handleCookieConsentAccept} onDecline={handleCookieConsentDecline} />
-      </div>
-    </>
+      </>
     )
   }
 }
@@ -258,7 +259,7 @@ function MobileSidebar() {
       </div>
       <div className="flex-1 overflow-auto py-2">
         <nav className="grid gap-1 px-2">
-          {navItems.map((item) => (
+          {navItems.map(item => (
             <NavLink
               to={item.href}
               className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-foreground"
@@ -279,7 +280,7 @@ function DesktopSidebar({ currentPath }: { currentPath: string }) {
     <div className="flex h-full flex-col gap-2">
       <div className="flex-1 overflow-auto py-2">
         <nav className="grid gap-1 px-2">
-          {navItems.map((item) => (
+          {navItems.map(item => (
             <NavLink
               to={item.href}
               key={item.href}

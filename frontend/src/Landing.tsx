@@ -1,14 +1,14 @@
-import { ArrowRight, BarChart3, Box, Check, ChevronRight, FileText, Package, Truck, Users } from "lucide-react"
+import { ArrowRight, BarChart3, Box, Check, ChevronRight, FileText, Package, Truck, Users } from 'lucide-react'
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { useEffect, useRef } from "react"
-import { NavLink } from "react-router-dom"
-import Footer from "./Footer"
-import TopBar from "./TopBar"
-import UiCarousel from "./UiCarousel"
+import { useEffect, useRef } from 'react'
+import { NavLink } from 'react-router-dom'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import Footer from './Footer'
+import TopBar from './TopBar'
+import UiCarousel from './UiCarousel'
+
 export default function LandingPage() {
-
   const pricingRef = useRef<HTMLDivElement>(null)
   const featuresRef = useRef<HTMLDivElement>(null)
   const ordersRef = useRef<HTMLDivElement>(null)
@@ -50,23 +50,29 @@ export default function LandingPage() {
     reportsRef.current?.scrollIntoView({ behavior: 'smooth' })
   }
 
-
   useEffect(() => {
     if (window.location.hash === '#hinnoittelu') {
       scrollToPricing()
-    } else if (window.location.hash === '#ominaisuudet') {
+    }
+    else if (window.location.hash === '#ominaisuudet') {
       scrollToFeatures()
-    } else if (window.location.hash === '#tilaukset') {
+    }
+    else if (window.location.hash === '#tilaukset') {
       scrollToOrders()
-    } else if (window.location.hash === '#asiakashallinta') {
+    }
+    else if (window.location.hash === '#asiakashallinta') {
       scrollToCustomers()
-    } else if (window.location.hash === '#tuotehallinta') {
+    }
+    else if (window.location.hash === '#tuotehallinta') {
       scrollToProducts()
-    } else if (window.location.hash === '#laskutus') {
+    }
+    else if (window.location.hash === '#laskutus') {
       scrollToInvoices()
-    } else if (window.location.hash === '#kuljetukset') {
+    }
+    else if (window.location.hash === '#kuljetukset') {
       scrollToShipping()
-    } else if (window.location.hash === '#raportit') {
+    }
+    else if (window.location.hash === '#raportit') {
       scrollToReports()
     }
   }, [window.location.hash])
@@ -92,7 +98,9 @@ export default function LandingPage() {
             <div className="flex flex-col sm:flex-row gap-4 mt-4">
               <Button size="lg" className="rounded-full" asChild>
                 <NavLink to="/kirjaudu">
-                  Aloita ilmaiseksi <ArrowRight className="ml-2 h-4 w-4" />
+                  Aloita ilmaiseksi
+                  {' '}
+                  <ArrowRight className="ml-2 h-4 w-4" />
                 </NavLink>
               </Button>
               <Button variant="outline" size="lg" className="rounded-full" asChild>
@@ -102,7 +110,7 @@ export default function LandingPage() {
             {false && (
               <div className="flex items-center gap-2 mt-4">
                 <div className="flex -space-x-2">
-                  {[1, 2, 3, 4].map((i) => (
+                  {[1, 2, 3, 4].map(i => (
                     <div
                       key={i}
                       className="h-8 w-8 rounded-full border-2 border-white bg-gray-200 flex items-center justify-center text-xs font-medium"
@@ -112,7 +120,11 @@ export default function LandingPage() {
                   ))}
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  Yli <span className="font-medium">500+</span> yritystä käyttää Siikliä
+                  Yli
+                  {' '}
+                  <span className="font-medium">500+</span>
+                  {' '}
+                  yritystä käyttää Siikliä
                 </p>
               </div>
             )}
@@ -145,8 +157,8 @@ export default function LandingPage() {
                   Hallitse tilauksia helposti, seuraa toimituksia ja pidä asiakkaat ajan tasalla.
                 </p>
                 <ul className="mt-4 space-y-2">
-                  {["Tilausten luonti", "Pakkauskoot", "Huomautukset ja kommentit"].map(
-                    (feature) => (
+                  {['Tilausten luonti', 'Pakkauskoot', 'Huomautukset ja kommentit'].map(
+                    feature => (
                       <li key={feature} className="flex items-center gap-2">
                         <Check className="h-4 w-4 text-primary" />
                         <span className="text-sm">{feature}</span>
@@ -159,7 +171,9 @@ export default function LandingPage() {
                 <CardFooter>
                   <Button variant="ghost" size="sm" className="gap-1" asChild>
                     <a href="#tilaukset">
-                      Lue lisää <ChevronRight className="h-4 w-4" />
+                      Lue lisää
+                      {' '}
+                      <ChevronRight className="h-4 w-4" />
                     </a>
                   </Button>
                 </CardFooter>
@@ -175,7 +189,7 @@ export default function LandingPage() {
               <CardContent>
                 <p className="text-muted-foreground">Pidä asiakastiedot järjestyksessä ja paranna asiakaspalvelua.</p>
                 <ul className="mt-4 space-y-2">
-                  {["Kattavat asiakasprofiilit", "Asiakasryhmittely", "Tilaushistoria"].map((feature) => (
+                  {['Kattavat asiakasprofiilit', 'Asiakasryhmittely', 'Tilaushistoria'].map(feature => (
                     <li key={feature} className="flex items-center gap-2">
                       <Check className="h-4 w-4 text-primary" />
                       <span className="text-sm">{feature}</span>
@@ -187,7 +201,9 @@ export default function LandingPage() {
                 <CardFooter>
                   <Button variant="ghost" size="sm" className="gap-1" asChild>
                     <a href="#asiakkaat">
-                      Lue lisää <ChevronRight className="h-4 w-4" />
+                      Lue lisää
+                      {' '}
+                      <ChevronRight className="h-4 w-4" />
                     </a>
                   </Button>
                 </CardFooter>
@@ -205,7 +221,7 @@ export default function LandingPage() {
                   Hallitse tuotevalikoimaa ja hintoja tehokkaasti.
                 </p>
                 <ul className="mt-4 space-y-2">
-                  {["Tuoteryhmien hallinta", "Hinnoittelu", "Muokkaus"].map((feature) => (
+                  {['Tuoteryhmien hallinta', 'Hinnoittelu', 'Muokkaus'].map(feature => (
                     <li key={feature} className="flex items-center gap-2">
                       <Check className="h-4 w-4 text-primary" />
                       <span className="text-sm">{feature}</span>
@@ -217,7 +233,9 @@ export default function LandingPage() {
                 <CardFooter>
                   <Button variant="ghost" size="sm" className="gap-1" asChild>
                     <a href="#tuotteet">
-                      Lue lisää <ChevronRight className="h-4 w-4" />
+                      Lue lisää
+                      {' '}
+                      <ChevronRight className="h-4 w-4" />
                     </a>
                   </Button>
                 </CardFooter>
@@ -233,7 +251,7 @@ export default function LandingPage() {
               <CardContent>
                 <p className="text-muted-foreground">Luo ja lähetä laskuja.</p>
                 <ul className="mt-4 space-y-2">
-                  {["Laskujen luonti", "Massatoiminnot", "Tulostettava PDF"].map((feature) => (
+                  {['Laskujen luonti', 'Massatoiminnot', 'Tulostettava PDF'].map(feature => (
                     <li key={feature} className="flex items-center gap-2">
                       <Check className="h-4 w-4 text-primary" />
                       <span className="text-sm">{feature}</span>
@@ -245,7 +263,9 @@ export default function LandingPage() {
                 <CardFooter>
                   <Button variant="ghost" size="sm" className="gap-1" asChild>
                     <a href="#laskutus">
-                      Lue lisää <ChevronRight className="h-4 w-4" />
+                      Lue lisää
+                      {' '}
+                      <ChevronRight className="h-4 w-4" />
                     </a>
                   </Button>
                 </CardFooter>
@@ -261,8 +281,8 @@ export default function LandingPage() {
               <CardContent>
                 <p className="text-muted-foreground">Suunnittele kuljetukset tehokkaasti ja seuraa toimituksia.</p>
                 <ul className="mt-4 space-y-2">
-                  {["Hyväksyttävä formaatti", "Massatulostus", "Selkeä käyttöliittymä"].map(
-                    (feature) => (
+                  {['Hyväksyttävä formaatti', 'Massatulostus', 'Selkeä käyttöliittymä'].map(
+                    feature => (
                       <li key={feature} className="flex items-center gap-2">
                         <Check className="h-4 w-4 text-primary" />
                         <span className="text-sm">{feature}</span>
@@ -275,7 +295,9 @@ export default function LandingPage() {
                 <CardFooter>
                   <Button variant="ghost" size="sm" className="gap-1" asChild>
                     <a href="#kuljetukset">
-                      Lue lisää <ChevronRight className="h-4 w-4" />
+                      Lue lisää
+                      {' '}
+                      <ChevronRight className="h-4 w-4" />
                     </a>
                   </Button>
                 </CardFooter>
@@ -291,7 +313,7 @@ export default function LandingPage() {
               <CardContent>
                 <p className="text-muted-foreground">Seuraa liiketoimintasi kehitystä kattavien raporttien avulla.</p>
                 <ul className="mt-4 space-y-2">
-                  {["Myyntiraportit", "Vie Exceliin", "Kattavat raportit"].map((feature) => (
+                  {['Myyntiraportit', 'Vie Exceliin', 'Kattavat raportit'].map(feature => (
                     <li key={feature} className="flex items-center gap-2">
                       <Check className="h-4 w-4 text-primary" />
                       <span className="text-sm">{feature}</span>
@@ -303,7 +325,9 @@ export default function LandingPage() {
                 <CardFooter>
                   <Button variant="ghost" size="sm" className="gap-1" asChild>
                     <a href="#raportit">
-                      Lue lisää <ChevronRight className="h-4 w-4" />
+                      Lue lisää
+                      {' '}
+                      <ChevronRight className="h-4 w-4" />
                     </a>
                   </Button>
                 </CardFooter>
@@ -333,8 +357,8 @@ export default function LandingPage() {
               </CardHeader>
               <CardContent className="flex-1">
                 <ul className="space-y-2">
-                  {["1 käyttäjä", "Asiakas- ja tuotehallinta", "Tilausten hallinta", "Perusraportit", "Ei luottokorttia, ei aikarajaa"].map(
-                    (feature) => (
+                  {['1 käyttäjä', 'Asiakas- ja tuotehallinta', 'Tilausten hallinta', 'Perusraportit', 'Ei luottokorttia, ei aikarajaa'].map(
+                    feature => (
                       <li key={feature} className="flex items-center gap-2">
                         <Check className="h-4 w-4 text-primary" />
                         <span className="text-sm">{feature}</span>
@@ -363,13 +387,13 @@ export default function LandingPage() {
               <CardContent className="flex-1">
                 <ul className="space-y-2">
                   {[
-                    "5 käyttäjää",
-                    "Laskutus",
-                    "Kuljetusten hallinta",
-                    "Edistyneet raportit",
-                    "Sähköposti- ja puhelintuki",
-                    "Kaikki ominaisuudet"
-                  ].map((feature) => (
+                    '5 käyttäjää',
+                    'Laskutus',
+                    'Kuljetusten hallinta',
+                    'Edistyneet raportit',
+                    'Sähköposti- ja puhelintuki',
+                    'Kaikki ominaisuudet',
+                  ].map(feature => (
                     <li key={feature} className="flex items-center gap-2">
                       <Check className="h-4 w-4 text-primary" />
                       <span className="text-sm">{feature}</span>
@@ -398,29 +422,29 @@ export default function LandingPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[
                 {
-                  name: "xxx",
-                  company: "xxx",
+                  name: 'xxx',
+                  company: 'xxx',
                   quote:
-                    "xxx",
+                    'xxx',
                 },
                 {
-                  name: "xxx",
-                  company: "xxx",
+                  name: 'xxx',
+                  company: 'xxx',
                   quote:
-                    "xxx",
+                    'xxx',
                 },
                 {
-                  name: "xxx",
-                  company: "xxx",
+                  name: 'xxx',
+                  company: 'xxx',
                   quote:
-                    "xxx",
+                    'xxx',
                 },
               ].map((testimonial, i) => (
                 <Card key={i} className="bg-gray-50 border-none">
                   <CardContent className="pt-6">
                     <div className="flex flex-col gap-4">
                       <div className="flex items-center gap-1">
-                        {[1, 2, 3, 4, 5].map((star) => (
+                        {[1, 2, 3, 4, 5].map(star => (
                           <svg
                             key={star}
                             xmlns="http://www.w3.org/2000/svg"
@@ -436,7 +460,11 @@ export default function LandingPage() {
                           </svg>
                         ))}
                       </div>
-                      <p className="text-muted-foreground italic">"{testimonial.quote}"</p>
+                      <p className="text-muted-foreground italic">
+                        "
+                        {testimonial.quote}
+                        "
+                      </p>
                       <div className="flex items-center gap-4 mt-4">
                         <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-sm font-medium">
                           {testimonial.name.charAt(0)}
@@ -466,7 +494,9 @@ export default function LandingPage() {
             <div className="flex flex-col sm:flex-row gap-4 mt-4">
               <Button size="lg" variant="secondary" asChild>
                 <NavLink to="/kirjaudu">
-                  Aloita ilmainen 3 kk kokeilu <ArrowRight className="ml-2 h-4 w-4" />
+                  Aloita ilmainen 3 kk kokeilu
+                  {' '}
+                  <ArrowRight className="ml-2 h-4 w-4" />
                 </NavLink>
               </Button>
               <Button
@@ -493,11 +523,11 @@ export default function LandingPage() {
               </p>
               <ul className="mt-4 space-y-2">
                 {[
-                  "256-bittinen salaus kaikelle datalle",
-                  "Automaattiset varmuuskopiot",
-                  "GDPR-yhteensopiva",
-                  "Tietoturvaa ylläpitää kokenut asiantuntija"
-                ].map((feature) => (
+                  '256-bittinen salaus kaikelle datalle',
+                  'Automaattiset varmuuskopiot',
+                  'GDPR-yhteensopiva',
+                  'Tietoturvaa ylläpitää kokenut asiantuntija',
+                ].map(feature => (
                   <li key={feature} className="flex items-center gap-2">
                     <Check className="h-4 w-4 text-primary" />
                     <span>{feature}</span>

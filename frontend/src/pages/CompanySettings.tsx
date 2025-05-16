@@ -1,21 +1,21 @@
-"use client"
+'use client'
 
-import type React from "react"
+import type React from 'react'
 
-import { Save } from "lucide-react"
-import { useEffect, useState } from "react"
+import type { GetCompanySettings, PostCompanySettings, PostSubscriptionChangeRequest } from '@/types/types'
+import axios from 'axios'
 
-import SiikliPage from "@/SiikliPage"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Separator } from "@/components/ui/separator"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { toast } from "@/hooks/use-toast"
-import { GetCompanySettings, PostCompanySettings, PostSubscriptionChangeRequest } from "@/types/types"
-import { formatDate } from "@/utils/date"
-import axios from "axios"
+import { Save } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Separator } from '@/components/ui/separator'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { toast } from '@/hooks/use-toast'
+import SiikliPage from '@/SiikliPage'
+import { formatDate } from '@/utils/date'
 
 export default function CompanySettings() {
   const [companyData, setCompanyData] = useState<GetCompanySettings>()
@@ -23,10 +23,11 @@ export default function CompanySettings() {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value }: { name: string, value: string } = e.target
     setCompanyData((prev) => {
-      if (!prev) return prev;
+      if (!prev)
+        return prev
       return {
         ...prev,
-        [name]: typeof prev[name as keyof GetCompanySettings] === 'string' ? value : Number(value)
+        [name]: typeof prev[name as keyof GetCompanySettings] === 'string' ? value : Number(value),
       }
     })
   }
@@ -34,10 +35,11 @@ export default function CompanySettings() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!companyData) return
+    if (!companyData)
+      return
 
     // Here you would typically save the data to your backend
-    console.log("Saving company data:", companyData)
+    console.log('Saving company data:', companyData)
     const data: PostCompanySettings = {
       name: companyData.name,
       businessId: companyData.businessId,
@@ -50,27 +52,28 @@ export default function CompanySettings() {
       invoiceSumRow: companyData.invoiceSumRow,
       phone: companyData.phone,
       email: companyData.email,
-      website: companyData.website
+      website: companyData.website,
     }
-    await axios.post("/tenants", data)
+    await axios.post('/tenants', data)
     toast({
-      title: "Yritys tiedot tallennettu",
-      description: "Yrityksesi tiedot on tallennettu",
-      variant: "success",
+      title: 'Yritys tiedot tallennettu',
+      description: 'Yrityksesi tiedot on tallennettu',
+      variant: 'success',
     })
   }
 
-  const switchSubscription = async (subscription: "FREE" | "PREMIUM") => {
-    const result = await axios.post<PostSubscriptionChangeRequest>("/tenants/subscription", {
+  const switchSubscription = async (subscription: 'FREE' | 'PREMIUM') => {
+    const result = await axios.post<PostSubscriptionChangeRequest>('/tenants/subscription', {
       subscription,
     })
     toast({
-      title: "Tilausvaihto",
-      description: "Tilausvaihto onnistui",
-      variant: "success",
+      title: 'Tilausvaihto',
+      description: 'Tilausvaihto onnistui',
+      variant: 'success',
     })
     setCompanyData((prev) => {
-      if (!prev) return prev;
+      if (!prev)
+        return prev
       return {
         ...prev,
         subscriptionType: result.data.subscriptionType,
@@ -81,7 +84,6 @@ export default function CompanySettings() {
     })
   }
 
-
   useEffect(() => {
     axios
       .get<GetCompanySettings>(`/tenants`)
@@ -90,12 +92,12 @@ export default function CompanySettings() {
       })
   }, [])
 
-  if (!companyData) return <SiikliPage title="Oma yritys" description="Voit hallinnoida yrityksesi asetuksia täällä." />
+  if (!companyData)
+    return <SiikliPage title="Oma yritys" description="Voit hallinnoida yrityksesi asetuksia täällä." />
 
   return (
     <>
       <SiikliPage title="Oma yritys" description="Voit hallinnoida yrityksesi asetuksia täällä.">
-
 
         <Tabs defaultValue="company" className="w-full">
           <TabsList className="grid w-full grid-cols-4 mb-6">
@@ -266,22 +268,30 @@ export default function CompanySettings() {
                 <div className="space-y-4">
                   <div className="bg-blue-50 p-4 rounded-md border border-blue-200">
                     <h3 className="text-lg font-medium text-blue-800 mb-2">
-                      Nykyinen tilaus: {companyData.subscriptionStartDate || (companyData.subscriptionEndDate && new Date(companyData.subscriptionEndDate).getTime() > new Date().getTime()) || (companyData.trialEndDate && new Date(companyData.trialEndDate).getTime() > new Date().getTime()) ? "Premium" : "Free"}{companyData.trialEndDate && new Date(companyData.trialEndDate).getTime() > new Date().getTime() ? " (Kokeilujakso)" : ""}
+                      Nykyinen tilaus:
+                      {' '}
+                      {companyData.subscriptionStartDate || (companyData.subscriptionEndDate && new Date(companyData.subscriptionEndDate).getTime() > new Date().getTime()) || (companyData.trialEndDate && new Date(companyData.trialEndDate).getTime() > new Date().getTime()) ? 'Premium' : 'Free'}
+                      {companyData.trialEndDate && new Date(companyData.trialEndDate).getTime() > new Date().getTime() ? ' (Kokeilujakso)' : ''}
                     </h3>
                     {companyData.trialEndDate && (
                       <>
                         <p className="text-blue-700">
-                          Kokeilujakso päättyy: <span className="font-semibold">{formatDate(new Date(companyData.trialEndDate))}</span>
+                          Kokeilujakso päättyy:
+                          {' '}
+                          <span className="font-semibold">{formatDate(new Date(companyData.trialEndDate))}</span>
                         </p>
                         <p className="text-sm text-blue-600 mt-2">
                           Kokeilujakson päätyttyä tilauksesi muuttuu automaattisesti Free-tasolle. Voit milloin
                           tahansa päivittää tilauksesi Premium-tasoon.
                         </p>
-                      </>)}
+                      </>
+                    )}
                     {companyData.subscriptionEndDate && (
                       <>
                         <p className="text-blue-700">
-                          Tilausjakso päättyy: <span className="font-semibold">{formatDate(new Date(companyData.subscriptionEndDate))}</span>
+                          Tilausjakso päättyy:
+                          {' '}
+                          <span className="font-semibold">{formatDate(new Date(companyData.subscriptionEndDate))}</span>
                         </p>
                         <p className="text-sm text-blue-600 mt-2">
                           Kokeilujakson päätyttyä tilauksesi muuttuu automaattisesti Free-tasolle. Voit milloin
@@ -303,7 +313,8 @@ export default function CompanySettings() {
                       </div>
                       <h3 className="text-xl font-semibold mb-4">Free</h3>
                       <p className="text-2xl font-bold mb-6">
-                        0,00 €<span className="text-sm font-normal text-gray-500">/kk</span>
+                        0,00 €
+                        <span className="text-sm font-normal text-gray-500">/kk</span>
                       </p>
                       <ul className="space-y-3 mb-6">
                         <li className="flex items-start">
@@ -319,7 +330,8 @@ export default function CompanySettings() {
                               strokeLinejoin="round"
                               strokeWidth="2"
                               d="M5 13l4 4L19 7"
-                            ></path>
+                            >
+                            </path>
                           </svg>
                           <span>Rajoitettu määrä käyttäjiä (1)</span>
                         </li>
@@ -336,7 +348,8 @@ export default function CompanySettings() {
                               strokeLinejoin="round"
                               strokeWidth="2"
                               d="M5 13l4 4L19 7"
-                            ></path>
+                            >
+                            </path>
                           </svg>
                           <span>Perusominaisuudet</span>
                         </li>
@@ -353,7 +366,8 @@ export default function CompanySettings() {
                               strokeLinejoin="round"
                               strokeWidth="2"
                               d="M5 13l4 4L19 7"
-                            ></path>
+                            >
+                            </path>
                           </svg>
                           <span>Rajoitettu määrä tilauksia (20/kk)</span>
                         </li>
@@ -370,13 +384,14 @@ export default function CompanySettings() {
                               strokeLinejoin="round"
                               strokeWidth="2"
                               d="M6 18L18 6M6 6l12 12"
-                            ></path>
+                            >
+                            </path>
                           </svg>
                           <span className="text-gray-500">Ei edistyneitä raportteja</span>
                         </li>
                       </ul>
-                      <Button onClick={() => switchSubscription("FREE")} variant="outline" className="w-full" disabled={companyData.subscriptionType === "FREE"}>
-                        {companyData.subscriptionType === "FREE" ? "Nykyinen taso" : "Vaihda tilaukseen"}
+                      <Button onClick={() => switchSubscription('FREE')} variant="outline" className="w-full" disabled={companyData.subscriptionType === 'FREE'}>
+                        {companyData.subscriptionType === 'FREE' ? 'Nykyinen taso' : 'Vaihda tilaukseen'}
                       </Button>
                     </div>
 
@@ -387,7 +402,8 @@ export default function CompanySettings() {
                       </div>
                       <h3 className="text-xl font-semibold mb-4">Premium</h3>
                       <p className="text-2xl font-bold mb-6">
-                        49,90 €<span className="text-sm font-normal text-gray-500">/kk</span>
+                        49,90 €
+                        <span className="text-sm font-normal text-gray-500">/kk</span>
                       </p>
                       <ul className="space-y-3 mb-6">
                         <li className="flex items-start">
@@ -403,7 +419,8 @@ export default function CompanySettings() {
                               strokeLinejoin="round"
                               strokeWidth="2"
                               d="M5 13l4 4L19 7"
-                            ></path>
+                            >
+                            </path>
                           </svg>
                           <span>Rajoittamaton määrä käyttäjiä</span>
                         </li>
@@ -420,7 +437,8 @@ export default function CompanySettings() {
                               strokeLinejoin="round"
                               strokeWidth="2"
                               d="M5 13l4 4L19 7"
-                            ></path>
+                            >
+                            </path>
                           </svg>
                           <span>Kaikki ominaisuudet</span>
                         </li>
@@ -437,7 +455,8 @@ export default function CompanySettings() {
                               strokeLinejoin="round"
                               strokeWidth="2"
                               d="M5 13l4 4L19 7"
-                            ></path>
+                            >
+                            </path>
                           </svg>
                           <span>Rajoittamaton määrä tilauksia</span>
                         </li>
@@ -454,13 +473,14 @@ export default function CompanySettings() {
                               strokeLinejoin="round"
                               strokeWidth="2"
                               d="M5 13l4 4L19 7"
-                            ></path>
+                            >
+                            </path>
                           </svg>
                           <span>Edistyneet raportit</span>
                         </li>
                       </ul>
-                      <Button onClick={() => switchSubscription("PREMIUM")} className="w-full bg-blue-600 hover:bg-blue-700" disabled={companyData.subscriptionType === "PREMIUM"}>
-                        {companyData.subscriptionType === "PREMIUM" ? "Nykyinen taso" : "Vaihda tilaukseen"}
+                      <Button onClick={() => switchSubscription('PREMIUM')} className="w-full bg-blue-600 hover:bg-blue-700" disabled={companyData.subscriptionType === 'PREMIUM'}>
+                        {companyData.subscriptionType === 'PREMIUM' ? 'Nykyinen taso' : 'Vaihda tilaukseen'}
                       </Button>
                     </div>
                   </div>
@@ -508,4 +528,3 @@ export default function CompanySettings() {
     </>
   )
 }
-

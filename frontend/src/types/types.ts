@@ -64,56 +64,56 @@ export interface GetOrderList {
 }
 
 export interface Customer {
-  id: string;
-  chain: string;
-  name: string;
-  business_id: string | null;
-  postal_code: string | null;
-  address: string | null;
-  compensation: number;
-  reference: string | null;
-  companyName: string | null;
-  orderIndex: number | null;
-  city: string | null;
-  showPriceWithoutTax: boolean | null;
+  id: string
+  chain: string
+  name: string
+  business_id: string | null
+  postal_code: string | null
+  address: string | null
+  compensation: number
+  reference: string | null
+  companyName: string | null
+  orderIndex: number | null
+  city: string | null
+  showPriceWithoutTax: boolean | null
 }
 
 export interface Order {
-  customerGroup: string | null;
-  customerId: string;
-  deliveryDate: Date;
-  hasNote: boolean;
-  id: string;
-  noteBody: string | null;
-  noteHeader: string | null;
+  customerGroup: string | null
+  customerId: string
+  deliveryDate: Date
+  hasNote: boolean
+  id: string
+  noteBody: string | null
+  noteHeader: string | null
   products: OrderProduct[]
-  showPriceWithoutTax: boolean | null;
-  tenantId: string;
+  showPriceWithoutTax: boolean | null
+  tenantId: string
 }
 
 export interface OrderProduct {
-  id: string;
-  orderId: string;
-  productId: string;
-  amount: number;
-  price: number;
-  price0: number;
-  packageSize: number;
-  packageType: string | null;
-  freetext: string | null;
+  id: string
+  orderId: string
+  productId: string
+  amount: number
+  price: number
+  price0: number
+  packageSize: number
+  packageType: string | null
+  freetext: string | null
 }
 
 export interface WarehouseReportByCustomerRow {
 
-  customerId: string;
-  customerName: string;
-  productVariety: string;
-  productType: string;
-  productName: string;
-  packageSize: number;
-  packageType: string;
+  customerId: string
+  customerName: string
+  productVariety: string
+  productType: string
+  productName: string
+  packageSize: number
+  packageType: string
   freetext: string
-  amount: number;
+  amount: number
 }
 
 export interface WarehouseReportByCustomer {
@@ -126,34 +126,34 @@ export interface WarehouseReportByProduct {
   deliveryDate: string
   groupedBy: 'product'
   rows: {
-    productId: string;
-    productVariety: string;
-    productType: string;
-    productName: string;
-    packageSize: number;
-    packageType: string;
-    amount: number;
+    productId: string
+    productVariety: string
+    productType: string
+    productName: string
+    packageSize: number
+    packageType: string
+    amount: number
   }[]
 }
 
 export interface GetCompanySettings {
-  id: string;
-  name: string;
-  businessId: string | null;
-  streetAddress: string | null;
-  postalCode: string | null;
-  city: string | null;
-  invoiceBankName: string | null;
-  invoiceBankAccount: string | null;
-  invoiceReference: string | null;
-  invoiceSumRow: string | null;
-  phone: string | null;
-  email: string | null;
-  website: string | null;
-  subscriptionType: string;
-  subscriptionEndDate: string | null;
-  subscriptionStartDate: string | null;
-  trialEndDate: string | null;
+  id: string
+  name: string
+  businessId: string | null
+  streetAddress: string | null
+  postalCode: string | null
+  city: string | null
+  invoiceBankName: string | null
+  invoiceBankAccount: string | null
+  invoiceReference: string | null
+  invoiceSumRow: string | null
+  phone: string | null
+  email: string | null
+  website: string | null
+  subscriptionType: string
+  subscriptionEndDate: string | null
+  subscriptionStartDate: string | null
+  trialEndDate: string | null
 }
 
 export interface GetCustomersResponseDto {
@@ -273,21 +273,21 @@ export interface GetProductResponseDto {
 }
 
 export interface ProductTypeResponse {
-  id: string;
-  name: string;
+  id: string
+  name: string
   orderIndex: number
   subtypes: {
-    id: string;
-    name: string;
-    orderIndex: number;
-  }[];
+    id: string
+    name: string
+    orderIndex: number
+  }[]
 }
 
 export interface ReorderDto {
   first: {
     id: string
     orderIndex: number
-  },
+  }
   second: {
     id: string
     orderIndex: number

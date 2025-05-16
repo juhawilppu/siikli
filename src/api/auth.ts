@@ -1,18 +1,19 @@
-const passport = require('passport')
+import type { GetCurrentUserDto } from '../../frontend/src/types/types'
 
-import { SESClient, SendEmailCommand } from '@aws-sdk/client-ses'
+import type { UserWithTenant } from '../passportConfig'
+import { SendEmailCommand, SESClient } from '@aws-sdk/client-ses'
 import express from 'express'
-import { GetCurrentUserDto } from '../../frontend/src/types/types'
+const passport = require('passport')
 import { rateLimit } from '../../middlewares/rateLimit'
-import { UserWithTenant } from '../passportConfig'
 import prisma from '../prisma'
+
 export const authRoute = express.Router()
 
 authRoute.get(
   '/api/auth/google',
   passport.authenticate('google', {
     scope: ['email', 'profile'],
-  })
+  }),
 )
 
 authRoute.get(
@@ -22,11 +23,12 @@ authRoute.get(
     try {
       console.log('callback here')
       res.redirect('/')
-    } catch (error) {
+    }
+    catch (error) {
       console.log('login error', error)
       next(error)
     }
-  }
+  },
 )
 
 authRoute.post('/api/auth/email/create-pin', rateLimit(5, 10), async (req, res, next) => {
@@ -46,8 +48,8 @@ authRoute.post('/api/auth/email/create-pin', rateLimit(5, 10), async (req, res, 
       where: {
         email: body.email,
         createdAt: {
-          gte: new Date(Date.now() - 15 * 60 * 1000) // 15 minutes ago
-        }
+          gte: new Date(Date.now() - 15 * 60 * 1000), // 15 minutes ago
+        },
       },
     })
 
@@ -55,7 +57,7 @@ authRoute.post('/api/auth/email/create-pin', rateLimit(5, 10), async (req, res, 
     if (existingPinCodes.length >= 3) {
       console.error(`Too many pin code attempts for ${body.email}. Please try again later.`)
       return res.status(429).json({
-        message: 'Too many pin code attempts. Please try again later.'
+        message: 'Too many pin code attempts. Please try again later.',
       })
     }
 
@@ -67,8 +69,8 @@ authRoute.post('/api/auth/email/create-pin', rateLimit(5, 10), async (req, res, 
       where: {
         email: body.email,
         createdAt: {
-          lt: new Date(Date.now() - 15 * 60 * 1000) // 15 minutes ago
-        }
+          lt: new Date(Date.now() - 15 * 60 * 1000), // 15 minutes ago
+        },
       },
     })
 
@@ -88,7 +90,7 @@ authRoute.post('/api/auth/email/create-pin', rateLimit(5, 10), async (req, res, 
     })
 
     // Send pin code via AWS SES
-    const client = new SESClient({ region: "eu-north-1" });
+    const client = new SESClient({ region: 'eu-north-1' })
 
     const command = new SendEmailCommand({
       Source: 'Siikli <no-reply@siikli.fi>',
@@ -125,9 +127,9 @@ authRoute.post('/api/auth/email/create-pin', rateLimit(5, 10), async (req, res, 
       },
     })
 
-    await client.send(command);
+    await client.send(command)
 
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    await new Promise(resolve => setTimeout(resolve, 1500))
 
     const command2 = new SendEmailCommand({
       Source: 'Siikli Event <no-reply@siikli.fi>',
@@ -145,13 +147,14 @@ authRoute.post('/api/auth/email/create-pin', rateLimit(5, 10), async (req, res, 
         },
       },
     })
-    await client.send(command2);
+    await client.send(command2)
 
-    console.log(`Pin ${pin} sent to ${body.email} via AWS SES`);
-    console.log(`Event notified`);
+    console.log(`Pin ${pin} sent to ${body.email} via AWS SES`)
+    console.log(`Event notified`)
 
     res.status(200).json({ message: 'OK' })
-  } catch (error) {
+  }
+  catch (error) {
     next(error)
   }
 })
@@ -160,7 +163,8 @@ authRoute.post('/api/auth/email/check-pin', rateLimit(10, 1), passport.authentic
   try {
     console.log('callback here')
     res.redirect('/')
-  } catch (error) {
+  }
+  catch (error) {
     console.log('login error', error)
     next(error)
   }
@@ -182,17 +186,18 @@ authRoute.get('/api/auth/current-user', (req, res) => {
       .split('@')[0] // Take part before @
       .includes('.')
       ? user.email
-        .split('@')[0]
-        .split('.')
-        .map(part => part[0])
-        .join('')
-        .toUpperCase()
+          .split('@')[0]
+          .split('.')
+          .map(part => part[0])
+          .join('')
+          .toUpperCase()
       : user.email
-        .split('@')[0]
-        .slice(0, 2)
-        .toUpperCase()
+          .split('@')[0]
+          .slice(0, 2)
+          .toUpperCase()
     res.status(200).send({ userId: user.id, tenantId: user.tenantId, initials, signupCompleted: user.tenant.signupCompleted } satisfies GetCurrentUserDto)
-  } else {
+  }
+  else {
     res.status(401).end()
   }
 })

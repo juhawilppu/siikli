@@ -1,13 +1,13 @@
+import type {
+  GetOrderDto,
+  GetOrderList,
+  PostOrderRequestDto,
+  PostOrderResponseDto,
+} from '../../frontend/src/types/types'
 import { captureException } from '@sentry/node'
 import { endOfDay, parse, startOfDay } from 'date-fns'
 import express from 'express'
 import puppeteer from 'puppeteer'
-import {
-  GetOrderDto,
-  GetOrderList,
-  PostOrderRequestDto,
-  PostOrderResponseDto
-} from '../../frontend/src/types/types'
 import { dateToString, formatDate, stringToDate } from '../../frontend/src/utils/date'
 import { getUser, isAuthenticated } from '../middlewares/permissions'
 import prisma from '../prisma'
@@ -134,9 +134,9 @@ ordersRoute.get(`/api/orders`, isAuthenticated, async (req, res) => {
     where: {
       deliveryDate: {
         gt: startOfDay(startDate),
-        lte: endOfDay(endDate)
+        lte: endOfDay(endDate),
       },
-      tenantId
+      tenantId,
     },
   })
   const mapped = result.map((o) => {
@@ -188,20 +188,20 @@ ordersRoute.get(`/api/orders/cargo_reports`, isAuthenticated, async (req, res) =
     where: {
       deliveryDate: {
         gte: startOfDay(parse(req.query.startDate as string, 'yyyy-MM-dd', new Date())),
-        lte: endOfDay(parse(req.query.endDate as string, 'yyyy-MM-dd', new Date()))
+        lte: endOfDay(parse(req.query.endDate as string, 'yyyy-MM-dd', new Date())),
       },
-      tenantId
+      tenantId,
     },
   })
 
   const company = await prisma.tenant.findFirstOrThrow({
     where: {
-      id: tenantId
-    }
+      id: tenantId,
+    },
   })
 
   const promises = orders.map((order, index) =>
-    require('../services/cargo_report')(company, order, index === 0)
+    require('../services/cargo_report')(company, order, index === 0),
   )
 
   Promise.all(promises).then(async (htmls) => {
@@ -273,27 +273,26 @@ ordersRoute.get(`/api/orders/cargo_reports`, isAuthenticated, async (req, res) =
           top: '5mm',
           right: '5mm',
           bottom: '0mm',
-          left: '5mm'
+          left: '5mm',
         },
         displayHeaderFooter: true,
-        footerTemplate: '<div style="height: 22mm;"></div>'
+        footerTemplate: '<div style="height: 22mm;"></div>',
       })
 
       await browser.close()
 
       res.contentType('application/pdf')
       res.status(200).send(pdfBuffer)
-
-    } catch (err) {
+    }
+    catch (err) {
       console.error(err)
       res.sendStatus(500)
     }
   })
 })
 
-
 ordersRoute.get(`/api/orders/:id`, isAuthenticated, async (req, res) => {
-  console.log('getting order ' + req.params.id)
+  console.log(`getting order ${req.params.id}`)
 
   const orderId = req.params.id
   const { tenantId } = getUser(req)
@@ -315,7 +314,7 @@ ordersRoute.get(`/api/orders/:id`, isAuthenticated, async (req, res) => {
     ],
     where: {
       id: orderId,
-      tenantId: tenantId,
+      tenantId,
     },
   })
 
@@ -337,15 +336,15 @@ ordersRoute.get(`/api/orders/:id`, isAuthenticated, async (req, res) => {
         packageSize: p.packageSize,
         packageType: p.packageType || '',
         freetext: p.freetext || '',
-        createdAt: p.createdAt
+        createdAt: p.createdAt,
       }
-    ))
+    )),
 
   } satisfies GetOrderDto)
 })
 
 ordersRoute.delete(`/api/orders/:id`, isAuthenticated, async (req, res) => {
-  console.log('deleting order ' + req.params.id)
+  console.log(`deleting order ${req.params.id}`)
 
   const orderId = req.params.id
   const { tenantId } = getUser(req)
@@ -353,7 +352,7 @@ ordersRoute.delete(`/api/orders/:id`, isAuthenticated, async (req, res) => {
   await prisma.order.delete({
     where: {
       id: orderId,
-      tenantId: tenantId,
+      tenantId,
     },
   })
 
@@ -380,7 +379,7 @@ ordersRoute.post(`/api/orders`, isAuthenticated, async (req, res) => {
       },
       tenant: {
         connect: {
-          id: tenantId
+          id: tenantId,
         },
       },
     },
@@ -408,14 +407,14 @@ ordersRoute.post(`/api/orders`, isAuthenticated, async (req, res) => {
       data: {
         order: result.id,
         customer: result.customerId,
-      }
-    }
+      },
+    },
   })
   res.json({ id: result.id } satisfies PostOrderResponseDto)
 })
 
 ordersRoute.post(`/api/orders/:id`, isAuthenticated, async (req, res) => {
-  console.log('saving order ' + req.params.id)
+  console.log(`saving order ${req.params.id}`)
 
   try {
     const data = req.body as PostOrderRequestDto
@@ -434,17 +433,17 @@ ordersRoute.post(`/api/orders/:id`, isAuthenticated, async (req, res) => {
         },
         tenant: {
           connect: {
-            id: tenantId
+            id: tenantId,
           },
         },
       },
       where: {
         id: req.params.id as string,
-        tenantId
+        tenantId,
       },
     })
     console.log(data.items)
-    const toCreate = data.items.filter((r) => !r.id)
+    const toCreate = data.items.filter(r => !r.id)
     if (toCreate.length > 0) {
       await prisma.orderProduct.createMany({
         data: toCreate.map((r) => {
@@ -461,7 +460,7 @@ ordersRoute.post(`/api/orders/:id`, isAuthenticated, async (req, res) => {
         }),
       })
     }
-    const toUpdate = data.items.filter((r) => r.id)
+    const toUpdate = data.items.filter(r => r.id)
     if (toUpdate.length > 0) {
       const promises = toUpdate.map((r) => {
         console.log(r)
@@ -482,7 +481,7 @@ ordersRoute.post(`/api/orders/:id`, isAuthenticated, async (req, res) => {
         })
       })
 
-      const promises2 = toUpdate.filter((r) => r.deleted).map((r) => {
+      const promises2 = toUpdate.filter(r => r.deleted).map((r) => {
         return prisma.orderProduct.delete({
           where: {
             id: r.id as string,
@@ -501,14 +500,15 @@ ordersRoute.post(`/api/orders/:id`, isAuthenticated, async (req, res) => {
         data: {
           order: result.id,
           customer: result.customerId,
-        }
-      }
+        },
+      },
     })
 
     res.status(200).json({ message: 'Saved' })
-  } catch (err) {
+  }
+  catch (err) {
     console.error(err)
-    captureException(err);
+    captureException(err)
     res.status(500).json({ message: 'Failed to save order' })
   }
 })

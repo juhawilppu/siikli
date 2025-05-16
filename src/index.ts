@@ -1,29 +1,30 @@
-import * as Sentry from "@sentry/node";
-import cookieParser from 'cookie-parser';
-import cors from 'cors';
-import express from 'express';
-import session from 'express-session';
-import helmet from 'helmet';
-import passport from 'passport';
-import { authRoute } from './api/auth';
-import { customersRoute } from './api/customers';
-import dashboardRoute from './api/dashboard';
-import { ordersRoute } from './api/orders';
-import productsRoute from './api/products';
-import salesReportRoute from './api/sales_report';
-import tenantsRoute from './api/tenants';
-import warehouseRoute from './api/warehouse-report';
-import "./instrument.js";
-import passportConfig from './passportConfig';
+import type { User } from '@prisma/client'
+import type { NextFunction, Request, Response } from 'express'
+import * as Sentry from '@sentry/node'
+import { RedisStore } from 'connect-redis'
+import cookieParser from 'cookie-parser'
+import cors from 'cors'
+import dotenv from 'dotenv'
+import express from 'express'
+import session from 'express-session'
+import helmet from 'helmet'
+import passport from 'passport'
+import { authRoute } from './api/auth'
+import { customersRoute } from './api/customers'
+import dashboardRoute from './api/dashboard'
+import invoiceRoute from './api/invoices'
+import { ordersRoute } from './api/orders'
+import productsRoute from './api/products'
 
-import { User } from "@prisma/client";
-import { RedisStore } from 'connect-redis';
-import dotenv from 'dotenv';
-import { NextFunction, Request, Response } from 'express';
-import invoiceRoute from './api/invoices';
-import { authErrorHandler } from './middlewares/authError';
-import redisClient from './redis';
-dotenv.config();
+import salesReportRoute from './api/sales_report'
+import tenantsRoute from './api/tenants'
+import warehouseRoute from './api/warehouse-report'
+import { authErrorHandler } from './middlewares/authError'
+import passportConfig from './passportConfig'
+import redisClient from './redis'
+import './instrument.js'
+
+dotenv.config()
 
 async function startServer() {
   const app = express()
@@ -55,21 +56,21 @@ async function startServer() {
   app.use(cookieParser()) // For parsing cookies
   app.set('trust proxy', 1) // trust first proxy
 
-  process.on("uncaughtException", (err) => {
-    console.error("Uncaught Exception:", err);
-    Sentry.captureException(err);
+  process.on('uncaughtException', (err) => {
+    console.error('Uncaught Exception:', err)
+    Sentry.captureException(err)
 
     // You can decide whether to exit or not
     // process.exit(1);
-  });
+  })
 
-  process.on("unhandledRejection", (reason, promise) => {
-    console.error("Unhandled Rejection:", reason);
-    Sentry.captureException(reason);
+  process.on('unhandledRejection', (reason, promise) => {
+    console.error('Unhandled Rejection:', reason)
+    Sentry.captureException(reason)
 
     // Same here, decide if you want to crash or just log
     // process.exit(1);
-  });
+  })
 
   app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     console.error('General error handler caught:', {
@@ -77,24 +78,24 @@ async function startServer() {
       name: err.name,
       stack: err.stack,
       path: req.path,
-      method: req.method
+      method: req.method,
     })
 
     // Ensure we always send a response
     if (!res.headersSent) {
       res.status(500).json({
         error: 'Internal server error',
-        message: err.message
+        message: err.message,
       })
     }
-  });
+  })
 
-  const sessionSecret = process.env.SESSION_SECRET;
+  const sessionSecret = process.env.SESSION_SECRET
   if (!sessionSecret || sessionSecret.length < 32) {
-    throw new Error('SESSION_SECRET is missing or too short. It must be at least 32 characters.');
+    throw new Error('SESSION_SECRET is missing or too short. It must be at least 32 characters.')
   }
 
-  await redisClient.connect();
+  await redisClient.connect()
 
   app.use(
     session({
@@ -110,8 +111,8 @@ async function startServer() {
         path: '/',
         maxAge: 30 * 24 * 60 * 60 * 1000,
       },
-    })
-  );
+    }),
+  )
 
   app.use(express.urlencoded({ extended: false })) // For parsing application/x-www-form-urlencoded
 
@@ -133,22 +134,22 @@ async function startServer() {
     res.status(200).send({ message: 'OK' })
   })
 
-  Sentry.setupExpressErrorHandler(app);
+  Sentry.setupExpressErrorHandler(app)
 
   app.use((req, res, next) => {
     if (req.user) {
-      const user = req.user as User;
+      const user = req.user as User
       Sentry.setUser({
         userId: user.id,
         tenantId: user.tenantId,
-      });
+      })
     }
-    next();
-  });
+    next()
+  })
 
   // custom 404
   app.use((req, res, next) => {
-    res.status(404).send("Sorry can't find that!")
+    res.status(404).send('Sorry can\'t find that!')
   })
 
   // Error handlers must be after all routes
@@ -159,14 +160,14 @@ async function startServer() {
       name: err.name,
       stack: err.stack,
       path: req.path,
-      method: req.method
+      method: req.method,
     })
 
     // Ensure we always send a response
     if (!res.headersSent) {
       res.status(500).json({
         error: 'Internal server error',
-        message: err.message
+        message: err.message,
       })
     }
   })
@@ -174,12 +175,12 @@ async function startServer() {
   const server = app.listen(3000, () => {
     console.log(`🚀 Server ready at: http://localhost:3000`)
     console.log(
-      `⭐️ See sample requests: http://pris.ly/e/ts/rest-express#3-using-the-rest-api`
+      `⭐️ See sample requests: http://pris.ly/e/ts/rest-express#3-using-the-rest-api`,
     )
   })
 }
 
-startServer().catch(err => {
-  console.error('Failed to start server:', err);
-  process.exit(1);
-});
+startServer().catch((err) => {
+  console.error('Failed to start server:', err)
+  process.exit(1)
+})

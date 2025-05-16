@@ -1,5 +1,5 @@
+import type { GetProductResponseDto, ProductTypeResponse, ReorderDto } from '../../frontend/src/types/types'
 import express from 'express'
-import { GetProductResponseDto, ProductTypeResponse, ReorderDto } from '../../frontend/src/types/types'
 import { getUser, isAuthenticated } from '../middlewares/permissions'
 import prisma from '../prisma'
 
@@ -10,26 +10,26 @@ productsRoute.get(`/api/products`, isAuthenticated, async (req, res) => {
   const { tenantId } = getUser(req)
   const products = await prisma.product.findMany({
     where: {
-      tenantId
+      tenantId,
     },
     orderBy: {
       name: 'asc',
     },
   })
-  res.json(products.map(p => {
+  res.json(products.map((p) => {
     return {
       id: p.id,
       name: p.name,
       price: p.price,
       price0: p.price0,
-      packageSize: p.packageSize ? parseInt(p.packageSize) : null,
+      packageSize: p.packageSize ? Number.parseInt(p.packageSize) : null,
       packageType: p.packageType,
       chain: p.customerGroup,
       variety: p.variety,
       type: p.type,
       subtype: p.subtype,
       orderIndex: p.orderIndex || 0,
-      info: p.info
+      info: p.info,
     }
   }) satisfies GetProductResponseDto[])
 })
@@ -39,38 +39,38 @@ productsRoute.get(`/api/products/product-types`, isAuthenticated, async (req, re
   const { tenantId } = getUser(req)
   const rows = await prisma.productType.findMany({
     where: {
-      tenantId
+      tenantId,
     },
     include: {
-      productSubtypes: true
-    }
-  });
+      productSubtypes: true,
+    },
+  })
 
-  res.status(200).json(rows.map(r => {
+  res.status(200).json(rows.map((r) => {
     return {
       id: r.id,
       name: r.type!,
       orderIndex: r.orderIndex,
-      subtypes: r.productSubtypes.map(s => {
+      subtypes: r.productSubtypes.map((s) => {
         return {
           id: s.id,
           name: s.subtype!,
-          orderIndex: s.orderIndex
+          orderIndex: s.orderIndex,
         }
-      })
+      }),
     }
   }) satisfies ProductTypeResponse[])
 })
 
-const verifyProductTypeAndSubtype = async (body: { packageType: string | null, packageSize: number | null, type: string, subtype: string }, tenantId: string) => {
+async function verifyProductTypeAndSubtype(body: { packageType: string | null, packageSize: number | null, type: string, subtype: string }, tenantId: string) {
   console.log('checking type', body.type)
 
   if (body.packageType) {
     const packageType = await prisma.packageType.findFirst({
       where: {
         name: body.packageType,
-        tenantId
-      }
+        tenantId,
+      },
     })
     if (!packageType) {
       console.log('creating package type', body.packageType)
@@ -78,9 +78,10 @@ const verifyProductTypeAndSubtype = async (body: { packageType: string | null, p
         data: {
           tenantId,
           name: body.packageType,
-        }
+        },
       })
-    } else {
+    }
+    else {
       console.log('package type OK')
     }
   }
@@ -89,8 +90,8 @@ const verifyProductTypeAndSubtype = async (body: { packageType: string | null, p
     const packageSize = await prisma.packageSize.findFirst({
       where: {
         size: body.packageSize,
-        tenantId
-      }
+        tenantId,
+      },
     })
     if (!packageSize) {
       console.log('creating package size', body.packageSize)
@@ -98,9 +99,10 @@ const verifyProductTypeAndSubtype = async (body: { packageType: string | null, p
         data: {
           tenantId,
           size: body.packageSize,
-        }
+        },
       })
-    } else {
+    }
+    else {
       console.log('package size OK')
     }
   }
@@ -108,8 +110,8 @@ const verifyProductTypeAndSubtype = async (body: { packageType: string | null, p
   const type = await prisma.productType.findFirst({
     where: {
       type: body.type,
-      tenantId
-    }
+      tenantId,
+    },
   })
   if (!type) {
     console.log('creating type', body.type)
@@ -117,10 +119,11 @@ const verifyProductTypeAndSubtype = async (body: { packageType: string | null, p
       data: {
         tenantId,
         type: body.type,
-        orderIndex: 0
-      }
+        orderIndex: 0,
+      },
     })
-  } else {
+  }
+  else {
     console.log('type OK')
   }
 
@@ -129,8 +132,8 @@ const verifyProductTypeAndSubtype = async (body: { packageType: string | null, p
     where: {
       type: body.type,
       subtype: body.subtype,
-      tenantId
-    }
+      tenantId,
+    },
   })
   if (!subtype) {
     console.log('creating subtype', body.subtype)
@@ -139,10 +142,11 @@ const verifyProductTypeAndSubtype = async (body: { packageType: string | null, p
         tenantId,
         type: body.type,
         subtype: body.subtype,
-        orderIndex: 0
-      }
+        orderIndex: 0,
+      },
     })
-  } else {
+  }
+  else {
     console.log('subtype OK')
   }
 }
@@ -163,11 +167,11 @@ productsRoute.post(`/api/products`, isAuthenticated, async (req, res) => {
       price: body.price,
       orderIndex: body.orderIndex,
       subtype: body.subtype,
-      packageSize: body.packageSize + '',
+      packageSize: `${body.packageSize}`,
       packageType: body.packageType,
       customerGroup: body.chain,
-      tenantId
-    }
+      tenantId,
+    },
   })
   await prisma.log.create({
     data: {
@@ -177,8 +181,8 @@ productsRoute.post(`/api/products`, isAuthenticated, async (req, res) => {
       data: {
         product: result.id,
         name: result.name,
-      }
-    }
+      },
+    },
   })
   res.status(201).json({ id: result.id })
 })
@@ -191,8 +195,8 @@ productsRoute.delete(`/api/products/:id`, isAuthenticated, async (req, res) => {
     await prisma.product.delete({
       where: {
         id,
-        tenantId
-      }
+        tenantId,
+      },
     })
     await prisma.log.create({
       data: {
@@ -201,11 +205,12 @@ productsRoute.delete(`/api/products/:id`, isAuthenticated, async (req, res) => {
         event: 'delete_product',
         data: {
           product: id,
-        }
-      }
+        },
+      },
     })
     res.status(200).json({ message: 'OK' })
-  } catch (e) {
+  }
+  catch (e) {
     res.status(400).json({ message: 'Failed' })
   }
 })
@@ -216,30 +221,30 @@ productsRoute.post(`/api/products/reorder`, isAuthenticated, async (req, res) =>
   const { tenantId } = getUser(req)
   await prisma.product.update({
     data: {
-      orderIndex: body.first.orderIndex
+      orderIndex: body.first.orderIndex,
     },
     where: {
       id: body.first.id,
-      tenantId
-    }
-  }
+      tenantId,
+    },
+  },
   )
   await prisma.product.update({
     data: {
-      orderIndex: body.second.orderIndex
+      orderIndex: body.second.orderIndex,
     },
     where: {
       id: body.second.id,
-      tenantId
-    }
-  }
+      tenantId,
+    },
+  },
   )
   res.status(201).json({ message: 'OK' })
 })
 
 productsRoute.post(`/api/products/:id`, isAuthenticated, async (req, res) => {
   const id = req.params.id
-  console.log('updating product ' + id)
+  console.log(`updating product ${id}`)
   const { tenantId } = getUser(req)
   const body = req.body as GetProductResponseDto
 
@@ -255,14 +260,14 @@ productsRoute.post(`/api/products/:id`, isAuthenticated, async (req, res) => {
       price: body.price,
       orderIndex: 1,
       subtype: body.subtype,
-      packageSize: body.packageSize + '',
+      packageSize: `${body.packageSize}`,
       packageType: body.packageType,
-      customerGroup: body.chain
+      customerGroup: body.chain,
     },
     where: {
       id,
-      tenantId
-    }
+      tenantId,
+    },
   })
   res.json(result)
 })
