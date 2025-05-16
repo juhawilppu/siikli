@@ -303,6 +303,7 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
                                                     <CommandGroup>
                                                         {packageSizes
                                                             .filter(size => size.toString().includes(inputValueType))
+                                                            .sort((a, b) => a - b)
                                                             .map((size) => (
                                                                 <CommandItem
                                                                     key={size}
@@ -383,7 +384,7 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
                                                         </button>
                                                     </CommandEmpty>
                                                     <CommandGroup>
-                                                        {packageTypes.map((packageType) => (
+                                                        {packageTypes.sort().map((packageType) => (
                                                             <CommandItem
                                                                 key={packageType}
                                                                 value={packageType}
