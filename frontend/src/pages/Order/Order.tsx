@@ -663,24 +663,22 @@ export default function CreateOrder() {
                               <Command>
                                 <CommandInput placeholder="Syötä pakkaustyyppi..."
                                   onValueChange={(value) => setInputValuePackageType(value)} />
-                                {(!inputValuePackageType || !packageTypes.some(type => type.toLowerCase() === inputValuePackageType.toLowerCase())) && (
-                                  <CommandEmpty>
-                                    <button
-                                      onClick={() => {
-                                        const type = inputValuePackageType.trim();
-                                        if (type) {
-                                          handleItemChange(item.id, "packageType", type)
-                                          setPackageTypes([...packageTypes, type]);
-                                          setOpenPackageType(undefined);
-                                        }
-                                      }}
-                                      className="flex items-center space-x-2 text-sm p-2 hover:bg-muted w-full text-left"
-                                    >
-                                      <Plus className="w-4 h-4" />
-                                      <span>Lisää: {inputValuePackageType}</span>
-                                    </button>
-                                  </CommandEmpty>
-                                )}
+                                <CommandEmpty>
+                                  <button
+                                    onClick={() => {
+                                      const type = inputValuePackageType.trim();
+                                      if (type) {
+                                        handleItemChange(item.id, "packageType", type)
+                                        setPackageTypes([...packageTypes, type]);
+                                        setOpenPackageType(undefined);
+                                      }
+                                    }}
+                                    className="flex items-center space-x-2 text-sm p-2 hover:bg-muted w-full text-left"
+                                  >
+                                    <Plus className="w-4 h-4" />
+                                    <span>Lisää: {inputValuePackageType}</span>
+                                  </button>
+                                </CommandEmpty>
                                 <CommandGroup>
                                   {packageTypes.
                                     filter(type => type.toLowerCase().includes(inputValuePackageType.toLowerCase()))
@@ -702,6 +700,24 @@ export default function CreateOrder() {
                                         {type}
                                       </CommandItem>
                                     ))}
+                                  {!packageTypes.includes(inputValuePackageType) && (
+                                    <div className="p-2 border-t">
+                                      <button
+                                        onClick={() => {
+                                          const type = inputValuePackageType.trim();
+                                          if (type) {
+                                            handleItemChange(item.id, "packageType", type)
+                                            setPackageTypes([...packageTypes, type]);
+                                            setOpenPackageType(undefined);
+                                          }
+                                        }}
+                                        className="flex items-center space-x-2 text-sm p-2 hover:bg-muted w-full text-left"
+                                      >
+                                        <Plus className="w-4 h-4" />
+                                        <span>Luo: {inputValuePackageType}</span>
+                                      </button>
+                                    </div>
+                                  )}
                                 </CommandGroup>
                               </Command>
                             </PopoverContent>
