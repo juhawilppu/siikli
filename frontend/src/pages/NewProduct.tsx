@@ -393,25 +393,41 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
                                                                     {packageType}
                                                                 </CommandItem>
                                                             ))}
+                                                        {inputValuePackageType.length > 0 && !packageTypes.includes(inputValuePackageType) && (
+                                                            <div className="p-2 border-t">
+                                                                <button
+                                                                    onClick={() => {
+                                                                        const type = inputValuePackageType.trim();
+                                                                        if (type) {
+                                                                            setProduct({ ...product, packageType: type });
+                                                                            setPackageTypes([...packageTypes, type]);
+                                                                            setOpenPackageType(false);
+                                                                        }
+                                                                    }}
+                                                                    className="flex items-center space-x-2 text-sm p-2 hover:bg-muted w-full text-left"
+                                                                >
+                                                                    <Plus className="w-4 h-4" />
+                                                                    <span>Luo: {inputValuePackageType}</span>
+                                                                </button>
+                                                            </div>
+                                                        )}
                                                     </CommandGroup>
-                                                    {(!inputValuePackageType || !packageTypes.some(type => type.toLowerCase() === inputValuePackageType.toLowerCase())) && (
-                                                        <CommandEmpty>
-                                                            <button
-                                                                onClick={() => {
-                                                                    const type = inputValuePackageType.trim();
-                                                                    if (type) {
-                                                                        setProduct({ ...product, packageType: type });
-                                                                        setPackageTypes([...packageTypes, type]);
-                                                                        setOpenPackageType(false);
-                                                                    }
-                                                                }}
-                                                                className="flex items-center space-x-2 text-sm p-2 hover:bg-muted w-full text-left"
-                                                            >
-                                                                <Plus className="w-4 h-4" />
-                                                                <span>Lisää: {inputValuePackageType}</span>
-                                                            </button>
-                                                        </CommandEmpty>
-                                                    )}
+                                                    <CommandEmpty>
+                                                        <button
+                                                            onClick={() => {
+                                                                const type = inputValuePackageType.trim();
+                                                                if (type) {
+                                                                    setProduct({ ...product, packageType: type });
+                                                                    setPackageTypes([...packageTypes, type]);
+                                                                    setOpenPackageType(false);
+                                                                }
+                                                            }}
+                                                            className="flex items-center space-x-2 text-sm p-2 hover:bg-muted w-full text-left"
+                                                        >
+                                                            <Plus className="w-4 h-4" />
+                                                            <span>Luo: {inputValuePackageType}</span>
+                                                        </button>
+                                                    </CommandEmpty>
                                                 </Command>
                                             </PopoverContent>
                                         </Popover>
