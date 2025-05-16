@@ -62,8 +62,45 @@ productsRoute.get(`/api/products/product-types`, isAuthenticated, async (req, re
   }) satisfies ProductTypeResponse[])
 })
 
-const verifyProductTypeAndSubtype = async (body: { type: string, subtype: string }, tenantId: string) => {
+const verifyProductTypeAndSubtype = async (body: { packageType: string, packageSize: number, type: string, subtype: string }, tenantId: string) => {
   console.log('checking type', body.type)
+
+  const packageType = await prisma.packageType.findFirst({
+    where: {
+      id: body.packageType,
+      tenantId
+    }
+  })
+  if (!packageType) {
+    console.log('creating package type', body.packageType)
+    await prisma.packageType.create({
+      data: {
+        tenantId,
+        name: body.packageType,
+      }
+    })
+  } else {
+    console.log('package type OK')
+  }
+
+  const packageSize = await prisma.packageSize.findFirst({
+    where: {
+      size: body.packageSize,
+      tenantId
+    }
+  })
+  if (!packageSize) {
+    console.log('creating package size', body.packageSize)
+    await prisma.packageSize.create({
+      data: {
+        tenantId,
+        size: body.packageSize,
+      }
+    })
+  } else {
+    console.log('package size OK')
+  }
+
   const type = await prisma.productType.findFirst({
     where: {
       type: body.type,

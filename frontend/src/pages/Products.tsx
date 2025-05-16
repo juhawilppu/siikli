@@ -197,7 +197,7 @@ export default function TuotteetSivu() {
                 </Button>
               </DialogTrigger>
               {showNewProductDialog &&
-                <NewProduct hide={() => setShowNewProductDialog(false)} onSave={onProductSaved} productTypes={productTypes} packageSizes={packageSettings.packageSizes} packageTypes={packageSettings?.packageTypes} orderIndex={Math.max(...products.map(p => p.orderIndex)) + 1} />}
+                <NewProduct hide={() => setShowNewProductDialog(false)} onSave={onProductSaved} productTypes={productTypes} refPackageSizes={packageSettings?.packageSizes} refPackageTypes={packageSettings?.packageTypes} orderIndex={Math.max(...products.map(p => p.orderIndex)) + 1} />}
             </Dialog>
           </div>
 
@@ -377,7 +377,7 @@ export default function TuotteetSivu() {
       </SiikliPage >
       < Dialog open={editProductId !== undefined} onOpenChange={() => setEditProductId(undefined)} >
         {editProductId &&
-          <NewProduct productToEdit={products.find(p => p.id === editProductId)} hide={() => setEditProductId(undefined)} onSave={onProductSaved} productTypes={productTypes} packageSizes={pakkausvaihtoehdot} />}
+          <NewProduct productToEdit={products.find(p => p.id === editProductId)} hide={() => setEditProductId(undefined)} onSave={onProductSaved} productTypes={productTypes} refPackageTypes={packageSettings?.packageTypes} refPackageSizes={packageSettings?.packageSizes} />}
       </Dialog>
     </>
   )
