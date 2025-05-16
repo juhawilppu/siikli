@@ -326,25 +326,41 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
                                                                     {size} kg
                                                                 </CommandItem>
                                                             ))}
+                                                        {inputValuePackageSize.length > 0 && !packageSizes.includes(Number(inputValuePackageSize)) && (
+                                                            <div className="p-2 border-t">
+                                                                <button
+                                                                    onClick={() => {
+                                                                        const size = Number(inputValuePackageSize);
+                                                                        if (!isNaN(size) && size > 0) {
+                                                                            setProduct({ ...product, packageSize: size });
+                                                                            setPackageSizes([...packageSizes, size]);
+                                                                            setOpenPackageSize(false);
+                                                                        }
+                                                                    }}
+                                                                    className="flex items-center space-x-2 text-sm p-2 hover:bg-muted w-full text-left"
+                                                                >
+                                                                    <Plus className="w-4 h-4" />
+                                                                    <span>Luo: {inputValuePackageSize} kg</span>
+                                                                </button>
+                                                            </div>
+                                                        )}
                                                     </CommandGroup>
-                                                    {(!inputValuePackageSize || !packageSizes.some(size => size.toString() === inputValuePackageSize)) && (
-                                                        <CommandEmpty>
-                                                            <button
-                                                                onClick={() => {
-                                                                    const size = Number(inputValuePackageSize);
-                                                                    if (!isNaN(size) && size > 0) {
-                                                                        setProduct({ ...product, packageSize: size });
-                                                                        setPackageSizes([...packageSizes, size]);
-                                                                        setOpenPackageSize(false);
-                                                                    }
-                                                                }}
-                                                                className="flex items-center space-x-2 text-sm p-2 hover:bg-muted w-full text-left"
-                                                            >
-                                                                <Plus className="w-4 h-4" />
-                                                                <span>Lisää: {inputValuePackageSize} kg</span>
-                                                            </button>
-                                                        </CommandEmpty>
-                                                    )}
+                                                    <CommandEmpty>
+                                                        <button
+                                                            onClick={() => {
+                                                                const size = Number(inputValuePackageSize);
+                                                                if (!isNaN(size) && size > 0) {
+                                                                    setProduct({ ...product, packageSize: size });
+                                                                    setPackageSizes([...packageSizes, size]);
+                                                                    setOpenPackageSize(false);
+                                                                }
+                                                            }}
+                                                            className="flex items-center space-x-2 text-sm p-2 hover:bg-muted w-full text-left"
+                                                        >
+                                                            <Plus className="w-4 h-4" />
+                                                            <span>Lisää: {inputValuePackageSize} kg</span>
+                                                        </button>
+                                                    </CommandEmpty>
                                                 </Command>
                                             </PopoverContent>
                                         </Popover>
