@@ -585,24 +585,22 @@ export default function CreateOrder() {
                               <Command>
                                 <CommandInput placeholder="Syötä pakkauskoko..."
                                   onValueChange={(value) => setInputValuePackageSize(value)} />
-                                {(!inputValuePackageSize || !packageSizes.some(size => size === Number(inputValuePackageSize))) && (
-                                  <CommandEmpty>
-                                    <button
-                                      onClick={() => {
-                                        const size = Number(inputValuePackageSize.trim());
-                                        if (size && !isNaN(size)) {
-                                          handleItemChange(item.id, "packageSize", size)
-                                          setPackageSizes([...packageSizes, size]);
-                                          setOpenPackageSize(undefined);
-                                        }
-                                      }}
-                                      className="flex items-center space-x-2 text-sm p-2 hover:bg-muted w-full text-left"
-                                    >
-                                      <Plus className="w-4 h-4" />
-                                      <span>Lisää: {inputValuePackageSize}</span>
-                                    </button>
-                                  </CommandEmpty>
-                                )}
+                                <CommandEmpty>
+                                  <button
+                                    onClick={() => {
+                                      const size = Number(inputValuePackageSize.trim());
+                                      if (size && !isNaN(size)) {
+                                        handleItemChange(item.id, "packageSize", size)
+                                        setPackageSizes([...packageSizes, size]);
+                                        setOpenPackageSize(undefined);
+                                      }
+                                    }}
+                                    className="flex items-center space-x-2 text-sm p-2 hover:bg-muted w-full text-left"
+                                  >
+                                    <Plus className="w-4 h-4" />
+                                    <span>Luo: {inputValuePackageSize}</span>
+                                  </button>
+                                </CommandEmpty>
                                 <CommandGroup>
                                   {packageSizes
                                     .filter(size => size.toString().includes(inputValuePackageSize))
@@ -624,6 +622,24 @@ export default function CreateOrder() {
                                         {size}
                                       </CommandItem>
                                     ))}
+                                  {!packageSizes.includes(Number(inputValuePackageSize)) && (
+                                    <div className="p-2 border-t">
+                                      <button
+                                        onClick={() => {
+                                          const size = Number(inputValuePackageSize.trim());
+                                          if (size && !isNaN(size)) {
+                                            handleItemChange(item.id, "packageSize", size)
+                                            setPackageSizes([...packageSizes, size]);
+                                            setOpenPackageSize(undefined);
+                                          }
+                                        }}
+                                        className="flex items-center space-x-2 text-sm p-2 hover:bg-muted w-full text-left"
+                                      >
+                                        <Plus className="w-4 h-4" />
+                                        <span>Luo: {inputValuePackageSize}</span>
+                                      </button>
+                                    </div>
+                                  )}
                                 </CommandGroup>
                               </Command>
                             </PopoverContent>
