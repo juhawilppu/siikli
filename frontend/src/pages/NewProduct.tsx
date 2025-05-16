@@ -41,7 +41,11 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
     const [inputValueSubtype, setInputValueSubtype] = useState("")
 
     const [openPackageSize, setOpenPackageSize] = useState(false)
+    const [inputValuePackageSize, setInputValuePackageSize] = useState("")
+
     const [openPackageType, setOpenPackageType] = useState(false)
+    const [inputValuePackageType, setInputValuePackageType] = useState("")
+
     const [packageSizes, setPackageSizes] = useState<number[]>([...refPackageSizes])
     const [packageTypes, setPackageTypes] = useState<string[]>([...refPackageTypes])
 
@@ -298,11 +302,11 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
                                                 <Command>
                                                     <CommandInput
                                                         placeholder="Syötä pakkauskoko..."
-                                                        onValueChange={(value) => setInputValueType(value)}
+                                                        onValueChange={(value) => setInputValuePackageSize(value)}
                                                     />
                                                     <CommandGroup>
                                                         {packageSizes
-                                                            .filter(size => size.toString().includes(inputValueType))
+                                                            .filter(size => size.toString().includes(inputValuePackageSize))
                                                             .sort((a, b) => a - b)
                                                             .map((size) => (
                                                                 <CommandItem
@@ -323,11 +327,11 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
                                                                 </CommandItem>
                                                             ))}
                                                     </CommandGroup>
-                                                    {(!inputValueType || !packageSizes.some(size => size.toString() === inputValueType)) && (
+                                                    {(!inputValuePackageSize || !packageSizes.some(size => size.toString() === inputValuePackageSize)) && (
                                                         <CommandEmpty>
                                                             <button
                                                                 onClick={() => {
-                                                                    const size = Number(inputValueType);
+                                                                    const size = Number(inputValuePackageSize);
                                                                     if (!isNaN(size) && size > 0) {
                                                                         setProduct({ ...product, packageSize: size });
                                                                         setPackageSizes([...packageSizes, size]);
@@ -337,7 +341,7 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
                                                                 className="flex items-center space-x-2 text-sm p-2 hover:bg-muted w-full text-left"
                                                             >
                                                                 <Plus className="w-4 h-4" />
-                                                                <span>Lisää: {inputValueType} kg</span>
+                                                                <span>Lisää: {inputValuePackageSize} kg</span>
                                                             </button>
                                                         </CommandEmpty>
                                                     )}
@@ -365,11 +369,11 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
                                                 <Command>
                                                     <CommandInput
                                                         placeholder="Syötä pakkaustyyppi..."
-                                                        onValueChange={(value) => setInputValueType(value)}
+                                                        onValueChange={(value) => setInputValuePackageType(value)}
                                                     />
                                                     <CommandGroup>
                                                         {packageTypes
-                                                            .filter(type => type.toLowerCase().includes(inputValueType.toLowerCase()))
+                                                            .filter(type => type.toLowerCase().includes(inputValuePackageType.toLowerCase()))
                                                             .sort()
                                                             .map((packageType) => (
                                                                 <CommandItem
@@ -390,11 +394,11 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
                                                                 </CommandItem>
                                                             ))}
                                                     </CommandGroup>
-                                                    {(!inputValueType || !packageTypes.some(type => type.toLowerCase() === inputValueType.toLowerCase())) && (
+                                                    {(!inputValuePackageType || !packageTypes.some(type => type.toLowerCase() === inputValuePackageType.toLowerCase())) && (
                                                         <CommandEmpty>
                                                             <button
                                                                 onClick={() => {
-                                                                    const type = inputValueType.trim();
+                                                                    const type = inputValuePackageType.trim();
                                                                     if (type) {
                                                                         setProduct({ ...product, packageType: type });
                                                                         setPackageTypes([...packageTypes, type]);
@@ -404,7 +408,7 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
                                                                 className="flex items-center space-x-2 text-sm p-2 hover:bg-muted w-full text-left"
                                                             >
                                                                 <Plus className="w-4 h-4" />
-                                                                <span>Lisää: {inputValueType}</span>
+                                                                <span>Lisää: {inputValuePackageType}</span>
                                                             </button>
                                                         </CommandEmpty>
                                                     )}
