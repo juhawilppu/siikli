@@ -2,6 +2,8 @@ import type React from "react"
 
 import {
   Calendar,
+  Check,
+  ChevronsUpDown,
   Plus,
   Save,
   X
@@ -13,6 +15,7 @@ import { Button } from "@/components/ui/button"
 import { Calendar as CalendarComponent } from "@/components/ui/calendar"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
@@ -21,6 +24,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Separator } from "@/components/ui/separator"
 import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/hooks/use-toast"
+import { cn } from "@/lib/utils"
 import { CustomerDto, GetCustomersResponseDto, GetOrderDto, GetPackageSettings, GetProductResponseDto, OrderProduct, PostOrderRequestDto, PostOrderResponseDto } from "@/types/types"
 import { dateToString } from "@/utils/date"
 import { formatMoneyFi } from "@/utils/money"
@@ -30,7 +34,6 @@ import { format } from "date-fns"
 import { fi } from 'date-fns/locale'
 import { NavLink, useNavigate, useParams } from "react-router-dom"
 import ConfirmDialog from "../ConfirmDialog"
-
 
 export default function CreateOrder() {
   const [customers, setCustomers] = useState<CustomerDto[]>()
@@ -43,8 +46,10 @@ export default function CreateOrder() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [open, setOpen] = useState(false)
   const [confirmDialog, setConfirmDialog] = useState(false)
-  const [packageSettings, setPackageSettings] = useState<GetPackageSettings>()
-
+  const [inputValuePackageType, setInputValuePackageType] = useState("")
+  const [packageTypes, setPackageTypes] = useState<string[]>()
+  const [packageSizes, setPackageSizes] = useState<number[]>()
+  const [openPackageType, setOpenPackageType] = useState<string>()
   const [orderItems, setOrderItems] = useState<{
     id: string
     deleted?: boolean
@@ -106,7 +111,8 @@ export default function CreateOrder() {
 
       setCustomers(promises[0].data.customers)
       setProducts(promises[1].data)
-      setPackageSettings(promises[2].data)
+      setPackageTypes(promises[2].data.packageTypes)
+      setPackageSizes(promises[2].data.packageSizes)
       if (orderId) {
         console.log('has orderId')
         const res = await axios.get<GetOrderDto>(`/orders/${orderId}`)
@@ -302,7 +308,7 @@ export default function CreateOrder() {
     // Show success message or handle errors
   }
 
-  if (isLoading || !customers || !products || !packageSettings) {
+  if (isLoading || !customers || !products || !packageTypes || !packageSizes) {
     return <SiikliPage title={orderId ? 'Tilaus' : 'Uusi tilaus'} description="Täytä tilauksen tiedot" />
   }
 
@@ -570,7 +576,7 @@ export default function CreateOrder() {
                               <SelectValue placeholder="Valitse pakkauskoko" />
                             </SelectTrigger>
                             <SelectContent>
-                              {packageSettings.packageSizes.map(type => (
+                              {packageSizes.map(type => (
                                 <SelectItem key={type} value={type + ''}>{type}</SelectItem>
                               ))}
                             </SelectContent>
@@ -579,19 +585,61 @@ export default function CreateOrder() {
 
                         <div className="space-y-2">
                           <Label htmlFor={`package-type-${item.id}`}>Pakkaustyyppi</Label>
-                          <Select
-                            value={item.packageType}
-                            onValueChange={(value) => handleItemChange(item.id, "packageType", value)}
-                          >
-                            <SelectTrigger id={`package-type-${item.id}`}>
-                              <SelectValue placeholder="Valitse pakkaustyyppi" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {packageSettings.packageTypes.map(type => (
-                                <SelectItem key={type} value={type}>{type}</SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
+                          <Popover open={openPackageType == item.id} onOpenChange={(open) => setOpenPackageType(open ? item.id : undefined)}>
+                            <PopoverTrigger asChild>
+                              <Button
+                                variant="outline"
+                                role="combobox"
+                                className="w-full justify-between"
+                              >
+                                {item.packageType || "Valitse pakkaustyyppi"}
+                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-full p-0">
+                              <Command>
+                                <CommandInput placeholder="Syötä pakkaustyyppi..."
+                                  onValueChange={(value) => setInputValuePackageType(value)} />
+                                {(!inputValuePackageType || !packageTypes.some(type => type.toLowerCase() === inputValuePackageType.toLowerCase())) && (
+                                  <CommandEmpty>
+                                    <button
+                                      onClick={() => {
+                                        const type = inputValuePackageType.trim();
+                                        if (type) {
+                                          handleItemChange(item.id, "packageType", type)
+                                          setPackageTypes([...packageTypes, type]);
+                                          setOpenPackageType(undefined);
+                                        }
+                                      }}
+                                      className="flex items-center space-x-2 text-sm p-2 hover:bg-muted w-full text-left"
+                                    >
+                                      <Plus className="w-4 h-4" />
+                                      <span>Lisää: {inputValuePackageType}</span>
+                                    </button>
+                                  </CommandEmpty>
+                                )}
+                                <CommandGroup>
+                                  {packageTypes.
+                                    filter(type => type.toLowerCase().includes(inputValuePackageType.toLowerCase()))
+                                    .sort()
+                                    .map((type) => (
+                                      <CommandItem
+                                        key={type}
+                                        onSelect={() => handleItemChange(item.id, "packageType", type)}
+                                      >
+                                        <Check
+                                          className={cn(
+                                            "mr-2 h-4 w-4",
+                                            item.packageType === type ? "opacity-100" : "opacity-0"
+                                          )}
+                                        />
+                                        {type}
+                                      </CommandItem>
+                                    ))}
+                                </CommandGroup>
+                              </Command>
+                            </PopoverContent>
+                          </Popover>
                         </div>
 
                         <div className="space-y-2">
