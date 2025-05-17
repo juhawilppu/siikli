@@ -176,9 +176,9 @@ authRoute.get('/api/auth/current-user', (req, res) => {
           .split('@')[0]
           .slice(0, 2)
           .toUpperCase()
-    res.status(200).send({ userId: user.id, tenantId: user.tenantId, initials, signupCompleted: user.tenant.signupCompleted } satisfies GetCurrentUserDto)
+    res.status(200).send({ authenticated: true, userId: user.id, tenantId: user.tenantId, initials, signupCompleted: user.tenant.signupCompleted } satisfies GetCurrentUserDto)
   }
   else {
-    res.status(401).end()
+    res.status(200).send({ authenticated: false } satisfies GetCurrentUserDto)
   }
 })

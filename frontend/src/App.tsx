@@ -85,28 +85,31 @@ function App() {
     axios
       .get<GetCurrentUserDto>('/auth/current-user')
       .then((response) => {
-        console.log('response', response)
         const userData = response.data
-        setUser(userData)
-
-        // Update Sentry user context
-        Sentry.setUser({
-          id: userData.userId,
-          initials: userData.initials,
-          tenantId: userData.tenantId,
-        })
+        if (userData.authenticated) {
+          setUser(userData)
+          // Update Sentry user context
+          Sentry.setUser({
+            id: userData.userId,
+            initials: userData.initials,
+            tenantId: userData.tenantId,
+          })
+        }
+        else {
+          setUser({authenticated: false})
+        }
       })
       .finally(() => setLoading(false))
   }, [])
 
-  if (loading) {
+  if (loading || user === undefined) {
     return (
       <div style={{ marginTop: '100px' }}>
         <div></div>
       </div>
     )
   }
-  else if (!user) {
+  else if (!user.authenticated) {
     return (
       <>
         <Routes>
@@ -126,7 +129,7 @@ function App() {
       </>
     )
   }
-  else if (!user.signupCompleted) {
+  else if (user.authenticated && !user.signupCompleted) {
     return (
       <>
         <Routes>

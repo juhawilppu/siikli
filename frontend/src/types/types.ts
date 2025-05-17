@@ -1,9 +1,12 @@
-export interface GetCurrentUserDto {
-  userId: string
-  tenantId: string
-  initials: string
-  signupCompleted: boolean
-}
+export type GetCurrentUserDto = {
+    authenticated: false
+} | {
+    authenticated: true
+    userId: string
+    tenantId: string
+    initials: string
+    signupCompleted: boolean
+  }
 
 export interface ProductOrderDto {
   id: string
