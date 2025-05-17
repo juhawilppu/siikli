@@ -178,6 +178,8 @@ export default function CreateOrder() {
     )
   }
 
+  const selectedCustomer = customers?.find(c => c.id === customerId)
+
   const calculateTotal = () => {
     return orderItems.reduce((sum, item) => sum + (Number.parseFloat(item.amount || '0')) * (Number.parseFloat(item.price || '0')), 0)
   }
@@ -358,8 +360,6 @@ export default function CreateOrder() {
       </SiikliPage>
     )
   }
-
-  const selectedCustomer = customers.find(c => c.id === customerId)
 
   const handleConfirmDelete = () => {
     axios.delete(`/orders/${orderId}`)
@@ -607,7 +607,7 @@ export default function CreateOrder() {
                                   <button
                                     onClick={() => {
                                       const size = Number(inputValuePackageSize.trim())
-                                      if (size && !isNaN(size)) {
+                                      if (size && !Number.isNaN(size)) {
                                         handleItemChange(item.id, 'packageSize', size)
                                         setPackageSizes([...packageSizes, size])
                                         setOpenPackageSize(undefined)
@@ -648,7 +648,7 @@ export default function CreateOrder() {
                                       <button
                                         onClick={() => {
                                           const size = Number(inputValuePackageSize.trim())
-                                          if (size && !isNaN(size)) {
+                                          if (size && !Number.isNaN(size)) {
                                             handleItemChange(item.id, 'packageSize', size)
                                             setPackageSizes([...packageSizes, size])
                                             setOpenPackageSize(undefined)
