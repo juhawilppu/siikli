@@ -55,6 +55,12 @@ resource "aws_ses_domain_identity" "siikli" {
   domain = "siikli.fi"
 }
 
+resource "aws_ses_domain_mail_from" "siikli" {
+  domain           = "siikli.fi"
+  mail_from_domain = "mail.siikli.fi"
+  behavior_on_mx_failure = "UseDefaultValue"
+}
+
 resource "aws_route53_record" "ses_verification" {
   zone_id = aws_route53_zone.siikli.id
   name    = "_amazonses.${aws_ses_domain_identity.siikli.domain}"
