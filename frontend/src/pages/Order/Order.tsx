@@ -59,7 +59,7 @@ export default function CreateOrder() {
     price: string // Use string to render with 2 decimal places and allow empty string
     amount: string // Use string to render with 2 decimal places
     packages: number
-    packageSize: number
+    packageSize?: number
     packageType: string
     freetext: string
     unsaved?: boolean
@@ -72,7 +72,7 @@ export default function CreateOrder() {
       productId: '',
       amount: '',
       packages: 0,
-      packageSize: 0,
+      packageSize: undefined,
       packageType: '',
       price: '',
       freetext: '',
@@ -158,8 +158,8 @@ export default function CreateOrder() {
           if (field === 'productId') {
             const product = products.find(p => p.id === value)
             if (product) {
-              updatedItem.price = product.price?.toString() || ''
-              updatedItem.packageSize = product.packageSize || 0
+              updatedItem.price = product.price?.toFixed(2) || ''
+              updatedItem.packageSize = product.packageSize || undefined
               updatedItem.packageType = product.packageType || ''
             }
           }
@@ -214,14 +214,7 @@ export default function CreateOrder() {
       return
     }
 
-    const items = orderItems.map(item => ({
-      ...item,
-      id: item.unsaved ? undefined : item.id,
-      price: Number.parseFloat(item.price),
-      amount: Number.parseFloat(item.amount),
-    }))
-
-    for (const item of items) {
+    for (const item of orderItems) {
       if (!item.productId) {
         toast({
           title: 'Tuote ei voi olla tyhjä',
@@ -275,7 +268,13 @@ export default function CreateOrder() {
       hasNote: hasWaybillNote,
       noteBody: hasWaybillNote ? waybillNote.content : null,
       noteHeader: hasWaybillNote ? waybillNote.title : null,
-      items,
+      items: orderItems.map(item => ({
+        ...item,
+        price: item.price ? Number.parseFloat(item.price) : 0,
+        amount: item.amount ? Number.parseFloat(item.amount) : 0,
+        packageSize: item.packageSize || 0,
+        packageType: item.packageType || '',
+      })),
     }
     console.log('Saving order:', data)
     try {
