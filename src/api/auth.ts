@@ -31,7 +31,7 @@ authRoute.get(
   },
 )
 
-authRoute.post('/api/auth/email/create-pin', rateLimit(5, 10), async (req, res, next) => {
+authRoute.post('/api/auth/email/create-pin', rateLimit(5, 15), async (req, res, next) => {
   try {
     const body = req.body
     console.log(body)
@@ -43,31 +43,12 @@ authRoute.post('/api/auth/email/create-pin', rateLimit(5, 10), async (req, res, 
       },
     })
 
-    // Check for existing pin codes
-    const existingPinCodes = await prisma.emailLoginPinCode.findMany({
-      where: {
-        email: body.email,
-        createdAt: {
-          gte: new Date(Date.now() - 15 * 60 * 1000), // 15 minutes ago
-        },
-      },
-    })
-
-    // If there are too many existing pin codes or recent attempts, reject
-    if (existingPinCodes.length >= 3) {
-      console.error(`Too many pin code attempts for ${body.email}. Please try again later.`)
-      return res.status(429).json({
-        message: 'Too many pin code attempts. Please try again later.',
-      })
-    }
-
     // Generate new pin
-    const pin = Math.floor(100000 + Math.random() * 900000)
+    const pin = Math.floor(100000 + require('crypto').randomInt(900000))
 
     // Delete pins older than 15 minutes
     await prisma.emailLoginPinCode.deleteMany({
       where: {
-        email: body.email,
         createdAt: {
           lt: new Date(Date.now() - 15 * 60 * 1000), // 15 minutes ago
         },
@@ -112,7 +93,7 @@ authRoute.post('/api/auth/email/create-pin', rateLimit(5, 10), async (req, res, 
                   🔑 Koodi: ${pin}
                 </p>
     
-                <p>(Koodi on voimassa 15 minuuttia.)</p>
+                <p>Koodi on voimassa 15 minuuttia.</p>
     
                 <p>Jos et pyytänyt tätä koodia, voit huoletta jättää viestin huomiotta.</p>
     
