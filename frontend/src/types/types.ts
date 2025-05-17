@@ -272,6 +272,20 @@ export interface GetProductResponseDto {
   packageType: string | null
 }
 
+export interface PostProductCreateRequestDto {
+  name: string
+  price?: number
+  price0?: number
+  type?: string
+  subtype?: string
+  packageSize?: number
+  packageType?: string
+  variety: string
+  info: string
+  chain: string
+  orderIndex: number
+}
+
 export interface ProductTypeResponse {
   id: string
   name: string

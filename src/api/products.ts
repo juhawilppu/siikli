@@ -1,5 +1,4 @@
-import type { GetProductResponseDto, ProductTypeResponse, ReorderDto } from '../../frontend/src/types/types'
-import { captureSession, SentryContextManager } from '@sentry/node'
+import type { GetProductResponseDto, PostProductCreateRequestDto, ProductTypeResponse, ReorderDto } from '../../frontend/src/types/types'
 import express from 'express'
 import { getUser, isAuthenticated } from '../middlewares/permissions'
 import prisma from '../prisma'
@@ -154,7 +153,7 @@ async function verifyProductTypeAndSubtype(body: { packageType: string | null, p
 
 productsRoute.post(`/api/products`, isAuthenticated, async (req, res) => {
   console.log('saving product')
-  const body = req.body as GetProductResponseDto
+  const body = req.body as PostProductCreateRequestDto
   const { tenantId, userId } = getUser(req)
   await verifyProductTypeAndSubtype(body as any, tenantId)
 
@@ -168,7 +167,7 @@ productsRoute.post(`/api/products`, isAuthenticated, async (req, res) => {
       price: body.price,
       orderIndex: body.orderIndex,
       subtype: body.subtype,
-      packageSize: `${body.packageSize}`,
+      packageSize: body.packageSize?.toString(), // TODO change to number
       packageType: body.packageType,
       customerGroup: body.chain,
       tenantId,

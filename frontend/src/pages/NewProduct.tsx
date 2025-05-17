@@ -1,6 +1,6 @@
 'use client'
 
-import type { GetProductResponseDto, ProductTypeResponse } from '@/types/types'
+import type { GetProductResponseDto, PostProductCreateRequestDto, ProductTypeResponse } from '@/types/types'
 
 import { Popover } from '@radix-ui/react-popover'
 import axios from 'axios'
@@ -30,10 +30,46 @@ import { cn } from '@/lib/utils'
 
 export default function NewProduct({ productToEdit, hide, onSave, productTypes, refPackageTypes, refPackageSizes, orderIndex }: { productToEdit?: GetProductResponseDto, hide: () => void, onSave: (product: GetProductResponseDto) => void, productTypes: ProductTypeResponse[], refPackageTypes: string[], refPackageSizes: number[], orderIndex?: number }) {
   const mode = productToEdit ? 'edit' : 'create'
-  const [product, setProduct] = useState<Partial<GetProductResponseDto>>(mode === 'edit'
-    ? { ...productToEdit }
+  const [product, setProduct] = useState <Partial<{
+    name: string
+    type: string
+    subtype: string
+    price: string
+    price0: string
+    packageSize: number
+    packageType: string
+    variety: string
+    info: string
+    orderIndex: number
+    chain: string
+    id: string
+  }>>(mode === 'edit'
+    ? {
+        ...productToEdit,
+        price: productToEdit?.price?.toFixed(2) || '',
+        price0: productToEdit?.price0?.toFixed(2) || '',
+        type: productToEdit?.type || '',
+        subtype: productToEdit?.subtype || '',
+        packageSize: productToEdit?.packageSize || undefined,
+        packageType: productToEdit?.packageType || '',
+        variety: productToEdit?.variety || '',
+        info: productToEdit?.info || '',
+        chain: productToEdit?.chain || '',
+        orderIndex: productToEdit?.orderIndex || 0,
+        id: productToEdit?.id || '',
+      }
     : {
         orderIndex,
+        price: '',
+        price0: '',
+        type: '',
+        subtype: '',
+        packageSize: undefined,
+        packageType: '',
+        variety: '',
+        info: '',
+        chain: '',
+        id: '',
       })
   const [openType, setOpenType] = useState(false)
   const [inputValueType, setInputValueType] = useState('')
@@ -61,18 +97,28 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
       return
     }
 
+    const data: PostProductCreateRequestDto = {
+      name: product.name,
+      price: product.price ? Number.parseFloat(product.price) : undefined,
+      price0: product.price0 ? Number.parseFloat(product.price0) : undefined,
+      type: product.type || undefined,
+      subtype: product.subtype || undefined,
+      packageSize: product.packageSize || undefined,
+      packageType: product.packageType || '',
+      variety: product.variety || '',
+      info: product.info || '',
+      chain: product.chain || '',
+      orderIndex: product.orderIndex || 0,
+    }
+
     if (mode === 'edit') {
-      await axios.post(`/products/${product.id}`, {
-        ...product,
-      })
-      onSave({ ...product } as GetProductResponseDto)
+      await axios.post(`/products/${product.id}`, data)
+      onSave({ ...product, price: Number.parseFloat(product.price || '0'), price0: Number.parseFloat(product.price0 || '0') } as GetProductResponseDto)
     }
     else {
-      const res = await axios.post<{ id: string }>('/products', {
-        ...product,
-      })
+      const res = await axios.post<{ id: string }>('/products', data)
 
-      onSave({ id: res.data.id, ...product } as GetProductResponseDto)
+      onSave({ id: res.data.id, ...product, price: Number.parseFloat(product.price || '0'), price0: Number.parseFloat(product.price0 || '0') } as GetProductResponseDto)
     }
   }
 
@@ -260,8 +306,10 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
                     className="ml-[1px]"
                     style={{ width: 'calc(100% - 2px)' }}
                     value={product.price || ''}
-                    onChange={e =>
-                      setProduct({ ...product, price: toDecimal(Number.parseFloat(e.target.value) || 0), price0: toDecimal(Number.parseFloat(e.target.value) / 1.14) })}
+                    onChange={e => setProduct({ ...product, price: e.target.value, price0: (Number.parseFloat(e.target.value) / 1.14).toFixed(2) })}
+                    onBlur={(e) => {
+                      setProduct({ ...product, price: (Number.parseFloat(e.target.value || '0')).toFixed(2) })
+                    }}
                   />
                 </div>
                 <div className="space-y-2">
@@ -276,8 +324,10 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
                     className="ml-[1px]"
                     style={{ width: 'calc(100% - 2px)' }}
                     value={product.price0 || ''}
-                    onChange={e =>
-                      setProduct({ ...product, price: toDecimal(Number.parseFloat(e.target.value) * 1.14 || 0), price0: toDecimal(Number.parseFloat(e.target.value)) })}
+                    onChange={e => setProduct({ ...product, price: e.target.value, price0: (Number.parseFloat(e.target.value) / 1.14).toFixed(2) })}
+                    onBlur={(e) => {
+                      setProduct({ ...product, price: (Number.parseFloat(e.target.value || '0')).toFixed(2) })
+                    }}
                   />
                 </div>
               </AccordionContent>
@@ -340,7 +390,7 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
                                 <button
                                   onClick={() => {
                                     const size = Number(inputValuePackageSize)
-                                    if (!isNaN(size) && size > 0) {
+                                    if (!Number.isNaN(size) && size > 0) {
                                       setProduct({ ...product, packageSize: size })
                                       setPackageSizes([...packageSizes, size])
                                       setOpenPackageSize(false)
@@ -363,7 +413,7 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
                             <button
                               onClick={() => {
                                 const size = Number(inputValuePackageSize)
-                                if (!isNaN(size) && size > 0) {
+                                if (!Number.isNaN(size) && size > 0) {
                                   setProduct({ ...product, packageSize: size })
                                   setPackageSizes([...packageSizes, size])
                                   setOpenPackageSize(false)
@@ -491,5 +541,3 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
     </DialogContent>
   )
 }
-
-export const toDecimal = (num: number) => Number(num.toFixed(2))
