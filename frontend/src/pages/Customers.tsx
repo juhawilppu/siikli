@@ -269,7 +269,6 @@ export function Customers() {
       })
   }
 
-  // Uuden asiakkaan lisääminen
   const createCustomer = () => {
     if (!customerToCreate.name) {
       toast({
@@ -280,14 +279,12 @@ export function Customers() {
       return
     }
 
-    const uusiJarjestys = Math.max(...customers.map(a => a.orderIndex || 0), 0) + 1
-    const uusiAsiakasObjekti: CustomerDto = {
-      ...customerToCreate,
-      orderIndex: uusiJarjestys,
+    const newCustomer: CustomerDto = {
+      ...customerToCreate
     } as CustomerDto
 
     axios
-      .post('/customers', uusiAsiakasObjekti)
+      .post('/customers', newCustomer)
       .then((response) => {
         setCustomers([...customers, response.data])
         setShowCreateDialog(false)
@@ -299,7 +296,7 @@ export function Customers() {
         })
         toast({
           title: 'Asiakas lisätty',
-          description: `Asiakas "${uusiAsiakasObjekti.name}" on lisätty onnistuneesti.`,
+          description: `Asiakas ${newCustomer.name} on lisätty onnistuneesti.`,
         })
       })
       .catch((error) => {
@@ -321,8 +318,8 @@ export function Customers() {
     if (!customerIdToDelete)
       return
 
-    const poistettava = customers.find(a => a.id === customerIdToDelete)
-    if (!poistettava)
+    const customerToDelete = customers.find(a => a.id === customerIdToDelete)
+    if (!customerToDelete)
       return
 
     axios
@@ -332,7 +329,7 @@ export function Customers() {
         setCustomerIdToDelete(null)
         toast({
           title: 'Asiakas poistettu',
-          description: `Asiakas "${poistettava.name}" on poistettu onnistuneesti.`,
+          description: `Asiakas "${customerToDelete.name}" on poistettu onnistuneesti.`,
         })
       })
       .catch((error) => {
@@ -589,22 +586,6 @@ export function Customers() {
                       value={customerToCreate.reference || ''}
                       onChange={e => setCustomerToCreate({ ...customerToCreate, reference: e.target.value })}
                       maxLength={255}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="order_index" className="font-medium">
-                      Järjestysnumero
-                    </Label>
-                    <Input
-                      id="order_index"
-                      type="number"
-                      min="0"
-                      value={customerToCreate.orderIndex || ''}
-                      onChange={e =>
-                        setCustomerToCreate({
-                          ...customerToCreate,
-                          orderIndex: Number.parseInt(e.target.value) || undefined,
-                        })}
                     />
                   </div>
                 </div>
