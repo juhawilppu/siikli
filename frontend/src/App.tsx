@@ -190,7 +190,7 @@ function App() {
                   <Button
                     variant="outline"
                     size="icon"
-                    className="rounded-full bg-blue-700 border-blue-500 hover:bg-blue-800"
+                    className="rounded-full bg-blue-700 border-blue-500 hover:bg-blue-800 text-white hover:text-white"
                   >
                     {user?.initials}
                     <span className="sr-only">Toggle user menu</span>
