@@ -28,7 +28,7 @@ import { Separator } from '@/components/ui/separator'
 import { toast } from '@/hooks/use-toast'
 import { cn } from '@/lib/utils'
 
-export default function NewProduct({ productToEdit, hide, onSave, productTypes, refPackageTypes, refPackageSizes, orderIndex }: { productToEdit?: GetProductResponseDto, hide: () => void, onSave: (product: GetProductResponseDto) => void, productTypes: ProductTypeResponse[], refPackageTypes: string[], refPackageSizes: number[], orderIndex?: number }) {
+export default function NewProduct({ productToEdit, hide, onSave, productTypes, refPackageTypes, refPackageSizes }: { productToEdit?: GetProductResponseDto, hide: () => void, onSave: (product: GetProductResponseDto) => void, productTypes: ProductTypeResponse[], refPackageTypes: string[], refPackageSizes: number[] }) {
   const mode = productToEdit ? 'edit' : 'create'
   const [product, setProduct] = useState <Partial<{
     name: string
@@ -40,7 +40,6 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
     packageType: string
     variety: string
     info: string
-    orderIndex: number
     chain: string
     id: string
   }>>(mode === 'edit'
@@ -55,11 +54,9 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
         variety: productToEdit?.variety || '',
         info: productToEdit?.info || '',
         chain: productToEdit?.chain || '',
-        orderIndex: productToEdit?.orderIndex || 0,
         id: productToEdit?.id || '',
       }
     : {
-        orderIndex,
         price: '',
         price0: '',
         type: '',
@@ -108,7 +105,6 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
       variety: product.variety || '',
       info: product.info || '',
       chain: product.chain || '',
-      orderIndex: product.orderIndex || 0,
     }
 
     if (mode === 'edit') {

@@ -124,10 +124,9 @@ ordersRoute.get(`/api/orders`, isAuthenticated, async (req, res) => {
       {
         deliveryDate: 'asc',
       },
-
       {
         customer: {
-          orderIndex: 'asc',
+          name: 'asc',
         },
       },
     ],
@@ -181,7 +180,7 @@ ordersRoute.get(`/api/orders/cargo_reports`, isAuthenticated, async (req, res) =
 
       {
         customer: {
-          orderIndex: 'asc',
+          name: 'asc',
         },
       },
     ],
@@ -308,7 +307,7 @@ ordersRoute.get(`/api/orders/:id`, isAuthenticated, async (req, res) => {
       },
       {
         customer: {
-          orderIndex: 'asc',
+          name: 'asc',
         },
       },
     ],

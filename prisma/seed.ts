@@ -43,7 +43,6 @@ async function main() {
       showPriceWithoutTax: true,
       reference: '1234567890',
       companyName: 'Test company',
-      orderIndex: 1,
       businessId: '1234567890',
       customerGroup: 'Test group',
 
@@ -64,7 +63,6 @@ async function main() {
       showPriceWithoutTax: true,
       reference: '1234567890',
       companyName: 'Test company',
-      orderIndex: 1,
       businessId: '1234567890',
       customerGroup: 'Test group',
 

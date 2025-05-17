@@ -18,7 +18,7 @@ dashboardRoute.get(`/api/dashboard`, isAuthenticated, setSentryUser, async (req,
       tenantId,
     },
     orderBy: {
-      orderIndex: 'asc',
+      name: 'asc',
     },
   })
 

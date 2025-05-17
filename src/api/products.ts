@@ -28,7 +28,6 @@ productsRoute.get(`/api/products`, isAuthenticated, async (req, res) => {
       variety: p.variety,
       type: p.type,
       subtype: p.subtype,
-      orderIndex: p.orderIndex || 0,
       info: p.info,
     }
   }) satisfies GetProductResponseDto[])
@@ -165,7 +164,6 @@ productsRoute.post(`/api/products`, isAuthenticated, async (req, res) => {
       info: body.info,
       price0: body.price0,
       price: body.price,
-      orderIndex: body.orderIndex,
       subtype: body.subtype,
       packageSize: body.packageSize?.toString(), // TODO change to number
       packageType: body.packageType,
@@ -216,6 +214,7 @@ productsRoute.delete(`/api/products/:id`, isAuthenticated, async (req, res) => {
   }
 })
 
+/*
 productsRoute.post(`/api/products/reorder`, isAuthenticated, async (req, res) => {
   console.log('reorder', req.body)
   const body = req.body as ReorderDto
@@ -242,6 +241,7 @@ productsRoute.post(`/api/products/reorder`, isAuthenticated, async (req, res) =>
   )
   res.status(201).json({ message: 'OK' })
 })
+  */
 
 productsRoute.post(`/api/products/:id`, isAuthenticated, async (req, res) => {
   const id = req.params.id
@@ -259,7 +259,6 @@ productsRoute.post(`/api/products/:id`, isAuthenticated, async (req, res) => {
       info: body.info,
       price0: body.price0,
       price: body.price,
-      orderIndex: 1,
       subtype: body.subtype,
       packageSize: `${body.packageSize}`,
       packageType: body.packageType,

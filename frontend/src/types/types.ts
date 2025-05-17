@@ -179,7 +179,6 @@ export interface CustomerDto {
   compensation: number
   reference: string | null
   companyName: string | null
-  orderIndex: number | null
   email: string | null
   phone: string | null
   businessId: string | null
@@ -259,7 +258,6 @@ export interface ProductDto {
 
 export interface GetProductResponseDto {
   id: string
-  orderIndex: number
   chain: string | null
   name: string
   info: string | null
@@ -283,7 +281,6 @@ export interface PostProductCreateRequestDto {
   variety: string
   info: string
   chain: string
-  orderIndex: number
 }
 
 export interface ProductTypeResponse {

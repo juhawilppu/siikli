@@ -23,7 +23,7 @@ customersRoute.get(`/api/customers`, isAuthenticated, async (req, res) => {
       tenantId,
     },
     orderBy: {
-      orderIndex: 'asc',
+      name: 'asc',
     },
   })
   const chains = await prisma.customer.findMany({
@@ -68,7 +68,6 @@ customersRoute.get(`/api/customers`, isAuthenticated, async (req, res) => {
         tenantId: r.tenantId,
         reference: r.reference,
         companyName: r.companyName,
-        orderIndex: r.orderIndex,
         customerGroup: r.customerGroup,
       }
     }),
@@ -100,7 +99,6 @@ customersRoute.post(`/api/customers`, isAuthenticated, async (req, res) => {
       showPriceWithoutTax: body.showPriceWithoutTax,
       reference: body.reference,
       companyName: body.companyName,
-      orderIndex: body.orderIndex,
       businessId: body.businessId,
       customerGroup: body.customerGroup,
     },
@@ -120,6 +118,7 @@ customersRoute.post(`/api/customers`, isAuthenticated, async (req, res) => {
   res.json(result)
 })
 
+/*
 customersRoute.put(`/api/customers/reorder`, isAuthenticated, async (req, res) => {
   console.log('reordering customers')
   const { userId, tenantId } = getUser(req)
@@ -147,6 +146,7 @@ customersRoute.put(`/api/customers/reorder`, isAuthenticated, async (req, res) =
     })
   }
 })
+  */
 
 customersRoute.put(`/api/customers/:id`, isAuthenticated, async (req, res) => {
   console.log('updating customer')
@@ -177,7 +177,6 @@ customersRoute.put(`/api/customers/:id`, isAuthenticated, async (req, res) => {
       showPriceWithoutTax: body.showPriceWithoutTax,
       reference: body.reference,
       companyName: body.companyName,
-      orderIndex: body.orderIndex,
       businessId: body.businessId,
       customerGroup: body.customerGroup,
     },

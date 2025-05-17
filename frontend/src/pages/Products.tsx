@@ -209,7 +209,7 @@ export default function TuotteetSivu() {
                 </Button>
               </DialogTrigger>
               {showNewProductDialog
-                && <NewProduct hide={() => setShowNewProductDialog(false)} onSave={onProductSaved} productTypes={productTypes} refPackageSizes={packageSizes} refPackageTypes={packageTypes} orderIndex={Math.max(...products.map(p => p.orderIndex)) + 1} />}
+                && <NewProduct hide={() => setShowNewProductDialog(false)} onSave={onProductSaved} productTypes={productTypes} refPackageSizes={packageSizes} refPackageTypes={packageTypes}/>}
             </Dialog>
           </div>
 
