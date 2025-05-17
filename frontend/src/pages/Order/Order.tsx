@@ -138,7 +138,7 @@ export default function CreateOrder() {
 
   const handleRemoveItem = (id: string) => {
     setOrderItems(orderItems.map((item) => {
-      if (item.id == id) {
+      if (item.id === id) {
         item.deleted = true
       }
       return item
@@ -586,7 +586,7 @@ export default function CreateOrder() {
 
                         <div className="space-y-2">
                           <Label htmlFor={`package-size-${item.id}`}>Pakkauskoko</Label>
-                          <Popover open={openPackageSize == item.id} onOpenChange={open => setOpenPackageSize(open ? item.id : undefined)}>
+                          <Popover open={openPackageSize === item.id} onOpenChange={open => setOpenPackageSize(open ? item.id : undefined)}>
                             <PopoverTrigger asChild>
                               <Button
                                 variant="outline"
@@ -672,7 +672,7 @@ export default function CreateOrder() {
 
                         <div className="space-y-2">
                           <Label htmlFor={`package-type-${item.id}`}>Pakkaustyyppi</Label>
-                          <Popover open={openPackageType == item.id} onOpenChange={open => setOpenPackageType(open ? item.id : undefined)}>
+                          <Popover open={openPackageType === item.id} onOpenChange={open => setOpenPackageType(open ? item.id : undefined)}>
                             <PopoverTrigger asChild>
                               <Button
                                 variant="outline"

@@ -65,7 +65,7 @@ export function Invoices() {
   if (!customers)
     return <div>Ei tuotteita</div>
 
-  const selectedCustomer = customers.find(c => c.id == customerId)
+  const selectedCustomer = customers.find(c => c.id === customerId)
 
   return (
     <SiikliPage title="Laskut" description="Tällä sivulla voit tulostaa laskut.">

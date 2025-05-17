@@ -117,7 +117,7 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
     <DialogContent className="sm:max-w-[500px]">
       <form onSubmit={handleSubmit}>
         <DialogHeader>
-          <DialogTitle>{mode == 'create' ? 'Lisää uusi tuote' : 'Muokkaa tuotetta'}</DialogTitle>
+          <DialogTitle>{mode === 'create' ? 'Lisää uusi tuote' : 'Muokkaa tuotetta'}</DialogTitle>
           <DialogDescription>
             Täytä tuotteen tiedot. Pakolliset kentät on merkitty tähdellä (*).
           </DialogDescription>

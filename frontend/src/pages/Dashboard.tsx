@@ -11,7 +11,7 @@ import { formatDate } from '@/utils/date'
 import { formatMoneyFi } from '@/utils/money'
 
 function formatMetric(value: number, unit: 'money' | 'count') {
-  if (unit == 'money') {
+  if (unit === 'money') {
     return formatMoneyFi(value, 0)
   }
   else {

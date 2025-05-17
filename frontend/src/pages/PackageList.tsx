@@ -128,12 +128,12 @@ export function PackageList() {
         {report && (
           <Card className="p-5">
             <Button onClick={() => window.print()}>Tulosta</Button>
-            {report.groupedBy == 'customer' && (
+            {report.groupedBy === 'customer' && (
               <WarehouseReportByCustomerDocument
                 report={report}
               />
             )}
-            {report.groupedBy == 'product' && (
+            {report.groupedBy === 'product' && (
               <WarehouseReportByProductDocument
                 report={report}
               />
