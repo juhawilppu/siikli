@@ -191,8 +191,8 @@ export default function CreateOrder() {
     }
     if (!selectedCustomer) {
       toast({
-        title: 'Asiakas ei voi olla tyhjä',
-        description: 'Valitse asiakas',
+        title: 'Valitse asiakas',
+        description: 'Asiakas ei voi olla tyhjä',
         variant: 'destructive',
       })
       setIsSubmitting(false)

@@ -3,9 +3,9 @@ import type { GetCurrentUserDto } from '../../frontend/src/types/types'
 import type { UserWithTenant } from '../passportConfig'
 import { SendEmailCommand, SESClient } from '@aws-sdk/client-ses'
 import express from 'express'
-const passport = require('passport')
 import { rateLimit } from '../../middlewares/rateLimit'
 import prisma from '../prisma'
+const passport = require('passport')
 
 export const authRoute = express.Router()
 

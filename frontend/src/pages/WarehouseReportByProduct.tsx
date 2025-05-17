@@ -51,16 +51,16 @@ export function WarehouseReportByProductDocument({ report }: {
                     const current = report.rows[index]
                     const next = report.rows[index + 1]
                     const addBorder
-                                    = !next
-                                      || current.productVariety !== next.productVariety
-                                      || current.productType !== next.productType
+                    = !next
+                      || current.productVariety !== next.productVariety
+                      || current.productType !== next.productType
 
                     return (
                       <tr key={index} className={addBorder ? 'border-bottom' : ''}>
                         <td className="align-left">{order.productName}</td>
                         <td className="align-right">{order.packageSize}</td>
                         <td className="align-left">
-&nbsp;
+                        &nbsp;
                           {order.packageType}
                         </td>
                         <td className="align-right">{Math.ceil(order.amount / order.packageSize)}</td>

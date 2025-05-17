@@ -2,11 +2,11 @@ import type { Tenant, User } from '@prisma/client'
 import { SendEmailCommand, SESClient } from '@aws-sdk/client-ses'
 import { addMonths } from 'date-fns'
 
-import { Strategy as LocalStrategy } from 'passport-local'
-import prisma from './prisma'
-
 const passport = require('passport')
 const GoogleStrategy = require('passport-google-oidc')
+
+import { Strategy as LocalStrategy } from 'passport-local'
+import prisma from './prisma'
 
 export interface UserWithTenant extends User {
   tenant: Tenant

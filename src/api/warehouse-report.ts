@@ -97,36 +97,36 @@ router.get('/api/warehouse-report/grouped-by/product', async (req, res) => {
 
   try {
     const results = await prisma.$queryRawUnsafe<any>(`
-		SELECT
+    SELECT
     product_id,
-		p.name AS product_name,
-		p.type AS product_type,
-		p.variety AS product_variety,
-		SUM(amount)::double precision AS amount,
-		op.package_size,
-		op.package_type
-		FROM "order" o
-		LEFT JOIN order_product op ON (op.order_id = o.id)
-		LEFT JOIN product p ON (p.id = op.product_id)
-		LEFT JOIN product_type pt ON (p.type = pt.type)
-		LEFT JOIN product_subtype pst ON (p.type = pst.type AND p.subtype = pst.subtype)
-		WHERE delivery_date = '${deliveryDate}' and o.tenant_id = '${tenantId}'
-		GROUP BY
+    p.name AS product_name,
+    p.type AS product_type,
+    p.variety AS product_variety,
+    SUM(amount)::double precision AS amount,
+    op.package_size,
+    op.package_type
+    FROM "order" o
+    LEFT JOIN order_product op ON (op.order_id = o.id)
+    LEFT JOIN product p ON (p.id = op.product_id)
+    LEFT JOIN product_type pt ON (p.type = pt.type)
+    LEFT JOIN product_subtype pst ON (p.type = pst.type AND p.subtype = pst.subtype)
+    WHERE delivery_date = '${deliveryDate}' and o.tenant_id = '${tenantId}'
+    GROUP BY
     product_id,
-		name,
+    name,
     p.type,
     p.variety,
     pt.order_index,
     pst.order_index,
-		op.package_size,
-		op.package_type
-		ORDER BY
-		pt.order_index ASC,
-		pst.order_index ASC,
-		product_name ASC,
-		op.package_type ASC,
-		op.package_size ASC,
-		amount ASC;
+    op.package_size,
+    op.package_type
+    ORDER BY
+    pt.order_index ASC,
+    pst.order_index ASC,
+    product_name ASC,
+    op.package_type ASC,
+    op.package_size ASC,
+    amount ASC;
     `)
     console.log('results', results)
 
