@@ -56,8 +56,8 @@ export default function CompanySettings() {
     }
     await axios.post('/tenants', data)
     toast({
-      title: 'Yritys tiedot tallennettu',
-      description: 'Yrityksesi tiedot on tallennettu',
+      title: 'Tiedot tallennettiin',
+      description: 'Yrityksen tiedot tallennettiin onnistuneesti.',
       variant: 'success',
     })
   }
