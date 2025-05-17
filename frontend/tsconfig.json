@@ -13,6 +13,7 @@
       "@/*": ["*"]
     },
     "resolveJsonModule": true,
+    "types": ["node"],
     "allowImportingTsExtensions": true,
 
     /* Linting */
@@ -21,8 +22,12 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noEmit": true,
+    "esModuleInterop": true,
     "isolatedModules": true,
     "skipLibCheck": true
+  },
+  "ts-node": {
+    "esm": true
   },
   "references": [{ "path": "./tsconfig.node.json" }],
   "include": ["src"]
