@@ -1,4 +1,5 @@
 import type { GetProductResponseDto, ProductTypeResponse, ReorderDto } from '../../frontend/src/types/types'
+import { captureSession, SentryContextManager } from '@sentry/node'
 import express from 'express'
 import { getUser, isAuthenticated } from '../middlewares/permissions'
 import prisma from '../prisma'
@@ -211,6 +212,7 @@ productsRoute.delete(`/api/products/:id`, isAuthenticated, async (req, res) => {
     res.status(200).json({ message: 'OK' })
   }
   catch (e) {
+    console.log('delete error', e)
     res.status(400).json({ message: 'Failed' })
   }
 })

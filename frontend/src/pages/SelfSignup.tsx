@@ -62,7 +62,8 @@ export default function SelfSignup() {
 
       window.location.href = '/'
     }
-    catch (error) {
+    catch (e) {
+      console.error('error', e)
       toast({
         title: 'Virhe yrityksen perustamisessa',
         description: 'Yritä uudelleen myöhemmin.',
