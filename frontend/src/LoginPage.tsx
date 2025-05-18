@@ -77,8 +77,7 @@ export default function LoginPage2() {
                       ].map(feature => (
                         <li key={feature} className="flex items-center gap-2">
                           <span>
-                            ✅
-                            {feature}
+                            ✅ {feature}
                           </span>
                         </li>
                       ))}
