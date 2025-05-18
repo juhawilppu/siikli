@@ -2,8 +2,8 @@ import type { Tenant, User } from '@prisma/client'
 import { SendEmailCommand, SESClient } from '@aws-sdk/client-ses'
 import { addMonths } from 'date-fns'
 
-const passport = require('passport')
-const GoogleStrategy = require('passport-google-oidc')
+import passport from 'passport'
+import GoogleStrategy from 'passport-google-oidc'
 
 import { Strategy as LocalStrategy } from 'passport-local'
 import prisma from './prisma'

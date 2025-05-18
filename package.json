@@ -10,7 +10,7 @@
   "scripts": {
     "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
     "start": "vite-node src/index.ts",
-    "dev:server": "vite-node src/index.ts",
+    "dev:server": "tsx watch src/index.ts",
     "dev:client": "npm run dev --prefix frontend",
     "lint": "eslint . --ext .ts,.tsx",
     "lint:fix": "eslint . --ext .ts,.tsx --fix",

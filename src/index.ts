@@ -59,17 +59,13 @@ async function startServer() {
   process.on('uncaughtException', (err) => {
     console.error('Uncaught Exception:', err)
     Sentry.captureException(err)
-
-    // You can decide whether to exit or not
-    // process.exit(1);
+    process.exit(1);
   })
 
   process.on('unhandledRejection', (reason, promise) => {
     console.error('Unhandled Rejection:', reason)
     Sentry.captureException(reason)
-
-    // Same here, decide if you want to crash or just log
-    // process.exit(1);
+    process.exit(1);
   })
 
   app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
@@ -180,8 +176,23 @@ async function startServer() {
     }
   })
 
-  app.listen(3000, () => {
+  const server = app.listen(3000, () => {
     console.log(`🚀 Server ready at: http://localhost:3000`)
+  })
+
+  process.on("SIGTERM", () => {
+    server.close(() => {
+      console.log("Server closed gracefully")
+      Sentry.captureMessage("Server closed gracefully")
+    })
+  })
+
+  process.on("SIGINT", () => {
+    server.close(() => {
+      console.log("Server closed via SIGINT")
+      Sentry.captureMessage("Server closed via SIGINT")
+      process.exit(0)
+    })
   })
 }
 
@@ -189,3 +200,4 @@ startServer().catch((err) => {
   console.error('Failed to start server:', err)
   process.exit(1)
 })
+

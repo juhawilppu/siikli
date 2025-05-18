@@ -1,4 +1,4 @@
-const Sentry = require('@sentry/node')
+import * as Sentry from '@sentry/node'
 
 if (process.env.NODE_ENV === 'production') {
   Sentry.init({

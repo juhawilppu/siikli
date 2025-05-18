@@ -5,7 +5,7 @@ import { SendEmailCommand, SESClient } from '@aws-sdk/client-ses'
 import express from 'express'
 import { rateLimit } from '../../middlewares/rateLimit'
 import prisma from '../prisma'
-const passport = require('passport')
+import passport from 'passport'
 
 export const authRoute = express.Router()
 
