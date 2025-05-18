@@ -119,6 +119,15 @@ async function startServer() {
   passportConfig()
   app.use(passport.initialize())
   app.use(passport.session())
+
+  if (process.env.SENTRY_DSN) {
+    Sentry.init({
+      dsn: process.env.SENTRY_DSN,
+      tracesSampleRate: 0.1,
+      environment: process.env.NODE_ENV,
+    })
+  }
+
   app.use(authRoute)
   app.use(ordersRoute)
   app.use(customersRoute)
@@ -134,8 +143,6 @@ async function startServer() {
     res.status(200).send({ message: 'OK' })
   })
 
-  Sentry.setupExpressErrorHandler(app)
-
   app.use((req, res, next) => {
     if (req.user) {
       const user = req.user as User
@@ -149,7 +156,7 @@ async function startServer() {
 
   // custom 404
   app.use((req, res, next) => {
-    res.status(404).send('Sorry can\'t find that!')
+    res.status(404).send(`Sorry can't find that!`)
   })
 
   // Error handlers must be after all routes
@@ -163,20 +170,18 @@ async function startServer() {
       method: req.method,
     })
 
+    Sentry.captureException(err)
+
     // Ensure we always send a response
     if (!res.headersSent) {
       res.status(500).json({
-        error: 'Internal server error',
-        message: err.message,
+        error: 'Internal server error'
       })
     }
   })
 
-  const server = app.listen(3000, () => {
+  app.listen(3000, () => {
     console.log(`🚀 Server ready at: http://localhost:3000`)
-    console.log(
-      `⭐️ See sample requests: http://pris.ly/e/ts/rest-express#3-using-the-rest-api`,
-    )
   })
 }
 

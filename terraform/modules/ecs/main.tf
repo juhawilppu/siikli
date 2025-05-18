@@ -108,6 +108,10 @@ resource "aws_ecs_task_definition" "backend" {
         {
           name = "GOOGLE_CLIENT_SECRET"
           valueFrom = "${data.aws_secretsmanager_secret_version.ecs_secrets_version.arn}:GOOGLE_CLIENT_SECRET::"
+        },
+        {
+          name = "SENTRY_DSN"
+          valueFrom = "${data.aws_secretsmanager_secret_version.ecs_secrets_version.arn}:SENTRY_DSN::"
         }
       ]
       logConfiguration = {
