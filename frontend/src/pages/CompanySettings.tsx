@@ -5,7 +5,7 @@ import type React from 'react'
 import type { GetCompanySettings, PostCompanySettings, PostSubscriptionChangeRequest } from '@/types/types'
 import axios from 'axios'
 
-import { Save } from 'lucide-react'
+import { Save, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
@@ -13,12 +13,29 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { toast } from '@/hooks/use-toast'
 import SiikliPage from '@/SiikliPage'
 import { formatDate } from '@/utils/date'
+import { useToast } from '@/hooks/use-toast'
+import ConfirmDialog from './ConfirmDialog'
 
 export default function CompanySettings() {
   const [companyData, setCompanyData] = useState<GetCompanySettings>()
+  const [showDeleteCompanyModal, setShowDeleteCompanyModal] = useState(false)
+  const { toast } = useToast()
+
+  const handleDeleteCompany = async () => {
+    await axios.delete('/tenants')
+    await axios.post('/auth/logout')
+    toast({
+      title: 'Yritys poistettu',
+      description: 'Yritys on poistettu onnistuneesti. Sinut ohjataan etusivulle.',
+      variant: 'success',
+    })
+    setShowDeleteCompanyModal(false)
+    setTimeout(() => {
+      window.location.href = '/'
+    }, 2000)
+  }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value }: { name: string, value: string } = e.target
@@ -106,6 +123,7 @@ export default function CompanySettings() {
               <TabsTrigger value="users">Käyttäjät</TabsTrigger>
             )}
             <TabsTrigger value="subscription">Tilaus</TabsTrigger>
+            <TabsTrigger value="others">Muut</TabsTrigger>
           </TabsList>
 
           <TabsContent value="company">
@@ -523,8 +541,33 @@ export default function CompanySettings() {
               </CardFooter>
             </Card>
           </TabsContent>
+
+          <TabsContent value="others">
+            <Card>
+              <CardHeader>
+                <CardTitle>Muut</CardTitle>
+                <CardDescription>Muut asetukset</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Button variant="destructive" onClick={() => setShowDeleteCompanyModal(true)}>
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Poista yritys
+                </Button>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
         </Tabs>
       </SiikliPage>
+
+      {showDeleteCompanyModal && (
+        <ConfirmDialog
+          title="Poista yritys"
+          description="Oletko varma, että haluat poistaa yrityksen? Kaikki tiedot poistetaan, eikä niitä voi palauttaa."
+          onConfirm={handleDeleteCompany}
+          onCancel={() => setShowDeleteCompanyModal(false)}
+        />
+      )}
     </>
   )
 }

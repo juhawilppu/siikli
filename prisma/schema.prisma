@@ -35,7 +35,6 @@ model Tenant {
   products              Product[]
   productTypes          ProductType[]
   productSubtypes       ProductSubtypes[]
-  logs                  Log[]
   PackageType           PackageType[]
   PackageSize           PackageSize[]
 
@@ -47,8 +46,7 @@ model User {
   googleExternalId String? @unique @map("google_external_id") @db.VarChar(128)
   email            String  @unique @map("email")
   tenantId         String  @map("tenant_id") @db.Uuid
-  tenant           Tenant  @relation(fields: [tenantId], references: [id])
-  logs             Log[]
+  tenant           Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   marketingConsent Boolean @default(false) @map("marketing_consent")
 
   @@map("user")
@@ -79,7 +77,7 @@ model Customer {
   showPriceWithoutTax Boolean @default(false) @map("show_price_without_tax")
   orders              Order[]
   tenantId            String  @map("tenant_id") @db.Uuid
-  tenant              Tenant  @relation(fields: [tenantId], references: [id])
+  tenant              Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@map("customer")
 }
@@ -88,7 +86,7 @@ model OrderProduct {
   id          String   @id @default(uuid()) @map("id") @db.Uuid
   orderId     String   @map("order_id") @db.Uuid
   tenantId    String   @map("tenant_id") @db.Uuid
-  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   productId   String   @map("product_id") @db.Uuid
   amount      Int      @map("amount")
   price       Float    @map("price")
@@ -97,7 +95,7 @@ model OrderProduct {
   packageType String?  @map("package_type") @db.VarChar(3)
   price0      Float    @default(0) @map("price0")
   createdAt   DateTime @default(now()) @map("created_at")
-  products    Product  @relation(fields: [productId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FKo6helt0ucmegaeachjpx40xhe")
+  products    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
   @@index([productId])
@@ -107,7 +105,7 @@ model OrderProduct {
 model ProductType {
   id              String            @id @default(uuid()) @map("id") @db.Uuid
   tenantId        String            @map("tenant_id") @db.Uuid
-  tenant          Tenant            @relation(fields: [tenantId], references: [id])
+  tenant          Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   orderIndex      Int               @map("order_index")
   type            String?           @map("type") @db.VarChar(255)
   productSubtypes ProductSubtypes[]
@@ -118,7 +116,7 @@ model ProductType {
 model Product {
   id            String         @id @default(uuid()) @map("id") @db.Uuid
   tenantId      String         @map("tenant_id") @db.Uuid
-  tenant        Tenant         @relation(fields: [tenantId], references: [id])
+  tenant        Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   name          String         @map("name") @db.VarChar(64)
   variety       String?        @map("variety") @db.VarChar(32)
   info          String?        @map("info") @db.VarChar(32)
@@ -144,10 +142,10 @@ model Order {
   noteHeader          String?        @map("note_header") @db.VarChar(255)
   showPriceWithoutTax Boolean?       @default(false) @map("show_price_without_tax")
   customerGroup       String?        @map("customer_group") @db.VarChar(256)
-  customer            Customer       @relation(fields: [customerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  customer            Customer       @relation(fields: [customerId], references: [id], onDelete: Cascade)
   products            OrderProduct[]
   tenantId            String         @map("tenant_id") @db.Uuid
-  tenant              Tenant         @relation(fields: [tenantId], references: [id])
+  tenant              Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@index([customerId], map: "customer_id")
   @@map("order")
@@ -156,12 +154,12 @@ model Order {
 model ProductSubtypes {
   id           String       @id @default(uuid()) @map("id") @db.Uuid
   tenantId     String       @map("tenant_id") @db.Uuid
-  tenant       Tenant       @relation(fields: [tenantId], references: [id])
+  tenant       Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   orderIndex   Int          @map("order_index")
   subtype      String?      @map("subtype") @db.VarChar(255)
   type         String?      @map("type") @db.VarChar(255)
   orderId      String?      @map("order_id") @db.Uuid
-  productTypes ProductType? @relation(fields: [orderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  productTypes ProductType? @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
   @@unique([type, subtype], map: "product_subtypes_uniq")
   @@index([orderId])
@@ -179,10 +177,13 @@ model RateLimit {
 
 model Log {
   id        String   @id @default(uuid()) @map("id") @db.Uuid
+
+  // No FK since I want to retain logs after user is deleted
   userId    String?  @map("user_id") @db.Uuid
-  user      User?    @relation(fields: [userId], references: [id])
+
+  // No FK since I want to retain logs after tenant is deleted
   tenantId  String?  @map("tenant_id") @db.Uuid
-  tenant    Tenant?  @relation(fields: [tenantId], references: [id])
+
   event     String   @map("event") @db.VarChar(255)
   data      Json     @default("{}") @map("data")
   createdAt DateTime @default(now()) @map("created_at")
@@ -194,7 +195,7 @@ model PackageType {
   id       String @id @default(uuid()) @map("id") @db.Uuid
   name     String @map("name") @db.VarChar(255)
   tenantId String @map("tenant_id") @db.Uuid
-  tenant   Tenant @relation(fields: [tenantId], references: [id])
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@map("package_type")
 }
@@ -203,7 +204,7 @@ model PackageSize {
   id       String @id @default(uuid()) @map("id") @db.Uuid
   size     Int    @map("size")
   tenantId String @map("tenant_id") @db.Uuid
-  tenant   Tenant @relation(fields: [tenantId], references: [id])
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@map("package_size")
 }
