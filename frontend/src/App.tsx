@@ -60,7 +60,7 @@ function App() {
 
   const logout = async () => {
     await axios.post('/auth/logout')
-    setUser(undefined)
+    setUser({authenticated: false})
     Sentry.setUser(null)
   }
 
