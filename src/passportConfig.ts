@@ -110,11 +110,12 @@ async function createUserAndTenant(email: string, googleExternalId?: string) {
 }
 
 function init() {
-  passport.serializeUser((user: User, done: any) => {
+
+  passport.serializeUser<string>((user: Express.User, done) => {
     console.log('serialize')
     console.log(user)
     console.log(done)
-    done(null, user.id)
+    done(null, (user as UserWithTenant).id)
   })
 
   passport.deserializeUser(async (id: string, done: any) => {
@@ -152,7 +153,7 @@ function init() {
             event: 'google-login-success',
           },
         })
-
+        
         if (existingUser) {
           // We already have saved this customer to db
           console.log('done1')
