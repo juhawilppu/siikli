@@ -92,22 +92,21 @@ export default function LandingPage() {
               {t('landing.title')}
             </h1>
             <p className="text-muted-foreground text-lg md:text-xl">
-              Siikli on helppokäyttöinen toiminnanohjausjärjestelmä, joka on suunniteltu erityisesti suomalaisten
-              pienyritysten tarpeisiin.
+              {t('landing.description')}
             </p>
             <p className="text-muted-foreground text-lg md:text-xl">
-              🎉 Ensimmäiset käyttäjät saavat 3 kuukautta täysin ilmaiseksi. Haen palautetta ja kehityskohteita – saat täyden version maksutta ja autat samalla tekemään siitä entistä paremman.
+              {t('landing.description2')}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 mt-4">
               <Button size="lg" className="rounded-full" asChild>
                 <NavLink to="/kirjaudu">
-                  Aloita ilmaiseksi
+                  {t('landing.startForFree')}
                   {' '}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </NavLink>
               </Button>
               <Button variant="outline" size="lg" className="rounded-full" asChild>
-                <a href="#ominaisuudet">Tutustu ominaisuuksiin</a>
+                <a href="#ominaisuudet">{t('landing.learnMore')}</a>
               </Button>
             </div>
             {false && (
@@ -142,9 +141,9 @@ export default function LandingPage() {
       <section className="w-full py-12 md:py-24 bg-white" id="ominaisuudet" ref={featuresRef}>
         <div className="container px-4 md:px-6">
           <div className="flex flex-col items-center justify-center gap-4 text-center mb-12">
-            <h2 className="text-3xl font-bold tracking-tight">Kaikki mitä tarvitset liiketoimintasi hallintaan</h2>
+            <h2 className="text-3xl font-bold tracking-tight">{t('landing.features.title')}</h2>
             <p className="text-muted-foreground text-lg max-w-[800px]">
-              Siikli tarjoaa kattavat työkalut yrityksesi toiminnan tehostamiseen ja hallintaan.
+              {t('landing.features.description')}
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -153,11 +152,11 @@ export default function LandingPage() {
                 <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
                   <Package className="h-6 w-6 text-primary" />
                 </div>
-                <CardTitle>Tilausten hallinta</CardTitle>
+                <CardTitle>{t('landing.features.ordersTitle')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
-                  Hallitse tilauksia helposti, seuraa toimituksia ja pidä asiakkaat ajan tasalla.
+                  {t('landing.features.ordersDescription')}
                 </p>
                 <ul className="mt-4 space-y-2">
                   {['Tilausten luonti', 'Pakkauskoot', 'Huomautukset ja kommentit'].map(

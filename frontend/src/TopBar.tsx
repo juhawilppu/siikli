@@ -2,8 +2,10 @@ import { ArrowLeft } from 'lucide-react'
 import { NavLink } from 'react-router-dom'
 import LanguageSwitcher from './components/LanguageSwitcher'
 import { Button } from './components/ui/button'
+import { useTranslation } from './translations'
 
 export default function TopBar({ showBackButton, hideLoginButton }: { showBackButton?: boolean, hideLoginButton?: boolean }) {
+  const t = useTranslation()
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white">
       <div className="container flex h-16 items-center justify-between">
@@ -18,25 +20,25 @@ export default function TopBar({ showBackButton, hideLoginButton }: { showBackBu
             to="/#ominaisuudet"
             className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
           >
-            Ominaisuudet
+            {t('landing.topbar.features')}
           </NavLink>
           <NavLink
             to="/#hinnoittelu"
             className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
           >
-            Hinnoittelu
+            {t('landing.topbar.pricing')}
           </NavLink>
           <NavLink
             to="/tuki"
             className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
           >
-            Tuki
+            {t('landing.topbar.support')}
           </NavLink>
           <NavLink
             to="/yhteystiedot"
             className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
           >
-            Yhteystiedot
+            {t('landing.topbar.contact')}
           </NavLink>
         </nav>
         <div className="flex items-center justify-end w-[200px] gap-4">
@@ -45,13 +47,13 @@ export default function TopBar({ showBackButton, hideLoginButton }: { showBackBu
             <Button variant="outline" size="sm" asChild>
               <NavLink to="/">
                 <ArrowLeft className="mr-2 h-4 w-4" />
-                Takaisin etusivulle
+                {t('landing.topbar.back')}
               </NavLink>
             </Button>
           )}
           {!hideLoginButton && (
             <Button size="sm" className="rounded-full" asChild>
-              <NavLink to="/kirjaudu">Kirjaudu sisään</NavLink>
+              <NavLink to="/kirjaudu">{t('landing.topbar.login')}</NavLink>
             </Button>
           )}
 
