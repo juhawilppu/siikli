@@ -1,3 +1,5 @@
+import { useApp } from './context/AppContext'
+
 export const translations = {
   fi: {
     'landing.title': 'Hallitse liiketoimintaasi tehokkaasti Siikli ERP:llä',
@@ -7,7 +9,9 @@ export const translations = {
   },
 }
 
-export function useTranslation(language: keyof typeof translations) {
+export function useTranslation() {
+  const { language } = useApp()
+
   return (key: keyof typeof translations[typeof language]) => {
     return translations[language][key]
   }

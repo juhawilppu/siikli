@@ -10,7 +10,7 @@ import { useTranslation } from './translations'
 import UiCarousel from './UiCarousel'
 
 export default function LandingPage() {
-  const t = useTranslation('fi')
+  const t = useTranslation()
 
   const pricingRef = useRef<HTMLDivElement>(null)
   const featuresRef = useRef<HTMLDivElement>(null)

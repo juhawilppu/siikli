@@ -1,5 +1,6 @@
 import { ArrowLeft } from 'lucide-react'
 import { NavLink } from 'react-router-dom'
+import LanguageSwitcher from './components/LanguageSwitcher'
 import { Button } from './components/ui/button'
 
 export default function TopBar({ showBackButton, hideLoginButton }: { showBackButton?: boolean, hideLoginButton?: boolean }) {
@@ -39,6 +40,7 @@ export default function TopBar({ showBackButton, hideLoginButton }: { showBackBu
           </NavLink>
         </nav>
         <div className="flex items-center justify-end w-[200px] gap-4">
+          <LanguageSwitcher />
           {showBackButton && (
             <Button variant="outline" size="sm" asChild>
               <NavLink to="/">
