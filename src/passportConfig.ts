@@ -110,7 +110,6 @@ async function createUserAndTenant(email: string, googleExternalId?: string) {
 }
 
 function init() {
-
   passport.serializeUser<string>((user: Express.User, done) => {
     console.log('serialize')
     console.log(user)
@@ -143,7 +142,7 @@ function init() {
         console.log(profile)
         console.log(cb)
         const existingUser = await prisma.user.findFirst({
-          where: { googleExternalId: profile.id },
+          where: { email: profile.emails[0].value },
         })
         console.log('existingUser', existingUser)
 
@@ -153,7 +152,7 @@ function init() {
             event: 'google-login-success',
           },
         })
-        
+
         if (existingUser) {
           // We already have saved this customer to db
           console.log('done1')
