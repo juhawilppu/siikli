@@ -6,9 +6,12 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import Footer from './Footer'
 import TopBar from './TopBar'
+import { useTranslation } from './translations'
 import UiCarousel from './UiCarousel'
 
 export default function LandingPage() {
+  const t = useTranslation('fi')
+
   const pricingRef = useRef<HTMLDivElement>(null)
   const featuresRef = useRef<HTMLDivElement>(null)
   const ordersRef = useRef<HTMLDivElement>(null)
@@ -86,7 +89,7 @@ export default function LandingPage() {
           <div className="flex flex-col gap-4 md:w-1/2">
             <img src="/siikli-logo.png" alt="Siikli Logo" className="w-1/3" />
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight">
-              Hallitse liiketoimintaasi tehokkaasti Siikli ERP:llä
+              {t('landing.title')}
             </h1>
             <p className="text-muted-foreground text-lg md:text-xl">
               Siikli on helppokäyttöinen toiminnanohjausjärjestelmä, joka on suunniteltu erityisesti suomalaisten
