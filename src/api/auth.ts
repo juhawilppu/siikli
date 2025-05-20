@@ -1,11 +1,12 @@
 import type { GetCurrentUserDto } from '../../frontend/src/types/types'
 
 import type { UserWithTenant } from '../passportConfig'
+import nodeCrypto from 'node:crypto'
 import { SendEmailCommand, SESClient } from '@aws-sdk/client-ses'
 import express from 'express'
+import passport from 'passport'
 import { rateLimit } from '../../middlewares/rateLimit'
 import prisma from '../prisma'
-import passport from 'passport'
 
 export const authRoute = express.Router()
 
@@ -44,7 +45,7 @@ authRoute.post('/api/auth/email/create-pin', rateLimit(5, 15), async (req, res, 
     })
 
     // Generate new pin
-    const pin = Math.floor(100000 + require('crypto').randomInt(900000))
+    const pin = Math.floor(100000 + nodeCrypto.randomInt(900000))
 
     // Delete pins older than 15 minutes
     await prisma.emailLoginPinCode.deleteMany({

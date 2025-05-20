@@ -46,7 +46,7 @@ model TenantHistory {
   revision  Int    @id @default(autoincrement()) @map("revision")
   operation String @map("operation")
 
-  id                    String    @default(uuid()) @map("id") @db.Uuid
+  id                    String    @map("id") @db.Uuid
   name                  String    @map("name") @db.VarChar(255)
   streetAddress         String?   @map("street_address") @db.VarChar(255)
   postalCode            String?   @map("postal_code") @db.VarChar(255)
@@ -60,10 +60,10 @@ model TenantHistory {
   invoiceSwiftBic       String?   @map("invoice_swift_bic") @db.VarChar(255)
   invoiceReference      String?   @map("invoice_reference") @db.VarChar(255)
   invoiceSumRow         String?   @map("invoice_sum_row") @db.VarChar(255)
-  signupCompleted       Boolean   @default(false) @map("signup_completed")
-  createdAt             DateTime  @default(now()) @map("created_at")
-  updatedAt             DateTime  @default(now()) @updatedAt @map("updated_at")
-  subscriptionType      String    @default("FREE") @map("subscription_type")
+  signupCompleted       Boolean   @map("signup_completed")
+  createdAt             DateTime  @map("created_at")
+  updatedAt             DateTime  @map("updated_at")
+  subscriptionType      String    @map("subscription_type")
   subscriptionEndDate   DateTime? @map("subscription_end_date")
   subscriptionStartDate DateTime? @map("subscription_start_date")
   trialEndDate          DateTime? @map("trial_end_date")
@@ -88,13 +88,13 @@ model UserHistory {
   revision  Int    @id @default(autoincrement()) @map("revision")
   operation String @map("operation")
 
-  id               String   @default(uuid()) @map("id") @db.Uuid
+  id               String   @map("id") @db.Uuid
   googleExternalId String?  @map("google_external_id") @db.VarChar(128)
   email            String   @map("email")
   tenantId         String   @map("tenant_id") @db.Uuid
-  marketingConsent Boolean  @default(false) @map("marketing_consent")
-  createdAt        DateTime @default(now()) @map("created_at")
-  updatedAt        DateTime @default(now()) @updatedAt @map("updated_at")
+  marketingConsent Boolean  @map("marketing_consent")
+  createdAt        DateTime @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
 
   @@map("user_history")
 }
@@ -104,6 +104,22 @@ model EmailLoginPinCode {
   email     String   @map("email")
   pinCode   String   @map("pin_code")
   createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  @@map("email_login_pin_code")
+}
+
+model EmailLoginPinCodeHistory {
+  revision  Int    @id @default(autoincrement()) @map("revision")
+  operation String @map("operation")
+
+  id        String   @map("id")
+  email     String   @map("email")
+  pinCode   String   @map("pin_code")
+  createdAt DateTime @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("email_login_pin_code_history")
 }
 
 model Customer {
