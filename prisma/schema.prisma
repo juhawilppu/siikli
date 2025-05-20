@@ -186,11 +186,32 @@ model OrderProduct {
   packageType String?  @map("package_type") @db.VarChar(3)
   price0      Float    @default(0) @map("price0")
   createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
   products    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
   @@index([productId])
   @@map("order_product")
+}
+
+model OrderProductHistory {
+  revision  Int    @id @default(autoincrement()) @map("revision")
+  operation String @map("operation")
+
+  id          String   @map("id") @db.Uuid
+  orderId     String   @map("order_id") @db.Uuid
+  tenantId    String   @map("tenant_id") @db.Uuid
+  productId   String   @map("product_id") @db.Uuid
+  amount      Int      @map("amount")
+  price       Float    @map("price")
+  packageSize Int      @map("package_size")
+  freetext    String?  @map("freetext") @db.VarChar(500)
+  packageType String?  @map("package_type") @db.VarChar(3)
+  price0      Float    @map("price0")
+  createdAt   DateTime @map("created_at")
+  updatedAt   DateTime @map("updated_at")
+
+  @@map("order_product_history")
 }
 
 model ProductType {
