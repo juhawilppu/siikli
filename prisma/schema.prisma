@@ -43,58 +43,58 @@ model Tenant {
 }
 
 model TenantHistory {
-  revision              Int               @id @default(autoincrement()) @map("revision")
-  operation             String            @map("operation")
+  revision  Int    @id @default(autoincrement()) @map("revision")
+  operation String @map("operation")
 
-  id                    String            @default(uuid()) @map("id") @db.Uuid
-  name                  String            @map("name") @db.VarChar(255)
-  streetAddress         String?           @map("street_address") @db.VarChar(255)
-  postalCode            String?           @map("postal_code") @db.VarChar(255)
-  city                  String?           @map("city") @db.VarChar(255)
-  phone                 String?           @map("phone") @db.VarChar(255)
-  email                 String?           @map("email") @db.VarChar(255)
-  website               String?           @map("website") @db.VarChar(255)
-  businessId            String?           @map("business_id") @db.VarChar(255)
-  invoiceBankName       String?           @map("invoice_bank_name") @db.VarChar(255)
-  invoiceBankAccount    String?           @map("invoice_bank_account") @db.VarChar(255)
-  invoiceSwiftBic       String?           @map("invoice_swift_bic") @db.VarChar(255)
-  invoiceReference      String?           @map("invoice_reference") @db.VarChar(255)
-  invoiceSumRow         String?           @map("invoice_sum_row") @db.VarChar(255)
-  signupCompleted       Boolean           @default(false) @map("signup_completed")
-  createdAt             DateTime          @default(now()) @map("created_at")
-  updatedAt             DateTime          @default(now()) @updatedAt @map("updated_at")
-  subscriptionType      String            @default("FREE") @map("subscription_type")
-  subscriptionEndDate   DateTime?         @map("subscription_end_date")
-  subscriptionStartDate DateTime?         @map("subscription_start_date")
-  trialEndDate          DateTime?         @map("trial_end_date")
+  id                    String    @default(uuid()) @map("id") @db.Uuid
+  name                  String    @map("name") @db.VarChar(255)
+  streetAddress         String?   @map("street_address") @db.VarChar(255)
+  postalCode            String?   @map("postal_code") @db.VarChar(255)
+  city                  String?   @map("city") @db.VarChar(255)
+  phone                 String?   @map("phone") @db.VarChar(255)
+  email                 String?   @map("email") @db.VarChar(255)
+  website               String?   @map("website") @db.VarChar(255)
+  businessId            String?   @map("business_id") @db.VarChar(255)
+  invoiceBankName       String?   @map("invoice_bank_name") @db.VarChar(255)
+  invoiceBankAccount    String?   @map("invoice_bank_account") @db.VarChar(255)
+  invoiceSwiftBic       String?   @map("invoice_swift_bic") @db.VarChar(255)
+  invoiceReference      String?   @map("invoice_reference") @db.VarChar(255)
+  invoiceSumRow         String?   @map("invoice_sum_row") @db.VarChar(255)
+  signupCompleted       Boolean   @default(false) @map("signup_completed")
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @default(now()) @updatedAt @map("updated_at")
+  subscriptionType      String    @default("FREE") @map("subscription_type")
+  subscriptionEndDate   DateTime? @map("subscription_end_date")
+  subscriptionStartDate DateTime? @map("subscription_start_date")
+  trialEndDate          DateTime? @map("trial_end_date")
 
   @@map("tenant_history")
 }
 
 model User {
-  id               String  @id @default(uuid()) @map("id") @db.Uuid
-  googleExternalId String? @unique @map("google_external_id") @db.VarChar(128)
-  email            String  @unique @map("email")
-  tenantId         String  @map("tenant_id") @db.Uuid
-  tenant           Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  marketingConsent Boolean @default(false) @map("marketing_consent")
-  createdAt             DateTime          @default(now()) @map("created_at")
-  updatedAt             DateTime          @default(now()) @updatedAt @map("updated_at")
+  id               String   @id @default(uuid()) @map("id") @db.Uuid
+  googleExternalId String?  @unique @map("google_external_id") @db.VarChar(128)
+  email            String   @unique @map("email")
+  tenantId         String   @map("tenant_id") @db.Uuid
+  tenant           Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  marketingConsent Boolean  @default(false) @map("marketing_consent")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @default(now()) @updatedAt @map("updated_at")
 
   @@map("user")
 }
 
 model UserHistory {
-  revision         Int                    @id @default(autoincrement()) @map("revision")
-  operation        String                 @map("operation")
+  revision  Int    @id @default(autoincrement()) @map("revision")
+  operation String @map("operation")
 
-  id               String                 @default(uuid()) @map("id") @db.Uuid
-  googleExternalId String?                @map("google_external_id") @db.VarChar(128)
-  email            String                 @map("email")
-  tenantId         String                 @map("tenant_id") @db.Uuid
-  marketingConsent Boolean                @default(false) @map("marketing_consent")
-  createdAt             DateTime          @default(now()) @map("created_at")
-  updatedAt             DateTime          @default(now()) @updatedAt @map("updated_at")
+  id               String   @default(uuid()) @map("id") @db.Uuid
+  googleExternalId String?  @map("google_external_id") @db.VarChar(128)
+  email            String   @map("email")
+  tenantId         String   @map("tenant_id") @db.Uuid
+  marketingConsent Boolean  @default(false) @map("marketing_consent")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @default(now()) @updatedAt @map("updated_at")
 
   @@map("user_history")
 }
@@ -223,13 +223,13 @@ model RateLimit {
 }
 
 model Log {
-  id        String   @id @default(uuid()) @map("id") @db.Uuid
+  id String @id @default(uuid()) @map("id") @db.Uuid
 
   // No FK since I want to retain logs after user is deleted
-  userId    String?  @map("user_id") @db.Uuid
+  userId String? @map("user_id") @db.Uuid
 
   // No FK since I want to retain logs after tenant is deleted
-  tenantId  String?  @map("tenant_id") @db.Uuid
+  tenantId String? @map("tenant_id") @db.Uuid
 
   event     String   @map("event") @db.VarChar(255)
   data      Json     @default("{}") @map("data")
