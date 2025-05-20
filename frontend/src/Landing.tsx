@@ -350,16 +350,16 @@ export default function LandingPage() {
       <section className="w-full py-12 md:py-24 bg-gray-50" id="hinnoittelu" ref={pricingRef}>
         <div className="container px-4 md:px-6">
           <div className="flex flex-col items-center justify-center gap-4 text-center mb-12">
-            <h2 className="text-3xl font-bold tracking-tight">Selkeä hinnoittelu ilman yllätyksiä</h2>
+            <h2 className="text-3xl font-bold tracking-tight">{t('landing.pricing.title')}</h2>
             <p className="text-muted-foreground text-lg max-w-[800px]">
-              Aloita ilmaiseksi ja päivitä tarvittaessa &ndash; maksat vain jos saat hyötyä.
+              {t('landing.pricing.description')}
             </p>
           </div>
           <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
             <Card className="border-border flex flex-col">
               <CardHeader>
-                <CardTitle>Free</CardTitle>
-                <CardDescription>Pienille yrityksille, joilla on yksinkertaiset tarpeet</CardDescription>
+                <CardTitle>{t('landing.pricing.free.title')}</CardTitle>
+                <CardDescription>{t('landing.pricing.free.description')}</CardDescription>
                 <div className="mt-4">
                   <span className="text-3xl font-bold">0 €</span>
                   <span className="text-muted-foreground">/kk</span>
@@ -367,7 +367,7 @@ export default function LandingPage() {
               </CardHeader>
               <CardContent className="flex-1">
                 <ul className="space-y-2">
-                  {['1 käyttäjä', 'Asiakas- ja tuotehallinta', 'Tilausten hallinta', 'Perusraportit', 'Ei luottokorttia, ei aikarajaa'].map(
+                  {[t('landing.pricing.free.feature1'), t('landing.pricing.free.feature2'), t('landing.pricing.free.feature3'), t('landing.pricing.free.feature4')].map(
                     feature => (
                       <li key={feature} className="flex items-center gap-2">
                         <Check className="h-4 w-4 text-primary" />
@@ -376,19 +376,19 @@ export default function LandingPage() {
                     ),
                   )}
                 </ul>
-                <p className="text-muted-foreground mt-4">🎉 Sisältää myös 3 kk kokeilun kaikilla ominaisuuksilla</p>
+                <p className="text-muted-foreground mt-4">{t('landing.pricing.free.cta')}</p>
               </CardContent>
               <CardFooter>
-                <Button className="w-full">👉 Aloita heti ilman maksua</Button>
+                <Button className="w-full">{t('landing.pricing.free.ctaButton')}</Button>
               </CardFooter>
             </Card>
             <Card className="border-primary relative border-border flex flex-col">
               <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-primary text-white text-xs font-medium px-3 py-1 rounded-full">
-                Suositeltu taso
+                {t('landing.pricing.premium.recommended')}
               </div>
               <CardHeader>
-                <CardTitle>Premium</CardTitle>
-                <CardDescription>Kasvaville yrityksille, jotka haluavat mukaan laskutuksen ja tuen</CardDescription>
+                <CardTitle>{t('landing.pricing.premium.title')}</CardTitle>
+                <CardDescription>{t('landing.pricing.premium.description')}</CardDescription>
                 <div className="mt-4">
                   <span className="text-3xl font-bold">49 €</span>
                   <span className="text-muted-foreground">/kk</span>
@@ -397,12 +397,12 @@ export default function LandingPage() {
               <CardContent className="flex-1">
                 <ul className="space-y-2">
                   {[
-                    '5 käyttäjää',
-                    'Laskutus',
-                    'Kuljetusten hallinta',
-                    'Edistyneet raportit',
-                    'Sähköposti- ja puhelintuki',
-                    'Kaikki ominaisuudet',
+                    t('landing.pricing.premium.feature1'),
+                    t('landing.pricing.premium.feature2'),
+                    t('landing.pricing.premium.feature3'),
+                    t('landing.pricing.premium.feature4'),
+                    t('landing.pricing.premium.feature5'),
+                    t('landing.pricing.premium.feature6'),
                   ].map(feature => (
                     <li key={feature} className="flex items-center gap-2">
                       <Check className="h-4 w-4 text-primary" />
@@ -412,11 +412,11 @@ export default function LandingPage() {
                 </ul>
               </CardContent>
               <CardFooter>
-                <Button className="w-full">👉 Aloita 3 kk kokeilu</Button>
+                <Button className="w-full">{t('landing.pricing.premium.ctaButton')}</Button>
               </CardFooter>
             </Card>
           </div>
-          <p className="text-sm text-muted-foreground mt-4 text-center">Hinnat ALV 0 %. Palvelu on tarkoitettu yrityskäyttöön.</p>
+          <p className="text-sm text-muted-foreground mt-4 text-center">{t('landing.pricing.vat')}</p>
         </div>
       </section>
 
@@ -497,14 +497,14 @@ export default function LandingPage() {
       <section className="w-full py-12 md:py-24 bg-primary text-primary-foreground">
         <div className="container px-4 md:px-6">
           <div className="flex flex-col items-center text-center gap-4 md:gap-8">
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Valmis tehostamaan liiketoimintaasi?</h2>
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight">{t('landing.cta.title')}</h2>
             <p className="text-lg md:text-xl text-primary-foreground/80 max-w-[800px]">
-              Aloita Siikli ERP:n käyttö jo tänään ja näe ero yrityksesi toiminnassa.
+              {t('landing.cta.description')}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 mt-4">
               <Button size="lg" variant="secondary" asChild>
                 <NavLink to="/kirjaudu">
-                  Aloita ilmainen 3 kk kokeilu
+                  {t('landing.cta.startForFree')}
                   {' '}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </NavLink>
@@ -515,7 +515,7 @@ export default function LandingPage() {
                 className="bg-transparent border-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/10"
                 asChild
               >
-                <NavLink to="/yhteystiedot">Kysy lisätietoja</NavLink>
+                <NavLink to="/yhteystiedot">{t('landing.cta.askForMore')}</NavLink>
               </Button>
             </div>
           </div>
@@ -527,16 +527,16 @@ export default function LandingPage() {
         <div className="container px-4 md:px-6">
           <div className="flex flex-col md:flex-row items-center gap-8">
             <div className="md:w-1/2 flex flex-col gap-4">
-              <h2 className="text-3xl font-bold tracking-tight">Tietosi ovat turvassa</h2>
+              <h2 className="text-3xl font-bold tracking-tight">{t('landing.security.title')}</h2>
               <p className="text-muted-foreground text-lg">
-                Siikli ERP on rakennettu alusta alkaen tietoturva edellä. Kaikki data on salattua ja säilytetään EU:n alueella GDPR-säädösten mukaisesti. Järjestelmässä sovelletaan käytäntöjä, joita olen oppinut toimiessani tietoturvavastaavana päivittäisessä työssäni ohjelmistokehityksen parissa.
+                {t('landing.security.description')}
               </p>
               <ul className="mt-4 space-y-2">
                 {[
-                  '256-bittinen salaus kaikelle datalle',
-                  'Automaattiset varmuuskopiot',
-                  'GDPR-yhteensopiva',
-                  'Tietoturvaa ylläpitää kokenut asiantuntija',
+                  t('landing.security.feature1'),
+                  t('landing.security.feature2'),
+                  t('landing.security.feature3'),
+                  t('landing.security.feature4'),
                 ].map(feature => (
                   <li key={feature} className="flex items-center gap-2">
                     <Check className="h-4 w-4 text-primary" />
