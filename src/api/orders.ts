@@ -12,6 +12,52 @@ import { dateToString, formatDate, stringToDate } from '../../frontend/src/utils
 import { getUser, isAuthenticated } from '../middlewares/permissions'
 import prisma from '../prisma'
 
+async function verifyPackageSizeAndType(body: { packageType: string | null, packageSize: number | null }, tenantId: string) {
+  console.log('checking type', body)
+
+  if (body.packageType) {
+    const packageType = await prisma.packageType.findFirst({
+      where: {
+        name: body.packageType,
+        tenantId,
+      },
+    })
+    if (!packageType) {
+      console.log('creating package type', body.packageType)
+      await prisma.packageType.create({
+        data: {
+          tenantId,
+          name: body.packageType,
+        },
+      })
+    }
+    else {
+      console.log('package type OK')
+    }
+  }
+
+  if (body.packageSize) {
+    const packageSize = await prisma.packageSize.findFirst({
+      where: {
+        size: body.packageSize,
+        tenantId,
+      },
+    })
+    if (!packageSize) {
+      console.log('creating package size', body.packageSize)
+      await prisma.packageSize.create({
+        data: {
+          tenantId,
+          size: body.packageSize,
+        },
+      })
+    }
+    else {
+      console.log('package size OK')
+    }
+  }
+}
+
 const defaultStyle = `
     <style type="text/css">
 
@@ -364,6 +410,10 @@ ordersRoute.post(`/api/orders`, isAuthenticated, async (req, res) => {
   const data = req.body as PostOrderRequestDto
   const { tenantId, userId } = getUser(req)
 
+  for (const item of data.items) {
+    await verifyPackageSizeAndType(item, tenantId)
+  }
+
   const result = await prisma.order.create({
     data: {
       deliveryDate: stringToDate(data.deliveryDate),
@@ -383,7 +433,7 @@ ordersRoute.post(`/api/orders`, isAuthenticated, async (req, res) => {
       },
     },
   })
-  const result2 = await prisma.orderProduct.createMany({
+  await prisma.orderProduct.createMany({
     data: data.items.map((r) => {
       return {
         orderId: result.id,
@@ -418,6 +468,10 @@ ordersRoute.post(`/api/orders/:id`, isAuthenticated, async (req, res) => {
   try {
     const data = req.body as PostOrderRequestDto
     const { tenantId, userId } = getUser(req)
+
+    for (const item of data.items) {
+      await verifyPackageSizeAndType(item, tenantId)
+    }
     const result = await prisma.order.update({
       data: {
         deliveryDate: stringToDate(data.deliveryDate),

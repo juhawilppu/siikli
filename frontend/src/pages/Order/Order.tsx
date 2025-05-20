@@ -720,7 +720,7 @@ export default function CreateOrder() {
                                 </CommandEmpty>
                                 <CommandGroup>
                                   {packageTypes
-                                    .filter(type => type.toLowerCase().includes(inputValuePackageType.toLowerCase()))
+                                    .filter(type => inputValuePackageType.length === 0 || type.toLowerCase().includes(inputValuePackageType.toLowerCase()))
                                     .sort()
                                     .map(type => (
                                       <CommandItem
@@ -728,6 +728,7 @@ export default function CreateOrder() {
                                         onSelect={() => {
                                           handleItemChange(item.id, 'packageType', type)
                                           setOpenPackageType(undefined)
+                                          setInputValuePackageType('')
                                         }}
                                       >
                                         <Check
@@ -748,6 +749,7 @@ export default function CreateOrder() {
                                             handleItemChange(item.id, 'packageType', type)
                                             setPackageTypes([...packageTypes, type])
                                             setOpenPackageType(undefined)
+                                            setInputValuePackageType('')
                                           }
                                         }}
                                         className="flex items-center space-x-2 text-sm p-2 hover:bg-muted w-full text-left"
