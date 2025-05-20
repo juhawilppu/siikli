@@ -152,14 +152,14 @@ export default function LandingPage() {
                 <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
                   <Package className="h-6 w-6 text-primary" />
                 </div>
-                <CardTitle>{t('landing.features.ordersTitle')}</CardTitle>
+                <CardTitle>{t('landing.features.orders.title')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
-                  {t('landing.features.ordersDescription')}
+                  {t('landing.features.orders.description')}
                 </p>
                 <ul className="mt-4 space-y-2">
-                  {['Tilausten luonti', 'Pakkauskoot', 'Huomautukset ja kommentit'].map(
+                  {[t('landing.features.orders.feature1'), t('landing.features.orders.feature2'), t('landing.features.orders.feature3'), t('landing.features.orders.feature4')].map(
                     feature => (
                       <li key={feature} className="flex items-center gap-2">
                         <Check className="h-4 w-4 text-primary" />
@@ -186,12 +186,14 @@ export default function LandingPage() {
                 <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
                   <Users className="h-6 w-6 text-primary" />
                 </div>
-                <CardTitle>Asiakashallinta</CardTitle>
+                <CardTitle>{t('landing.features.customers.title')}</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground">Pidä asiakastiedot järjestyksessä ja paranna asiakaspalvelua.</p>
+                <p className="text-muted-foreground">
+                  {t('landing.features.customers.description')}
+                </p>
                 <ul className="mt-4 space-y-2">
-                  {['Kattavat asiakasprofiilit', 'Asiakasryhmittely', 'Tilaushistoria'].map(feature => (
+                  {[t('landing.features.customers.feature1'), t('landing.features.customers.feature2'), t('landing.features.customers.feature3')].map(feature => (
                     <li key={feature} className="flex items-center gap-2">
                       <Check className="h-4 w-4 text-primary" />
                       <span className="text-sm">{feature}</span>
@@ -216,14 +218,14 @@ export default function LandingPage() {
                 <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
                   <Box className="h-6 w-6 text-primary" />
                 </div>
-                <CardTitle>Tuotehallinta</CardTitle>
+                <CardTitle>{t('landing.features.products.title')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
-                  Hallitse tuotevalikoimaa ja hintoja tehokkaasti.
+                  {t('landing.features.products.description')}
                 </p>
                 <ul className="mt-4 space-y-2">
-                  {['Tuoteryhmien hallinta', 'Hinnoittelu', 'Muokkaus'].map(feature => (
+                  {[t('landing.features.products.feature1'), t('landing.features.products.feature2'), t('landing.features.products.feature3')].map(feature => (
                     <li key={feature} className="flex items-center gap-2">
                       <Check className="h-4 w-4 text-primary" />
                       <span className="text-sm">{feature}</span>
@@ -248,12 +250,14 @@ export default function LandingPage() {
                 <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
                   <FileText className="h-6 w-6 text-primary" />
                 </div>
-                <CardTitle>Laskutus</CardTitle>
+                <CardTitle>{t('landing.features.invoices.title')}</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground">Luo ja lähetä laskuja.</p>
+                <p className="text-muted-foreground">
+                  {t('landing.features.invoices.description')}
+                </p>
                 <ul className="mt-4 space-y-2">
-                  {['Laskujen luonti', 'Massatoiminnot', 'Tulostettava PDF'].map(feature => (
+                  {[t('landing.features.invoices.feature1'), t('landing.features.invoices.feature2'), t('landing.features.invoices.feature3')].map(feature => (
                     <li key={feature} className="flex items-center gap-2">
                       <Check className="h-4 w-4 text-primary" />
                       <span className="text-sm">{feature}</span>
@@ -278,12 +282,14 @@ export default function LandingPage() {
                 <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
                   <Truck className="h-6 w-6 text-primary" />
                 </div>
-                <CardTitle>Kuormakirjat</CardTitle>
+                <CardTitle>{t('landing.features.shipping.title')}</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground">Suunnittele kuljetukset tehokkaasti ja seuraa toimituksia.</p>
+                <p className="text-muted-foreground">
+                  {t('landing.features.shipping.description')}
+                </p>
                 <ul className="mt-4 space-y-2">
-                  {['Hyväksyttävä formaatti', 'Massatulostus', 'Selkeä käyttöliittymä'].map(
+                  {[t('landing.features.shipping.feature1'), t('landing.features.shipping.feature2'), t('landing.features.shipping.feature3')].map(
                     feature => (
                       <li key={feature} className="flex items-center gap-2">
                         <Check className="h-4 w-4 text-primary" />
@@ -310,12 +316,14 @@ export default function LandingPage() {
                 <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
                   <BarChart3 className="h-6 w-6 text-primary" />
                 </div>
-                <CardTitle>Raportit</CardTitle>
+                <CardTitle>{t('landing.features.reports.title')}</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground">Seuraa liiketoimintasi kehitystä kattavien raporttien avulla.</p>
+                <p className="text-muted-foreground">
+                  {t('landing.features.reports.description')}
+                </p>
                 <ul className="mt-4 space-y-2">
-                  {['Myyntiraportit', 'Vie Exceliin', 'Kattavat raportit'].map(feature => (
+                  {[t('landing.features.reports.feature1'), t('landing.features.reports.feature2'), t('landing.features.reports.feature3')].map(feature => (
                     <li key={feature} className="flex items-center gap-2">
                       <Check className="h-4 w-4 text-primary" />
                       <span className="text-sm">{feature}</span>
