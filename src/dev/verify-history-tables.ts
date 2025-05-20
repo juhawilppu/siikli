@@ -2,6 +2,13 @@ import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
+async function verifyHistoryTables() {
+  const tablesToVerify = ['tenant', 'user']
+  for (const tableName of tablesToVerify) {
+    await verifyHistoryTable(tableName)
+  }
+}
+
 async function getTableSchema(tableName: string) {
   const schema = await prisma.$queryRaw`
     SELECT 
@@ -52,13 +59,6 @@ function findSchemaDifferences(baseSchema: any, compareSchema: any, allowedExtra
   })
 
   return differences
-}
-
-async function verifyHistoryTables() {
-  const tablesToVerify = ['tenant']
-  for (const tableName of tablesToVerify) {
-    await verifyHistoryTable(tableName)
-  }
 }
 
 async function checkTriggerExists(triggerName: string) {
