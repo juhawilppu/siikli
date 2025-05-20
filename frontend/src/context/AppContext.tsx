@@ -1,9 +1,12 @@
 // src/context/AppContext.tsx
 import React, { createContext, useContext, useState } from 'react'
 
+const DEFAULT_LANGUAGE = 'fi'
+type Language = 'fi' | 'en'
+
 interface AppContextType {
-  language: 'fi' | 'en'
-  setLanguage: (lang: 'fi' | 'en') => void
+  language: Language
+  setLanguage: (lang: Language) => void
   user: null | {
     userId: string
     tenantId: string
@@ -16,11 +19,16 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined)
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [language, setLanguage] = useState<'fi' | 'en'>('fi')
+  const [language, setLanguage] = useState<Language>(localStorage.getItem('language') as Language || DEFAULT_LANGUAGE)
   const [user, setUser] = useState<AppContextType['user']>(null)
 
+  const updateLanguage = (lang: Language) => {
+    setLanguage(lang)
+    localStorage.setItem('language', lang)
+  }
+
   return (
-    <AppContext.Provider value={{ language, setLanguage, user, setUser }}>
+    <AppContext.Provider value={{ language, setLanguage: updateLanguage, user, setUser }}>
       {children}
     </AppContext.Provider>
   )
