@@ -1,6 +1,8 @@
 import { NavLink } from 'react-router-dom'
+import { useTranslation } from './translations'
 
 export default function Footer() {
+  const t = useTranslation()
   return (
     <footer className="w-full py-12 bg-gray-800 text-white" id="yhteystiedot">
       <div className="container px-4 md:px-6">
@@ -10,7 +12,7 @@ export default function Footer() {
               <span className="font-bold text-2xl text-white">Siikli</span>
               <span className="text-sm font-medium text-gray-400">ERP</span>
             </div>
-            <p className="text-gray-400">Tehokas toiminnanohjausjärjestelmä suomalaisille yrityksille.</p>
+            <p className="text-gray-400">{t('landing.footer.description')}</p>
             {false && (
               <div className="flex gap-4 mt-2">
                 {['twitter', 'facebook', 'instagram', 'NavLinkedin'].map(social => (
@@ -25,15 +27,15 @@ export default function Footer() {
             )}
           </div>
           <div className="flex flex-col gap-4">
-            <h3 className="text-lg font-medium text-white">Ominaisuudet</h3>
+            <h3 className="text-lg font-medium text-white">{t('landing.footer.features')}</h3>
             <ul className="space-y-2">
               {[
-                { name: 'Tilausten hallinta', href: '/#tilaukset' },
-                { name: 'Asiakashallinta', href: '/#asiakashallinta' },
-                { name: 'Tuotehallinta', href: '/#tuotehallinta' },
-                { name: 'Laskutus', href: '/#laskutus' },
-                { name: 'Kuljetusten hallinta', href: '/#kuljetukset' },
-                { name: 'Raportit', href: '/#raportit' },
+                { name: t('landing.footer.links.orders'), href: '/#tilaukset' },
+                { name: t('landing.footer.links.customers'), href: '/#asiakashallinta' },
+                { name: t('landing.footer.links.products'), href: '/#tuotehallinta' },
+                { name: t('landing.footer.links.invoices'), href: '/#laskutus' },
+                { name: t('landing.footer.links.shipping'), href: '/#kuljetukset' },
+                { name: t('landing.footer.links.reports'), href: '/#raportit' },
               ].map(item => (
                 <li key={item.name}>
                   <NavLink
@@ -47,10 +49,10 @@ export default function Footer() {
             </ul>
           </div>
           <div className="flex flex-col gap-4">
-            <h3 className="text-lg font-medium text-white">Yritys</h3>
+            <h3 className="text-lg font-medium text-white">{t('landing.footer.company')}</h3>
             <ul className="space-y-2">
               {[
-                { name: 'Tietoa meistä', href: '/tietoa-meista' },
+                { name: t('landing.footer.links.about'), href: '/tietoa-meista' },
               ].map(item => (
                 <li key={item.name}>
                   <NavLink to={item.href} className="text-gray-400 hover:text-white">
@@ -61,9 +63,9 @@ export default function Footer() {
             </ul>
           </div>
           <div className="flex flex-col gap-4">
-            <h3 className="text-lg font-medium text-white">Tuki</h3>
+            <h3 className="text-lg font-medium text-white">{t('landing.footer.support')}</h3>
             <ul className="space-y-2">
-              {[{ name: 'Yhteystiedot', href: '/yhteystiedot' }].map(item => (
+              {[{ name: t('landing.footer.links.contact'), href: '/yhteystiedot' }].map(item => (
                 <li key={item.name}>
                   <NavLink
                     to={item.href}
@@ -80,13 +82,13 @@ export default function Footer() {
           <p className="text-sm text-gray-400">© 2025 Siikli</p>
           <div className="flex gap-6">
             <NavLink to="/tietosuoja" className="text-sm text-gray-400 hover:text-white">
-              Tietosuoja
+              {t('landing.footer.links.privacyPolicy')}
             </NavLink>
             <NavLink to="/kayttoehdot" className="text-sm text-gray-400 hover:text-white">
-              Käyttöehdot
+              {t('landing.footer.links.termsOfService')}
             </NavLink>
             <NavLink to="/evasteet" className="text-sm text-gray-400 hover:text-white">
-              Evästeet
+              {t('landing.footer.links.cookiePolicy')}
             </NavLink>
           </div>
         </div>
