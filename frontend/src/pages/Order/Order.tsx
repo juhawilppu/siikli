@@ -603,23 +603,27 @@ export default function CreateOrder() {
                                   onValueChange={value => setInputValuePackageSize(value)}
                                 />
                                 <CommandEmpty>
-                                  <button
-                                    onClick={() => {
-                                      const size = Number(inputValuePackageSize.trim())
-                                      if (size && !Number.isNaN(size)) {
-                                        handleItemChange(item.id, 'packageSize', size)
-                                        setPackageSizes([...packageSizes, size])
-                                        setOpenPackageSize(undefined)
-                                      }
-                                    }}
-                                    className="flex items-center space-x-2 text-sm p-2 hover:bg-muted w-full text-left"
-                                  >
-                                    <Plus className="w-4 h-4" />
-                                    <span>
-                                      Luo:
-                                      {inputValuePackageSize}
-                                    </span>
-                                  </button>
+                                  {inputValuePackageSize.length > 0 && (
+                                    <button
+                                      onClick={() => {
+                                        const size = Number(inputValuePackageSize.trim())
+                                        if (size && !Number.isNaN(size)) {
+                                          handleItemChange(item.id, 'packageSize', size)
+                                          setPackageSizes([...packageSizes, size])
+                                          setOpenPackageSize(undefined)
+                                          setInputValuePackageSize('')
+                                        }
+                                      }}
+                                      className="flex items-center space-x-2 text-sm p-2 hover:bg-muted w-full text-left"
+                                    >
+                                      <Plus className="w-4 h-4" />
+                                      <span>
+                                        Luo:
+                                        {' '}
+                                        {inputValuePackageSize}
+                                      </span>
+                                    </button>
+                                  )}
                                 </CommandEmpty>
                                 <CommandGroup>
                                   {packageSizes
@@ -631,6 +635,7 @@ export default function CreateOrder() {
                                         onSelect={() => {
                                           handleItemChange(item.id, 'packageSize', size)
                                           setOpenPackageSize(undefined)
+                                          setInputValuePackageSize('')
                                         }}
                                       >
                                         <Check
@@ -642,7 +647,7 @@ export default function CreateOrder() {
                                         {size}
                                       </CommandItem>
                                     ))}
-                                  {!packageSizes.includes(Number(inputValuePackageSize)) && (
+                                  {!packageSizes.includes(Number(inputValuePackageSize)) && inputValuePackageSize.length > 0 && (
                                     <div className="p-2 border-t">
                                       <button
                                         onClick={() => {
@@ -651,6 +656,7 @@ export default function CreateOrder() {
                                             handleItemChange(item.id, 'packageSize', size)
                                             setPackageSizes([...packageSizes, size])
                                             setOpenPackageSize(undefined)
+                                            setInputValuePackageSize('')
                                           }
                                         }}
                                         className="flex items-center space-x-2 text-sm p-2 hover:bg-muted w-full text-left"
@@ -658,6 +664,7 @@ export default function CreateOrder() {
                                         <Plus className="w-4 h-4" />
                                         <span>
                                           Luo:
+                                          {' '}
                                           {inputValuePackageSize}
                                         </span>
                                       </button>
@@ -689,23 +696,27 @@ export default function CreateOrder() {
                                   onValueChange={value => setInputValuePackageType(value)}
                                 />
                                 <CommandEmpty>
-                                  <button
-                                    onClick={() => {
-                                      const type = inputValuePackageType.trim()
-                                      if (type) {
-                                        handleItemChange(item.id, 'packageType', type)
-                                        setPackageTypes([...packageTypes, type])
-                                        setOpenPackageType(undefined)
-                                      }
-                                    }}
-                                    className="flex items-center space-x-2 text-sm p-2 hover:bg-muted w-full text-left"
-                                  >
-                                    <Plus className="w-4 h-4" />
-                                    <span>
-                                      Lisää:
-                                      {inputValuePackageType}
-                                    </span>
-                                  </button>
+                                  {inputValuePackageType.length > 0 && (
+                                    <button
+                                      onClick={() => {
+                                        const type = inputValuePackageType.trim()
+                                        if (type) {
+                                          handleItemChange(item.id, 'packageType', type)
+                                          setPackageTypes([...packageTypes, type])
+                                          setOpenPackageType(undefined)
+                                          setInputValuePackageType('')
+                                        }
+                                      }}
+                                      className="flex items-center space-x-2 text-sm p-2 hover:bg-muted w-full text-left"
+                                    >
+                                      <Plus className="w-4 h-4" />
+                                      <span>
+                                        Luo:
+                                        {' '}
+                                        {inputValuePackageType}
+                                      </span>
+                                    </button>
+                                  )}
                                 </CommandEmpty>
                                 <CommandGroup>
                                   {packageTypes
@@ -728,7 +739,7 @@ export default function CreateOrder() {
                                         {type}
                                       </CommandItem>
                                     ))}
-                                  {!packageTypes.includes(inputValuePackageType) && (
+                                  {!packageTypes.includes(inputValuePackageType) && inputValuePackageType.length > 0 && (
                                     <div className="p-2 border-t">
                                       <button
                                         onClick={() => {
@@ -744,6 +755,7 @@ export default function CreateOrder() {
                                         <Plus className="w-4 h-4" />
                                         <span>
                                           Luo:
+                                          {' '}
                                           {inputValuePackageType}
                                         </span>
                                       </button>
