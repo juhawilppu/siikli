@@ -24,6 +24,7 @@ model Tenant {
   invoiceSumRow         String?           @map("invoice_sum_row") @db.VarChar(255)
   signupCompleted       Boolean           @default(false) @map("signup_completed")
   createdAt             DateTime          @default(now()) @map("created_at")
+  updatedAt             DateTime          @default(now()) @updatedAt @map("updated_at")
   subscriptionType      String            @default("FREE") @map("subscription_type")
   subscriptionEndDate   DateTime?         @map("subscription_end_date")
   subscriptionStartDate DateTime?         @map("subscription_start_date")
@@ -39,6 +40,35 @@ model Tenant {
   PackageSize           PackageSize[]
 
   @@map("tenant")
+}
+
+model TenantHistory {
+  revision              Int               @id @default(autoincrement()) @map("revision")
+  operation             String            @map("operation")
+
+  id                    String            @default(uuid()) @map("id") @db.Uuid
+  name                  String            @map("name") @db.VarChar(255)
+  streetAddress         String?           @map("street_address") @db.VarChar(255)
+  postalCode            String?           @map("postal_code") @db.VarChar(255)
+  city                  String?           @map("city") @db.VarChar(255)
+  phone                 String?           @map("phone") @db.VarChar(255)
+  email                 String?           @map("email") @db.VarChar(255)
+  website               String?           @map("website") @db.VarChar(255)
+  businessId            String?           @map("business_id") @db.VarChar(255)
+  invoiceBankName       String?           @map("invoice_bank_name") @db.VarChar(255)
+  invoiceBankAccount    String?           @map("invoice_bank_account") @db.VarChar(255)
+  invoiceSwiftBic       String?           @map("invoice_swift_bic") @db.VarChar(255)
+  invoiceReference      String?           @map("invoice_reference") @db.VarChar(255)
+  invoiceSumRow         String?           @map("invoice_sum_row") @db.VarChar(255)
+  signupCompleted       Boolean           @default(false) @map("signup_completed")
+  createdAt             DateTime          @default(now()) @map("created_at")
+  updatedAt             DateTime          @default(now()) @updatedAt @map("updated_at")
+  subscriptionType      String            @default("FREE") @map("subscription_type")
+  subscriptionEndDate   DateTime?         @map("subscription_end_date")
+  subscriptionStartDate DateTime?         @map("subscription_start_date")
+  trialEndDate          DateTime?         @map("trial_end_date")
+
+  @@map("tenant_history")
 }
 
 model User {
