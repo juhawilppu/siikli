@@ -3,7 +3,20 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function verifyHistoryTables() {
-  const tablesToVerify = ['tenant', 'user', 'email_login_pin_code', 'customer', 'order_product']
+  const tablesToVerify = [
+    'tenant',
+    'user',
+    'email_login_pin_code',
+    'customer',
+    'order_product',
+    'product_type',
+    'product',
+    'order',
+    'product_subtype',
+    'rate_limit',
+    'package_type',
+    'package_size',
+  ]
   for (const tableName of tablesToVerify) {
     await verifyHistoryTable(tableName)
   }
