@@ -11,7 +11,7 @@ export default function LanguageSwitcher() {
     <div>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
-          <Button variant="ghost" size="icon" className="w-8 h-8">
+          <Button variant="ghost" size="icon" className="w-10 h-10 text-2xl">
             {language === 'fi' ? '🇫🇮' : '🇬🇧'}
           </Button>
         </PopoverTrigger>
@@ -19,7 +19,7 @@ export default function LanguageSwitcher() {
           <div className="flex flex-col gap-2">
             <Button
               variant="ghost"
-              className="w-full justify-start"
+              className="w-full justify-start text-lg"
               onClick={() => {
                 setLanguage('fi')
                 setOpen(false)
@@ -29,7 +29,7 @@ export default function LanguageSwitcher() {
             </Button>
             <Button
               variant="ghost"
-              className="w-full justify-start"
+              className="w-full justify-start text-lg"
               onClick={() => {
                 setLanguage('en')
                 setOpen(false)
