@@ -33,6 +33,7 @@ async function createUserAndTenant(email: string, googleExternalId?: string) {
       email,
       tenantId: tenant.id,
       googleExternalId,
+      lastLoginAt: new Date(),
     },
   })
   await prisma.log.create({
@@ -156,6 +157,10 @@ function init() {
         if (existingUser) {
           // We already have saved this customer to db
           console.log('done1')
+          await prisma.user.update({
+            where: { id: existingUser.id },
+            data: { lastLoginAt: new Date() },
+          })
           return cb(null, existingUser)
         }
         else {
@@ -199,6 +204,10 @@ function init() {
               data: { email },
               event: 'pin-check-success',
             },
+          })
+          await prisma.user.update({
+            where: { id: user.id },
+            data: { lastLoginAt: new Date() },
           })
 
           console.log('LocalStrategy success')
