@@ -1,11 +1,10 @@
 import { useEffect } from 'react'
 import Footer from './Footer'
 import TopBar from './TopBar'
+import { useTranslation } from './translations'
 
 export default function ContactPage() {
-  useEffect(() => {
-    scrollToTop()
-  }, [])
+  const t = useTranslation()
 
   const scrollToTop = () => {
     window.scrollTo({
@@ -13,6 +12,10 @@ export default function ContactPage() {
       behavior: 'smooth',
     })
   }
+
+  useEffect(() => {
+    scrollToTop()
+  }, [])
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -22,18 +25,19 @@ export default function ContactPage() {
         <div className="container px-4 md:px-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <div className="flex flex-col gap-6">
-              <h2 className="text-3xl font-bold tracking-tight">Tuki</h2>
+              <h2 className="text-3xl font-bold tracking-tight">{t('support.title')}</h2>
               <div className="space-y-4 text-muted-foreground">
-                <p>Tarvitsetko apua? Autan mielelläni.</p>
+                <p>{t('support.description')}</p>
 
-                <p> Jos kohtaat ongelmia tai sinulla on kysyttävää Siiklin käytöstä, ota rohkeasti yhteyttä sähköpostitse: </p>
+                <p>{t('support.description2')}</p>
 
                 <p>
                   ✉️
+                  {' '}
                   <a className="text-blue-500" href="mailto:juha.wilppu@gmail.com">juha.wilppu@gmail.com</a>
                 </p>
 
-                <p>Pyrin vastaamaan mahdollisimman nopeasti, yleensä saman arkipäivän aikana.</p>
+                <p>{t('support.description3')}</p>
               </div>
             </div>
             <div className="flex justify-center">

@@ -142,6 +142,10 @@ export const translations = {
     'landing.privacyPolicy.content.section7.feature4': 'Vastustaa tai rajoittaa tietojesi käsittelyä',
     'landing.privacyPolicy.content.section7.feature5': 'Tehdä valitus tietosuojavaltuutetulle',
     'landing.privacyPolicy.content.section7.feature6': 'Ota yhteyttä sähköpostitse osoitteeseen juha.wilppu@gmail.com, jos haluat käyttää oikeuksiasi.',
+    'support.title': 'Tarvitsetko apua?',
+    'support.description': 'Autan mielelläni.',
+    'support.description2': 'Jos kohtaat ongelmia tai sinulla on kysyttävää Siiklin käytöstä, ota rohkeasti yhteyttä sähköpostitse:',
+    'support.description3': 'Pyrin vastaamaan mahdollisimman nopeasti, yleensä saman arkipäivän aikana.',
   },
   en: {
     'landing.title': 'Siikli – The Simple ERP for Agriculture',
@@ -284,6 +288,10 @@ export const translations = {
     'landing.privacyPolicy.content.section7.feature4': 'Oppose or limit the processing of your data',
     'landing.privacyPolicy.content.section7.feature5': 'Make a complaint to the data protection authority',
     'landing.privacyPolicy.content.section7.feature6': 'Contact us by email at juha.wilppu@gmail.com to exercise your rights.',
+    'support.title': 'Need help?',
+    'support.description': 'I\'ll be happy to help.',
+    'support.description2': 'If you encounter problems or have questions about Siikli, please contact me by email:',
+    'support.description3': 'I will respond as soon as possible, usually the same day.',
   },
 }
 
