@@ -1,5 +1,5 @@
 // src/context/AppContext.tsx
-import React, { createContext, useContext, useState } from 'react'
+import React, { createContext, useContext, useEffect, useState } from 'react'
 
 const DEFAULT_LANGUAGE = 'fi'
 type Language = 'fi' | 'en'
@@ -21,6 +21,15 @@ const AppContext = createContext<AppContextType | undefined>(undefined)
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [language, setLanguage] = useState<Language>(localStorage.getItem('language') as Language || DEFAULT_LANGUAGE)
   const [user, setUser] = useState<AppContextType['user']>(null)
+
+  useEffect(() => {
+    if (language === 'en') {
+      document.title = 'Siikli ERP | Made with Common Sense'
+    }
+    else {
+      document.title = 'Siikli ERP | Tehty maalaisjärjellä'
+    }
+  }, [language])
 
   const updateLanguage = (lang: Language) => {
     setLanguage(lang)
