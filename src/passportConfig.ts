@@ -1,6 +1,6 @@
 import type { Tenant, User } from '@prisma/client'
 import { SendEmailCommand, SESClient } from '@aws-sdk/client-ses'
-import { addMonths } from 'date-fns'
+import { addMonths, subMinutes } from 'date-fns'
 
 import passport from 'passport'
 import GoogleStrategy from 'passport-google-oidc'
@@ -179,7 +179,13 @@ function init() {
         try {
           console.log('LocalStrategy here')
 
-          const emailLoginPinCode = await prisma.emailLoginPinCode.findFirst({ where: { email, pinCode } })
+          const emailLoginPinCode = await prisma.emailLoginPinCode.findFirst({
+            where: {
+              email,
+              pinCode,
+              createdAt: { gte: subMinutes(new Date(), 15) },
+            },
+          })
           console.log('emailLoginPinCode', emailLoginPinCode)
           console.log('pinCode', pinCode)
           if (!emailLoginPinCode) {
@@ -191,6 +197,10 @@ function init() {
             })
             return done(null, false, { message: 'Email has no active pin code or wrong pin code' })
           }
+
+          await prisma.emailLoginPinCode.delete({
+            where: { id: emailLoginPinCode.id },
+          })
 
           let user = await prisma.user.findUnique({ where: { email } })
           console.log('user', user)
