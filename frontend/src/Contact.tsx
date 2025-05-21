@@ -1,11 +1,10 @@
 import { useEffect } from 'react'
 import Footer from './Footer'
 import TopBar from './TopBar'
+import { useTranslation } from './translations'
 
 export default function ContactPage() {
-  useEffect(() => {
-    scrollToTop()
-  }, [])
+  const t = useTranslation()
 
   const scrollToTop = () => {
     window.scrollTo({
@@ -13,6 +12,10 @@ export default function ContactPage() {
       behavior: 'smooth',
     })
   }
+
+  useEffect(() => {
+    scrollToTop()
+  }, [])
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -22,29 +25,44 @@ export default function ContactPage() {
         <div className="container px-4 md:px-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <div className="flex flex-col gap-6">
-              <h2 className="text-3xl font-bold tracking-tight">Yhteystiedot</h2>
+              <h2 className="text-3xl font-bold tracking-tight">{t('contact.title')}</h2>
               <div className="space-y-4 text-muted-foreground">
-                <p>Ota yhteyttä matalalla kynnyksellä — vastaan mielelläni kysymyksiin ja kerron lisää Siiklistä.</p>
+                <p>{t('contact.description')}</p>
 
                 <p>
                   ✉️
+                  {' '}
                   <a className="text-blue-500" href="mailto:juha.wilppu@gmail.com">juha.wilppu@gmail.com</a>
                 </p>
                 <p>
                   🔗
-                  <a className="text-blue-500" href="https://www.linkedin.com/in/juhawilppu" target="_blank">LinkedIn-profiilini</a>
+                  {' '}
+                  <a className="text-blue-500" href="https://www.linkedin.com/in/juhawilppu" target="_blank">{t('contact.linkedin')}</a>
                 </p>
 
                 <p>
-                  {' '}
-                  Voit ottaa yhteyttä, jos:
-                  <ul>
-                    <li className="pl-4">➡️ Haluat kokeilla Siikliä</li>
-                    <li className="pl-4">➡️ Mietit sopiiko se teidän yritykselle</li>
-                    <li className="pl-4">➡️ Sinulla on kysyttävää toiminnallisuuksista tai tietoturvasta</li>
+                  {t('contact.description2')}
+                  <ul className="ml-4">
+                    <li className="pl-4">
+                      ➡️
+                      {' '}
+                      {t('contact.description2.item1')}
+                    </li>
+                    <li className="pl-4">
+                      ➡️
+                      {' '}
+                      {t('contact.description2.item2')}
+                    </li>
+                    <li className="pl-4">
+                      ➡️
+                      {' '}
+                      {t('contact.description2.item3')}
+                    </li>
                   </ul>
                 </p>
-                <p> Vastaan yleensä saman arkipäivän aikana. Viikonloppuisin luen viestejä satunnaisesti. </p>
+                <p>
+                  {t('contact.description3')}
+                </p>
               </div>
             </div>
             <div className="flex justify-center">
