@@ -8,8 +8,10 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useToast } from '@/hooks/use-toast'
+import { useTranslation } from './translations'
 
 export default function LoginForm() {
+  const t = useTranslation()
   const [email, setEmail] = useState('')
   const [pin, setPin] = useState(['', '', '', '', '', ''])
   const [isLoading, setIsLoading] = useState(false)
@@ -66,7 +68,7 @@ export default function LoginForm() {
     }
   }
 
-  // Käsittele PIN-koodin syöttö
+  // Handle PIN code input
   const handlePinChange = (index: number, value: string) => {
     // Handle single character input
     if (value.length > 1) {
@@ -116,8 +118,8 @@ export default function LoginForm() {
     const pinCode = pin.join('')
     if (pinCode.length !== 6) {
       toast({
-        title: 'Virheellinen PIN-koodi',
-        description: 'Syötä kaikki 6 numeroa.',
+        title: t('login.form.email.invalid.invalidPin'),
+        description: t('login.form.email.invalid.enter6DigitPin'),
         variant: 'destructive',
       })
       return
@@ -135,15 +137,15 @@ export default function LoginForm() {
       console.log('error.status', (error as any).status)
       if ((error as any).status === 429) {
         toast({
-          title: 'Virhe',
-          description: 'Olet yrittänyt liian monta kertaa. Yritä hetken kuluttua uudelleen.',
+          title: t('login.form.email.invalid.error'),
+          description: t('login.form.email.invalid.tooManyAttempts'),
           variant: 'destructive',
         })
       }
       else {
         toast({
-          title: 'Virhe',
-          description: 'Virheellinen PIN-koodi.',
+          title: t('login.form.email.invalid.error'),
+          description: t('login.form.email.invalid.invalidPin'),
           variant: 'destructive',
         })
       }
@@ -153,9 +155,9 @@ export default function LoginForm() {
     }
   }
 
-  // Käsittele näppäimistötapahtumat PIN-koodikentissä
+  // Handle keyboard events in PIN code fields
   const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
-    // Backspace-näppäin: poista nykyinen merkki ja siirry edelliseen kenttään
+    // Backspace key: delete current character and move to previous field
     if (e.key === 'Backspace' && !pin[index] && index > 0) {
       const prevInput = document.getElementById(`pin-${index - 1}`)
       if (prevInput) {
@@ -167,8 +169,12 @@ export default function LoginForm() {
   return (
     <Tabs defaultValue="google" className="w-full">
       <TabsList className="grid w-full grid-cols-2 mb-4">
-        <TabsTrigger value="google">Kirjaudu Google-tilillä</TabsTrigger>
-        <TabsTrigger value="email">Kirjaudu sähköpostilla</TabsTrigger>
+        <TabsTrigger value="google">
+          {t('login.form.google')}
+        </TabsTrigger>
+        <TabsTrigger value="email">
+          {t('login.form.email')}
+        </TabsTrigger>
       </TabsList>
       <TabsContent value="google" className="space-y-4">
         <Button
@@ -200,7 +206,7 @@ export default function LoginForm() {
                       fill="#EA4335"
                     />
                   </svg>
-                  Kirjaudu Google-tilillä
+                  {t('login.form.google')}
                 </>
               )}
         </Button>
@@ -211,12 +217,12 @@ export default function LoginForm() {
               <form onSubmit={handleSendPin} className="space-y-4">
                 <div className="space-y-2">
                   <label htmlFor="email" className="text-sm font-medium">
-                    Sähköpostiosoite
+                    {t('login.form.email.title')}
                   </label>
                   <Input
                     id="email"
                     type="email"
-                    placeholder="nimi@yritys.fi"
+                    placeholder={t('login.form.email.placeholder')}
                     value={email}
                     onChange={e => setEmail(e.target.value)}
                     required
@@ -224,7 +230,7 @@ export default function LoginForm() {
                 </div>
                 <Button type="submit" className="w-full" disabled={isLoading}>
                   {isLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <ArrowRight className="h-4 w-4 mr-2" />}
-                  Lähetä PIN-koodi
+                  {t('login.form.email.sendPin')}
                 </Button>
               </form>
             )
@@ -232,10 +238,10 @@ export default function LoginForm() {
               <form onSubmit={handlePinSubmit} className="space-y-4">
                 <div className="space-y-2">
                   <label htmlFor="pin-0" className="text-sm font-medium">
-                    Syötä 6-numeroinen PIN-koodi
+                    {t('login.form.email.enter6DigitPin')}
                   </label>
                   <p className="text-xs text-muted-foreground">
-                    PIN-koodi on lähetetty osoitteeseen
+                    {t('login.form.email.pinSentTo')}
                     {email}
                   </p>
                   <div className="flex gap-2 justify-between mt-2">
@@ -259,15 +265,15 @@ export default function LoginForm() {
                 </div>
                 <div className="flex justify-between items-center">
                   <button type="button" className="text-sm text-primary hover:underline" onClick={() => setPinSent(false)}>
-                    Vaihda sähköposti
+                    {t('login.form.email.changeEmail')}
                   </button>
                   <button type="button" className="text-sm text-primary hover:underline" onClick={handleSendPin}>
-                    Lähetä koodi uudelleen
+                    {t('login.form.email.sendPinAgain')}
                   </button>
                 </div>
                 <Button type="submit" className="w-full" disabled={isLoading || pin.includes('')}>
                   {isLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <ArrowRight className="h-4 w-4 mr-2" />}
-                  Kirjaudu sisään
+                  {t('login.form.email.login')}
                 </Button>
               </form>
             )}
