@@ -209,7 +209,7 @@ export default function TuotteetSivu() {
                 </Button>
               </DialogTrigger>
               {showNewProductDialog
-                && <NewProduct hide={() => setShowNewProductDialog(false)} onSave={onProductSaved} productTypes={productTypes} refPackageSizes={packageSizes} refPackageTypes={packageTypes}/>}
+                && <NewProduct hide={() => setShowNewProductDialog(false)} onSave={onProductSaved} productTypes={productTypes} refPackageSizes={packageSizes} refPackageTypes={packageTypes} />}
             </Dialog>
           </div>
 
@@ -220,6 +220,7 @@ export default function TuotteetSivu() {
                 {filteredTuotteet.length}
                 {' '}
                 tuotetta
+                {' '}
                 {products.length}
                 {' '}
                 tuotteesta

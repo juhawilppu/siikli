@@ -280,7 +280,7 @@ export function Customers() {
     }
 
     const newCustomer: CustomerDto = {
-      ...customerToCreate
+      ...customerToCreate,
     } as CustomerDto
 
     axios
@@ -686,6 +686,7 @@ export function Customers() {
               {filteredCustomers.length}
               {' '}
               asiakasta
+              {' '}
               {customers.length}
               {' '}
               asiakkaasta
