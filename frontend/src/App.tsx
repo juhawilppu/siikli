@@ -1,7 +1,7 @@
 import type { GetCurrentUserDto } from './types/types'
 import * as Sentry from '@sentry/react'
 import axios from 'axios'
-import { Building2, ClipboardList, FileText, HelpCircle, LineChart, Package, PlusCircle, Receipt, Search, ShoppingBasket, Users } from 'lucide-react'
+import { Building2, ClipboardList, FileText, HelpCircle, LineChart, PlusCircle, Receipt, Search, ShoppingBasket, Users } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Navigate, NavLink, Route, Routes, useLocation } from 'react-router-dom'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
