@@ -60,7 +60,7 @@ function App() {
 
   const logout = async () => {
     await axios.post('/auth/logout')
-    setUser({authenticated: false})
+    setUser({ authenticated: false })
     Sentry.setUser(null)
   }
 
@@ -96,7 +96,7 @@ function App() {
           })
         }
         else {
-          setUser({authenticated: false})
+          setUser({ authenticated: false })
         }
       })
       .finally(() => setLoading(false))
@@ -146,16 +146,15 @@ function App() {
             <Sheet open={isMobileNavOpen} onOpenChange={setIsMobileNavOpen}>
               <SheetTrigger asChild>
                 <Button variant="outline" size="icon" className="md:hidden">
-                  <Menu className="h-5 w-5" />
+                  <Menu className="h-5 w-5 text-black" />
                   <span className="sr-only">Toggle Menu</span>
                 </Button>
               </SheetTrigger>
               <SheetContent side="left" className="md:hidden">
-                <MobileSidebar />
+                <MobileSidebar setIsMobileNavOpen={setIsMobileNavOpen} />
               </SheetContent>
             </Sheet>
             <div className="flex items-center gap-2">
-              <Package className="h-6 w-6 text-white" />
               <span className="text-lg font-semibold text-white">Siikli ERP</span>
             </div>
             <div className="ml-auto flex items-center gap-4">
@@ -251,12 +250,12 @@ function App() {
 
 export default App
 
-function MobileSidebar() {
+function MobileSidebar({ setIsMobileNavOpen }: { setIsMobileNavOpen: (isOpen: boolean) => void }) {
   return (
     <div className="flex h-full flex-col gap-2 overflow-auto">
       <div className="flex h-14 items-center border-b px-4">
         <NavLink href="/" className="flex items-center gap-2 font-semibold">
-          <Package className="h-6 w-6" />
+          <img src="/siikli-logo.png" className="h-6" />
           <span>Siikli ERP</span>
         </NavLink>
       </div>
@@ -266,6 +265,9 @@ function MobileSidebar() {
             <NavLink
               to={item.href}
               className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-foreground"
+              onClick={() => {
+                setIsMobileNavOpen(false)
+              }}
             >
               <item.icon className="h-4 w-4" />
               {item.title}
