@@ -5,11 +5,10 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import Footer from './Footer'
 import TopBar from './TopBar'
+import { useTranslation } from './translations'
 
 export default function AboutUsPage() {
-  useEffect(() => {
-    scrollToTop()
-  }, [])
+  const t = useTranslation()
 
   const scrollToTop = () => {
     window.scrollTo({
@@ -17,6 +16,10 @@ export default function AboutUsPage() {
       behavior: 'smooth',
     })
   }
+
+  useEffect(() => {
+    scrollToTop()
+  }, [])
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -26,31 +29,31 @@ export default function AboutUsPage() {
         <div className="container px-4 md:px-6">
           <div className="flex flex-col items-center text-center gap-4">
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight">
-              Tietoa meistä
+              {t('aboutUs.title')}
             </h1>
             <p className="text-muted-foreground text-lg md:text-xl max-w-[800px]">
-              Siikli on yhden kehittäjän rakentama palvelu, joka on tehty auttamaan pienyrityksiä menestymään tehokkaasti.
+              {t('aboutUs.description')}
             </p>
           </div>
         </div>
       </section>
 
-      {/* Tarinamme */}
+      {/* Our story */}
       <section className="w-full py-12 md:py-24 bg-white">
         <div className="container px-4 md:px-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <div className="flex flex-col gap-6">
-              <h2 className="text-3xl font-bold tracking-tight">Tarinamme</h2>
+              <h2 className="text-3xl font-bold tracking-tight">{t('aboutUs.ourStory')}</h2>
               <div className="space-y-4 text-muted-foreground">
                 <p>
-                  Siikli sai alkunsa vuonna 2017, kun Männistön Peruna (nykyään Aromäen tila) kaipasi yksinkertaista ja toimivaa järjestelmää laskutuksen hallintaan. Kehitin alkuperäisen version siis tuttavani maatalousyrityksen tarpeisiin — sama järjestelmä on sen jälkeen ollut luotettavasti tuotantokäytössä jo seitsemän vuotta!
+                  {t('aboutUs.ourStory.siikliWasStartedWhen')}
                 </p>
                 <p>
-                  Vuonna 2025 Siikli siirtyi uudelle tasolle: järjestelmä rakennettiin kokonaan uudelleen ja nyt se tukee multi-tenant-arkkitehtuuria. Tämä mahdollistaa sen, että uusia asiakkaita voidaan ottaa mukaan helposti ja turvallisesti.
+                  {t('aboutUs.ourStory.siikliWasUpgradedIn2025')}
                 </p>
                 <Separator />
                 <p>
-                  💡 Tavoitteeni ei ole rakentaa isoa ohjelmistotaloa. Haluan rakentaa tuotteen, joka toimii oikeasti &ndash; ja palvelee yrityksiä, joilla ei ole aikaa tai varaa säätämiseen.
+                  {t('aboutUs.ourStory.myGoal')}
                 </p>
               </div>
             </div>
@@ -63,6 +66,7 @@ export default function AboutUsPage() {
         </div>
       </section>
 
+      {/* Who */ }
       <section className="w-full py-12 md:py-24 bg-white">
         <div className="container px-4 md:px-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
@@ -72,82 +76,19 @@ export default function AboutUsPage() {
               </div>
             </div>
             <div className="flex flex-col gap-6">
-              <h2 className="text-3xl font-bold tracking-tight">Tekijä</h2>
+              <h2 className="text-3xl font-bold tracking-tight">{t('aboutUs.whoIsJuha.title')}</h2>
               <div className="space-y-4 text-muted-foreground">
-                <p>Moi! 👋</p>
-                <p>Olen Juha — Siiklin kehittäjä ja perustaja.</p>
-                <p>Rakennan ohjelmistoja työkseni ja harrastuksena. Tykkään tehdä asiat selkeästi ja tehokkaasti. En kaipaa turhia palavereita tai raskaita rakenteita, vaan käytännöllisiä ratkaisuja, jotka toimivat oikeassa elämässä.</p>
-                <p>Siikli on minulle paikka tehdä asioita kunnolla — omalla tavallani, mutta asiakkaita kuunnellen.</p>
+                <p>{t('aboutUs.whoIsJuha.hi')}</p>
+                <p>{t('aboutUs.whoIsJuha.myNameIs')}</p>
+                <p>{t('aboutUs.whoIsJuha.iBuildSoftware')}</p>
+                <p>{t('aboutUs.whoIsJuha.siikliIsAPlaceToDoThingsWell')}</p>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {false && (
-        <section className="w-full py-12 md:py-24 bg-gray-50">
-          <div className="container px-4 md:px-6">
-            <div className="flex flex-col items-center text-center gap-4 mb-12">
-              <h2 className="text-3xl font-bold tracking-tight">Arvomme</h2>
-              <p className="text-muted-foreground text-lg max-w-[800px]">
-                Nämä arvot ohjaavat kaikkea toimintaamme ja päätöksentekoamme.
-              </p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {[
-                {
-                  title: 'Asiakaslähtöisyys',
-                  description:
-                                        'xxx',
-                  icon: '❤️',
-                },
-                {
-                  title: 'Helppokäyttöisyys',
-                  description:
-                                        'xxx',
-                  icon: '👍',
-                },
-                {
-                  title: 'Jatkuva kehitys',
-                  description:
-                                        'xxx',
-                  icon: '🚀',
-                },
-                {
-                  title: 'Läpinäkyvyys',
-                  description:
-                                        'xxx',
-                  icon: '🔍',
-                },
-                {
-                  title: 'Yhteisöllisyys',
-                  description:
-                                        'xxx',
-                  icon: '🤝',
-                },
-                {
-                  title: 'Vastuullisuus',
-                  description:
-                                        'xxx',
-                  icon: '🌱',
-                },
-              ].map((value, i) => (
-                <Card key={i} className="bg-white border-none shadow-md">
-                  <CardContent className="pt-6">
-                    <div className="flex flex-col items-center gap-4 text-center">
-                      <div className="text-4xl">{value.icon}</div>
-                      <h3 className="text-xl font-bold">{value.title}</h3>
-                      <p className="text-muted-foreground">{value.description}</p>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Tiimimme */}
+      {/* Our team - currently hidden */}
       {false && (
         <section className="w-full py-12 md:py-24 bg-white">
           <div className="container px-4 md:px-6">
@@ -191,6 +132,7 @@ export default function AboutUsPage() {
         </section>
       )}
 
+      {/* Our achievements - currently hidden */}
       {false && (
         <section className="w-full py-12 md:py-24 bg-gray-50">
           <div className="container px-4 md:px-6">
@@ -248,6 +190,7 @@ export default function AboutUsPage() {
         </section>
       )}
 
+      {/* Our location - currently hidden */}
       {false && (
         <section className="w-full py-12 md:py-24 bg-white">
           <div className="container px-4 md:px-6">
@@ -307,18 +250,19 @@ export default function AboutUsPage() {
       <section className="w-full py-12 md:py-24 bg-primary text-primary-foreground">
         <div className="container px-4 md:px-6">
           <div className="flex flex-col items-center text-center gap-4 md:gap-8">
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Haluatko rakentaa kanssani?</h2>
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight">{t('aboutUs.doYouWantToBuildWithMe.title')}</h2>
 
             <p className="text-lg md:text-xl text-primary-foreground/80 max-w-[800px]">
-              Siikli ei ole kasvuyritys, jolla on HR-tiimi ja rekryputki. Se on yhden kehittäjän tuote, joka on ollut toiminnassa jo vuosia — ja on nyt valmis kehittymään seuraavalle tasolle.
+              {t('aboutUs.doYouWantToBuildWithMe.siikliIsNotCorporate')}
             </p>
 
             <p className="text-lg md:text-xl text-primary-foreground/80 max-w-[800px]">
-              Etsin rinnalle toista tekijää, jolla on kiinnostusta rakentaa jotain oikeaa ja kestävää. Tämä ei ole työpaikka vaan mahdollisuus: jos koodi, asiakasymmärrys ja omistajuus tuntuvat tutuilta sanoilta, ota yhteyttä. Katsotaan, voisimmeko tehdä jotain yhdessä.
+              {t('aboutUs.doYouWantToBuildWithMe.iAmLookingForAPartner')}
             </p>
 
             <p>
               ✉️
+              {' '}
               <a className="text-white-500" href="mailto:juha.wilppu@gmail.com">juha.wilppu@gmail.com</a>
             </p>
           </div>
