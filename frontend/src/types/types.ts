@@ -12,6 +12,7 @@ export interface ProductOrderDto {
   id: string
   productId: string
   price: number | null
+  price0: number | null
   amount: number
   packages: number
   packageSize: number
@@ -25,6 +26,7 @@ export interface PostOrderItemRequestDto {
   deleted?: boolean
   productId: string
   price: number
+  price0: number
   amount: number
   packages: number
   packageSize: number

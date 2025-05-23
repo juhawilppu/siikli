@@ -9,12 +9,11 @@ import prisma from '../prisma'
 const invoiceRoute = express.Router()
 
 invoiceRoute.get(`/api/invoices`, isAuthenticated, async (req, res) => {
-  const { userId, tenantId } = getUser(req)
+  const { tenantId } = getUser(req)
   try {
     const customerId = req.query.customerId as string
     const startDate = new Date(req.query.startDate as string)
     const endDate = new Date(req.query.endDate as string)
-    const usePrice0 = req.query.usePrice0 === 'true'
 
     const customer = await prisma.customer.findUnique({
       where: {

@@ -57,6 +57,7 @@ export default function CreateOrder() {
     deleted?: boolean
     productId: string
     price: string // Use string to render with 2 decimal places and allow empty string
+    price0: string // Use string to render with 2 decimal places and allow empty string
     amount: string // Use string to render with 2 decimal places
     packages: number
     packageSize?: number
@@ -75,6 +76,7 @@ export default function CreateOrder() {
       packageSize: undefined,
       packageType: '',
       price: '',
+      price0: '',
       freetext: '',
       createdAt: new Date(),
     },
@@ -96,6 +98,7 @@ export default function CreateOrder() {
         packageSize: 0,
         packageType: '',
         price: '',
+        price0: '',
         freetext: '',
         createdAt: new Date(),
       },
@@ -120,6 +123,7 @@ export default function CreateOrder() {
         setOrderItems(res.data.items.map(item => ({
           ...item,
           price: item.price?.toFixed(2).toString() || '',
+          price0: item.price0?.toFixed(2).toString() || '',
           amount: item.amount?.toFixed(2).toString() || '',
           createdAt: new Date(item.createdAt),
         })))
@@ -162,6 +166,13 @@ export default function CreateOrder() {
               updatedItem.packageSize = product.packageSize || undefined
               updatedItem.packageType = product.packageType || ''
             }
+          }
+
+          if (field === 'price') {
+            updatedItem.price0 = (value * 1 / 1.14).toFixed(2)
+          }
+          if (field === 'price0') {
+            updatedItem.price = (value * 1.14).toFixed(2)
           }
 
           // Recalculate packages if amount or package size changed
@@ -271,6 +282,7 @@ export default function CreateOrder() {
       items: orderItems.map(item => ({
         ...item,
         price: item.price ? Number.parseFloat(item.price) : 0,
+        price0: item.price0 ? Number.parseFloat(item.price0) : 0,
         amount: item.amount ? Number.parseFloat(item.amount) : 0,
         packageSize: item.packageSize || 0,
         packageType: item.packageType || '',
