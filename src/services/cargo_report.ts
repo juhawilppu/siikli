@@ -1,6 +1,18 @@
+import type { Customer, Order, OrderProduct, Product, Tenant } from '@prisma/client'
 import { formatDate } from '../../frontend/src/utils/date'
 
-module.exports = async (company, order, first) => {
+export default async function createCargoReport(
+  company: Tenant,
+  order: Order & {
+    products: (OrderProduct & {
+      products: Product
+    })[]
+    customer: Customer & {
+      chain: string
+    }
+  },
+  first: boolean,
+) {
   const itemsTable = order.products.map((item) => {
     return `
             <tr>
@@ -15,11 +27,11 @@ module.exports = async (company, order, first) => {
                   .replace('.', ',')}</td>
             </tr>`
   })
-  const note = order.note_body
+  const note = order.noteBody
     ? `
         <div style="margin-top: 10pt;">
-            ${order.note_header ? `<h3>${order.note_header}</h3>` : ``}
-            <div>${order.note_body}</div>
+            ${order.noteHeader ? `<h3>${order.noteHeader}</h3>` : ``}
+            <div>${order.noteBody}</div>
         </div>
     `
     : ''
@@ -29,7 +41,7 @@ module.exports = async (company, order, first) => {
             <div style="height: 3em;">
                 <div style="float: left;">
                     <div class="company-name">${company.name}</div>
-                    <div>${company.address}</div>
+                    <div>${company.streetAddress}</div>
                     <div>${company.postalCode} ${company.city}</div>
                 </div>
                 <div style="float: right;">
@@ -38,9 +50,8 @@ module.exports = async (company, order, first) => {
             </div>
             <h1>Kuormakirja</h1>
             <div style="margin-bottom: 10pt;">
-                <div><b>Asiakas:</b> <span>${order.customer.chain} ${order.customer.name
-                }</span></div>
-                <div><b>Toimituspäivä:</b> <span>${formatDate(order.delivery_date)}</span></div>
+                <div><b>Asiakas:</b> <span>${order.customer.chain} ${order.customer.name}</span></div>
+                <div><b>Toimituspäivä:</b> <span>${formatDate(order.deliveryDate)}</span></div>
             </div>
             <table>
                 <thead>

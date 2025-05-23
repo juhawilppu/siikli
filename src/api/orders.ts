@@ -11,6 +11,7 @@ import puppeteer from 'puppeteer'
 import { dateToString, formatDate, stringToDate } from '../../frontend/src/utils/date'
 import { getUser, isAuthenticated } from '../middlewares/permissions'
 import prisma from '../prisma'
+import createCargoReport from '../services/cargo_report'
 
 async function verifyPackageSizeAndType(body: { packageType: string | null, packageSize: number | null }, tenantId: string) {
   console.log('checking type', body)
@@ -246,7 +247,7 @@ ordersRoute.get(`/api/orders/cargo_reports`, isAuthenticated, async (req, res) =
   })
 
   const promises = orders.map((order, index) =>
-    require('../services/cargo_report')(company, order, index === 0),
+    createCargoReport(company, order, index === 0),
   )
 
   Promise.all(promises).then(async (htmls) => {
