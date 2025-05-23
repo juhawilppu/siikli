@@ -24,7 +24,6 @@ router.get('/api/warehouse-report/grouped-by/customer', async (req, res) => {
       SELECT
         customer_id,
         c.name AS customer_name,
-        c.order_index AS customer_order_index,
         product_id,
         p.name AS product_name,
         type AS product_type,
@@ -42,7 +41,6 @@ router.get('/api/warehouse-report/grouped-by/customer', async (req, res) => {
         customer_id,
         c.chain,
         c.name,
-        c.order_index,
         product_id,
         p.name,
         type,
