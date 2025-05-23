@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react'
 import { Navigate, NavLink, Route, Routes, useLocation } from 'react-router-dom'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import AboutUs from './AboutUs'
+import LanguageSwitcher from './components/LanguageSwitcher'
 import { Button } from './components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from './components/ui/dropdown-menu'
 import { Input } from './components/ui/input'
@@ -24,8 +25,8 @@ import Order from './pages/Order/Order'
 import Orders from './pages/Orders'
 import { PackageConfiguration } from './pages/PackageConfiguration'
 import { PackageList } from './pages/PackageList'
-import { ProductPage } from './pages/ProductPage'
 
+import { ProductPage } from './pages/ProductPage'
 import Products from './pages/Products'
 import TuoteryhmatJarjestely from './pages/ProductTypeReorder'
 import { SalesReport } from './pages/SalesReport'
@@ -168,6 +169,7 @@ function App() {
                   />
                 </div>
               </form>
+              <LanguageSwitcher inApp />
               <Button
                 variant="outline"
                 size="icon"
