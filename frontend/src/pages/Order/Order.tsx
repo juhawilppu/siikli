@@ -422,6 +422,7 @@ export default function CreateOrder() {
                     <p className="text-xs text-muted-foreground mt-1">
                       {selectedCustomer.streetAddress}
                       ,
+                      {' '}
                       {selectedCustomer.postalCode}
                       {' '}
                       {selectedCustomer.city}
