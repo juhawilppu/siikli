@@ -288,7 +288,7 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
               <AccordionTrigger className="py-3 text-base font-medium">Hinta</AccordionTrigger>
               <AccordionContent className="space-y-4">
                 <p className="text-sm text-muted-foreground">
-                  Hinta on vapaaehtoinen tieto. Voit aina muokata hinnan tilauksen yhteydessä.
+                  Voit määrittää tuotteelle hinnan, jota käytetään tilauksessa. Voit myös kustomoida hinnan tilauksen yhteydessä.
                 </p>
                 <div className="space-y-2">
                   <Label htmlFor="price" className="text-base font-medium">
@@ -332,7 +332,7 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
               <AccordionTrigger className="py-3 text-base font-medium">Pakkaustiedot</AccordionTrigger>
               <AccordionContent className="space-y-4">
                 <p className="text-sm text-muted-foreground">
-                  Pakkaustiedot ovat vapaaehtoisia. Niitä käytetään tilauksen yhteydessä.
+                  Voit määrittää tuotteelle pakkaustiedot. Voit myös kustomoida pakkaustietoja tilauksen yhteydessä.
                 </p>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
