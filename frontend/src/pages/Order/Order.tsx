@@ -1,8 +1,9 @@
 import type React from 'react'
 
 import type { CustomerDto, GetCustomersResponseDto, GetOrderDto, GetPackageSettings, GetProductResponseDto, OrderProduct, PostOrderRequestDto, PostOrderResponseDto } from '@/types/types'
-import { captureException } from '@sentry/react'
+import { isHTMLElement } from '@dnd-kit/utilities'
 
+import { captureException } from '@sentry/react'
 import axios from 'axios'
 import { format } from 'date-fns'
 import { fi } from 'date-fns/locale'
@@ -281,6 +282,7 @@ export default function CreateOrder() {
       noteHeader: hasWaybillNote ? waybillNote.title : null,
       items: orderItems.map(item => ({
         ...item,
+        id: item.unsaved ? undefined : item.id,
         price: item.price ? Number.parseFloat(item.price) : 0,
         price0: item.price0 ? Number.parseFloat(item.price0) : 0,
         amount: item.amount ? Number.parseFloat(item.amount) : 0,
@@ -293,6 +295,14 @@ export default function CreateOrder() {
       if (orderId) {
         // Update order
         await axios.post(`/orders/${orderId}`, data)
+        const res = await axios.get<GetOrderDto>(`/orders/${orderId}`)
+        setOrderItems(res.data.items.map(item => ({
+          ...item,
+          price: item.price?.toFixed(2).toString() || '',
+          price0: item.price0?.toFixed(2).toString() || '',
+          amount: item.amount?.toFixed(2).toString() || '',
+          createdAt: new Date(item.createdAt),
+        })))
         toast({
           title: 'Tilaus tallennettu',
           description: `Tilaus asiakkaalle ${customer.name} tallennettiin onnistuneesti.`,
