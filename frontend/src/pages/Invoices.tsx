@@ -24,17 +24,15 @@ export interface FlatOrderItem {
   productName: string
 }
 
-const now = new Date()
-
 export function Invoices() {
   const [customers, setCustomers] = useState<CustomerDto[]>()
   const [invoice, setInvoice] = useState<InvoiceDto>()
   const [loading, setLoading] = useState(true)
   const [startDate, setStartDate] = useState<Date | undefined>(
-    startOfMonth(now),
+    startOfMonth(new Date(new Date().setMonth(new Date().getMonth() - 1))),
   )
   const [endDate, setEndDate] = useState<Date | undefined>(
-    endOfMonth(now),
+    endOfMonth(new Date(new Date().setMonth(new Date().getMonth() - 1))),
   )
 
   const [customerId, setCustomerId] = useState<string>()
