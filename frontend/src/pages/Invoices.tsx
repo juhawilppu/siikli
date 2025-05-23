@@ -11,6 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Label } from '@/components/ui/label'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { toast } from '@/hooks/use-toast'
 import SiikliPage from '@/SiikliPage'
 import { formatDate } from '@/utils/date'
 import { InvoiceAppendix } from './InvoiceAppendix'
@@ -39,6 +40,14 @@ export function Invoices() {
   const [customerId, setCustomerId] = useState<string>()
 
   const getData = async () => {
+    if (!customerId) {
+      toast({
+        title: 'Valitse asiakas',
+        description: 'Valitse asiakas, jonka laskut haluat tulostaa',
+        variant: 'destructive',
+      })
+      return
+    }
     if (!startDate || !endDate) {
       return
     }
