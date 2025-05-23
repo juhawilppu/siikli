@@ -41,7 +41,7 @@
     "passport-google-oidc": "^0.1.0",
     "passport-local": "^1.0.0",
     "print-js": "^1.6.0",
-    "puppeteer": "^24.7.2",
+    "puppeteer": "^24.9.0",
     "react-router-dom": "^6.30.0",
     "redis": "^4.7.0",
     "styled-components": "^6.1.17",

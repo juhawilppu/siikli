@@ -44,14 +44,36 @@ export default function Orders() {
       .finally(() => setIsLoading(false))
   }, [startDate, endDate])
 
-  const handlePrintWaybills = () => {
-    setIsPrinting(true)
-    printJS({
-      printable: `/api/orders/cargo_reports?startDate=${dateToString(startDate)}&endDate=${dateToString(endDate)}`,
-      type: 'pdf',
-      showModal: false,
-      onLoadingEnd: () => setIsPrinting(false),
-    })
+  const handlePrintWaybills = async () => {
+    try {
+      setIsPrinting(true)
+      const response = await axios.get(
+        `/orders/cargo_reports?startDate=${dateToString(startDate)}&endDate=${dateToString(endDate)}`,
+        { responseType: 'blob' },
+      )
+
+      // Create blob URL
+      const blob = new Blob([response.data], { type: 'application/pdf' })
+      const url = window.URL.createObjectURL(blob)
+
+      // Create temporary link and trigger download
+      const link = document.createElement('a')
+      link.href = url
+      link.setAttribute('download', `waybills-${dateToString(startDate)}-${dateToString(endDate)}.pdf`)
+      document.body.appendChild(link)
+      link.click()
+
+      // Cleanup
+      link.remove()
+      window.URL.revokeObjectURL(url)
+    }
+    catch (error) {
+      console.error('Error downloading PDF:', error)
+      // Could add error notification here
+    }
+    finally {
+      setIsPrinting(false)
+    }
   }
 
   const toggleOrderSelection = (orderId: string) => {

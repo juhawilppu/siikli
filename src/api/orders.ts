@@ -309,7 +309,12 @@ ordersRoute.get(`/api/orders/cargo_reports`, isAuthenticated, async (req, res) =
 </html>`
 
     try {
-      const browser = await puppeteer.launch({ headless: true })
+      console.log('creating pdf')
+      console.log(document)
+      const browser = await puppeteer.launch({
+        headless: true,
+        args: ['--no-sandbox'],
+      })
       const page = await browser.newPage()
       await page.setContent(document)
 
@@ -323,12 +328,18 @@ ordersRoute.get(`/api/orders/cargo_reports`, isAuthenticated, async (req, res) =
         },
         displayHeaderFooter: true,
         footerTemplate: '<div style="height: 22mm;"></div>',
+        printBackground: true,
       })
 
       await browser.close()
 
-      res.contentType('application/pdf')
-      res.status(200).send(pdfBuffer)
+      // Set headers for proper PDF display
+      res.setHeader('Content-Type', 'application/pdf')
+      res.setHeader('Content-Length', pdfBuffer.length)
+      res.setHeader('Content-Disposition', 'inline')
+      res.setHeader('Cache-Control', 'no-cache')
+      res.status(200)
+      res.end(pdfBuffer, 'binary')
     }
     catch (err) {
       console.error(err)
