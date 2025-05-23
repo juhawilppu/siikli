@@ -25,9 +25,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   useEffect(() => {
     if (language === 'en') {
       document.title = 'Siikli ERP | Made with Common Sense'
+      document.documentElement.lang = 'en'
     }
     else {
       document.title = 'Siikli ERP | Tehty maalaisjärjellä'
+      document.documentElement.lang = 'fi'
     }
   }, [language])
 
