@@ -176,14 +176,16 @@ function App() {
                 <HelpCircle className="h-5 w-5" />
                 <span className="sr-only">Tuki</span>
               </Button>
-              <Button
-                variant="outline"
-                size="icon"
-                className="rounded-full bg-blue-700 border-blue-500 text-white hover:bg-blue-800 hover:text-white"
-              >
-                <Bell className="h-5 w-5" />
-                <span className="sr-only">Ilmoitukset</span>
-              </Button>
+              {false && (
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="rounded-full bg-blue-700 border-blue-500 text-white hover:bg-blue-800 hover:text-white"
+                >
+                  <Bell className="h-5 w-5" />
+                  <span className="sr-only">Ilmoitukset</span>
+                </Button>
+              )}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
