@@ -26,15 +26,6 @@ customersRoute.get(`/api/customers`, isAuthenticated, async (req, res) => {
       name: 'asc',
     },
   })
-  const chains = await prisma.customer.findMany({
-    where: {
-      tenantId,
-    },
-    select: {
-      chain: true,
-    },
-    distinct: ['chain'],
-  })
   const customerGroups = await prisma.customer.findMany({
     where: {
       tenantId,
@@ -50,24 +41,21 @@ customersRoute.get(`/api/customers`, isAuthenticated, async (req, res) => {
 
   res.json({
     customerGroups: customerGroups.map(r => r.customerGroup as string),
-    chains: chains.map(r => r.chain as string),
     customers: result.map((r) => {
       return {
         id: r.id,
-        chain: r.chain,
         name: r.name,
-        streetAddress: r.address,
-        streetAddress2: r.address2,
+        companyLegalName: r.companyLegalName,
+        discount: r.discount,
+        invoiceReference: r.invoiceReference,
+        streetAddress: r.streetAddress,
         postalCode: r.postalCode,
-        compensation: r.compensation,
-        businessId: r.businessId,
         city: r.city,
+        businessId: r.businessId,
         email: r.email,
         phone: r.phone,
         showPriceWithoutTax: r.showPriceWithoutTax,
         tenantId: r.tenantId,
-        reference: r.reference,
-        companyName: r.companyName,
         customerGroup: r.customerGroup,
       }
     }),
@@ -87,18 +75,16 @@ customersRoute.post(`/api/customers`, isAuthenticated, async (req, res) => {
           id: tenantId,
         },
       },
-      chain: body.chain,
       name: body.name,
-      compensation: body.compensation,
-      address: body.streetAddress,
-      address2: body.streetAddress2,
+      companyLegalName: body.companyLegalName,
+      discount: body.discount,
+      invoiceReference: body.invoiceReference,
+      streetAddress: body.streetAddress,
       postalCode: body.postalCode,
       city: body.city,
       email: body.email,
       phone: body.phone,
       showPriceWithoutTax: body.showPriceWithoutTax,
-      reference: body.reference,
-      companyName: body.companyName,
       businessId: body.businessId,
       customerGroup: body.customerGroup,
     },
@@ -115,38 +101,8 @@ customersRoute.post(`/api/customers`, isAuthenticated, async (req, res) => {
       },
     },
   })
-  res.json(result)
+  res.status(201).json({id: result.id})
 })
-
-/*
-customersRoute.put(`/api/customers/reorder`, isAuthenticated, async (req, res) => {
-  console.log('reordering customers')
-  const { userId, tenantId } = getUser(req)
-
-  const customers = req.body as CustomerDto[]
-
-  try {
-    // Update all customers in a transaction to ensure atomicity
-    await prisma.$transaction(
-      customers.map(customer =>
-        prisma.customer.update({
-          where: { id: customer.id, tenantId },
-          data: { orderIndex: customer.orderIndex },
-        }),
-      ),
-    )
-
-    res.json({ success: true })
-  }
-  catch (error) {
-    console.error('Failed to reorder customers:', error)
-    res.status(500).json({
-      success: false,
-      error: 'Failed to update customer order',
-    })
-  }
-})
-  */
 
 customersRoute.put(`/api/customers/:id`, isAuthenticated, async (req, res) => {
   console.log('updating customer')
@@ -165,20 +121,16 @@ customersRoute.put(`/api/customers/:id`, isAuthenticated, async (req, res) => {
           id: tenantId,
         },
       },
-      chain: body.chain,
       name: body.name,
-      compensation: body.compensation,
-      address: body.streetAddress,
-      address2: body.streetAddress2,
+      discount: body.discount,
+      streetAddress: body.streetAddress,
       postalCode: body.postalCode,
       city: body.city,
       email: body.email,
       phone: body.phone,
       showPriceWithoutTax: body.showPriceWithoutTax,
-      reference: body.reference,
-      companyName: body.companyName,
+      invoiceReference: body.invoiceReference,
       businessId: body.businessId,
-      customerGroup: body.customerGroup,
     },
   })
   await prisma.log.create({

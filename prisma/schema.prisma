@@ -126,25 +126,23 @@ model EmailLoginPinCodeHistory {
 
 model Customer {
   id                  String   @id @default(uuid()) @map("id") @db.Uuid
-  chain               String   @map("chain") @db.VarChar(32)
   name                String   @map("name") @db.VarChar(50)
-  address             String?  @map("address") @db.VarChar(255)
-  compensation        Float    @map("compensation")
-  reference           String?  @map("reference") @db.VarChar(255)
-  companyName         String?  @map("company_name") @db.VarChar(255)
-  city                String?  @map("city") @db.VarChar(255)
+  customerGroup       String?  @map("customer_group") @db.VarChar(255)
+  companyLegalName    String?  @map("company_legal_name") @db.VarChar(255)
+  discount            Float    @default(0) @map("discount")
+  invoiceReference    String?  @map("invoice_reference") @db.VarChar(255)
   email               String?  @map("email") @db.VarChar(255)
   phone               String?  @map("phone") @db.VarChar(255)
+  streetAddress       String?  @map("street_address") @db.VarChar(255)
   postalCode          String?  @map("postal_code") @db.VarChar(5)
-  address2            String?  @map("address2") @db.VarChar(255)
+  city                String?  @map("city") @db.VarChar(255)
   businessId          String?  @map("business_id") @db.VarChar(255)
-  customerGroup       String?  @map("customer_group") @db.VarChar(256)
   showPriceWithoutTax Boolean  @default(false) @map("show_price_without_tax")
-  orders              Order[]
   tenantId            String   @map("tenant_id") @db.Uuid
   tenant              Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   createdAt           DateTime @default(now()) @map("created_at")
   updatedAt           DateTime @default(now()) @updatedAt @map("updated_at")
+  orders              Order[]
 
   @@map("customer")
 }

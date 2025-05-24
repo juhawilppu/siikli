@@ -20,7 +20,6 @@ import CompanySettings from './pages/CompanySettings'
 import { CustomerPage } from './pages/CustomerPage'
 import { Customers } from './pages/Customers'
 import { Invoices } from './pages/Invoices'
-import NewCustomerForm from './pages/NewCustomer'
 import Order from './pages/Order/Order'
 import Orders from './pages/Orders'
 import { PackageConfiguration } from './pages/PackageConfiguration'
@@ -227,7 +226,6 @@ function App() {
                 <Route path="/packaging-list" element={<PackageList />} />
                 <Route path="/invoices" element={<Invoices />} />
                 <Route path="/customers" element={<Customers />} />
-                <Route path="/customers/new" element={<NewCustomerForm />} />
                 <Route path="/customers/:customerId" element={<CustomerPage />} />
                 <Route path="/customers/:customerId/:edit" element={<CustomerPage />} />
                 <Route path="/products" element={<Products />} />

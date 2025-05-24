@@ -164,7 +164,6 @@ export interface GetCompanySettings {
 export interface GetCustomersResponseDto {
   customerGroups: string[]
   customers: CustomerDto[]
-  chains: string[]
 }
 
 export interface DeleteCustomerResponseDto {
@@ -174,16 +173,14 @@ export interface DeleteCustomerResponseDto {
 
 export interface CustomerDto {
   id: string
-  chain: string
   name: string
+  companyLegalName: string | null
+  discount: number
+  invoiceReference: string | null
   streetAddress: string | null
-  streetAddress2: string | null
   postalCode: string | null
   city: string | null
   showPriceWithoutTax: boolean
-  compensation: number
-  reference: string | null
-  companyName: string | null
   email: string | null
   phone: string | null
   businessId: string | null
