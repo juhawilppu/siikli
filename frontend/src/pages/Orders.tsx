@@ -8,7 +8,6 @@ import {
   Package,
   Printer,
 } from 'lucide-react'
-import printJS from 'print-js'
 import { useEffect, useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
@@ -216,47 +215,49 @@ export default function Orders() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {orders.length === 0 ? (
-                    <TableRow>
-                      <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
-                        Sinulla ei ole tilauksia tällä aikavälillä. 👉
-                        {' '}
-                        <NavLink to="/orders/new" className="text-blue-500">Luo uusi tilaus</NavLink>
-                        .
-                      </TableCell>
-                    </TableRow>
-                  ) : (
-                    orders.map(order => (
-                      <TableRow key={order.id}>
-                        <TableCell>
-                          <input
-                            type="checkbox"
-                            className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
-                            checked={selectedOrders.includes(order.id)}
-                            onChange={() => toggleOrderSelection(order.id)}
-                          />
-                        </TableCell>
-                        {/* <TableCell className="font-medium">{order.id}</TableCell> */}
-                        <TableCell>{order.deliveryDate}</TableCell>
-                        <TableCell>
-                          {order.customer.chain}
-                          {' '}
-                          {order.customer.name}
-                        </TableCell>
-                        <TableCell>{formatMoneyFi(order.total)}</TableCell>
-                        <TableCell className="text-right">
-                          <Button
-                            variant="ghost"
-                            className="text-blue-500"
-                            size="sm"
-                            onClick={() => (window.location.href = `/orders/${order.id}`)}
-                          >
-                            Avaa
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  )}
+                  {orders.length === 0
+                    ? (
+                        <TableRow>
+                          <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                            Sinulla ei ole tilauksia tällä aikavälillä. 👉
+                            {' '}
+                            <NavLink to="/orders/new" className="text-blue-500">Luo uusi tilaus</NavLink>
+                            .
+                          </TableCell>
+                        </TableRow>
+                      )
+                    : (
+                        orders.map(order => (
+                          <TableRow key={order.id}>
+                            <TableCell>
+                              <input
+                                type="checkbox"
+                                className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                                checked={selectedOrders.includes(order.id)}
+                                onChange={() => toggleOrderSelection(order.id)}
+                              />
+                            </TableCell>
+                            {/* <TableCell className="font-medium">{order.id}</TableCell> */}
+                            <TableCell>{order.deliveryDate}</TableCell>
+                            <TableCell>
+                              {order.customer.chain}
+                              {' '}
+                              {order.customer.name}
+                            </TableCell>
+                            <TableCell>{formatMoneyFi(order.total)}</TableCell>
+                            <TableCell className="text-right">
+                              <Button
+                                variant="ghost"
+                                className="text-blue-500"
+                                size="sm"
+                                onClick={() => (window.location.href = `/orders/${order.id}`)}
+                              >
+                                Avaa
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      )}
                 </TableBody>
               </Table>
             </CardContent>

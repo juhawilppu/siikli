@@ -1,7 +1,6 @@
 import type React from 'react'
 
 import type { CustomerDto, GetCustomersResponseDto, GetOrderDto, GetPackageSettings, GetProductResponseDto, OrderProduct, PostOrderRequestDto, PostOrderResponseDto } from '@/types/types'
-import { isHTMLElement } from '@dnd-kit/utilities'
 
 import { captureException } from '@sentry/react'
 import axios from 'axios'
