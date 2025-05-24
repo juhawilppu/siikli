@@ -13,9 +13,9 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { useToast } from '@/hooks/use-toast'
 import SiikliPage from '@/SiikliPage'
 import { formatDate } from '@/utils/date'
-import { useToast } from '@/hooks/use-toast'
 import ConfirmDialog from './ConfirmDialog'
 
 export default function CompanySettings() {
@@ -110,11 +110,11 @@ export default function CompanySettings() {
   }, [])
 
   if (!companyData)
-    return <SiikliPage title="Oma yritys" description="Voit hallinnoida yrityksesi asetuksia täällä." />
+    return <SiikliPage title="Oma yritys" description="Voit hallinnoida yrityksesi asetuksia täällä" />
 
   return (
     <>
-      <SiikliPage title="Oma yritys" description="Voit hallinnoida yrityksesi asetuksia täällä.">
+      <SiikliPage title="Oma yritys" description="Voit hallinnoida yrityksesi asetuksia täällä">
 
         <Tabs defaultValue="company" className="w-full">
           <TabsList className="grid w-full grid-cols-4 mb-6">

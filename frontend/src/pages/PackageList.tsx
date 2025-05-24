@@ -37,7 +37,7 @@ export function PackageList() {
 
   return (
     <>
-      <SiikliPage title="Pakkauslista" description="Voit tulostaa pakkauslistan täältä.">
+      <SiikliPage title="Pakkauslista" description="Voit tulostaa pakkauslistan täältä">
         <Card>
           <CardHeader className="border-b bg-gray-50">
             <CardTitle>Luo pakkauslista</CardTitle>
