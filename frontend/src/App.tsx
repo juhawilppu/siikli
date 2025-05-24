@@ -26,7 +26,6 @@ import Orders from './pages/Orders'
 import { PackageConfiguration } from './pages/PackageConfiguration'
 import { PackageList } from './pages/PackageList'
 
-import { ProductPage } from './pages/ProductPage'
 import Products from './pages/Products'
 import TuoteryhmatJarjestely from './pages/ProductTypeReorder'
 import { SalesReport } from './pages/SalesReport'
@@ -233,8 +232,6 @@ function App() {
                 <Route path="/customers/:customerId/:edit" element={<CustomerPage />} />
                 <Route path="/products" element={<Products />} />
                 <Route path="/products/reorder" element={<TuoteryhmatJarjestely />} />
-                <Route path="/products/:productId" element={<ProductPage />} />
-                <Route path="/products/:productId/:edit" element={<ProductPage />} />
                 <Route
                   path="/package_configuration"
                   element={<PackageConfiguration />}

@@ -28,6 +28,16 @@ import { Separator } from '@/components/ui/separator'
 import { toast } from '@/hooks/use-toast'
 import { cn } from '@/lib/utils'
 
+export function calculatePricesFromVat14(price: string, format: boolean) {
+  const price0 = Number.parseFloat(price) / 1.14
+  return { price: format ? Number.parseFloat(price).toFixed(2) : price, price0: price0.toFixed(2) }
+}
+
+export function calculatePricesFromVat0(price0: string, format: boolean) {
+  const price = Number.parseFloat(price0) * 1.14
+  return { price: price.toFixed(2), price0: format ? Number.parseFloat(price0).toFixed(2) : price0 }
+}
+
 export default function NewProduct({ productToEdit, hide, onSave, productTypes, refPackageTypes, refPackageSizes }: { productToEdit?: GetProductResponseDto, hide: () => void, onSave: (product: GetProductResponseDto) => void, productTypes: ProductTypeResponse[], refPackageTypes: string[], refPackageSizes: number[] }) {
   const mode = productToEdit ? 'edit' : 'create'
   const [product, setProduct] = useState <Partial<{
@@ -302,9 +312,12 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
                     className="ml-[1px]"
                     style={{ width: 'calc(100% - 2px)' }}
                     value={product.price || ''}
-                    onChange={e => setProduct({ ...product, price: e.target.value, price0: (Number.parseFloat(e.target.value) / 1.14).toFixed(2) })}
+                    onChange={e => setProduct({
+                      ...product,
+                      ...calculatePricesFromVat14(e.target.value, false),
+                    })}
                     onBlur={(e) => {
-                      setProduct({ ...product, price: (Number.parseFloat(e.target.value || '0')).toFixed(2) })
+                      setProduct({ ...product, ...calculatePricesFromVat14(e.target.value, true) })
                     }}
                   />
                 </div>
@@ -320,9 +333,9 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
                     className="ml-[1px]"
                     style={{ width: 'calc(100% - 2px)' }}
                     value={product.price0 || ''}
-                    onChange={e => setProduct({ ...product, price0: e.target.value, price: (Number.parseFloat(e.target.value) * 1.14).toFixed(2) })}
+                    onChange={e => setProduct({ ...product, ...calculatePricesFromVat0(e.target.value, false) })}
                     onBlur={(e) => {
-                      setProduct({ ...product, price0: (Number.parseFloat(e.target.value || '0')).toFixed(2) })
+                      setProduct({ ...product, ...calculatePricesFromVat0(e.target.value, true) })
                     }}
                   />
                 </div>
