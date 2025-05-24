@@ -35,7 +35,7 @@ import SiikliPage from '@/SiikliPage'
 import { formatMoneyFi } from '@/utils/money'
 import NewProduct from './NewProduct'
 
-export default function TuotteetSivu() {
+export default function Products() {
   const [searchQuery, setSearchQuery] = useState('')
   const [loading, setLoading] = useState(true)
   const [products, setProducts] = useState<GetProductResponseDto[]>([])
@@ -51,8 +51,6 @@ export default function TuotteetSivu() {
   const [orderByField, setOrderByField] = useState<keyof GetProductResponseDto>('name')
 
   const { toast } = useToast()
-
-  console.log('searchQuery', setSearchQuery)
 
   const navigate = useNavigate()
 
@@ -72,22 +70,22 @@ export default function TuotteetSivu() {
     loadData()
   }, [])
 
-  // Suodata ja järjestä tuotteet
+  // Filter and sort products
   const filteredTuotteet = products
     .filter((product) => {
-      // Haku
+      // Search
       const matchesSearch
         = product.name.toLowerCase().includes(searchQuery.toLowerCase())
           || product.variety?.toLowerCase().includes(searchQuery.toLowerCase())
           || product.type?.toLowerCase().includes(searchQuery.toLowerCase())
 
-      // productryhmäsuodatus
+      // Product category filter
       const matchesCategory = typeFilter === 'all' || product.type === typeFilter
 
       return matchesSearch && matchesCategory
     })
     .sort((a, b) => {
-      // Järjestäminen
+      // Sorting
       if (typeof a[orderByField] === 'string' && typeof b[orderByField] === 'string') {
         return orderDirection === 'asc'
           ? (a[orderByField] as string).localeCompare(b[orderByField] as string)
@@ -156,7 +154,7 @@ export default function TuotteetSivu() {
     }
   }
 
-  // Järjestyksen vaihtaminen
+  // Change sort order
   const vaihdaJarjestys = (kentta: keyof GetProductResponseDto) => {
     if (orderByField === kentta) {
       setOrderDirection(orderDirection === 'asc' ? 'desc' : 'asc')
@@ -168,37 +166,39 @@ export default function TuotteetSivu() {
   }
 
   if (loading || !packageTypes || !packageSizes)
-    return <SiikliPage title="Tuotteet" description="Hallitse tuotteita ja hintoja." />
+    return <SiikliPage title="Tuotteet" description="Hallitse tuotteita ja hintoja" />
 
   return (
     <>
-      <SiikliPage title="Tuotteet" description="Hallitse tuotteita ja hintoja.">
+      <SiikliPage title="Tuotteet" description="Hallitse tuotteita ja hintoja">
 
         <div className="space-y-4">
           <div className="flex flex-col gap-4 md:flex-row md:items-center">
             <div className="flex flex-1 items-center gap-2">
               <Input className="h-8 w-full md:w-[300px]" placeholder="Hae tuotetta" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="gap-1">
-                    <Filter className="h-4 w-4 mr-1" />
-                    Tuoteryhmä:
-                    {' '}
-                    {typeFilter === 'all' ? 'Kaikki' : typeFilter}
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuItem onClick={() => setTypeFilter('all')}>
-                    Kaikki tuoteryhmät
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  {productTypes.map(productType => (
-                    <DropdownMenuItem key={productType.name} onClick={() => setTypeFilter(productType.name)}>
-                      {productType.name}
+              {false && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" className="gap-1">
+                      <Filter className="h-4 w-4 mr-1" />
+                      Tuoteryhmä:
+                      {' '}
+                      {typeFilter === 'all' ? 'Kaikki' : typeFilter}
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuItem onClick={() => setTypeFilter('all')}>
+                      Kaikki tuoteryhmät
                     </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
+                    <DropdownMenuSeparator />
+                    {productTypes.map(productType => (
+                      <DropdownMenuItem key={productType.name} onClick={() => setTypeFilter(productType.name)}>
+                        {productType.name}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
               {false && (
                 <Button variant="outline" onClick={() => navigate('/products/reorder')}>Järjestele ryhmät</Button>
               )}
