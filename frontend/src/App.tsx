@@ -142,7 +142,7 @@ function App() {
     return (
       <>
         <div className="flex min-h-screen flex-col">
-          <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-blue-600 text-white px-4 md:px-6">
+          <header className="sticky top-0 z-30 flex h-16 items-center gap-4 bg-blue-600 text-white px-4 md:px-6">
             <Sheet open={isMobileNavOpen} onOpenChange={setIsMobileNavOpen}>
               <SheetTrigger asChild>
                 <Button variant="outline" size="icon" className="md:hidden">
@@ -212,7 +212,7 @@ function App() {
           </header>
           <div className="flex flex-1">
             {/* Desktop Sidebar */}
-            <aside className="hidden w-64 shrink-0 border-r bg-muted/40 md:block">
+            <aside className="hidden w-64 shrink-0 border-r border-slate-300 bg-slate-200 md:block">
               <DesktopSidebar currentPath={location.pathname} />
             </aside>
 
@@ -290,7 +290,7 @@ function DesktopSidebar({ currentPath }: { currentPath: string }) {
             <NavLink
               to={item.href}
               key={item.href}
-              className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${currentPath === item.href ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+              className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${currentPath === item.href ? 'bg-slate-300 text-slate-800' : 'text-slate-700 hover:text-foreground'}`}
             >
               <item.icon className="h-4 w-4" />
               {item.title}
