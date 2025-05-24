@@ -40,7 +40,7 @@ export function calculatePricesFromVat0(price0: string, format: boolean) {
 
 export default function NewProduct({ productToEdit, hide, onSave, productTypes, refPackageTypes, refPackageSizes }: { productToEdit?: GetProductResponseDto, hide: () => void, onSave: (product: GetProductResponseDto) => void, productTypes: ProductTypeResponse[], refPackageTypes: string[], refPackageSizes: number[] }) {
   const mode = productToEdit ? 'edit' : 'create'
-  const [product, setProduct] = useState <Partial<{
+  const [product, setProduct] = useState<Partial<{
     name: string
     type: string
     subtype: string
@@ -50,7 +50,6 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
     packageType: string
     variety: string
     info: string
-    chain: string
     id: string
   }>>(mode === 'edit'
     ? {
@@ -63,7 +62,6 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
         packageType: productToEdit?.packageType || '',
         variety: productToEdit?.variety || '',
         info: productToEdit?.info || '',
-        chain: productToEdit?.chain || '',
         id: productToEdit?.id || '',
       }
     : {
@@ -75,7 +73,6 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
         packageType: '',
         variety: '',
         info: '',
-        chain: '',
         id: '',
       })
   const [openType, setOpenType] = useState(false)
@@ -114,17 +111,16 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
       packageType: product.packageType || '',
       variety: product.variety || '',
       info: product.info || '',
-      chain: product.chain || '',
     }
 
     if (mode === 'edit') {
       await axios.post(`/products/${product.id}`, data)
-      onSave({ ...product, price: Number.parseFloat(product.price || '0'), price0: Number.parseFloat(product.price0 || '0') } as GetProductResponseDto)
+      onSave({ ...product, price: product.price ? Number.parseFloat(product.price) : undefined, price0: product.price0 ? Number.parseFloat(product.price0) : undefined } as GetProductResponseDto)
     }
     else {
       const res = await axios.post<{ id: string }>('/products', data)
 
-      onSave({ id: res.data.id, ...product, price: Number.parseFloat(product.price || '0'), price0: Number.parseFloat(product.price0 || '0') } as GetProductResponseDto)
+      onSave({ ...product, id: res.data.id, price: product.price ? Number.parseFloat(product.price) : null, price0: product.price0 ? Number.parseFloat(product.price0) : null } as GetProductResponseDto)
     }
   }
 

@@ -263,7 +263,6 @@ export interface ProductDto {
 
 export interface GetProductResponseDto {
   id: string
-  chain: string | null
   name: string
   info: string | null
   price: number | null
@@ -285,7 +284,6 @@ export interface PostProductCreateRequestDto {
   packageType?: string
   variety: string
   info: string
-  chain: string
 }
 
 export interface ProductTypeResponse {
