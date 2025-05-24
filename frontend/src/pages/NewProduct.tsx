@@ -320,9 +320,9 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
                     className="ml-[1px]"
                     style={{ width: 'calc(100% - 2px)' }}
                     value={product.price0 || ''}
-                    onChange={e => setProduct({ ...product, price: e.target.value, price0: (Number.parseFloat(e.target.value) / 1.14).toFixed(2) })}
+                    onChange={e => setProduct({ ...product, price0: e.target.value, price: (Number.parseFloat(e.target.value) * 1.14).toFixed(2) })}
                     onBlur={(e) => {
-                      setProduct({ ...product, price: (Number.parseFloat(e.target.value || '0')).toFixed(2) })
+                      setProduct({ ...product, price0: (Number.parseFloat(e.target.value || '0')).toFixed(2) })
                     }}
                   />
                 </div>
