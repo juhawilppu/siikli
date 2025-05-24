@@ -1,8 +1,9 @@
 'use client'
 
 import type { GetPackageSettings, GetProductResponseDto, ProductTypeResponse } from '@/types/types'
-import axios from 'axios'
+import * as Sentry from '@sentry/react'
 
+import axios from 'axios'
 import {
   ChevronDown,
   ChevronUp,
@@ -145,7 +146,8 @@ export default function TuotteetSivu() {
         description: `Tuote "${product.name}" on poistettu onnistuneesti.`,
       })
     }
-    catch (e) {
+    catch (e: any) {
+      Sentry.captureException(e)
       toast({
         title: 'Poistaminen epäonnistui',
         description: `Tuotetta "${product.name}" ei voitu poistaa, koska se on jo lisätty tilaukseen.`,
@@ -281,16 +283,18 @@ export default function TuotteetSivu() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredTuotteet.length === 0 ? (
-                    <TableRow>
-                      <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
-                        Ei tuotteita hakuehdoilla
-                      </TableCell>
-                    </TableRow>
-                  ) : (
-                    filteredTuotteet.map((product, index) => (
-                      <TableRow key={product.id} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                        {/*
+                  {filteredTuotteet.length === 0
+                    ? (
+                        <TableRow>
+                          <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
+                            Ei tuotteita hakuehdoilla
+                          </TableCell>
+                        </TableRow>
+                      )
+                    : (
+                        filteredTuotteet.map((product, index) => (
+                          <TableRow key={product.id} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                            {/*
                         <TableCell>
                           <div className="flex items-center">
                             <span className="font-medium mr-2">{product.orderIndex + 1}</span>
@@ -335,60 +339,60 @@ export default function TuotteetSivu() {
                           </div>
                         </TableCell>
                         */}
-                        <TableCell className="font-medium">{product.name}</TableCell>
-                        { /*
+                            <TableCell className="font-medium">{product.name}</TableCell>
+                            { /*
                         <TableCell>{product.variety}</TableCell>
                         <TableCell>{product.type}</TableCell>
                         <TableCell>{product.subtype}</TableCell>
                         */}
-                        <TableCell className="font-medium">
-                          {' '}
-                          {product.price ? formatMoneyFi(product.price) : ''}
-                        </TableCell>
-                        <TableCell>{product.price0 ? formatMoneyFi(product.price0) : ''}</TableCell>
-                        <TableCell>{product.packageSize ? `${product.packageSize} kg` : ''}</TableCell>
-                        <TableCell>{product.packageType}</TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex justify-end gap-2">
-                            <TooltipProvider>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-8 w-8"
-                                    onClick={() => setEditProductId(product.id)}
-                                  >
-                                    <Edit className="h-4 w-4" />
-                                  </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  <p>Muokkaa</p>
-                                </TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
-                            <TooltipProvider>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50"
-                                    onClick={() => deleteProduct(product.id)}
-                                  >
-                                    <Trash2 className="h-4 w-4" />
-                                  </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  <p>Poista</p>
-                                </TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  )}
+                            <TableCell className="font-medium">
+                              {' '}
+                              {product.price ? formatMoneyFi(product.price) : ''}
+                            </TableCell>
+                            <TableCell>{product.price0 ? formatMoneyFi(product.price0) : ''}</TableCell>
+                            <TableCell>{product.packageSize ? `${product.packageSize} kg` : ''}</TableCell>
+                            <TableCell>{product.packageType}</TableCell>
+                            <TableCell className="text-right">
+                              <div className="flex justify-end gap-2">
+                                <TooltipProvider>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className="h-8 w-8"
+                                        onClick={() => setEditProductId(product.id)}
+                                      >
+                                        <Edit className="h-4 w-4" />
+                                      </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      <p>Muokkaa</p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
+                                <TooltipProvider>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50"
+                                        onClick={() => deleteProduct(product.id)}
+                                      >
+                                        <Trash2 className="h-4 w-4" />
+                                      </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      <p>Poista</p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      )}
                 </TableBody>
               </Table>
             </CardContent>
