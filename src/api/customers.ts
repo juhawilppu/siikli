@@ -132,6 +132,7 @@ customersRoute.put(`/api/customers/:id`, isAuthenticated, async (req, res) => {
       showPriceWithoutTax: body.showPriceWithoutTax,
       invoiceReference: body.invoiceReference,
       businessId: body.businessId,
+      customerGroup: body.customerGroup,
     },
   })
   await prisma.log.create({
