@@ -1,4 +1,4 @@
-import type { CustomerDto, GetCustomersResponseDto, InvoiceDto } from '@/types/types'
+import type { PostCreateCustomerRequestDto, GetCustomersResponseDto, InvoiceDto } from '@/types/types'
 import axios from 'axios'
 import { endOfMonth, startOfMonth } from 'date-fns'
 import { fi } from 'date-fns/locale'
@@ -25,7 +25,7 @@ export interface FlatOrderItem {
 }
 
 export function Invoices() {
-  const [customers, setCustomers] = useState<CustomerDto[]>()
+  const [customers, setCustomers] = useState<PostCreateCustomerRequestDto[]>()
   const [invoice, setInvoice] = useState<InvoiceDto>()
   const [loading, setLoading] = useState(true)
   const [startDate, setStartDate] = useState<Date | undefined>(

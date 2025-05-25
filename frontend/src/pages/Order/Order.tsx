@@ -1,6 +1,6 @@
 import type React from 'react'
 
-import type { CustomerDto, GetCustomersResponseDto, GetOrderDto, GetPackageSettings, GetProductResponseDto, OrderProduct, PostOrderRequestDto, PostOrderResponseDto } from '@/types/types'
+import type { PostCreateCustomerRequestDto, GetCustomersResponseDto, GetOrderDto, GetPackageSettings, GetProductResponseDto, OrderProduct, PostOrderRequestDto, PostOrderResponseDto } from '@/types/types'
 
 import { captureException } from '@sentry/react'
 import axios from 'axios'
@@ -36,7 +36,7 @@ import { formatMoneyFi } from '@/utils/money'
 import ConfirmDialog from '../ConfirmDialog'
 
 export default function CreateOrder() {
-  const [customers, setCustomers] = useState<CustomerDto[]>()
+  const [customers, setCustomers] = useState<PostCreateCustomerRequestDto[]>()
   const [products, setProducts] = useState<GetProductResponseDto[]>()
   const [isLoading, setIsLoading] = useState(true)
   const [deliveryDate, setDeliveryDate] = useState<Date>()

@@ -163,7 +163,23 @@ export interface GetCompanySettings {
 
 export interface GetCustomersResponseDto {
   customerGroups: string[]
-  customers: CustomerDto[]
+  customers: GetCustomerRequestDto[]
+}
+
+export interface GetCustomerRequestDto {
+  id: string
+  name: string
+  companyLegalName: string | null
+  discount: number
+  invoiceReference: string | null
+  streetAddress: string | null
+  postalCode: string | null
+  city: string | null
+  showPriceWithoutTax: boolean
+  email: string | null
+  phone: string | null
+  businessId: string | null
+  customerGroup: string | null
 }
 
 export interface DeleteCustomerResponseDto {
@@ -171,8 +187,7 @@ export interface DeleteCustomerResponseDto {
   deletedCustomer: string
 }
 
-export interface CustomerDto {
-  id: string
+export interface PostCreateCustomerRequestDto {
   name: string
   companyLegalName: string | null
   discount: number

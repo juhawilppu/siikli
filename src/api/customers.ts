@@ -1,4 +1,4 @@
-import type { CustomerDto, DeleteCustomerResponseDto, GetCustomersResponseDto } from '../../frontend/src/types/types'
+import type { DeleteCustomerResponseDto, GetCustomersResponseDto, PostCreateCustomerRequestDto } from '../../frontend/src/types/types'
 import express from 'express'
 import { getUser, isAuthenticated } from '../middlewares/permissions'
 import prisma from '../prisma'
@@ -67,7 +67,7 @@ customersRoute.post(`/api/customers`, isAuthenticated, async (req, res) => {
 
   const { userId, tenantId } = getUser(req)
 
-  const body = req.body as CustomerDto
+  const body = req.body as PostCreateCustomerRequestDto
   const result = await prisma.customer.create({
     data: {
       tenant: {
@@ -77,7 +77,7 @@ customersRoute.post(`/api/customers`, isAuthenticated, async (req, res) => {
       },
       name: body.name,
       companyLegalName: body.companyLegalName,
-      discount: body.discount,
+      discount: body.discount || 0,
       invoiceReference: body.invoiceReference,
       streetAddress: body.streetAddress,
       postalCode: body.postalCode,
@@ -101,7 +101,7 @@ customersRoute.post(`/api/customers`, isAuthenticated, async (req, res) => {
       },
     },
   })
-  res.status(201).json({id: result.id})
+  res.status(201).json({ id: result.id })
 })
 
 customersRoute.put(`/api/customers/:id`, isAuthenticated, async (req, res) => {
@@ -109,7 +109,7 @@ customersRoute.put(`/api/customers/:id`, isAuthenticated, async (req, res) => {
   const { userId, tenantId } = getUser(req)
 
   const id = req.params.id
-  const body = req.body as CustomerDto
+  const body = req.body as PostCreateCustomerRequestDto
   const result = await prisma.customer.update({
     where: {
       id,
@@ -122,6 +122,7 @@ customersRoute.put(`/api/customers/:id`, isAuthenticated, async (req, res) => {
         },
       },
       name: body.name,
+      companyLegalName: body.companyLegalName,
       discount: body.discount,
       streetAddress: body.streetAddress,
       postalCode: body.postalCode,

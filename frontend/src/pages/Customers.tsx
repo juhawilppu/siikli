@@ -1,4 +1,4 @@
-import type { CustomerDto, GetCustomersResponseDto } from '@/types/types'
+import type { PostCreateCustomerRequestDto, GetCustomersResponseDto, GetCustomerRequestDto } from '@/types/types'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import axios from 'axios'
 import {
@@ -44,8 +44,8 @@ import SiikliPage from '@/SiikliPage'
 import NewCustomer from './NewCustomer'
 
 function SortableTableRow({ customer, onEdit, onDelete }: {
-  customer: CustomerDto
-  onEdit: (customer: CustomerDto) => void
+  customer: GetCustomerRequestDto
+  onEdit: (customer: GetCustomerRequestDto) => void
   onDelete: (id: string) => void
 }) {
   return (
@@ -114,12 +114,12 @@ function SortableTableRow({ customer, onEdit, onDelete }: {
 }
 
 export function Customers() {
-  const [customers, setCustomers] = useState<CustomerDto[]>([])
+  const [customers, setCustomers] = useState<GetCustomerRequestDto[]>([])
   const [customerGroups, setCustomerGroups] = useState<string[]>([])
 
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
-  const [customerToEdit, setCustomerToEdit] = useState<CustomerDto>()
+  const [customerToEdit, setCustomerToEdit] = useState<GetCustomerRequestDto>()
   const [showCreateDialog, setShowCreateDialog] = useState(false)
   const [customerIdToDelete, setCustomerIdToDelete] = useState<string | null>(null)
   const [customerGroupFilter, setCustomerGroupFilter] = useState<string>('all')
@@ -170,7 +170,7 @@ export function Customers() {
   const totalPages = Math.ceil(filteredCustomers.length / rowsPerPage)
 
   // Customer edit
-  const startEdit = (customer: CustomerDto) => {
+  const startEdit = (customer: GetCustomerRequestDto) => {
     setCustomerToEdit({ ...customer })
     setShowCreateDialog(true)
   }
