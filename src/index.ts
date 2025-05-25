@@ -14,11 +14,10 @@ import { customersRoute } from './api/customers'
 import dashboardRoute from './api/dashboard'
 import invoiceRoute from './api/invoices'
 import { ordersRoute } from './api/orders'
+import packagingListRoute from './api/packaging-list'
 import productsRoute from './api/products'
-
 import salesReportRoute from './api/sales_report'
 import tenantsRoute from './api/tenants'
-import warehouseRoute from './api/warehouse-report'
 import { authErrorHandler } from './middlewares/authError'
 import passportConfig from './passportConfig'
 import redisClient from './redis'
@@ -59,13 +58,13 @@ async function startServer() {
   process.on('uncaughtException', (err) => {
     console.error('Uncaught Exception:', err)
     Sentry.captureException(err)
-    process.exit(1);
+    process.exit(1)
   })
 
   process.on('unhandledRejection', (reason, promise) => {
     console.error('Unhandled Rejection:', reason)
     Sentry.captureException(reason)
-    process.exit(1);
+    process.exit(1)
   })
 
   app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
@@ -131,7 +130,7 @@ async function startServer() {
   app.use(tenantsRoute)
   app.use(salesReportRoute)
   app.use(invoiceRoute)
-  app.use(warehouseRoute)
+  app.use(packagingListRoute)
   app.use(dashboardRoute)
 
   app.get('/api/health', (req, res) => {
@@ -171,7 +170,7 @@ async function startServer() {
     // Ensure we always send a response
     if (!res.headersSent) {
       res.status(500).json({
-        error: 'Internal server error'
+        error: 'Internal server error',
       })
     }
   })
@@ -180,17 +179,17 @@ async function startServer() {
     console.log(`🚀 Server ready at: http://localhost:3000`)
   })
 
-  process.on("SIGTERM", () => {
+  process.on('SIGTERM', () => {
     server.close(() => {
-      console.log("Server closed gracefully")
-      Sentry.captureMessage("Server closed gracefully")
+      console.log('Server closed gracefully')
+      Sentry.captureMessage('Server closed gracefully')
     })
   })
 
-  process.on("SIGINT", () => {
+  process.on('SIGINT', () => {
     server.close(() => {
-      console.log("Server closed via SIGINT")
-      Sentry.captureMessage("Server closed via SIGINT")
+      console.log('Server closed via SIGINT')
+      Sentry.captureMessage('Server closed via SIGINT')
       process.exit(0)
     })
   })
@@ -200,4 +199,3 @@ startServer().catch((err) => {
   console.error('Failed to start server:', err)
   process.exit(1)
 })
-

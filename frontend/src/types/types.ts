@@ -108,26 +108,23 @@ export interface OrderProduct {
   freetext: string | null
 }
 
-export interface WarehouseReportByCustomerRow {
-
-  customerId: string
-  customerName: string
-  productVariety: string
-  productType: string
-  productName: string
-  packageSize: number
-  packageType: string
-  freetext: string
-  amount: number
-}
-
-export interface WarehouseReportByCustomer {
+export interface PackagingListGroupedByCustomer {
   deliveryDate: string
   groupedBy: 'customer'
-  rows: WarehouseReportByCustomerRow[]
+  rows: {
+    customerId: string
+    customerName: string
+    productVariety: string
+    productType: string
+    productName: string
+    packageSize: number
+    packageType: string
+    freetext: string
+    amount: number
+  }[]
 }
 
-export interface WarehouseReportByProduct {
+export interface PackagingListGroupedByProduct {
   deliveryDate: string
   groupedBy: 'product'
   rows: {

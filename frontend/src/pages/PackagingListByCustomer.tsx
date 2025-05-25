@@ -1,16 +1,16 @@
-import type { WarehouseReportByCustomer, WarehouseReportByCustomerRow } from '@/types/types'
+import type { PackagingListGroupedByCustomer } from '@/types/types'
 
-export function WarehouseReportByCustomerDocument({ report }: {
-  report: WarehouseReportByCustomer
+export function PackagingListByCustomer({ report }: {
+  report: PackagingListGroupedByCustomer
 }) {
-  const groupByCustomerName = (orders: WarehouseReportByCustomerRow[]): Record<string, WarehouseReportByCustomerRow[]> => {
+  const groupByCustomerName = (orders: PackagingListGroupedByCustomer['rows']): Record<string, PackagingListGroupedByCustomer['rows']> => {
     return orders.reduce((acc, order) => {
       if (!acc[order.customerName]) {
         acc[order.customerName] = []
       }
       acc[order.customerName].push(order)
       return acc
-    }, {} as Record<string, WarehouseReportByCustomerRow[]>)
+    }, {} as Record<string, PackagingListGroupedByCustomer['rows']>)
   }
 
   const groupedData = groupByCustomerName(report.rows)
@@ -72,4 +72,4 @@ export function WarehouseReportByCustomerDocument({ report }: {
   )
 }
 
-export default WarehouseReportByCustomerDocument
+export default PackagingListByCustomer

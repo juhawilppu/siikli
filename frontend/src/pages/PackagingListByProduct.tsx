@@ -1,8 +1,8 @@
-import type { WarehouseReportByProduct } from '@/types/types'
+import type { PackagingListGroupedByProduct } from '@/types/types'
 import '../App.css'
 
-export function WarehouseReportByProductDocument({ report }: {
-  report: WarehouseReportByProduct
+export function PackagingListByProduct({ report }: {
+  report: PackagingListGroupedByProduct
 }) {
   function groupBy<T, K extends keyof T>(array: T[], key: K): Record<string, T[]> {
     return array.reduce((result, item) => {
@@ -115,4 +115,4 @@ export function WarehouseReportByProductDocument({ report }: {
   )
 }
 
-export default WarehouseReportByProductDocument
+export default PackagingListByProduct

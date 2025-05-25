@@ -1,4 +1,4 @@
-import type { WarehouseReportByCustomer, WarehouseReportByProduct } from '@/types/types'
+import type { PackagingListGroupedByCustomer, PackagingListGroupedByProduct } from '@/types/types'
 import axios from 'axios'
 import { Calendar, RefreshCw } from 'lucide-react'
 import { useState } from 'react'
@@ -10,22 +10,22 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import SiikliPage from '@/SiikliPage'
 import { dateToString, formatDate } from '@/utils/date'
-import WarehouseReportByCustomerDocument from './WarehouseReportByCustomer'
-import WarehouseReportByProductDocument from './WarehouseReportByProduct'
+import PackagingListByCustomer from './PackagingListByCustomer'
+import PackagingListByProduct from './PackagingListByProduct'
 
-export function PackageList() {
+export function PackagingList() {
   const [deliveryDate, setDeliveryDate] = useState<Date | undefined>(new Date())
   const [groupBy, setGroupBy] = useState<'customer' | 'product'>('customer')
   const [isLoading, setIsLoading] = useState(false)
 
-  const [report, setReport] = useState<WarehouseReportByProduct | WarehouseReportByCustomer>()
+  const [report, setReport] = useState<PackagingListGroupedByProduct | PackagingListGroupedByCustomer>()
 
   const handleFetch = async () => {
     if (!deliveryDate) {
       return
     }
     setIsLoading(true)
-    const res = await axios.get(`/warehouse-report/grouped-by/${groupBy}`, {
+    const res = await axios.get(`/packaging-list/grouped-by/${groupBy}`, {
       params: {
         deliveryDate: dateToString(deliveryDate),
       },
@@ -64,7 +64,10 @@ export function PackageList() {
                     <CalendarComponent
                       mode="single"
                       selected={deliveryDate}
-                      onSelect={(value: Date | undefined) => { setDeliveryDate(value); setReport(undefined) }}
+                      onSelect={(value: Date | undefined) => {
+                        setDeliveryDate(value)
+                        setReport(undefined)
+                      }}
                       initialFocus
                     />
                   </PopoverContent>
@@ -73,7 +76,14 @@ export function PackageList() {
 
               <div className="space-y-2">
                 <Label className="font-medium">Ryhmittely</Label>
-                <RadioGroup value={groupBy} onValueChange={(value: 'customer' | 'product') => { setGroupBy(value); setReport(undefined) }} className="flex gap-6">
+                <RadioGroup
+                  value={groupBy}
+                  onValueChange={(value: 'customer' | 'product') => {
+                    setGroupBy(value)
+                    setReport(undefined)
+                  }}
+                  className="flex gap-6"
+                >
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="customer" id="group-customer" />
                     <Label htmlFor="group-customer">Asiakkaan mukaan</Label>
@@ -129,12 +139,12 @@ export function PackageList() {
           <Card className="p-5">
             <Button onClick={() => window.print()}>Tulosta</Button>
             {report.groupedBy === 'customer' && (
-              <WarehouseReportByCustomerDocument
+              <PackagingListByCustomer
                 report={report}
               />
             )}
             {report.groupedBy === 'product' && (
-              <WarehouseReportByProductDocument
+              <PackagingListByProduct
                 report={report}
               />
             )}

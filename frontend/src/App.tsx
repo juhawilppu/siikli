@@ -23,7 +23,7 @@ import { Invoices } from './pages/Invoices'
 import Order from './pages/Order/Order'
 import Orders from './pages/Orders'
 import { PackageConfiguration } from './pages/PackageConfiguration'
-import { PackageList } from './pages/PackageList'
+import { PackagingList } from './pages/PackagingList'
 
 import Products from './pages/Products'
 import TuoteryhmatJarjestely from './pages/ProductTypeReorder'
@@ -229,7 +229,7 @@ function App() {
                 <Route path="/orders/new" element={<Order key="new" />} />
                 <Route path="/orders/:orderId" element={<Order key="edit" />} />
                 <Route path="/sales-report" element={<SalesReport />} />
-                <Route path="/packaging-list" element={<PackageList />} />
+                <Route path="/packaging-list" element={<PackagingList />} />
                 <Route path="/invoices" element={<Invoices />} />
                 <Route path="/customers" element={<Customers />} />
                 <Route path="/customers/:customerId" element={<CustomerPage />} />

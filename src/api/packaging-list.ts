@@ -1,12 +1,11 @@
-import type { WarehouseReportByCustomer, WarehouseReportByProduct } from '../../frontend/src/types/types'
-// warehouseReport.routes.ts
+import type { PackagingListGroupedByCustomer, PackagingListGroupedByProduct } from '../../frontend/src/types/types'
 import express from 'express'
 import { getUser } from '../middlewares/permissions'
 import prisma from '../prisma'
 
 const router = express.Router()
 
-router.get('/api/warehouse-report/grouped-by/customer', async (req, res) => {
+router.get('/api/packaging-list/grouped-by/customer', async (req, res) => {
   const { tenantId } = getUser(req)
 
   const query = req.query
@@ -19,8 +18,7 @@ router.get('/api/warehouse-report/grouped-by/customer', async (req, res) => {
 
   console.log('deliveryDate here', deliveryDate)
 
-  try {
-    const results = await prisma.$queryRawUnsafe<any>(`
+  const results = await prisma.$queryRawUnsafe<any>(`
       SELECT
         customer_id,
         c.name AS customer_name,
@@ -54,32 +52,27 @@ router.get('/api/warehouse-report/grouped-by/customer', async (req, res) => {
         amount ASC,
         product_name ASC
     `)
-    console.log('results', results)
+  console.log('results', results)
 
-    res.json({
-      deliveryDate,
-      groupedBy: 'customer',
-      rows: results.map((r) => {
-        return {
-          customerId: r.customer_id,
-          customerName: r.customer_name,
-          productType: r.product_type,
-          productName: r.product_name,
-          packageSize: r.package_size,
-          packageType: r.package_type,
-          freetext: r.freetext,
-          amount: r.amount,
-        }
-      }),
-    } satisfies WarehouseReportByCustomer)
-  }
-  catch (error) {
-    console.error('Error fetching warehouse report:', error)
-    res.status(500).json({ error: 'Internal server error' })
-  }
+  res.json({
+    deliveryDate,
+    groupedBy: 'customer',
+    rows: results.map((r) => {
+      return {
+        customerId: r.customer_id,
+        customerName: r.customer_name,
+        productType: r.product_type,
+        productName: r.product_name,
+        packageSize: r.package_size,
+        packageType: r.package_type,
+        freetext: r.freetext,
+        amount: r.amount,
+      }
+    }),
+  } satisfies PackagingListGroupedByCustomer)
 })
 
-router.get('/api/warehouse-report/grouped-by/product', async (req, res) => {
+router.get('/api/packaging-list/grouped-by/product', async (req, res) => {
   const { tenantId } = getUser(req)
 
   const query = req.query
@@ -92,8 +85,7 @@ router.get('/api/warehouse-report/grouped-by/product', async (req, res) => {
 
   console.log('deliveryDate here', deliveryDate)
 
-  try {
-    const results = await prisma.$queryRawUnsafe<any>(`
+  const results = await prisma.$queryRawUnsafe<any>(`
     SELECT
     product_id,
     p.name AS product_name,
@@ -125,28 +117,23 @@ router.get('/api/warehouse-report/grouped-by/product', async (req, res) => {
     op.package_size ASC,
     amount ASC;
     `)
-    console.log('results', results)
+  console.log('results', results)
 
-    res.json({
-      deliveryDate,
-      groupedBy: 'product',
-      rows: results.map((r) => {
-        return {
-          productId: r.product_id,
-          productName: r.product_name,
-          productType: r.product_type,
-          productVariety: r.product_variety,
-          packageSize: r.package_size,
-          packageType: r.package_type,
-          amount: r.amount,
-        }
-      }),
-    } satisfies WarehouseReportByProduct)
-  }
-  catch (error) {
-    console.error('Error fetching warehouse report:', error)
-    res.status(500).json({ error: 'Internal server error' })
-  }
+  res.json({
+    deliveryDate,
+    groupedBy: 'product',
+    rows: results.map((r) => {
+      return {
+        productId: r.product_id,
+        productName: r.product_name,
+        productType: r.product_type,
+        productVariety: r.product_variety,
+        packageSize: r.package_size,
+        packageType: r.package_type,
+        amount: r.amount,
+      }
+    }),
+  } satisfies PackagingListGroupedByProduct)
 })
 
 export default router
