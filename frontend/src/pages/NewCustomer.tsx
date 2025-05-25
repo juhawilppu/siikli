@@ -21,7 +21,7 @@ function instructionTooltip(text: string) {
             <HelpCircle className="h-4 w-4 text-muted-foreground ml-1" />
           </div>
         </TooltipTrigger>
-        <TooltipContent>
+        <TooltipContent className="max-w-[300px]">
           <p>{text}</p>
         </TooltipContent>
       </Tooltip>
@@ -182,10 +182,12 @@ function NewCustomer({ closeDialog, customerToEdit, forwaredCustomerGroups, onSa
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="edit-company_legal_name" className="font-medium">
-                Virallinen nimi
-              </Label>
-              {instructionTooltip('Yrityksen virallinen kaupparekisterissä oleva nimi, jota käytetään laskuissa. Jos tämä on tyhjä, käytetään nimeä.')}
+              <span className="flex">
+                <Label htmlFor="edit-company_legal_name" className="font-medium">
+                  Virallinen nimi
+                </Label>
+                {instructionTooltip('Yrityksen virallinen kaupparekisterissä oleva nimi, jota käytetään laskuissa. Jos tämä on tyhjä, käytetään nimeä.')}
+              </span>
               <Input
                 id="edit-company_legal_name"
                 placeholder="Oy Myymäläketju Ab"
@@ -258,7 +260,7 @@ function NewCustomer({ closeDialog, customerToEdit, forwaredCustomerGroups, onSa
               </Popover>
             </div>
             <div className="space-y-2">
-              <span>
+              <span className="flex">
                 <Label htmlFor="edit-discount" className="font-medium">
                   Alennus (%)
                 </Label>
@@ -287,9 +289,12 @@ function NewCustomer({ closeDialog, customerToEdit, forwaredCustomerGroups, onSa
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="edit-reference" className="font-medium">
-              Viite
-            </Label>
+            <span className="flex">
+              <Label htmlFor="edit-reference" className="font-medium">
+                Laskun viite
+              </Label>
+              {instructionTooltip('Voit määrittää viitekoodin, joka näkyy laskuissa.')}
+            </span>
             <Input
               id="edit-reference"
               value={customer.invoiceReference || ''}
@@ -300,7 +305,7 @@ function NewCustomer({ closeDialog, customerToEdit, forwaredCustomerGroups, onSa
 
           <div className="space-y-2">
             <Label htmlFor="edit-address" className="font-medium">
-              Osoite
+              Katuosoite
             </Label>
             <Input
               id="edit-address"
@@ -362,15 +367,18 @@ function NewCustomer({ closeDialog, customerToEdit, forwaredCustomerGroups, onSa
           </div>
 
           <div className="flex items-center space-x-2 pt-2">
+            <span className="flex">
+              <Label htmlFor="edit-show_price_without_tax" className="font-medium">
+                Näytä hinnat ilman veroa
+              </Label>
+              {instructionTooltip('Jos olet sopinut asiakkaan kanssa ALV 0 % hinnat, valitse tämä. Tämän jälkeen laskuissa näytetään ALV 0 % hinnat. Tämä asetus on tehty, jotta vältytään pyöristysvirheiltä.')}
+            </span>
             <Checkbox
               id="edit-show_price_without_tax"
               checked={customer.showPriceWithoutTax}
               onCheckedChange={checked =>
                 setCustomer({ ...customer, showPriceWithoutTax: checked as boolean })}
             />
-            <Label htmlFor="edit-show_price_without_tax" className="font-medium">
-              Näytä hinnat ilman veroa
-            </Label>
           </div>
         </div>
 
