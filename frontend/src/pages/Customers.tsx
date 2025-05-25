@@ -1,10 +1,8 @@
-import type { GetCustomerRequestDto, GetCustomersResponseDto, PostCreateCustomerRequestDto } from '@/types/types'
-import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
+import type { GetCustomerRequestDto, GetCustomersResponseDto } from '@/types/types'
 import axios from 'axios'
 import {
   Edit,
   Filter,
-  Plus,
   Trash2,
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
@@ -41,7 +39,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { useToast } from '@/hooks/use-toast'
 import SiikliPage from '@/SiikliPage'
-import NewCustomer from './NewCustomer'
+import { NewCustomer } from './NewCustomer'
 
 function SortableTableRow({ customer, onEdit, onDelete }: {
   customer: GetCustomerRequestDto

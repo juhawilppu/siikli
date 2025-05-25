@@ -33,7 +33,7 @@ export function formatNumberForUi(number?: number) {
   return number?.toFixed(2) || ''
 }
 
-function NewCustomer({ closeDialog, customerToEdit, forwaredCustomerGroups, onSave }: {
+export function NewCustomer({ closeDialog, customerToEdit, forwaredCustomerGroups, onSave }: {
   closeDialog: () => void
   customerToEdit?: GetCustomerRequestDto
   forwaredCustomerGroups: string[]
@@ -168,48 +168,18 @@ function NewCustomer({ closeDialog, customerToEdit, forwaredCustomerGroups, onSa
         </DialogHeader>
         <div className="grid gap-4 py-4 max-h-[70vh] overflow-y-auto pl-[1px] pr-2">
           {/* pl-[1px] to fix scrollbar width */}
+          <h2 className="text-lg font-medium">Perustiedot</h2>
           <div className="space-y-2">
             <Label htmlFor="edit-name" className="font-medium">
               Nimi *
             </Label>
             <Input
               id="edit-name"
-              placeholder="Myymälä Leppävaara"
               value={customer.name}
               onChange={e => setCustomer({ ...customer, name: e.target.value })}
               maxLength={50}
             />
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <span className="flex">
-                <Label htmlFor="edit-company_legal_name" className="font-medium">
-                  Virallinen nimi
-                </Label>
-                {instructionTooltip('Yrityksen virallinen kaupparekisterissä oleva nimi, jota käytetään laskuissa. Jos tämä on tyhjä, käytetään nimeä.')}
-              </span>
-              <Input
-                id="edit-company_legal_name"
-                placeholder="Oy Myymäläketju Ab"
-                value={customer.companyLegalName || ''}
-                onChange={e => setCustomer({ ...customer, companyLegalName: e.target.value })}
-                maxLength={255}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="edit-business_id" className="font-medium">
-                Y-tunnus
-              </Label>
-              <Input
-                id="edit-business_id"
-                placeholder="1234567-8"
-                value={customer.businessId || ''}
-                onChange={e => setCustomer({ ...customer, businessId: e.target.value })}
-                maxLength={255}
-              />
-            </div>
-          </div>
-
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="edit-customer_group" className="font-medium">
@@ -288,21 +258,7 @@ function NewCustomer({ closeDialog, customerToEdit, forwaredCustomerGroups, onSa
             </div>
           </div>
 
-          <div className="space-y-2">
-            <span className="flex">
-              <Label htmlFor="edit-reference" className="font-medium">
-                Laskun viite
-              </Label>
-              {instructionTooltip('Voit määrittää viitekoodin, joka näkyy laskuissa.')}
-            </span>
-            <Input
-              id="edit-reference"
-              value={customer.invoiceReference || ''}
-              onChange={e => setCustomer({ ...customer, invoiceReference: e.target.value })}
-              maxLength={255}
-            />
-          </div>
-
+          <h2 className="text-lg font-medium">Yhteystiedot</h2>
           <div className="space-y-2">
             <Label htmlFor="edit-address" className="font-medium">
               Katuosoite
@@ -315,7 +271,7 @@ function NewCustomer({ closeDialog, customerToEdit, forwaredCustomerGroups, onSa
             />
           </div>
 
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="edit-postal_code" className="font-medium">
                 Postinumero
@@ -327,7 +283,7 @@ function NewCustomer({ closeDialog, customerToEdit, forwaredCustomerGroups, onSa
                 maxLength={5}
               />
             </div>
-            <div className="space-y-2 col-span-2">
+            <div className="space-y-2">
               <Label htmlFor="edit-city" className="font-medium">
                 Kaupunki
               </Label>
@@ -365,7 +321,48 @@ function NewCustomer({ closeDialog, customerToEdit, forwaredCustomerGroups, onSa
               />
             </div>
           </div>
-
+          <h2 className="text-lg font-medium">Laskutuksen asetukset</h2>
+          <div className="space-y-2">
+            <Label htmlFor="edit-business_id" className="font-medium">
+              Y-tunnus
+            </Label>
+            <Input
+              id="edit-business_id"
+              placeholder="1234567-8"
+              value={customer.businessId || ''}
+              onChange={e => setCustomer({ ...customer, businessId: e.target.value })}
+              maxLength={255}
+            />
+          </div>
+          <div className="space-y-2">
+            <span className="flex">
+              <Label htmlFor="edit-company_legal_name" className="font-medium">
+                Yrityksen virallinen nimi
+              </Label>
+              {instructionTooltip('Yrityksen virallinen kaupparekisterissä oleva nimi, jota käytetään laskuissa. Jos tämä on tyhjä, käytetään nimeä.')}
+            </span>
+            <Input
+              id="edit-company_legal_name"
+              placeholder="Oy Myymäläketju Ab"
+              value={customer.companyLegalName || ''}
+              onChange={e => setCustomer({ ...customer, companyLegalName: e.target.value })}
+              maxLength={255}
+            />
+          </div>
+          <div className="space-y-2">
+            <span className="flex">
+              <Label htmlFor="edit-reference" className="font-medium">
+                Laskun viite
+              </Label>
+              {instructionTooltip('Voit määrittää viitekoodin, joka näkyy laskuissa.')}
+            </span>
+            <Input
+              id="edit-reference"
+              value={customer.invoiceReference || ''}
+              onChange={e => setCustomer({ ...customer, invoiceReference: e.target.value })}
+              maxLength={255}
+            />
+          </div>
           <div className="flex items-center space-x-2 pt-2">
             <span className="flex">
               <Label htmlFor="edit-show_price_without_tax" className="font-medium">
@@ -395,5 +392,3 @@ function NewCustomer({ closeDialog, customerToEdit, forwaredCustomerGroups, onSa
     </Dialog>
   )
 }
-
-export default NewCustomer
