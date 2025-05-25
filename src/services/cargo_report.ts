@@ -7,9 +7,7 @@ export default async function createCargoReport(
     products: (OrderProduct & {
       products: Product
     })[]
-    customer: Customer & {
-      chain: string
-    }
+    customer: Customer
   },
   first: boolean,
 ) {
@@ -50,7 +48,7 @@ export default async function createCargoReport(
             </div>
             <h1>Kuormakirja</h1>
             <div style="margin-bottom: 10pt;">
-                <div><b>Asiakas:</b> <span>${order.customer.chain} ${order.customer.name}</span></div>
+                <div><b>Asiakas:</b> <span>${order.customer.name}</span></div>
                 <div><b>Toimituspäivä:</b> <span>${formatDate(order.deliveryDate)}</span></div>
             </div>
             <table>

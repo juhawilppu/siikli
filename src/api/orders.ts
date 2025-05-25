@@ -192,7 +192,6 @@ ordersRoute.get(`/api/orders`, isAuthenticated, async (req, res) => {
       total: o.products.map(o => o.amount * o.price).reduce((a, b) => a + b, 0),
       customer: {
         id: o.customerId,
-        chain: o.customer.chain,
         name: o.customer.name,
       },
     } as GetOrderList

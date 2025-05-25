@@ -39,7 +39,6 @@ router.get('/api/warehouse-report/grouped-by/customer', async (req, res) => {
       WHERE DATE(delivery_date) = '${deliveryDate}' and o.tenant_id = '${tenantId}'
       GROUP BY
         customer_id,
-        c.chain,
         c.name,
         product_id,
         p.name,
