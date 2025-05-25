@@ -1,4 +1,4 @@
-import type { PostCreateCustomerRequestDto, GetCustomersResponseDto, GetCustomerRequestDto } from '@/types/types'
+import type { GetCustomerRequestDto, GetCustomersResponseDto, PostCreateCustomerRequestDto } from '@/types/types'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import axios from 'axios'
 import {
@@ -126,7 +126,6 @@ export function Customers() {
   const [page, setPage] = useState(1)
   const rowsPerPage = 20
   const { toast } = useToast()
-
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value)
@@ -298,8 +297,8 @@ export function Customers() {
                             customer={customer}
                             onEdit={startEdit}
                             onDelete={deleteCustomer}
-                            />
-                          ))
+                          />
+                        ))
                       )}
                 </TableBody>
               </Table>
@@ -365,23 +364,23 @@ export function Customers() {
       </SiikliPage>
 
       {(showCreateDialog || customerToEdit) && (
-      <NewCustomer
-        closeDialog={
-          () => {
+        <NewCustomer
+          closeDialog={
+            () => {
+              setShowCreateDialog(false)
+              setCustomerToEdit(undefined)
+            }
+          }
+          customerToEdit={customerToEdit}
+          forwaredCustomerGroups={customerGroups}
+          onSave={() => {
+            refreshCustomers()
             setShowCreateDialog(false)
             setCustomerToEdit(undefined)
-          }
-        }
-        customerToEdit={customerToEdit}
-        forwaredCustomerGroups={customerGroups}
-          onSave={() => {
-          refreshCustomers()
-          setShowCreateDialog(false)
-          setCustomerToEdit(undefined)
-        }}
-      />
+          }}
+        />
       )}
-        {/* Delete dialog */}
+      {/* Delete dialog */}
       <AlertDialog open={!!customerIdToDelete} onOpenChange={open => !open && setCustomerIdToDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
