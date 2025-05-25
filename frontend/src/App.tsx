@@ -3,7 +3,7 @@ import * as Sentry from '@sentry/react'
 import axios from 'axios'
 import { Building2, ClipboardList, FileText, HelpCircle, LineChart, PlusCircle, Receipt, Search, ShoppingBasket, Users } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { Navigate, NavLink, Route, Routes, useLocation } from 'react-router-dom'
+import { Navigate, NavLink, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import AboutUs from './AboutUs'
 import LanguageSwitcher from './components/LanguageSwitcher'
@@ -51,6 +51,7 @@ const navItems = [
 ]
 
 function App() {
+  const navigate = useNavigate()
   const [user, setUser] = useState<GetCurrentUserDto>()
   const [loading, setLoading] = useState(true)
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false)
@@ -173,6 +174,9 @@ function App() {
               <Button
                 variant="outline"
                 size="icon"
+                onClick={() => {
+                  navigate('/support')
+                }}
                 className="rounded-full bg-blue-700 border-blue-500 text-white hover:bg-blue-800 hover:text-white"
               >
                 <HelpCircle className="h-5 w-5" />
@@ -232,6 +236,7 @@ function App() {
                 <Route path="/customers/:customerId/:edit" element={<CustomerPage />} />
                 <Route path="/products" element={<Products />} />
                 <Route path="/products/reorder" element={<TuoteryhmatJarjestely />} />
+                <Route path="/support" element={<Support inApp />} />
                 <Route
                   path="/package_configuration"
                   element={<PackageConfiguration />}
