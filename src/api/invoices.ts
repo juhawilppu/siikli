@@ -79,20 +79,19 @@ invoiceRoute.get(`/api/invoices`, isAuthenticated, async (req, res) => {
       notificationPeriod: `${notificationPeriod} päivää`,
       interestRate: 7,
       customer: {
-        chain: customer.chain,
         name: customer.name,
-        companyName: customer.companyName,
-        businessId: customer.businessId,
-        address: customer.address,
+        legalName: customer.companyLegalName,
+        streetAddress: customer.streetAddress,
         postalCode: customer.postalCode,
         city: customer.city,
+        businessId: customer.businessId,
         showPriceWithoutTax: customer.showPriceWithoutTax,
       },
       company: {
         name: company.name,
       },
       items,
-      totals: calculateTotals(items, customer.compensation, customer.showPriceWithoutTax),
+      totals: calculateTotals(items, customer.discount, customer.showPriceWithoutTax),
     }
 
     return res.status(200).json(invoice satisfies InvoiceDto)
@@ -111,7 +110,7 @@ function getPriceWithoutTax(item: InvoiceItemDto, usePrice0: boolean) {
   return usePrice0 ? item.price0 : item.price / 1.14
 }
 
-function calculateTotals(items: InvoiceItemDto[], compensation: number, usePrice0: boolean) {
+function calculateTotals(items: InvoiceItemDto[], discount: number, usePrice0: boolean) {
   let totalSumWithoutTax = new Decimal(0)
   let totalSumWithTax = new Decimal(0)
   let totalCompensation = new Decimal(0)
@@ -134,7 +133,7 @@ function calculateTotals(items: InvoiceItemDto[], compensation: number, usePrice
     totalSumWithTax = totalSumWithTax.toDecimalPlaces(2, Decimal.ROUND_HALF_DOWN)
 
     totalCompensation = totalSumWithoutTax
-      .mul(new Decimal(compensation).div(100))
+      .mul(new Decimal(discount).div(100))
       .toDecimalPlaces(2, Decimal.ROUND_HALF_DOWN)
 
     totalTax = totalSumWithoutTax
@@ -151,9 +150,9 @@ function calculateTotals(items: InvoiceItemDto[], compensation: number, usePrice
       .div(1.14)
       .toDecimalPlaces(2, Decimal.ROUND_HALF_DOWN)
 
-    if (compensation > 0) {
+    if (discount > 0) {
       totalCompensation = totalSumWithoutTax
-        .mul(new Decimal(compensation).div(100))
+        .mul(new Decimal(discount).div(100))
         .toDecimalPlaces(2, Decimal.ROUND_HALF_DOWN)
 
       finalSumWithoutTax = totalSumWithoutTax.sub(totalCompensation)

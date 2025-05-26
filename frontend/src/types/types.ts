@@ -214,13 +214,12 @@ export interface InvoiceDto {
   date: string
   dueDate: string
   customer: {
-    chain: string
-    name: string
-    companyName: string | null
-    businessId: string | null
-    address: string | null
+    streetAddress: string | null
     postalCode: string | null
     city: string | null
+    name: string
+    legalName: string | null
+    businessId: string | null
     showPriceWithoutTax: boolean
   }
   company: {

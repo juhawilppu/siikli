@@ -62,8 +62,6 @@ export function InvoiceView(
           </tr>
           <tr>
             <td>
-              {invoice.customer.chain}
-              {' '}
               {invoice.customer.name}
             </td>
             <td className="strong border-left">Laskun numero:</td>
@@ -78,7 +76,7 @@ export function InvoiceView(
             </td>
           </tr>
           <tr>
-            <td>{invoice.customer.companyName}</td>
+            <td>{invoice.customer.legalName || invoice.customer.name}</td>
             <td className="strong border-left">Maksuehdot:</td>
             <td>
               {isEditMode
@@ -91,7 +89,7 @@ export function InvoiceView(
             </td>
           </tr>
           <tr>
-            <td>{invoice.customer.businessId ? `Y-tunnus ${invoice.customer.businessId}` : invoice.customer.address}</td>
+            <td>{invoice.customer.businessId ? `Y-tunnus ${invoice.customer.businessId}` : invoice.customer.streetAddress}</td>
             <td className="strong border-left">Eräpäivä:</td>
             <td>
               {isEditMode
@@ -104,7 +102,7 @@ export function InvoiceView(
             </td>
           </tr>
           <tr>
-            <td>{invoice.customer.businessId ? invoice.customer.address : `${invoice.customer.postalCode || ''} ${invoice.customer.city || ''}`}</td>
+            <td>{invoice.customer.businessId ? invoice.customer.streetAddress : `${invoice.customer.postalCode || ''} ${invoice.customer.city || ''}`}</td>
             <td className="strong border-left">Viivästyskorko:</td>
             <td>
               {isEditMode
