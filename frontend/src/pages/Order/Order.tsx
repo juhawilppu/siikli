@@ -1,6 +1,6 @@
 import type React from 'react'
 
-import type { PostCreateCustomerRequestDto, GetCustomersResponseDto, GetOrderDto, GetPackageSettings, GetProductResponseDto, OrderProduct, PostOrderRequestDto, PostOrderResponseDto } from '@/types/types'
+import type { GetCustomerRequestDto, GetCustomersResponseDto, GetOrderDto, GetPackageSettings, GetProductResponseDto, OrderProduct, PostCreateCustomerRequestDto, PostOrderRequestDto, PostOrderResponseDto } from '@/types/types'
 
 import { captureException } from '@sentry/react'
 import axios from 'axios'
@@ -36,7 +36,7 @@ import { formatMoneyFi } from '@/utils/money'
 import ConfirmDialog from '../ConfirmDialog'
 
 export default function CreateOrder() {
-  const [customers, setCustomers] = useState<PostCreateCustomerRequestDto[]>()
+  const [customers, setCustomers] = useState<GetCustomerRequestDto[]>()
   const [products, setProducts] = useState<GetProductResponseDto[]>()
   const [isLoading, setIsLoading] = useState(true)
   const [deliveryDate, setDeliveryDate] = useState<Date>()
@@ -342,11 +342,7 @@ export default function CreateOrder() {
       <SiikliPage
         title={orderId ? 'Tilaus' : 'Uusi tilaus'}
         description="Täytä tilauksen tiedot"
-        mainAction={(
-          <Button variant="outline" onClick={() => window.history.back()}>
-            Peruuta
-          </Button>
-        )}
+        mainAction={<></>}
       >
         <div className="flex flex-col items-center justify-center h-[60vh] space-y-6 text-center">
           <div className="text-4xl">📦</div>
@@ -396,12 +392,7 @@ export default function CreateOrder() {
       title={orderId ? 'Tilaus' : 'Uusi tilaus'}
       description="Täytä tilauksen tiedot"
       mainAction={
-        !orderId
-        && (
-          <Button variant="outline" onClick={() => window.history.back()}>
-            Peruuta
-          </Button>
-        )
+        <></>
       }
     >
 
