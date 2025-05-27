@@ -1,0 +1,119 @@
+import type { InvoiceItemDto, InvoiceRow } from '../frontend/src/types/types'
+import Decimal from 'decimal.js'
+
+export function calculateTotals(items: InvoiceItemDto[], discount: number, usePrice0: boolean) {
+  let totalSumWithoutTax = new Decimal(0)
+  let totalSumWithTax = new Decimal(0)
+  let totalDiscount = new Decimal(0)
+  let totalTax = new Decimal(0)
+  let finalSumWithoutTax = new Decimal(0)
+  let finalSumWithTax = new Decimal(0)
+  let totalKg = 0
+
+  const invoiceRows: InvoiceRow[] = []
+
+  for (const item of items) {
+    if (usePrice0) {
+
+      // Calculation will be based on VAT 0 % price
+      const priceWithTax = undefined
+      const priceWithoutTax = new Decimal(item.price0).toDecimalPlaces(2, Decimal.ROUND_HALF_DOWN)
+
+      const totalWithoutTax = new Decimal(item.amount).mul(priceWithoutTax).toDecimalPlaces(2, Decimal.ROUND_HALF_DOWN)
+      const totalWithTax = totalWithoutTax.mul(1.14).toDecimalPlaces(2, Decimal.ROUND_HALF_DOWN)
+      const tax = (totalWithTax.sub(totalWithoutTax)).toDecimalPlaces(2, Decimal.ROUND_HALF_DOWN)
+
+      invoiceRows.push({
+        usePrice0,
+        deliveryDate: item.deliveryDate,
+        orderNumber: item.orderNumber,
+        productName: item.productName,
+        quantity: item.amount,
+        priceWithTax,
+        priceWithoutTax,
+        totalWithTax,
+        totalWithoutTax,
+        tax,
+      })
+    }
+    else {
+      // Calculation will be based on VAT 14 % price
+      const priceWithTax = new Decimal(item.price).toDecimalPlaces(2, Decimal.ROUND_HALF_DOWN)
+      const priceWithoutTax = undefined
+
+      const totalWithTax = new Decimal(item.amount).mul(priceWithTax).toDecimalPlaces(2, Decimal.ROUND_HALF_DOWN)
+      const totalWithoutTax = totalWithTax.div(1.14)
+      const tax = (totalWithTax.sub(totalWithoutTax)).toDecimalPlaces(2, Decimal.ROUND_HALF_DOWN)
+
+      invoiceRows.push({
+        usePrice0,
+        deliveryDate: item.deliveryDate,
+        orderNumber: item.orderNumber,
+        productName: item.productName,
+        quantity: item.amount,
+        priceWithTax,
+        priceWithoutTax,
+        totalWithTax,
+        totalWithoutTax,
+        tax,
+      })
+    }
+  }
+
+  for (const invoiceRow of invoiceRows) {
+    totalSumWithoutTax = totalSumWithoutTax.add(invoiceRow.totalWithoutTax)
+    totalSumWithTax = totalSumWithTax.add(invoiceRow.totalWithTax)
+    totalKg += invoiceRow.quantity
+  }
+
+  totalSumWithTax = totalSumWithTax.toDecimalPlaces(2, Decimal.ROUND_HALF_DOWN)
+
+  totalSumWithoutTax = totalSumWithTax
+    .div(1.14)
+    .toDecimalPlaces(2, Decimal.ROUND_HALF_DOWN)
+
+  totalDiscount = totalSumWithoutTax
+    .mul(new Decimal(discount).div(100))
+    .toDecimalPlaces(2, Decimal.ROUND_HALF_DOWN)
+
+  finalSumWithoutTax = totalSumWithoutTax.sub(totalDiscount)
+
+  totalTax = finalSumWithoutTax
+    .mul(0.14)
+    .toDecimalPlaces(2, Decimal.ROUND_HALF_DOWN)
+
+  finalSumWithTax = finalSumWithoutTax.add(totalTax)
+
+  return {
+    items: invoiceRows,
+    totals: {
+      totalSumWithoutTax: totalSumWithoutTax.toNumber(),
+      totalSumWithTax: totalSumWithTax.toNumber(),
+      totalDiscount: totalDiscount.toNumber(),
+      totalTax: totalTax.toNumber(),
+      finalSumWithoutTax: finalSumWithoutTax.toNumber(),
+      finalSumWithTax: finalSumWithTax.toNumber(),
+      totalKg,
+    },
+  }
+}
+
+/**
+ * Function to convert from server-side Decimal objects to numbers for REST API
+ * 
+ * @param invoice
+ * @returns 
+ */
+export const serializeInvoice = (invoice: ReturnType<typeof calculateTotals>) => {
+  return {
+    ...invoice,
+    items: invoice.items.map((item) => ({
+        ...item,
+        priceWithTax: item.usePrice0 ? undefined : item.priceWithTax.toNumber(),
+        priceWithoutTax: item.usePrice0 ? item.priceWithoutTax.toNumber() : undefined,
+        totalWithTax: item.usePrice0 ? undefined : item.totalWithTax.toNumber(),
+        totalWithoutTax: item.usePrice0 ? item.totalWithoutTax.toNumber() : undefined,
+        tax: item.usePrice0 ? undefined : item.tax.toNumber(),
+    })),
+  }
+}

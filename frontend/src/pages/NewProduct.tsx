@@ -27,16 +27,7 @@ import { PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Separator } from '@/components/ui/separator'
 import { toast } from '@/hooks/use-toast'
 import { cn } from '@/lib/utils'
-
-export function calculatePricesFromVat14(price: string, format: boolean) {
-  const price0 = Number.parseFloat(price) / 1.14
-  return { price: format ? Number.parseFloat(price).toFixed(2) : price, price0: price0.toFixed(2) }
-}
-
-export function calculatePricesFromVat0(price0: string, format: boolean) {
-  const price = Number.parseFloat(price0) * 1.14
-  return { price: price.toFixed(2), price0: format ? Number.parseFloat(price0).toFixed(2) : price0 }
-}
+import { calculatePricesFromVat0, calculatePricesFromVat14 } from './price-utils'
 
 export default function NewProduct({ productToEdit, hide, onSave, productTypes, refPackageTypes, refPackageSizes }: { productToEdit?: GetProductResponseDto, hide: () => void, onSave: (product: GetProductResponseDto) => void, productTypes: ProductTypeResponse[], refPackageTypes: string[], refPackageSizes: number[] }) {
   const mode = productToEdit ? 'edit' : 'create'

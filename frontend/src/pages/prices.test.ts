@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { calculatePricesFromVat0, calculatePricesFromVat14 } from './NewProduct'
+import { calculatePricesFromVat0, calculatePricesFromVat14 } from './price-utils'
 
 describe('price calculation functions', () => {
   describe('calculatePricesFromVat14', () => {

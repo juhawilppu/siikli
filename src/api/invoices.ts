@@ -1,8 +1,8 @@
-import type { InvoiceDto, InvoiceItemDto } from '../../frontend/src/types/types'
+import type { InvoiceDto } from '../../frontend/src/types/types'
 import { addDays } from 'date-fns'
-import Decimal from 'decimal.js'
 import express from 'express'
 import { dateToString } from '../../frontend/src/utils/date'
+import { calculateTotals, serializeInvoice } from '../invoice-service'
 import { getUser, isAuthenticated } from '../middlewares/permissions'
 import prisma from '../prisma'
 
@@ -10,7 +10,6 @@ const invoiceRoute = express.Router()
 
 invoiceRoute.get(`/api/invoices`, isAuthenticated, async (req, res) => {
   const { tenantId } = getUser(req)
-  try {
     const customerId = req.query.customerId as string
     const startDate = new Date(req.query.startDate as string)
     const endDate = new Date(req.query.endDate as string)
@@ -90,97 +89,11 @@ invoiceRoute.get(`/api/invoices`, isAuthenticated, async (req, res) => {
       company: {
         name: company.name,
       },
-      items,
-      totals: calculateTotals(items, customer.discount, customer.showPriceWithoutTax),
+      ...serializeInvoice(calculateTotals(items, customer.discount, customer.showPriceWithoutTax)),
     }
 
-    return res.status(200).json(invoice satisfies InvoiceDto)
-  }
-  catch (err) {
-    console.error('Error generating invoice:', err)
-    res.status(500).json({ error: 'Internal server error' })
-  }
-})
-
-function getPrice(item: InvoiceItemDto, usePrice0: boolean) {
-  return usePrice0 ? item.price0 * 1.14 : item.price
-}
-
-function getPriceWithoutTax(item: InvoiceItemDto, usePrice0: boolean) {
-  return usePrice0 ? item.price0 : item.price / 1.14
-}
-
-function calculateTotals(items: InvoiceItemDto[], discount: number, usePrice0: boolean) {
-  let totalSumWithoutTax = new Decimal(0)
-  let totalSumWithTax = new Decimal(0)
-  let totalCompensation = new Decimal(0)
-  let totalTax = new Decimal(0)
-  let finalSumWithoutTax = new Decimal(0)
-  let finalSumWithTax = new Decimal(0)
-  let totalKg = 0
-
-  for (const item of items) {
-    const priceWithoutTax = new Decimal(item.amount).mul(getPriceWithoutTax(item, usePrice0))
-    const priceWithTax = new Decimal(item.amount).mul(getPrice(item, usePrice0))
-
-    totalSumWithoutTax = totalSumWithoutTax.add(priceWithoutTax)
-    totalSumWithTax = totalSumWithTax.add(priceWithTax)
-    totalKg += item.amount
-  }
-
-  if (usePrice0) {
-    totalSumWithoutTax = totalSumWithoutTax.toDecimalPlaces(2, Decimal.ROUND_HALF_DOWN)
-    totalSumWithTax = totalSumWithTax.toDecimalPlaces(2, Decimal.ROUND_HALF_DOWN)
-
-    totalCompensation = totalSumWithoutTax
-      .mul(new Decimal(discount).div(100))
-      .toDecimalPlaces(2, Decimal.ROUND_HALF_DOWN)
-
-    totalTax = totalSumWithoutTax
-      .mul(0.14)
-      .toDecimalPlaces(2, Decimal.ROUND_HALF_DOWN)
-
-    finalSumWithoutTax = totalSumWithoutTax.sub(totalCompensation)
-    finalSumWithTax = finalSumWithoutTax.add(totalTax)
-  }
-  else {
-    totalSumWithTax = totalSumWithTax.toDecimalPlaces(2, Decimal.ROUND_HALF_DOWN)
-
-    totalSumWithoutTax = totalSumWithTax
-      .div(1.14)
-      .toDecimalPlaces(2, Decimal.ROUND_HALF_DOWN)
-
-    if (discount > 0) {
-      totalCompensation = totalSumWithoutTax
-        .mul(new Decimal(discount).div(100))
-        .toDecimalPlaces(2, Decimal.ROUND_HALF_DOWN)
-
-      finalSumWithoutTax = totalSumWithoutTax.sub(totalCompensation)
-
-      totalTax = finalSumWithoutTax
-        .mul(0.14)
-        .toDecimalPlaces(2, Decimal.ROUND_HALF_DOWN)
-
-      finalSumWithTax = finalSumWithoutTax.add(totalTax)
-    }
-    else {
-      totalCompensation = new Decimal(0)
-      totalTax = totalSumWithTax.sub(totalSumWithoutTax)
-
-      finalSumWithoutTax = totalSumWithoutTax
-      finalSumWithTax = finalSumWithoutTax.add(totalTax)
-    }
-  }
-
-  return {
-    totalSumWithoutTax: totalSumWithoutTax.toNumber(),
-    totalSumWithTax: totalSumWithTax.toNumber(),
-    totalCompensation: totalCompensation.toNumber(),
-    totalTax: totalTax.toNumber(),
-    finalSumWithoutTax: finalSumWithoutTax.toNumber(),
-    finalSumWithTax: finalSumWithTax.toNumber(),
-    totalKg,
-  }
-}
+    return res.status(200).json(invoice as InvoiceDto)
+  },
+)
 
 export default invoiceRoute

@@ -57,18 +57,18 @@ export function InvoiceAppendix({
               <td className="align-left width-20">{formatDate(item.deliveryDate)}</td>
               <td className="align-left width-20">{item.orderNumber}</td>
               <td className="align-left width-20">{item.productName}</td>
-              <td className="align-right width-20">{item.amount}</td>
-              {invoice.customer.showPriceWithoutTax
+              <td className="align-right width-20">{item.quantity}</td>
+              {item.usePrice0
                 ? (
                     <>
-                      <td className="align-right width-10">{formatMoneyFi(item.price0)}</td>
-                      <td className="align-right width-10">{formatMoneyFi(item.amount * item.price0)}</td>
+                      <td className="align-right width-10">{formatMoneyFi(item.priceWithoutTax)}</td>
+                      <td className="align-right width-10">{formatMoneyFi(item.totalWithoutTax)}</td>
                     </>
                   )
                 : (
                     <>
-                      <td className="align-right width-10">{formatMoneyFi(item.price)}</td>
-                      <td className="align-right width-10">{formatMoneyFi(item.amount * item.price)}</td>
+                      <td className="align-right width-10">{formatMoneyFi(item.priceWithTax)}</td>
+                      <td className="align-right width-10">{formatMoneyFi(item.totalWithTax)}</td>
                     </>
                   )}
             </tr>
