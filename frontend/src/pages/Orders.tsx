@@ -47,7 +47,7 @@ export default function Orders() {
     try {
       setIsPrinting(true)
       const response = await axios.get(
-        `/orders/cargo_reports?startDate=${dateToString(startDate)}&endDate=${dateToString(endDate)}`,
+        `/orders/waybills?startDate=${dateToString(startDate)}&endDate=${dateToString(endDate)}`,
         { responseType: 'blob' },
       )
 

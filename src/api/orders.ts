@@ -11,7 +11,7 @@ import puppeteer from 'puppeteer'
 import { dateToString, formatDate, stringToDate } from '../../frontend/src/utils/date'
 import { getUser, isAuthenticated } from '../middlewares/permissions'
 import prisma from '../prisma'
-import createCargoReport from '../services/cargo_report'
+import createWaybill from '../services/waybill'
 
 async function verifyPackageSizeAndType(body: { packageType: string | null, packageSize: number | null }, tenantId: string) {
   console.log('checking type', body)
@@ -199,7 +199,7 @@ ordersRoute.get(`/api/orders`, isAuthenticated, async (req, res) => {
   res.json(mapped)
 })
 
-ordersRoute.get(`/api/orders/cargo_reports`, isAuthenticated, async (req, res) => {
+ordersRoute.get(`/api/orders/waybills`, isAuthenticated, async (req, res) => {
   console.log('getting orders')
 
   if (!req.query.startDate || !req.query.endDate) {
@@ -246,7 +246,7 @@ ordersRoute.get(`/api/orders/cargo_reports`, isAuthenticated, async (req, res) =
   })
 
   const promises = orders.map((order, index) =>
-    createCargoReport(company, order, index === 0),
+    createWaybill(company, order, index === 0),
   )
 
   Promise.all(promises).then(async (htmls) => {

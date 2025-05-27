@@ -1,7 +1,7 @@
 import type { Customer, Order, OrderProduct, Product, Tenant } from '@prisma/client'
 import { formatDate } from '../../frontend/src/utils/date'
 
-export default async function createCargoReport(
+export default async function createWaybill(
   company: Tenant,
   order: Order & {
     products: (OrderProduct & {
