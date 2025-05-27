@@ -423,24 +423,32 @@ export default function LandingPage() {
       <section className="w-full py-12 md:py-24 bg-white">
         <div className="container px-4 md:px-6">
           <div className="flex flex-col items-center justify-center gap-4 text-center mb-12">
-            <h2 className="text-3xl font-bold tracking-tight">Mitä asiakkaamme sanovat</h2>
+            <h2 className="text-3xl font-bold tracking-tight">{t('landing.customerFeedback.title')}</h2>
             <p className="text-muted-foreground text-lg max-w-[800px]">
-              Tuhannet yritykset ovat tehostaneet toimintaansa Siikli ERP:n avulla.
+              {t('landing.customerFeedback.description')}
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
             {[
               {
-                name: 'Juhana Männistö',
-                company: 'Aromäen tila',
+                name: t(
+                  'landing.customerFeedback.1.name',
+                ),
+                company: t(
+                  'landing.customerFeedback.1.company',
+                ),
                 quote:
-                    'Siikli on merkittävästi helpottanut tilaustemme hallintaa ja laskutusta.',
+                    t('landing.customerFeedback.1.quote'),
               },
               {
-                name: 'Satu Valkas',
-                company: 'Aromäen tila',
+                name: t(
+                  'landing.customerFeedback.2.name',
+                ),
+                company: t(
+                  'landing.customerFeedback.2.company',
+                ),
                 quote:
-                    'Siikli on yksinkertainen ja luotettava sovellus, joka sopii juuri meidän tarpeisiimme.',
+                    t('landing.customerFeedback.2.quote'),
               },
             ].map((testimonial, i) => (
               <Card key={i} className="bg-gray-50 border-none">

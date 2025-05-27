@@ -2,7 +2,7 @@ import { useApp } from './context/AppContext'
 
 export const translations = {
   fi: {
-    'landing.title': 'Hallitse liiketoimintaasi tehokkaasti Siikli ERP:llä',
+    'landing.title': 'Yksinkertainen sovellus pienyritykselle, ilman säätöä',
     'landing.description': 'Siikli on helppokäyttöinen toiminnanohjausjärjestelmä, joka on suunniteltu erityisesti suomalaisten pienyritysten tarpeisiin.',
     'landing.description2': '🎉 Ensimmäiset käyttäjät saavat 3 kuukautta täysin ilmaiseksi. Haen palautetta ja kehityskohteita – saat täyden version maksutta ja autat samalla tekemään siitä entistä paremman.',
     'landing.startForFree': 'Aloita ilmaiseksi',
@@ -38,7 +38,7 @@ export const translations = {
     'landing.features.invoices.feature3': 'Tulostettava PDF',
     'landing.features.shipping.title': 'Kuormakirjat',
     'landing.features.shipping.description': 'Suunnittele kuljetukset tehokkaasti ja seuraa toimituksia.',
-    'landing.features.shipping.feature1': 'Hyväksyttävä formaatti',
+    'landing.features.shipping.feature1': 'Kuormakirjat oikeassa muodossa',
     'landing.features.shipping.feature2': 'Massatulostus',
     'landing.features.shipping.feature3': 'Selkeä käyttöliittymä',
     'landing.features.reports.title': 'Raportit',
@@ -168,7 +168,7 @@ export const translations = {
     'login.trial.noCommitment': 'Ei sitoutumista',
     'login.trial.personalSupport': 'Henkilökohtainen tuki',
     'login.trial.allFeatures': 'Kaikki ominaisuudet käytössä',
-    'login.trial.contactIfUnsure': 'Jos olet epävarma, ota rohkeasti yhteyttä. Kerron mielelläni lisää ja voit vaikka kokeilla Siikliä ilman sitoutumista.',
+    'login.trial.contactIfUnsure': 'Jos mietit sopiiko tämä teille, kysy ihmeessä lisää. Kerron mielelläni lisää ja voit kokeilla Siikliä ilman sitoutumista.',
     'login.trial.faqTitle': 'Usein kysytyt kysymykset',
     'login.trial.faq.needCreditCard': 'Tarvitsenko luottokorttia kokeilun aloittamiseen?',
     'login.trial.faq.needCreditCardAnswer': 'Ei, kokeilu on täysin maksuton eikä vaadi maksutietoja.',
@@ -208,7 +208,15 @@ export const translations = {
     'aboutUs.whoIsJuha.siikliIsAPlaceToDoThingsWell': 'Siikli on minulle paikka tehdä asioita kunnolla — omalla tavallani, mutta asiakkaita kuunnellen.',
     'aboutUs.doYouWantToBuildWithMe.title': 'Haluatko rakentaa kanssani?',
     'aboutUs.doYouWantToBuildWithMe.siikliIsNotCorporate': 'Siikli ei ole kasvuyritys, jolla on HR-tiimi ja rekryputki. Se on yhden kehittäjän tuote, joka on ollut toiminnassa jo vuosia — ja on nyt valmis kehittymään seuraavalle tasolle.',
-    'aboutUs.doYouWantToBuildWithMe.iAmLookingForAPartner': 'Etsin rinnalle toista tekijää, jolla on kiinnostusta rakentaa jotain oikeaa ja kestävää. Tämä ei ole työpaikka vaan mahdollisuus: jos koodi, asiakasymmärrys ja omistajuus tuntuvat tutuilta sanoilta, ota yhteyttä. Katsotaan, voisimmeko tehdä jotain yhdessä.',
+    'aboutUs.doYouWantToBuildWithMe.iAmLookingForAPartner': 'Etsin rinnalle toista tekijää, jolla on kiinnostusta rakentaa jotain oikeaa ja kestävää. Jos koodi, asiakasymmärrys ja omistajuus tuntuvat tutuilta sanoilta, ota yhteyttä. Katsotaan, voisimmeko tehdä jotain yhdessä.',
+    'landing.customerFeedback.title': 'Mitä asiakkaamme sanovat',
+    'landing.customerFeedback.description': 'Aromäen tila on käyttänyt Siikliä jo 7 vuotta — ja toimii edelleen.',
+    'landing.customerFeedback.1.name': 'Juhana Männistö',
+    'landing.customerFeedback.1.company': 'Aromäen tila',
+    'landing.customerFeedback.1.quote': 'Siikli on merkittävästi helpottanut tilaustemme hallintaa ja laskutusta.',
+    'landing.customerFeedback.2.name': 'Satu Valkas',
+    'landing.customerFeedback.2.company': 'Aromäen tila',
+    'landing.customerFeedback.2.quote': 'Siikli on yksinkertainen ja luotettava sovellus, joka sopii juuri meidän tarpeisiimme.',
   },
   en: {
     'landing.title': 'Siikli – The Simple ERP for Agriculture',
@@ -418,6 +426,14 @@ export const translations = {
     'aboutUs.doYouWantToBuildWithMe.title': 'Do you want to build with me?',
     'aboutUs.doYouWantToBuildWithMe.siikliIsNotCorporate': 'Siikli is not a growing company with an HR team and a recruitment process. It is a product built by a single developer that has been in operation for years — and is now ready to grow to the next level.',
     'aboutUs.doYouWantToBuildWithMe.iAmLookingForAPartner': 'I am looking for a partner to build something real and sustainable. This is not a job, but an opportunity: if the code, customer understanding, and ownership feel like familiar terms, contact me. Let\'s see if we can do something together.',
+    'landing.customerFeedback.title': 'What our customers say',
+    'landing.customerFeedback.description': 'Siikli has been a useful product for Aromäen tila.',
+    'landing.customerFeedback.1.name': 'Juhana Männistö',
+    'landing.customerFeedback.1.company': 'Aromäen tila',
+    'landing.customerFeedback.1.quote': 'Siikli has significantly simplified our order management and invoicing.',
+    'landing.customerFeedback.2.name': 'Satu Valkas',
+    'landing.customerFeedback.2.company': 'Aromäen tila',
+    'landing.customerFeedback.2.quote': 'Siikli is a simple and reliable application that suits our needs perfectly.',
   },
 }
 
