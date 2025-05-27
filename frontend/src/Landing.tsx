@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react'
 import { NavLink } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { useApp } from './context/AppContext'
 import Footer from './Footer'
 import TopBar from './TopBar'
 import { useTranslation } from './translations'
@@ -11,6 +12,7 @@ import UiCarousel from './UiCarousel'
 
 export default function LandingPage() {
   const t = useTranslation()
+  const { variant } = useApp()
 
   const pricingRef = useRef<HTMLDivElement>(null)
   const featuresRef = useRef<HTMLDivElement>(null)
@@ -87,20 +89,20 @@ export default function LandingPage() {
       <section className="w-full py-12 md:py-24 lg:py-32 bg-gradient-to-b from-white to-gray-50">
         <div className="container px-4 md:px-6 flex flex-col md:flex-row items-center md:items-start gap-12">
           <div className="flex flex-col gap-4 md:w-1/2">
-            <img src="/siikli-logo.png" alt="Siikli Logo" className="w-1/3" />
+            <img src={`/siikli-logo-${variant}.png`} alt="Siikli Logo" className="w-1/3" />
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight">
-              {t('landing.title')}
+              {t(`landing.${variant}.title`)}
             </h1>
             <p className="text-muted-foreground text-lg md:text-xl">
-              {t('landing.description')}
+              {t(`landing.${variant}.description`)}
             </p>
             <p className="text-muted-foreground text-lg md:text-xl">
-              {t('landing.description2')}
+              {t(`landing.${variant}.description2`)}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 mt-4">
               <Button size="lg" className="rounded-full" asChild>
                 <NavLink to="/kirjaudu">
-                  {t('landing.startForFree')}
+                  {t(`landing.${variant}.startForFree`)}
                   {' '}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </NavLink>

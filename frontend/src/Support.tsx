@@ -3,7 +3,7 @@ import Footer from './Footer'
 import TopBar from './TopBar'
 import { useTranslation } from './translations'
 
-export default function ContactPage({ inApp }: { inApp: boolean }) {
+export default function ContactPage({ inApp = false }: { inApp?: boolean }) {
   const t = useTranslation()
 
   const scrollToTop = () => {

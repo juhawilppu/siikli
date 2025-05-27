@@ -3,6 +3,7 @@ import type React from 'react'
 import axios from 'axios'
 import { ArrowRight, Loader2 } from 'lucide-react'
 
+import posthog from 'posthog-js'
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -21,6 +22,9 @@ export default function LoginForm() {
   const handleGoogleLogin = () => {
     setIsLoading(true)
     window.location.href = '/api/auth/google'
+    posthog.capture('google_login', {
+      variant: localStorage.getItem('variant'),
+    })
   }
 
   const handleSendPin = async (e: React.FormEvent) => {
@@ -40,6 +44,9 @@ export default function LoginForm() {
       setPin(Array.from({ length: 6 }).fill('') as string[])
       await axios.post('/auth/email/create-pin', {
         email,
+      })
+      posthog.capture('send_pin', {
+        variant: localStorage.getItem('variant'),
       })
       setPinSent(true)
       toast({

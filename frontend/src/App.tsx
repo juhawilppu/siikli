@@ -12,6 +12,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { Input } from './components/ui/input'
 import { Toaster } from './components/ui/toaster'
 import ContactPage from './Contact'
+import { useApp } from './context/AppContext'
 import Cookies from './Cookies'
 import ErrorPage from './ErrorPage'
 import Landing from './Landing'
@@ -23,8 +24,8 @@ import { Invoices } from './pages/Invoices'
 import Order from './pages/Order/Order'
 import Orders from './pages/Orders'
 import { PackageConfiguration } from './pages/PackageConfiguration'
-import { PackagingList } from './pages/PackagingList'
 
+import { PackagingList } from './pages/PackagingList'
 import Products from './pages/Products'
 import TuoteryhmatJarjestely from './pages/ProductTypeReorder'
 import { SalesReport } from './pages/SalesReport'
@@ -257,11 +258,12 @@ function App() {
 export default App
 
 function MobileSidebar({ setIsMobileNavOpen }: { setIsMobileNavOpen: (isOpen: boolean) => void }) {
+  const { variant } = useApp()
   return (
     <div className="flex h-full flex-col gap-2 overflow-auto">
       <div className="flex h-14 items-center border-b px-4">
         <NavLink href="/" className="flex items-center gap-2 font-semibold">
-          <img src="/siikli-logo.png" className="h-6" />
+          <img src={`/siikli-logo-${variant}.png`} className="h-6" />
           <span>Siikli ERP</span>
         </NavLink>
       </div>

@@ -11,4 +11,5 @@ export function initPosthog() {
       console.log('PostHog loaded')
     },
   })
+  posthog.people.set({ variant: localStorage.getItem('variant') })
 }
