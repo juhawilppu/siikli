@@ -62,6 +62,9 @@ async function verifyPackageSizeAndType(body: { packageType: string | null, pack
 const defaultStyle = `
     <style type="text/css">
 
+        .pdf {
+          font-family: 'Roboto', sans-serif;
+        }
         .pdf .page-break {
             page-break-before: always;
         }
@@ -289,7 +292,7 @@ ordersRoute.get(`/api/orders/waybills`, isAuthenticated, async (req, res) => {
 
         </style>
     </head>
-    <body>
+    <body class="pdf">
         ${htmls.join('')}
         <div id="pageFooter">
             <div class="signature">
@@ -301,49 +304,43 @@ ordersRoute.get(`/api/orders/waybills`, isAuthenticated, async (req, res) => {
                 </div>
             </div>
             <div class="siikli-footer">
-                Siikli-toiminnanohjausjärjestelmä (siikli.fi)
+                Siikli (siikli.fi)
             </div>
         </div>
     </body>
 </html>`
 
-    try {
-      console.log('creating pdf')
-      console.log(document)
-      const browser = await puppeteer.launch({
-        headless: true,
-        args: ['--no-sandbox'],
-      })
-      const page = await browser.newPage()
-      await page.setContent(document)
+    console.log('creating pdf')
+    console.log(document)
+    const browser = await puppeteer.launch({
+      headless: true,
+      args: ['--no-sandbox'],
+    })
+    const page = await browser.newPage()
+    await page.setContent(document)
 
-      const pdfBuffer = await page.pdf({
-        format: 'a5',
-        margin: {
-          top: '5mm',
-          right: '5mm',
-          bottom: '0mm',
-          left: '5mm',
-        },
-        displayHeaderFooter: true,
-        footerTemplate: '<div style="height: 22mm;"></div>',
-        printBackground: true,
-      })
+    const pdfBuffer = await page.pdf({
+      format: 'a5',
+      margin: {
+        top: '5mm',
+        right: '5mm',
+        bottom: '0mm',
+        left: '5mm',
+      },
+      displayHeaderFooter: true,
+      footerTemplate: '<div style="height: 22mm;"></div>',
+      printBackground: true,
+    })
 
-      await browser.close()
+    await browser.close()
 
-      // Set headers for proper PDF display
-      res.setHeader('Content-Type', 'application/pdf')
-      res.setHeader('Content-Length', pdfBuffer.length)
-      res.setHeader('Content-Disposition', 'inline')
-      res.setHeader('Cache-Control', 'no-cache')
-      res.status(200)
-      res.end(pdfBuffer, 'binary')
-    }
-    catch (err) {
-      console.error(err)
-      res.sendStatus(500)
-    }
+    // Set headers for proper PDF display
+    res.setHeader('Content-Type', 'application/pdf')
+    res.setHeader('Content-Length', pdfBuffer.length)
+    res.setHeader('Content-Disposition', 'inline')
+    res.setHeader('Cache-Control', 'no-cache')
+    res.status(200)
+    res.end(pdfBuffer, 'binary')
   })
 })
 
