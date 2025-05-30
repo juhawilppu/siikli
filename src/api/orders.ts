@@ -11,7 +11,7 @@ import puppeteer from 'puppeteer'
 import { dateToString, formatDate, stringToDate } from '../../frontend/src/utils/date'
 import { getUser, isAuthenticated } from '../middlewares/permissions'
 import prisma from '../prisma'
-import createWaybill from '../services/waybill'
+import { createWaybills } from '../services/waybill'
 
 async function verifyPackageSizeAndType(body: { packageType: string | null, packageSize: number | null }, tenantId: string) {
   console.log('checking type', body)
@@ -58,95 +58,6 @@ async function verifyPackageSizeAndType(body: { packageType: string | null, pack
     }
   }
 }
-
-const defaultStyle = `
-    <style type="text/css">
-
-        .pdf {
-          font-family: 'Roboto', sans-serif;
-        }
-        .pdf .page-break {
-            page-break-before: always;
-        }
-
-        .pdf h1 {
-            font-size: 14pt;
-            text-align: center;
-        }
-
-        .pdf .border-bottom {
-            border-bottom: 1px solid black;
-        }
-
-        .pdf .border-top {
-            border-top: 1px solid black;
-        }
-
-        .pdf .row {
-            border-bottom: 1px solid black;
-            border-top: 1px solid black;
-        }
-
-        .pdf .width-20 {
-            width: 20%;
-        }
-
-        .pdf .width-25 {
-            width: 25%;
-        }
-
-        .pdf .width-30 {
-            width: 30%;
-        }
-
-        .pdf .width-33 {
-            width: 33%;
-        }
-
-        .pdf .width-40 {
-            width: 40%;
-        }
-        
-        .pdf .width-50 {
-            width: 50%;
-        }
-
-        .pdf .width-70 {
-            width: 70%;
-        }
-
-        .pdf .width-100 {
-            width: 100%;
-        }
-
-        .pdf .align-right {
-            text-align: right;
-        }
-
-        .pdf table {
-            width: 100%;
-            border-collapse: collapse;
-            page-break-inside: avoid;
-        }
-
-        .pdf table td, .pdf table th {
-            padding-left: 4px;
-            padding-right: 4px;
-            padding-top: 1px;
-            padding-bottom: 1px;
-            vertical-align: top;
-        }
-
-        .pdf table thead {
-            border-top: 1px solid black;
-            border-bottom: 1px solid black;
-        }
-
-        .pdf table tbody {
-            border-bottom: 1px solid black;
-        }
-    </style>
-    `
 
 export const ordersRoute = express.Router()
 
@@ -248,100 +159,39 @@ ordersRoute.get(`/api/orders/waybills`, isAuthenticated, async (req, res) => {
     },
   })
 
-  const promises = orders.map((order, index) =>
-    createWaybill(company, order, index === 0),
-  )
+  const document = await createWaybills(company, orders)
 
-  Promise.all(promises).then(async (htmls) => {
-    const document = `
-    <html>
-        <head>
-        <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
-        ${defaultStyle}
-        <style type="text/css">
-            .order-section {
-                display: block;
-            }
-
-            .order-header {
-                display: flex;
-                justify-content: space-between;
-            }
-
-            .company-name {
-                font-weight: bold;
-                font-size: 11pt;
-            }
-
-            .signature {
-                color: black;
-                text-align: right;
-            }
-
-            .signature div {
-                display: inline-block;
-                margin-left: 30px;
-            }
-
-            .siikli-footer {
-                margin-top: 17px;
-                text-align: right;
-                font-size: 7pt;
-                color: gray;
-            }
-
-        </style>
-    </head>
-    <body class="pdf">
-        ${htmls.join('')}
-        <div id="pageFooter">
-            <div class="signature">
-                <div>
-                    _____&nbsp;&nbsp;/&nbsp;&nbsp;____&nbsp;&nbsp;/&nbsp;&nbsp;20______
-                </div>
-                <div>
-                    ________________________________
-                </div>
-            </div>
-            <div class="siikli-footer">
-                Siikli (siikli.fi)
-            </div>
-        </div>
-    </body>
-</html>`
-
-    console.log('creating pdf')
-    console.log(document)
-    const browser = await puppeteer.launch({
-      headless: true,
-      args: ['--no-sandbox'],
-    })
-    const page = await browser.newPage()
-    await page.setContent(document)
-
-    const pdfBuffer = await page.pdf({
-      format: 'a5',
-      margin: {
-        top: '5mm',
-        right: '5mm',
-        bottom: '0mm',
-        left: '5mm',
-      },
-      displayHeaderFooter: true,
-      footerTemplate: '<div style="height: 22mm;"></div>',
-      printBackground: true,
-    })
-
-    await browser.close()
-
-    // Set headers for proper PDF display
-    res.setHeader('Content-Type', 'application/pdf')
-    res.setHeader('Content-Length', pdfBuffer.length)
-    res.setHeader('Content-Disposition', 'inline')
-    res.setHeader('Cache-Control', 'no-cache')
-    res.status(200)
-    res.end(pdfBuffer, 'binary')
+  console.log('creating pdf')
+  console.log(document)
+  const browser = await puppeteer.launch({
+    headless: true,
+    args: ['--no-sandbox'],
   })
+  const page = await browser.newPage()
+  await page.setContent(document)
+
+  const pdfBuffer = await page.pdf({
+    format: 'a5',
+    margin: {
+      top: '5mm',
+      right: '5mm',
+      bottom: '5mm',
+      left: '5mm',
+    },
+    displayHeaderFooter: true,
+    footerTemplate: '<div style="height: 22mm;">moi</div>',
+    printBackground: true,
+  })
+
+  await browser.close()
+
+  // Set headers for proper PDF display
+  res.setHeader('Content-Type', 'application/pdf')
+  res.setHeader('Content-Length', pdfBuffer.length)
+  res.setHeader('Content-Disposition', 'inline')
+  res.setHeader('Cache-Control', 'no-cache')
+  res.status(200)
+  res.end(pdfBuffer, 'binary')
 })
 
 ordersRoute.get(`/api/orders/:id`, isAuthenticated, async (req, res) => {
