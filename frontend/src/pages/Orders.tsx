@@ -184,6 +184,7 @@ export default function Orders() {
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead>Tilausnumero</TableHead>
                     <TableHead>Päivämäärä</TableHead>
                     <TableHead>Asiakas</TableHead>
                     <TableHead>Summa</TableHead>
@@ -205,11 +206,9 @@ export default function Orders() {
                     : (
                         orders.map(order => (
                           <TableRow key={order.id}>
-                            {/* <TableCell className="font-medium">{order.id}</TableCell> */}
+                            <TableCell className="font-medium">{order.waybillNumber}</TableCell>
                             <TableCell>{order.deliveryDate}</TableCell>
                             <TableCell>
-                              {order.customer.chain}
-                              {' '}
                               {order.customer.name}
                             </TableCell>
                             <TableCell>{formatMoneyFi(order.total)}</TableCell>

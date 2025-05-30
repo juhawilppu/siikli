@@ -62,9 +62,9 @@ export interface GetOrderDto {
 export interface GetOrderList {
   id: string
   deliveryDate: string
+  waybillNumber: number
   customer: {
     id: string
-    chain: string
     name: string
   }
   total: number
