@@ -626,6 +626,13 @@ export default function CreateOrder() {
                                           setOpenPackageSize(undefined)
                                           setInputValuePackageSize('')
                                         }
+                                        else if (inputValuePackageSize.length > 0 && Number.isNaN(Number(inputValuePackageSize))) {
+                                          toast({
+                                            title: 'Virhe',
+                                            description: 'Syötä pakkauskoko numerona.',
+                                            variant: 'destructive',
+                                          })
+                                        }
                                       }}
                                       className="flex items-center space-x-2 text-sm p-2 hover:bg-muted w-full text-left"
                                     >
