@@ -3,16 +3,16 @@ import Footer from './Footer'
 import TopBar from './TopBar'
 
 export default function TermsOfService() {
-  useEffect(() => {
-    scrollToTop()
-  }, [])
-
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
       behavior: 'smooth',
     })
   }
+
+  useEffect(() => {
+    scrollToTop()
+  }, [])
 
   return (
     <div className="flex min-h-screen flex-col">
