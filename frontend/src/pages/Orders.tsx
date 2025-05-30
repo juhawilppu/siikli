@@ -28,7 +28,6 @@ export default function Orders() {
   const [isLoading, setIsLoading] = useState(false)
   const [isPrinting, setIsPrinting] = useState(false)
   const [orders, setOrders] = useState<GetOrderList[]>([])
-  const [selectedOrders, setSelectedOrders] = useState<string[]>([])
 
   useEffect(() => {
     setIsLoading(true)
@@ -72,21 +71,6 @@ export default function Orders() {
     }
     finally {
       setIsPrinting(false)
-    }
-  }
-
-  const toggleOrderSelection = (orderId: string) => {
-    setSelectedOrders(prev => (prev.includes(orderId) ? prev.filter(id => id !== orderId) : [...prev, orderId]))
-  }
-
-  const isAllSelected = orders.length > 0 && selectedOrders.length === orders.length
-
-  const toggleSelectAll = () => {
-    if (isAllSelected) {
-      setSelectedOrders([])
-    }
-    else {
-      setSelectedOrders(orders.map(order => order.id))
     }
   }
 
@@ -200,14 +184,6 @@ export default function Orders() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="w-[40px]">
-                      <input
-                        type="checkbox"
-                        className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
-                        checked={isAllSelected}
-                        onChange={toggleSelectAll}
-                      />
-                    </TableHead>
                     <TableHead>Päivämäärä</TableHead>
                     <TableHead>Asiakas</TableHead>
                     <TableHead>Summa</TableHead>
@@ -229,14 +205,6 @@ export default function Orders() {
                     : (
                         orders.map(order => (
                           <TableRow key={order.id}>
-                            <TableCell>
-                              <input
-                                type="checkbox"
-                                className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
-                                checked={selectedOrders.includes(order.id)}
-                                onChange={() => toggleOrderSelection(order.id)}
-                              />
-                            </TableCell>
                             {/* <TableCell className="font-medium">{order.id}</TableCell> */}
                             <TableCell>{order.deliveryDate}</TableCell>
                             <TableCell>
