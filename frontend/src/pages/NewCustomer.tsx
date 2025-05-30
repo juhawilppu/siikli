@@ -111,15 +111,6 @@ export function NewCustomer({ closeDialog, customerToEdit, forwaredCustomerGroup
   }
 
   const createCustomer = () => {
-    if (!customer.name) {
-      toast({
-        title: 'Virhe',
-        description: 'Nimi on pakollinen tieto.',
-        variant: 'destructive',
-      })
-      return
-    }
-
     const newCustomer: PostCreateCustomerRequestDto = {
       ...customer,
       discount: Number.parseFloat(customer.discount),
@@ -147,6 +138,42 @@ export function NewCustomer({ closeDialog, customerToEdit, forwaredCustomerGroup
 
   const save = () => {
     console.log('onSave', customer)
+
+    if (!customer.name) {
+      toast({
+        title: 'Virhe',
+        description: 'Nimi on pakollinen tieto.',
+        variant: 'destructive',
+      })
+      return
+    }
+
+    if (customer.email) {
+      const emailRegex = /^[^\s@]+@[^\s@][^\s.@]*\.[^\s@]+$/
+      const isValidEmail = emailRegex.test(customer.email)
+      if (!isValidEmail) {
+        toast({
+          title: 'Virhe',
+          description: 'Virheellinen sähköpostiosoite.',
+          variant: 'destructive',
+        })
+        return
+      }
+    }
+
+    if (customer.phone) {
+      const phoneRegex = /^\+?\d{8,15}$/
+      const isValidPhone = phoneRegex.test(customer.phone)
+      if (!isValidPhone) {
+        toast({
+          title: 'Virhe',
+          description: 'Virheellinen puhelinnumero.',
+          variant: 'destructive',
+        })
+        return
+      }
+    }
+
     if (customerToEdit) {
       saveCustomerToEdit()
     }
