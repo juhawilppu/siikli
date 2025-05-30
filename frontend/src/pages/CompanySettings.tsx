@@ -252,7 +252,6 @@ export default function CompanySettings() {
                   </div>
                 </CardContent>
                 <CardFooter className="flex justify-end gap-2">
-                  <Button variant="outline">Peruuta</Button>
                   <Button type="submit">
                     <Save className="mr-2 h-4 w-4" />
                     Tallenna
@@ -535,10 +534,6 @@ export default function CompanySettings() {
                   </div>
                 </div>
               </CardContent>
-              <CardFooter className="flex justify-between">
-                <Button variant="outline">Peruuta</Button>
-                <Button>Tallenna muutokset</Button>
-              </CardFooter>
             </Card>
           </TabsContent>
 
