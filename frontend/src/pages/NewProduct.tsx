@@ -391,6 +391,13 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
                                       setPackageSizes([...packageSizes, size])
                                       setOpenPackageSize(false)
                                     }
+                                    else {
+                                      toast({
+                                        title: 'Virhe',
+                                        description: 'Syötä pakkauskoko numerona.',
+                                        variant: 'destructive',
+                                      })
+                                    }
                                   }}
                                   className="flex items-center space-x-2 text-sm p-2 hover:bg-muted w-full text-left"
                                 >
@@ -414,12 +421,20 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
                                   setPackageSizes([...packageSizes, size])
                                   setOpenPackageSize(false)
                                 }
+                                else {
+                                  toast({
+                                    title: 'Virhe',
+                                    description: 'Syötä pakkauskoko numerona.',
+                                    variant: 'destructive',
+                                  })
+                                }
                               }}
                               className="flex items-center space-x-2 text-sm p-2 hover:bg-muted w-full text-left"
                             >
                               <Plus className="w-4 h-4" />
                               <span>
-                                Lisää:
+                                Luo:
+                                {' '}
                                 {inputValuePackageSize}
                                 {' '}
                                 kg
