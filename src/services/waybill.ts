@@ -177,7 +177,7 @@ export default async function createWaybill(
     : ''
 
   const html = `
-        <div class="order-section ${first ? '' : 'page-break'}">
+        <div class="order-section ${first ? '' : 'page-break'}" style="position: relative; min-height: 100%;">
             <div style="height: 3em;">
                 <div style="float: left;">
                     <div class="company-name">${company.name}</div>
@@ -207,15 +207,15 @@ export default async function createWaybill(
                 </tbody>
             </table>
             ${note}
-            <div class="signature">
+            <div class="signature" style="position: absolute; bottom: 20px; width: 100%;">
                 <div>
-                    _____&nbsp;&nbsp;/&nbsp;&nbsp;____&nbsp;&nbsp;/&nbsp;&nbsp;20______
+                    ____&nbsp;&nbsp;/&nbsp;&nbsp;____&nbsp;&nbsp;/&nbsp;&nbsp;20______
                 </div>
                 <div>
                     ________________________________
                 </div>
             </div>
-        <div>
+        </div>
     `
 
   console.log(html)
