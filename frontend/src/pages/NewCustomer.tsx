@@ -11,6 +11,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { toast } from '@/hooks/use-toast'
 import { cn } from '@/lib/utils'
+import { formatNumber } from '@/utils/money'
 
 function instructionTooltip(text: string) {
   return (
@@ -27,10 +28,6 @@ function instructionTooltip(text: string) {
       </Tooltip>
     </TooltipProvider>
   )
-}
-
-export function formatNumberForUi(number?: number) {
-  return number?.toFixed(2).replace('.', ',') || ''
 }
 
 export function NewCustomer({ closeDialog, customerToEdit, forwaredCustomerGroups, onSave }: {
@@ -56,7 +53,7 @@ export function NewCustomer({ closeDialog, customerToEdit, forwaredCustomerGroup
       showPriceWithoutTax: boolean
     }
   >(customerToEdit
-    ? { ...customerToEdit, discount: formatNumberForUi(customerToEdit?.discount) }
+    ? { ...customerToEdit, discount: formatNumber(customerToEdit?.discount) }
     : {
         id: null,
         name: '',
@@ -377,7 +374,7 @@ export function NewCustomer({ closeDialog, customerToEdit, forwaredCustomerGroup
               onBlur={e =>
                 setCustomer({
                   ...customer,
-                  discount: formatNumberForUi(Number.parseFloat(e.target.value)),
+                  discount: formatNumber(Number.parseFloat(e.target.value)),
                 })}
             />
           </div>

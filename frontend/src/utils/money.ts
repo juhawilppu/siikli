@@ -1,24 +1,30 @@
-export function formatNumber(amount: number | string, decimals = 2) {
+export function formatNumber(amount?: number | string) {
+  if (!amount) {
+    return ''
+  }
+
+  // TODO: As a long-term plan, this function should never receive numbers or strings that don't have 2 decimals.
+
   if (typeof amount === 'string') {
-    return parseFloat(amount).toFixed(decimals).replace('.', ',')
+    return parseFloat(amount).toFixed(2).replace('.', ',')
   }
   return `${amount
-    .toFixed(decimals)
+    .toFixed(2)
     .replace('.', ',')}`
 }
 
-export function formatMoneyFi(amount: number | string, decimals = 2) {
+export function formatMoneyFi(amount: number | string) {
   if (typeof amount === 'string') {
-    return parseFloat(amount).toFixed(decimals).replace('.', ',') + ' €'
+    return parseFloat(amount).toFixed(2).replace('.', ',') + ' €'
   }
   return `${amount
-    .toFixed(decimals)
+    .toFixed(2)
     .replace('.', ',')} €`
 }
 
-export function formatPercentage(amount: number, decimals = 2) {
+export function formatPercentage(amount: number) {
   return `${amount
-    .toFixed(decimals)
+    .toFixed(2)
     .replace('.', ',')
   } %`
 }
