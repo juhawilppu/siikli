@@ -37,7 +37,10 @@ export function Invoices() {
 
   const [customerId, setCustomerId] = useState<string>()
 
+  const [dirty, setDirty] = useState(true)
+
   const getData = async () => {
+    setDirty(false)
     if (!customerId) {
       toast({
         title: 'Valitse asiakas',
@@ -85,7 +88,10 @@ export function Invoices() {
           <div className="grid gap-4 md:grid-cols-4">
             <div className="space-y-2">
               <Label htmlFor="customer">Asiakas</Label>
-              <Select value={customerId} onValueChange={setCustomerId}>
+              <Select value={customerId} onValueChange={value => {
+                setCustomerId(value)
+                setDirty(true)
+              }}>
                 <SelectTrigger id="customer">
                   <SelectValue placeholder="Valitse asiakas" />
                 </SelectTrigger>
@@ -121,7 +127,10 @@ export function Invoices() {
                   <CalendarComponent
                     mode="single"
                     selected={startDate}
-                    onSelect={setStartDate}
+                    onSelect={date => {
+                      setStartDate(date)
+                      setDirty(true)
+                    }}
                     required
                     initialFocus
                     locale={fi}
@@ -140,12 +149,15 @@ export function Invoices() {
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0">
-                  <CalendarComponent mode="single" selected={endDate} onSelect={setEndDate} required locale={fi} />
+                  <CalendarComponent mode="single" selected={endDate} onSelect={date => {
+                    setEndDate(date)
+                    setDirty(true)
+                  }} required locale={fi} />
                 </PopoverContent>
               </Popover>
             </div>
-            <div className="flex justify-end items-end gap-2">
-              <Button onClick={getData}>
+            <div className="flex justify-center items-center gap-2">
+              <Button disabled={!dirty || !customerId || !startDate || !endDate} onClick={getData}>
                 <RefreshCw className="w-4 h-4 mr-2" />
                 {' '}
                 Hae tiedot
@@ -157,7 +169,7 @@ export function Invoices() {
       {invoice && (
         <Card className="p-5">
           <div className="flex justify-end items-end">
-            <Button disabled={!invoice} onClick={print}>
+            <Button variant="outline" disabled={!invoice} onClick={print}>
               <Printer className="w-4 h-4 mr-2" />
               {' '}
               Tulosta
