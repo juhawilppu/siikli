@@ -311,10 +311,10 @@ export function Customers() {
       <AlertDialog open={!!customerIdToDelete} onOpenChange={open => !open && setCustomerIdToDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Haluatko varmasti poistaa tämän asiakkaan?</AlertDialogTitle>
+            <AlertDialogTitle>Poistetaanko asiakas?</AlertDialogTitle>
             <AlertDialogDescription>
-              <p>Tätä toimintoa ei voi peruuttaa enää jälkikäteen. Asiakkaan tiedot poistetaan pysyvästi järjestelmästä.</p>
-              <p>Jos asiakkaalla on tilauksia, ne poistetaan myös. Varmista, että olet laskuttanut kaikki asiakkaan tilaukset.</p>
+              <p>⚠️ Tietoja ei voi palauttaa enää jälkikäteen.</p>
+              <p className="pt-2">Asiakkaan tiedot poistetaan pysyvästi järjestelmästä. Jos asiakkaalla on tilauksia, ne poistetaan myös. Varmista, että olet laskuttanut kaikki asiakkaan tilaukset.</p>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

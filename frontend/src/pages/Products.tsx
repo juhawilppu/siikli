@@ -14,6 +14,7 @@ import {
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
@@ -44,6 +45,7 @@ export default function Products() {
   const [packageSizes, setPackageSizes] = useState<number[]>([])
 
   const [showNewProductDialog, setShowNewProductDialog] = useState(false)
+  const [productIdToDelete, setProductIdToDelete] = useState<string>()
   const [editProductId, setEditProductId] = useState<string>()
 
   const [typeFilter, setTypeFilter] = useState<string>('all')
@@ -366,7 +368,7 @@ export default function Products() {
                                         variant="ghost"
                                         size="icon"
                                         className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50"
-                                        onClick={() => deleteProduct(product.id)}
+                                        onClick={() => setProductIdToDelete(product.id)}
                                       >
                                         <Trash2 className="h-4 w-4" />
                                       </Button>
@@ -391,6 +393,25 @@ export default function Products() {
         {editProductId
           && <NewProduct productToEdit={products.find(p => p.id === editProductId)} hide={() => setEditProductId(undefined)} onSave={onProductSaved} productTypes={productTypes} refPackageTypes={packageTypes} refPackageSizes={packageSizes} />}
       </Dialog>
+      {productIdToDelete && (
+        <AlertDialog open onOpenChange={() => setProductIdToDelete(undefined)}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Poistetaanko tuote?</AlertDialogTitle>
+              <AlertDialogDescription>
+                <p>⚠️ Tietoja ei voi palauttaa enää jälkikäteen.</p>
+                <p className="pt-2">Tuotteen tiedot poistetaan pysyvästi järjestelmästä. Jos tuotetta on käytetty tilauksissa, ne poistetaan myös. Varmista, että olet laskuttanut kaikki tuotteen tilaukset.</p>
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Peruuta</AlertDialogCancel>
+              <AlertDialogAction onClick={() => deleteProduct(productIdToDelete)} className="bg-red-500 hover:bg-red-600">
+                Poista
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      )}
     </>
   )
 }
