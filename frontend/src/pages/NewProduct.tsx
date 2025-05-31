@@ -285,7 +285,7 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
               <AccordionTrigger className="py-3 text-base font-medium">Hinta</AccordionTrigger>
               <AccordionContent className="space-y-4">
                 <p className="text-sm text-muted-foreground">
-                  Voit määrittää tuotteelle hinnan, jota käytetään tilauksessa. Voit myös kustomoida hinnan tilauksen yhteydessä.
+                  Voit määrittää tuotteelle oletushinnan, jota käytetään tilauksessa. Voit kuitenkin muuttaa hinnan tilauksen yhteydessä.
                 </p>
                 <div className="space-y-2">
                   <Label htmlFor="price" className="text-base font-medium">
@@ -332,7 +332,7 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
               <AccordionTrigger className="py-3 text-base font-medium">Pakkaustiedot</AccordionTrigger>
               <AccordionContent className="space-y-4">
                 <p className="text-sm text-muted-foreground">
-                  Voit määrittää tuotteelle pakkaustiedot. Voit myös kustomoida pakkaustietoja tilauksen yhteydessä.
+                  Voit määrittää tuotteelle oletuspakkaustiedot, eli uusille tilausriveille tulee suoraan tämä pakkauskoko ja pakkaustyyppi. Voit kuitenkin muuttaa nämä tilausta tehdessä.
                 </p>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
@@ -404,6 +404,7 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
                                   <Plus className="w-4 h-4" />
                                   <span>
                                     Luo:
+                                    {' '}
                                     {inputValuePackageSize}
                                     {' '}
                                     kg
@@ -457,7 +458,7 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
                           aria-expanded={openPackageType}
                           className="w-full justify-between"
                         >
-                          {product.packageType ?? 'Valitse pakkaus'}
+                          {product.packageType || 'Valitse pakkaustyyppi'}
                           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                         </Button>
                       </PopoverTrigger>
@@ -505,6 +506,7 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
                                   <Plus className="w-4 h-4" />
                                   <span>
                                     Luo:
+                                    {' '}
                                     {inputValuePackageType}
                                   </span>
                                 </button>
@@ -526,6 +528,7 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
                               <Plus className="w-4 h-4" />
                               <span>
                                 Luo:
+                                {' '}
                                 {inputValuePackageType}
                               </span>
                             </button>
