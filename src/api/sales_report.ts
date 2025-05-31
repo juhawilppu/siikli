@@ -34,26 +34,26 @@ router.get('/api/sales-report', isAuthenticated, async (req, res) => {
     })
 
     const workbook = new ExcelJS.Workbook()
-    const sheet = workbook.addWorksheet('Order Products')
+    const sheet = workbook.addWorksheet('Myyntiraportti')
 
     // Define headers
     sheet.columns = [
-      { header: 'Päivämäärä', key: 'date' },
-      { header: 'Tilaus', key: 'orderId' },
-      { header: 'Asiakas', key: 'customerName' },
-      { header: 'Tuote', key: 'productName' },
-      { header: 'Määrä', key: 'amount' },
-      { header: 'Hinta', key: 'price' },
-      { header: 'Pakkauskoko', key: 'packageSize' },
-      { header: 'Pakkaustyyppi', key: 'packageType' },
-      { header: 'Lisätieto', key: 'freetext' },
+      { header: 'Päivämäärä', key: 'date', style: { font: { bold: true } }, width: 11 },
+      { header: 'Tilaus', key: 'orderId', style: { font: { bold: true }, alignment: { horizontal: 'right' } }, width: 11 },
+      { header: 'Asiakas', key: 'customerName', style: { font: { bold: true } }, width: 15 },
+      { header: 'Tuote', key: 'productName', style: { font: { bold: true } }, width: 15 },
+      { header: 'Määrä', key: 'amount', style: { font: { bold: true }, alignment: { horizontal: 'right' } }, width: 10 },
+      { header: 'Hinta', key: 'price', style: { font: { bold: true }, alignment: { horizontal: 'right' } }, width: 10 },
+      { header: 'Pakkauskoko', key: 'packageSize', style: { font: { bold: true }, alignment: { horizontal: 'right' } }, width: 12 },
+      { header: 'Pakkaustyyppi', key: 'packageType', style: { font: { bold: true } }, width: 12 },
+      { header: 'Lisätieto', key: 'freetext', style: { font: { bold: true } }, width: 20 },
     ]
 
     // Add rows
     data.forEach((item) => {
-      sheet.addRow({
+      const row =sheet.addRow({
         date: formatDate(item.order.deliveryDate),
-        orderId: item.orderId,
+        orderId: item.order.waybillNumber,
         customerName: item.order.customer.name,
         productName: item.products.name,
         amount: item.amount,
@@ -62,7 +62,13 @@ router.get('/api/sales-report', isAuthenticated, async (req, res) => {
         packageType: item.packageType,
         freetext: item.freetext,
       })
+      row.font = { bold: false }
     })
+
+    sheet.getColumn('date').numFmt = 'dd.mm.yyyy'
+    sheet.getColumn('amount').numFmt = '#.00'
+    sheet.getColumn('price').numFmt = '#.00'
+    sheet.getColumn('packageSize').numFmt = '#'
 
     // Set headers for file download
     res.setHeader(
