@@ -121,13 +121,10 @@ export function Customers() {
   const [showCreateDialog, setShowCreateDialog] = useState(false)
   const [customerIdToDelete, setCustomerIdToDelete] = useState<string | null>(null)
   const [customerGroupFilter, setCustomerGroupFilter] = useState<string>('all')
-  const [page, setPage] = useState(1)
-  const rowsPerPage = 20
   const { toast } = useToast()
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value)
-    setPage(1) // Reset to first page when searching
   }
 
   const refreshCustomers = () => {
@@ -161,10 +158,6 @@ export function Customers() {
 
       return matchesSearch && matchesGroup
     })
-
-  // Pagination
-  const paginatedCustomers = filteredCustomers.slice((page - 1) * rowsPerPage, page * rowsPerPage)
-  const totalPages = Math.ceil(filteredCustomers.length / rowsPerPage)
 
   // Customer edit
   const startEdit = (customer: GetCustomerRequestDto) => {
@@ -251,17 +244,8 @@ export function Customers() {
 
         {/* Customer table */}
         <Card className="shadow-md">
-          <CardHeader className="border-b bg-gray-50 py-4">
+          <CardHeader className="border-b bg-gray-50 py-4 pl-2">
             <CardTitle>Asiakasluettelo</CardTitle>
-            <CardDescription>
-              {filteredCustomers.length}
-              {' '}
-              asiakasta
-              {' '}
-              {customers.length}
-              {' '}
-              asiakkaasta
-            </CardDescription>
           </CardHeader>
           <CardContent className="p-0">
             <div className="relative">
@@ -280,16 +264,16 @@ export function Customers() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {paginatedCustomers.length === 0
+                  {filteredCustomers.length === 0
                     ? (
                         <TableRow>
                           <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
-                            Ei asiakkaita hakuehdoilla
+                            Ei asiakkaita
                           </TableCell>
                         </TableRow>
                       )
                     : (
-                        paginatedCustomers.map(customer => (
+                        filteredCustomers.map(customer => (
                           <SortableTableRow
                             key={customer.id}
                             customer={customer}
@@ -303,61 +287,6 @@ export function Customers() {
             </div>
 
           </CardContent>
-          <CardFooter className="flex justify-between border-t bg-gray-50 py-3">
-            <div className="text-sm text-muted-foreground">
-              Näytetään
-              {' '}
-              {(page - 1) * rowsPerPage + 1}
-              -
-              {Math.min(page * rowsPerPage, filteredCustomers.length)}
-              {' '}
-              /
-              {filteredCustomers.length}
-              {' '}
-              asiakasta
-            </div>
-            <Pagination>
-              <PaginationContent>
-                <PaginationItem>
-                  <PaginationPrevious
-                    onClick={() => setPage(prev => Math.max(prev - 1, 1))}
-                    className={page === 1 ? 'pointer-events-none opacity-50' : ''}
-                  />
-                </PaginationItem>
-                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                  let pageNum = i + 1
-                  if (totalPages > 5 && page > 3) {
-                    pageNum = page - 3 + i
-                    if (pageNum > totalPages) {
-                      pageNum = totalPages - (4 - i)
-                    }
-                  }
-                  return (
-                    <PaginationItem key={i}>
-                      <PaginationLink
-                        onClick={() => setPage(pageNum)}
-                        isActive={page === pageNum}
-                        className={pageNum > totalPages ? 'pointer-events-none opacity-50' : ''}
-                      >
-                        {pageNum}
-                      </PaginationLink>
-                    </PaginationItem>
-                  )
-                })}
-                {totalPages > 5 && page < totalPages - 2 && (
-                  <PaginationItem>
-                    <PaginationEllipsis />
-                  </PaginationItem>
-                )}
-                <PaginationItem>
-                  <PaginationNext
-                    onClick={() => setPage(prev => Math.min(prev + 1, totalPages))}
-                    className={page === totalPages || totalPages === 0 ? 'pointer-events-none opacity-50' : ''}
-                  />
-                </PaginationItem>
-              </PaginationContent>
-            </Pagination>
-          </CardFooter>
         </Card>
       </SiikliPage>
 
