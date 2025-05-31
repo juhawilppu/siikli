@@ -160,7 +160,7 @@ export function NewCustomer({ closeDialog, customerToEdit, forwaredCustomerGroup
 
     if (customer.phone) {
       const phoneRegex = /^\+?\d{8,15}$/
-      const isValidPhone = phoneRegex.test(customer.phone)
+      const isValidPhone = phoneRegex.test(customer.phone.replace(/\s/g, ''))
       if (!isValidPhone) {
         toast({
           title: 'Virhe',
