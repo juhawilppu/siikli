@@ -167,6 +167,7 @@ export default function CompanySettings() {
                       <Input
                         id="streetAddress"
                         name="streetAddress"
+                        autoComplete="street-address"
                         value={companyData.streetAddress || ''}
                         onChange={handleInputChange}
                       />
@@ -178,13 +179,14 @@ export default function CompanySettings() {
                         <Input
                           id="postalCode"
                           name="postalCode"
+                          autoComplete="postal-code"
                           value={companyData.postalCode || ''}
                           onChange={handleInputChange}
                         />
                       </div>
                       <div className="space-y-2 sm:col-span-2">
                         <Label htmlFor="city">Kaupunki</Label>
-                        <Input id="city" name="city" value={companyData.city || ''} onChange={handleInputChange} />
+                        <Input id="city" name="city" autoComplete="city" value={companyData.city || ''} onChange={handleInputChange} />
                       </div>
                     </div>
 
@@ -232,7 +234,7 @@ export default function CompanySettings() {
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                       <div className="space-y-2">
                         <Label htmlFor="phone">Puhelinnumero</Label>
-                        <Input id="phone" name="phone" value={companyData.phone || ''} onChange={handleInputChange} />
+                        <Input id="phone" name="phone" autoComplete="tel" value={companyData.phone || ''} onChange={handleInputChange} />
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="email">Sähköposti</Label>
@@ -240,6 +242,7 @@ export default function CompanySettings() {
                           id="email"
                           name="email"
                           type="email"
+                          autoComplete="email"
                           value={companyData.email || ''}
                           onChange={handleInputChange}
                         />
@@ -547,12 +550,12 @@ export default function CompanySettings() {
             <Card>
               <CardHeader>
                 <CardTitle>Muut</CardTitle>
-                <CardDescription>Muut asetukset</CardDescription>
+                <CardDescription>Voit halutessasi poistaa yrityksesi ja käyttäjätilisi.</CardDescription>
               </CardHeader>
               <CardContent>
                 <Button variant="destructive" onClick={() => setShowDeleteCompanyModal(true)}>
                   <Trash2 className="mr-2 h-4 w-4" />
-                  Poista yritys
+                  Poista yrityksen kaikki tiedot
                 </Button>
               </CardContent>
             </Card>

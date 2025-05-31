@@ -3,6 +3,7 @@ import { addMonths } from 'date-fns'
 import express from 'express'
 import { getUser, isAuthenticated } from '../middlewares/permissions'
 import prisma from '../prisma'
+import { sendEventEmail } from '../services/email-service'
 
 const companiesRoute = express.Router()
 
@@ -101,6 +102,7 @@ companiesRoute.delete(`/api/tenants`, isAuthenticated, async (req, res) => {
       event: 'delete_tenant',
     },
   })
+  await sendEventEmail('Tenant deleted', `Tenant: ${tenantId}\nUser: ${userId}`)
   res.status(200).end()
 })
 
@@ -123,6 +125,14 @@ companiesRoute.post(`/api/tenants/subscription`, isAuthenticated, async (req, re
       id: tenantId,
     },
   })
+  await prisma.log.create({
+    data: {
+      userId,
+      tenantId,
+      event: 'update_tenant_subscription',
+    },
+  })
+  await sendEventEmail('Subscription changed', `Tenant: ${tenantId}\nSubscription: ${body.subscription}`)
   res.status(200).json({
     subscriptionType: result.subscriptionType,
     subscriptionEndDate: result.subscriptionEndDate?.toISOString() ?? null,
@@ -152,6 +162,7 @@ companiesRoute.post(`/api/tenants/create`, isAuthenticated, async (req, res) => 
       id: userId,
     },
   })
+  await sendEventEmail('Tenant completed onboarding', `Tenant: ${tenantId}\nUser: ${userId}`)
   await prisma.log.create({
     data: {
       userId,
