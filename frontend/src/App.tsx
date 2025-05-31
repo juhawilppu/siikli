@@ -207,9 +207,12 @@ function App() {
                 <DropdownMenuContent align="end">
                   <DropdownMenuLabel>Tunnukseni</DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem>Profiili</DropdownMenuItem>
-                  <DropdownMenuItem>Asetukset</DropdownMenuItem>
-                  <DropdownMenuItem>Tuki</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => {
+                    navigate('/support')
+                  }}
+                  >
+                    Tuki
+                  </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={logout}>Kirjaudu ulos</DropdownMenuItem>
                 </DropdownMenuContent>
