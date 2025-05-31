@@ -261,33 +261,6 @@ export function NewCustomer({ closeDialog, customerToEdit, forwaredCustomerGroup
                 </PopoverContent>
               </Popover>
             </div>
-            <div className="space-y-2">
-              <span className="flex">
-                <Label htmlFor="edit-discount" className="font-medium">
-                  Alennus (%)
-                </Label>
-                {instructionTooltip('Tämä asettaa yritykselle yleisen alennuksen, joka vaikuttaa kaikkiin laskuihin. Esimerkiksi 10,00 tarkoittaa 10 % alennusta.')}
-              </span>
-              <Input
-                id="edit-discount"
-                placeholder="0,00"
-                type="number"
-                step="0.01"
-                min="0"
-                max="100"
-                value={Number.parseFloat(customer.discount) === 0 ? '' : customer.discount}
-                onChange={e =>
-                  setCustomer({
-                    ...customer,
-                    discount: e.target.value,
-                  })}
-                onBlur={e =>
-                  setCustomer({
-                    ...customer,
-                    discount: formatNumberForUi(Number.parseFloat(e.target.value)),
-                  })}
-              />
-            </div>
           </div>
 
           <h2 className="text-lg font-medium">Yhteystiedot</h2>
@@ -379,6 +352,33 @@ export function NewCustomer({ closeDialog, customerToEdit, forwaredCustomerGroup
               value={customer.companyLegalName || ''}
               onChange={e => setCustomer({ ...customer, companyLegalName: e.target.value })}
               maxLength={255}
+            />
+          </div>
+          <div className="space-y-2">
+            <div className="flex">
+              <Label htmlFor="edit-discount" className="font-medium">
+                Alennus (%)
+              </Label>
+              {instructionTooltip('Tämä asettaa yritykselle yleisen alennuksen, joka vaikuttaa kaikkiin laskuihin. Esimerkiksi 10,00 tarkoittaa 10 % alennusta.')}
+            </div>
+            <Input
+              id="edit-discount"
+              placeholder="0,00"
+              type="number"
+              step="0.01"
+              min="0"
+              max="100"
+              value={Number.parseFloat(customer.discount) === 0 ? '' : customer.discount}
+              onChange={e =>
+                setCustomer({
+                  ...customer,
+                  discount: e.target.value,
+                })}
+              onBlur={e =>
+                setCustomer({
+                  ...customer,
+                  discount: formatNumberForUi(Number.parseFloat(e.target.value)),
+                })}
             />
           </div>
           <div className="space-y-2">
