@@ -313,8 +313,8 @@ export function Customers() {
           <AlertDialogHeader>
             <AlertDialogTitle>Haluatko varmasti poistaa tämän asiakkaan?</AlertDialogTitle>
             <AlertDialogDescription>
-              <p>Tätä toimintoa ei voi peruuttaa. Asiakkaan tiedot poistetaan pysyvästi järjestelmästä.</p>
-              <p>Jos asiakkaalla on tilauksia, ne poistetaan myös.</p>
+              <p>Tätä toimintoa ei voi peruuttaa enää jälkikäteen. Asiakkaan tiedot poistetaan pysyvästi järjestelmästä.</p>
+              <p>Jos asiakkaalla on tilauksia, ne poistetaan myös. Varmista, että olet laskuttanut kaikki asiakkaan tilaukset.</p>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
