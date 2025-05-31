@@ -15,7 +15,7 @@ import {
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Dialog,
   DialogTrigger,
@@ -155,12 +155,12 @@ export default function Products() {
   }
 
   // Change sort order
-  const vaihdaJarjestys = (kentta: keyof GetProductResponseDto) => {
-    if (orderByField === kentta) {
+  const changeSorting = (field: keyof GetProductResponseDto) => {
+    if (orderByField === field) {
       setOrderDirection(orderDirection === 'asc' ? 'desc' : 'asc')
     }
     else {
-      setOrderByField(kentta)
+      setOrderByField(field)
       setOrderDirection('asc')
     }
   }
@@ -216,17 +216,8 @@ export default function Products() {
           </div>
 
           <Card className="shadow-md">
-            <CardHeader className="border-b bg-gray-50 py-4">
+            <CardHeader className="border-b bg-gray-50 py-4 pl-2">
               <CardTitle>Tuoteluettelo</CardTitle>
-              <CardDescription>
-                {filteredTuotteet.length}
-                {' '}
-                tuotetta
-                {' '}
-                {products.length}
-                {' '}
-                tuotteesta
-              </CardDescription>
             </CardHeader>
             <CardContent className="p-0">
               <Table>
@@ -235,7 +226,7 @@ export default function Products() {
                     {/*
                     <TableHead className="w-[80px]">Järjestys</TableHead>
                     */}
-                    <TableHead className="cursor-pointer" onClick={() => vaihdaJarjestys('name')}>
+                    <TableHead className="cursor-pointer" onClick={() => changeSorting('name')}>
                       <div className="flex items-center">
                         Nimi
                         {orderByField === 'name'
@@ -263,7 +254,7 @@ export default function Products() {
                     </TableHead>
                     <TableHead>Aliryhmä</TableHead>
                     */}
-                    <TableHead className="cursor-pointer" onClick={() => vaihdaJarjestys('price')}>
+                    <TableHead className="cursor-pointer" onClick={() => changeSorting('price')}>
                       <div className="flex items-center">
                         Hinta ALV 14 % (€)
                         {orderByField === 'price'
@@ -277,8 +268,7 @@ export default function Products() {
                       </div>
                     </TableHead>
                     <TableHead>Hinta ALV 0 % (€)</TableHead>
-                    <TableHead>Pakkauskoko</TableHead>
-                    <TableHead>Pakkaus</TableHead>
+                    <TableHead>Pakkaustiedot</TableHead>
                     <TableHead className="text-right">Toiminnot</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -286,14 +276,14 @@ export default function Products() {
                   {filteredTuotteet.length === 0
                     ? (
                         <TableRow>
-                          <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
+                          <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
                             Ei tuotteita hakuehdoilla
                           </TableCell>
                         </TableRow>
                       )
                     : (
                         filteredTuotteet.map((product, index) => (
-                          <TableRow key={product.id} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                          <TableRow key={product.id} className={index % 2 === 0 ? 'bg-white' : 'bg-white'}>
                             {/*
                         <TableCell>
                           <div className="flex items-center">
@@ -345,13 +335,11 @@ export default function Products() {
                         <TableCell>{product.type}</TableCell>
                         <TableCell>{product.subtype}</TableCell>
                         */}
-                            <TableCell className="font-medium">
-                              {' '}
-                              {product.price ? formatMoneyFi(product.price) : ''}
-                            </TableCell>
+                            <TableCell className="font-medium">{product.price ? formatMoneyFi(product.price) : ''}</TableCell>
                             <TableCell>{product.price0 ? formatMoneyFi(product.price0) : ''}</TableCell>
-                            <TableCell>{product.packageSize ? `${product.packageSize} kg` : ''}</TableCell>
-                            <TableCell>{product.packageType}</TableCell>
+                            <TableCell>
+                              {[product.packageSize ? `${product.packageSize} kg` : '', product.packageType].filter(Boolean).join(', ')}
+                            </TableCell>
                             <TableCell className="text-right">
                               <div className="flex justify-end gap-2">
                                 <TooltipProvider>
@@ -396,19 +384,6 @@ export default function Products() {
                 </TableBody>
               </Table>
             </CardContent>
-            <CardFooter className="flex justify-between border-t bg-gray-50 py-3">
-              <div className="text-sm text-muted-foreground">
-                Näytetään
-                {' '}
-                {filteredTuotteet.length}
-                {' '}
-                /
-                {' '}
-                {products.length}
-                {' '}
-                tuotetta
-              </div>
-            </CardFooter>
           </Card>
         </div>
       </SiikliPage>
