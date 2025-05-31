@@ -1,4 +1,4 @@
-import type { PostCreateCustomerRequestDto, GetCustomersResponseDto, InvoiceDto, GetCustomerRequestDto } from '@/types/types'
+import type { GetCustomersResponseDto, InvoiceDto, GetCustomerRequestDto } from '@/types/types'
 import axios from 'axios'
 import { endOfMonth, startOfMonth } from 'date-fns'
 import { fi } from 'date-fns/locale'

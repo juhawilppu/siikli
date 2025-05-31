@@ -16,6 +16,7 @@ async function verifyHistoryTables() {
     'rate_limit',
     'package_type',
     'package_size',
+    'invoice'
   ]
   for (const tableName of tablesToVerify) {
     await verifyHistoryTable(tableName)
@@ -233,7 +234,7 @@ async function verifyHistoryTable(tableName: string) {
   }
 
   if (schemaDifferences.length === 0) {
-    console.log('✓ Schema validation passed')
+    console.log('✅ Schema validation passed')
 
     const triggerExists = await checkTriggerExists(`${historyTableName}_trigger`)
     const triggerStatus = await getTriggerStatus(
@@ -242,7 +243,7 @@ async function verifyHistoryTable(tableName: string) {
     )
 
     if (!triggerExists || triggerStatus !== 'VALID') {
-      console.log('✗ History trigger not found')
+      console.log('❌ History trigger not found')
     }
 
     const columnsForTrigger = tableColumns.filter(
@@ -260,16 +261,16 @@ async function verifyHistoryTable(tableName: string) {
         historyTableName,
         columnsForTrigger,
       )
-      console.log('✗ History trigger needs update')
+      console.log('❌ History trigger needs update')
       console.log('\n--- Required Trigger SQL ---')
       console.log(triggerSQL)
     }
     else {
-      console.log('✓ History trigger is up to date')
+      console.log('✅ History trigger is up to date')
     }
   }
   else {
-    console.log('✗ Schema validation failed:')
+    console.log('❌ Schema validation failed:')
     schemaDifferences.forEach(diff => console.log(`  - ${diff}`))
   }
 }

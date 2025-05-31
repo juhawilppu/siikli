@@ -38,6 +38,7 @@ model Tenant {
   productSubtypes       ProductSubtypes[]
   PackageType           PackageType[]
   PackageSize           PackageSize[]
+  invoices              Invoice[]
 
   @@map("tenant")
 }
@@ -125,24 +126,25 @@ model EmailLoginPinCodeHistory {
 }
 
 model Customer {
-  id                  String   @id @default(uuid()) @map("id") @db.Uuid
-  name                String   @map("name") @db.VarChar(50)
-  customerGroup       String?  @map("customer_group") @db.VarChar(255)
-  companyLegalName    String?  @map("company_legal_name") @db.VarChar(255)
-  discount            Float    @default(0) @map("discount")
-  invoiceReference    String?  @map("invoice_reference") @db.VarChar(255)
-  email               String?  @map("email") @db.VarChar(255)
-  phone               String?  @map("phone") @db.VarChar(255)
-  streetAddress       String?  @map("street_address") @db.VarChar(255)
-  postalCode          String?  @map("postal_code") @db.VarChar(5)
-  city                String?  @map("city") @db.VarChar(255)
-  businessId          String?  @map("business_id") @db.VarChar(255)
-  showPriceWithoutTax Boolean  @default(false) @map("show_price_without_tax")
-  tenantId            String   @map("tenant_id") @db.Uuid
-  tenant              Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  createdAt           DateTime @default(now()) @map("created_at")
-  updatedAt           DateTime @default(now()) @updatedAt @map("updated_at")
+  id                  String    @id @default(uuid()) @map("id") @db.Uuid
+  name                String    @map("name") @db.VarChar(50)
+  customerGroup       String?   @map("customer_group") @db.VarChar(255)
+  companyLegalName    String?   @map("company_legal_name") @db.VarChar(255)
+  discount            Float     @default(0) @map("discount")
+  invoiceReference    String?   @map("invoice_reference") @db.VarChar(255)
+  email               String?   @map("email") @db.VarChar(255)
+  phone               String?   @map("phone") @db.VarChar(255)
+  streetAddress       String?   @map("street_address") @db.VarChar(255)
+  postalCode          String?   @map("postal_code") @db.VarChar(5)
+  city                String?   @map("city") @db.VarChar(255)
+  businessId          String?   @map("business_id") @db.VarChar(255)
+  showPriceWithoutTax Boolean   @default(false) @map("show_price_without_tax")
+  tenantId            String    @map("tenant_id") @db.Uuid
+  tenant              Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updatedAt           DateTime  @default(now()) @updatedAt @map("updated_at")
   orders              Order[]
+  invoices            Invoice[]
 
   @@map("customer")
 }
@@ -282,6 +284,35 @@ model ProductHistory {
   updatedAt     DateTime @map("updated_at")
 
   @@map("product_history")
+}
+
+model Invoice {
+  id            String   @id @default(uuid()) @map("id") @db.Uuid
+  invoiceNumber Int      @map("invoice_number") @db.Integer
+  customerId    String   @map("customer_id") @db.Uuid
+  tenantId      String   @map("tenant_id") @db.Uuid
+  tenant        Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  customer      Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  content       Json     @map("content") @db.JsonB
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @default(now()) @updatedAt @map("updated_at")
+
+  @@map("invoice")
+}
+
+model InvoiceHistory {
+  revision  Int    @id @default(autoincrement()) @map("revision")
+  operation String @map("operation")
+
+  id            String   @default(uuid()) @map("id") @db.Uuid
+  invoiceNumber Int      @map("invoice_number") @db.Integer
+  customerId    String   @map("customer_id") @db.Uuid
+  tenantId      String   @map("tenant_id") @db.Uuid
+  content       Json     @map("content") @db.JsonB
+  createdAt     DateTime @map("created_at")
+  updatedAt     DateTime @map("updated_at")
+
+  @@map("invoice_history")
 }
 
 model Order {

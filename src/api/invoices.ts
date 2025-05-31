@@ -70,8 +70,19 @@ invoiceRoute.get(`/api/invoices`, isAuthenticated, async (req, res) => {
 
     const notificationPeriod = 14
 
+  const lastInvoice = await prisma.invoice.findFirst({
+    where: {
+      tenantId, 
+    },
+    orderBy: {
+      invoiceNumber: 'desc',
+    },
+  })
+  
+  const invoiceNumber = lastInvoice ? lastInvoice.invoiceNumber + 1 : 1000
+  
     const invoice = {
-      invoiceId: 1001,
+      invoiceId: invoiceNumber,
       date: dateToString(today),
       dueDate: dateToString(addDays(today, notificationPeriod)),
       paymentCondition: `${notificationPeriod} päivää`,
@@ -91,6 +102,15 @@ invoiceRoute.get(`/api/invoices`, isAuthenticated, async (req, res) => {
       },
       ...serializeInvoice(calculateTotals(items, customer.discount, customer.showPriceWithoutTax)),
     }
+  
+  await prisma.invoice.create({
+    data: {
+      invoiceNumber,
+      customerId: customer.id,
+      tenantId,
+      content: JSON.stringify(invoice),
+    },
+  })
 
     return res.status(200).json(invoice as InvoiceDto)
   },
