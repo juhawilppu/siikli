@@ -10,65 +10,69 @@ const invoiceRoute = express.Router()
 
 invoiceRoute.get(`/api/invoices`, isAuthenticated, async (req, res) => {
   const { tenantId } = getUser(req)
-    const customerId = req.query.customerId as string
-    const startDate = new Date(req.query.startDate as string)
-    const endDate = new Date(req.query.endDate as string)
+  const customerId = req.query.customerId as string
+  const startDate = new Date(req.query.startDate as string)
+  const endDate = new Date(req.query.endDate as string)
 
-    const customer = await prisma.customer.findUnique({
-      where: {
-        id: customerId,
-        tenantId,
-      },
-    })
-
-    if (!customer)
-      throw new Error('Customer not found')
-
-    const orders = await prisma.order.findMany({
-      where: {
-        customerId: customer.id,
-        tenantId,
-        deliveryDate: {
-          gte: startDate,
-          lte: endDate,
-        },
-      },
-      orderBy: {
-        deliveryDate: 'asc',
-      },
-      include: {
-        orderRows: {
-          include: {
-            product: true,
-          },
-        },
-      },
-    })
-
-    const company = await prisma.tenant.findFirstOrThrow({
-      where: {
-        id: tenantId,
-      },
-    })
-
-    const today = new Date()
-
-    const items = orders.map((o) => {
-      return o.orderRows.map((p) => {
-        return {
-          orderId: o.id,
-          orderNumber: o.waybillNumber,
-          amount: p.amount.toNumber() ,
-          deliveryDate: o.deliveryDate,
-          productName: p.product.name,
-          price: p.price.toNumber(),
-          price0: p.price0.toNumber(),
-        }
-      })
+  const customer = await prisma.customer.findUnique({
+    where: {
+      id: customerId,
+      tenantId,
     },
-    ).flat()
+  })
 
-    const notificationPeriod = 14
+  if (!customer)
+    throw new Error('Customer not found')
+
+  const orders = await prisma.order.findMany({
+    where: {
+      customerId: customer.id,
+      tenantId,
+      deliveryDate: {
+        gte: startDate,
+        lte: endDate,
+      },
+    },
+    orderBy: {
+      deliveryDate: 'asc',
+    },
+    include: {
+      orderRows: {
+        include: {
+          product: true,
+        },
+      },
+    },
+  })
+
+  const company = await prisma.tenant.findFirstOrThrow({
+    where: {
+      id: tenantId,
+    },
+  })
+
+  const today = new Date()
+
+  const items = orders.map((o) => {
+    return o.orderRows.map((p) => {
+      return {
+        orderId: o.id,
+        orderNumber: o.waybillNumber,
+        amount: p.amount.toNumber() ,
+        deliveryDate: o.deliveryDate,
+        productName: p.product.name,
+        price: p.price.toNumber(),
+        price0: p.price0.toNumber(),
+      }
+    })
+  },
+  ).flat()
+
+  if (orders.length === 0 || items.length === 0) {
+    return res.status(400).json({ error: 'No items found' })
+  }
+  
+  const notificationPeriod = 14
 
   const lastInvoice = await prisma.invoice.findFirst({
     where: {

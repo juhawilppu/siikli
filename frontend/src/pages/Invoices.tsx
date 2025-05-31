@@ -41,6 +41,8 @@ export function Invoices() {
 
   const getData = async () => {
     setDirty(false)
+    setInvoice(undefined)
+
     if (!customerId) {
       toast({
         title: 'Valitse asiakas',
@@ -52,15 +54,29 @@ export function Invoices() {
     if (!startDate || !endDate) {
       return
     }
-    const invoice = await axios.get<InvoiceDto>('/invoices', {
-      params: {
-        customerId,
-        startDate: startDate.toISOString(),
-        endDate: endDate.toISOString(),
-      },
-    })
-    console.log('invoice', invoice.data)
-    setInvoice(invoice.data)
+    try {
+      const invoice = await axios.get<InvoiceDto>('/invoices', {
+        params: {
+          customerId,
+          startDate: startDate.toISOString(),
+          endDate: endDate.toISOString(),
+        },
+      })
+      console.log('invoice', invoice.data)
+      setInvoice(invoice.data)
+    } catch (error:any) {
+      if (error.response?.data?.error === 'No items found') {
+        toast({
+          title: 'Ei tilauksia',
+          description: 'Tällä asiakkaalla ei ole tilauksia tällä aikavälillä',
+        })
+      } else {
+        toast({
+          title: 'Jokin meni pieleen',
+          description: 'Tarkista, että aloitus- ja lopetuspäivät ovat oikein',
+        })
+      }
+    }
   }
 
   useEffect(() => {
@@ -72,8 +88,9 @@ export function Invoices() {
 
   if (loading)
     return <SiikliPage title="Laskut" description="Tällä sivulla voit tulostaa laskut" />
+
   if (!customers)
-    return <div>Ei tuotteita</div>
+    return <div>Ei Asiakkaita</div>
 
   const selectedCustomer = customers.find(c => c.id === customerId)
 
@@ -91,6 +108,7 @@ export function Invoices() {
               <Select value={customerId} onValueChange={value => {
                 setCustomerId(value)
                 setDirty(true)
+                setInvoice(undefined)
               }}>
                 <SelectTrigger id="customer">
                   <SelectValue placeholder="Valitse asiakas" />
@@ -130,6 +148,7 @@ export function Invoices() {
                     onSelect={date => {
                       setStartDate(date)
                       setDirty(true)
+                      setInvoice(undefined)
                     }}
                     required
                     initialFocus
@@ -152,6 +171,7 @@ export function Invoices() {
                   <CalendarComponent mode="single" selected={endDate} onSelect={date => {
                     setEndDate(date)
                     setDirty(true)
+                    setInvoice(undefined)
                   }} required locale={fi} />
                 </PopoverContent>
               </Popover>
