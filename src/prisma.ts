@@ -5,7 +5,7 @@ const prisma = new PrismaClient()
 
 export function requireTenantFilterMiddleware(): Prisma.Middleware {
   return async (params, next) => {
-    const isProtectedModel = ['Customer', 'Order', 'OrderProduct', 'Product', 'ProductType', 'ProductSubtypes'].includes(params.model as string)
+    const isProtectedModel = ['Customer', 'Order', 'OrderRow', 'Product', 'ProductType', 'ProductSubtypes'].includes(params.model as string)
     const isFindAction
             = params.action === 'findMany'
               || params.action === 'findFirst'

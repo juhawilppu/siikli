@@ -1,5 +1,6 @@
 import type { InvoiceDto } from '@/types/types'
 import { formatMoneyFi } from '@/utils/money'
+import { formatNumberForUi } from './NewCustomer'
 
 export function InvoiceAppendix({
   invoice,
@@ -57,7 +58,7 @@ export function InvoiceAppendix({
               <td className="align-left width-20">{formatDate(item.deliveryDate)}</td>
               <td className="align-left width-20">{item.orderNumber}</td>
               <td className="align-left width-20">{item.productName}</td>
-              <td className="align-right width-20">{item.quantity}</td>
+              <td className="align-right width-20">{formatNumberForUi(item.quantity)}</td>
               {item.usePrice0
                 ? (
                     <>
@@ -79,9 +80,11 @@ export function InvoiceAppendix({
               <td colSpan={3} className="title width-40">
                 Yhteensä
                 {' '}
+                {formatNumberForUi(invoice.totals.totalKg)}
+                {' '}
                 {invoice.customer.showPriceWithoutTax ? '(ALV 0 %)' : '(ALV 14 %)'}
               </td>
-              <td className="align-right">{invoice.totals.totalKg}</td>
+              <td className="align-right">{formatNumberForUi(invoice.totals.totalKg)}</td>
               <td></td>
               <td className="align-right">
                 {invoice.customer.showPriceWithoutTax

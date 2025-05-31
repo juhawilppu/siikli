@@ -1,5 +1,6 @@
-import type { Customer, Order, OrderProduct, Product, Tenant } from '@prisma/client'
+import type { Customer, Order, OrderRow, Product, Tenant } from '@prisma/client'
 import { formatDate } from '../../frontend/src/utils/date'
+import { formatMoneyFi } from '../../frontend/src/utils/money'
 
 const defaultStyle = `
     <style type="text/css">
@@ -119,8 +120,8 @@ const defaultStyle = `
     `
 
 export async function createWaybills(tenant: Tenant, orders: (Order & {
-  products: (OrderProduct & {
-    products: Product
+  orderRows: (OrderRow & {
+    product: Product
   })[]
   customer: Customer
 })[]) {
@@ -146,25 +147,21 @@ export async function createWaybills(tenant: Tenant, orders: (Order & {
 export default async function createWaybill(
   company: Tenant,
   order: Order & {
-    products: (OrderProduct & {
-      products: Product
+    orderRows: (OrderRow & {
+      product: Product
     })[]
     customer: Customer
   },
   first: boolean,
 ) {
-  const itemsTable = order.products.map((item) => {
+  const itemsTable = order.orderRows.map((item) => {
     return `
             <tr>
-                <td class="align-left width-25">${item.products.name} ${item.price < 0 ? '(Hyvitys)' : ''
+                <td class="align-left width-25">${item.product.name} ${item.price.lessThan(0) ? '(Hyvitys)' : ''
                 }</td>
                 <td class="align-right width-25">${item.amount}</td>
-                <td class="align-right width-25">${item.price
-                  .toFixed(2)
-                  .replace('.', ',')}</td>
-                <td class="align-right width-25">${(item.amount * item.price)
-                  .toFixed(2)
-                  .replace('.', ',')}</td>
+                <td class="align-right width-25">${formatMoneyFi(item.price.toNumber())}</td>
+                <td class="align-right width-25">${formatMoneyFi(item.amount.mul(item.price).toNumber())}</td>
             </tr>`
   })
   const note = order.noteBody

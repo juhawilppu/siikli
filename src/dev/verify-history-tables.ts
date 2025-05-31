@@ -8,7 +8,7 @@ async function verifyHistoryTables() {
     'user',
     'email_login_pin_code',
     'customer',
-    'order_product',
+    'order_row',
     'product_type',
     'product',
     'order',

@@ -1,4 +1,5 @@
 import type { PackagingListGroupedByCustomer } from '@/types/types'
+import { formatNumberForUi } from './NewCustomer'
 
 export function PackagingListByCustomer({ report }: {
   report: PackagingListGroupedByCustomer
@@ -58,9 +59,9 @@ export function PackagingListByCustomer({ report }: {
                     {order.packageType}
                   </td>
                   <td className="align-right" style={{ width: '15%' }}>
-                    {order.amount / order.packageSize}
+                    {formatNumberForUi(order.amount / order.packageSize)}
                   </td>
-                  <td className="align-right" style={{ width: '25%' }}>{order.amount}</td>
+                  <td className="align-right" style={{ width: '25%' }}>{formatNumberForUi(order.amount)}</td>
                   <td className="align-left" style={{ width: '25%' }}>{order.freetext}</td>
                 </tr>
               ))}

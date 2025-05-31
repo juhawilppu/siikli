@@ -9,13 +9,13 @@ const router = express.Router()
 router.get('/api/sales-report', isAuthenticated, async (req, res) => {
   try {
     const { tenantId, userId } = getUser(req)
-    const data = await prisma.orderProduct.findMany({
+    const data = await prisma.orderRow.findMany({
       where: {
         tenantId,
         order: {
           tenantId,
         },
-        products: {
+        product: {
           tenantId,
         },
       },
@@ -29,7 +29,7 @@ router.get('/api/sales-report', isAuthenticated, async (req, res) => {
             },
           },
         },
-        products: true,
+        product: true,
       },
     })
 
@@ -51,13 +51,13 @@ router.get('/api/sales-report', isAuthenticated, async (req, res) => {
 
     // Add rows
     data.forEach((item) => {
-      const row =sheet.addRow({
+      const row = sheet.addRow({
         date: formatDate(item.order.deliveryDate),
         orderId: item.order.waybillNumber,
         customerName: item.order.customer.name,
-        productName: item.products.name,
-        amount: item.amount,
-        price: item.price,
+        productName: item.product.name,
+        amount: item.amount.toNumber(),
+        price: item.price.toNumber(),
         packageSize: item.packageSize,
         packageType: item.packageType,
         freetext: item.freetext,

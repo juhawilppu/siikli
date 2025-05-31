@@ -12,6 +12,7 @@ import { dateToString, formatDate, stringToDate } from '../../frontend/src/utils
 import { getUser, isAuthenticated } from '../middlewares/permissions'
 import prisma from '../prisma'
 import { createWaybills } from '../services/waybill'
+import Decimal from 'decimal.js'
 
 async function verifyPackageSizeAndType(body: { packageType: string | null, packageSize: number | null }, tenantId: string) {
   console.log('checking type', body)
@@ -75,7 +76,7 @@ ordersRoute.get(`/api/orders`, isAuthenticated, async (req, res) => {
   const result = await prisma.order.findMany({
     include: {
       customer: true,
-      products: true,
+      orderRows: true,
     },
     orderBy: [
       {
@@ -100,7 +101,7 @@ ordersRoute.get(`/api/orders`, isAuthenticated, async (req, res) => {
       id: o.id,
       waybillNumber: o.waybillNumber,
       deliveryDate: formatDate(o.deliveryDate),
-      total: o.products.map(o => o.amount * o.price).reduce((a, b) => a + b, 0),
+      total: o.orderRows.map(o => o.amount.mul(o.price)).reduce((a, b) => a.add(b), new Decimal(0)).toNumber(),
       customer: {
         id: o.customerId,
         name: o.customer.name,
@@ -124,9 +125,9 @@ ordersRoute.get(`/api/orders/waybills`, isAuthenticated, async (req, res) => {
   const orders = await prisma.order.findMany({
     include: {
       customer: true,
-      products: {
+      orderRows: {
         include: {
-          products: true,
+          product: true,
         },
       },
     },
@@ -200,7 +201,7 @@ ordersRoute.get(`/api/orders/:id`, isAuthenticated, async (req, res) => {
   const result = await prisma.order.findFirstOrThrow({
     include: {
       customer: true,
-      products: true,
+      orderRows: true,
     },
     orderBy: [
       {
@@ -225,14 +226,14 @@ ordersRoute.get(`/api/orders/:id`, isAuthenticated, async (req, res) => {
     hasNote: result.hasNote,
     noteBody: result.noteBody,
     noteHeader: result.noteHeader,
-    items: result.products.map(p => (
+    items: result.orderRows.map(p => (
       {
         id: p.id,
         productId: p.productId,
-        price: p.price,
-        price0: p.price0,
-        amount: p.amount,
-        packages: p.amount / p.packageSize,
+        price: p.price.toNumber(),
+        price0: p.price0.toNumber(),
+        amount: p.amount.toNumber(),
+        packages: p.amount.div(p.packageSize).toNumber(),
         packageSize: p.packageSize,
         packageType: p.packageType || '',
         freetext: p.freetext || '',
@@ -302,7 +303,7 @@ ordersRoute.post(`/api/orders`, isAuthenticated, async (req, res) => {
       },
     },
   })
-  await prisma.orderProduct.createMany({
+  await prisma.orderRow.createMany({
     data: data.items.map((r) => {
       return {
         orderId: result.id,
@@ -367,7 +368,7 @@ ordersRoute.post(`/api/orders/:id`, isAuthenticated, async (req, res) => {
   console.log(data.items)
   const toCreate = data.items.filter(r => !r.id)
   if (toCreate.length > 0) {
-    await prisma.orderProduct.createMany({
+    await prisma.orderRow.createMany({
       data: toCreate.map((r) => {
         return {
           orderId: result.id,
@@ -387,7 +388,7 @@ ordersRoute.post(`/api/orders/:id`, isAuthenticated, async (req, res) => {
   if (toUpdate.length > 0) {
     const promises = toUpdate.map((r) => {
       console.log(r)
-      return prisma.orderProduct.update({
+      return prisma.orderRow.update({
         data: {
           orderId: result.id,
           productId: r.productId,
@@ -406,7 +407,7 @@ ordersRoute.post(`/api/orders/:id`, isAuthenticated, async (req, res) => {
     })
 
     const promises2 = toUpdate.filter(r => r.deleted).map((r) => {
-      return prisma.orderProduct.delete({
+      return prisma.orderRow.delete({
         where: {
           id: r.id as string,
           orderId: result.id,

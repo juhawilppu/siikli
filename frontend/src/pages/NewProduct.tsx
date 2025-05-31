@@ -28,6 +28,7 @@ import { Separator } from '@/components/ui/separator'
 import { toast } from '@/hooks/use-toast'
 import { cn } from '@/lib/utils'
 import { calculatePricesFromVat0, calculatePricesFromVat14 } from './price-utils'
+import { formatNumber } from '@/utils/money'
 
 export default function NewProduct({ productToEdit, hide, onSave, productTypes, refPackageTypes, refPackageSizes }: { productToEdit?: GetProductResponseDto, hide: () => void, onSave: (product: GetProductResponseDto) => void, productTypes: ProductTypeResponse[], refPackageTypes: string[], refPackageSizes: number[] }) {
   const mode = productToEdit ? 'edit' : 'create'
@@ -45,8 +46,8 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
   }>>(mode === 'edit'
     ? {
         ...productToEdit,
-        price: productToEdit?.price?.toFixed(2) || '',
-        price0: productToEdit?.price0?.toFixed(2) || '',
+        price: productToEdit?.price ? formatNumber(productToEdit.price) : '',
+        price0: productToEdit?.price0 ? formatNumber(productToEdit.price0) : '',
         type: productToEdit?.type || '',
         subtype: productToEdit?.subtype || '',
         packageSize: productToEdit?.packageSize || undefined,
@@ -111,7 +112,7 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
     else {
       const res = await axios.post<{ id: string }>('/products', data)
 
-      onSave({ ...product, id: res.data.id, price: product.price ? Number.parseFloat(product.price) : null, price0: product.price0 ? Number.parseFloat(product.price0) : null } as GetProductResponseDto)
+      onSave({ ...product, id: res.data.id, price: product.price ? product.price : undefined, price0: product.price0 ? product.price0 : undefined } as GetProductResponseDto)
     }
   }
 

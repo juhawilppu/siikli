@@ -1,5 +1,30 @@
-import type { InvoiceItemDto, InvoiceRow } from '../frontend/src/types/types'
+import type { InvoiceItemDto } from '../frontend/src/types/types'
 import Decimal from 'decimal.js'
+
+export type InvoiceRow = {
+  usePrice0: true
+  deliveryDate: Date
+  orderNumber: number
+  productName: string
+  quantity: number
+  priceWithTax: undefined
+  priceWithoutTax: Decimal
+  totalWithTax: Decimal
+  totalWithoutTax: Decimal
+  tax: Decimal
+} |
+{
+  usePrice0: false
+  deliveryDate: Date
+  orderNumber: number
+  productName: string
+  quantity: number
+  priceWithTax: Decimal
+  priceWithoutTax: undefined
+  totalWithTax: Decimal
+  totalWithoutTax: Decimal
+  tax: Decimal
+}
 
 export function calculateTotals(items: InvoiceItemDto[], discount: number, usePrice0: boolean) {
   let totalSumWithoutTax = new Decimal(0)

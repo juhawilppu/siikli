@@ -32,7 +32,7 @@ router.get('/api/packaging-list/grouped-by/customer', async (req, res) => {
         freetext
       FROM "order" o
       LEFT JOIN customer c ON (c.id = o.customer_id)
-      LEFT JOIN order_product op ON (op.order_id = o.id)
+      LEFT JOIN order_row op ON (op.order_id = o.id)
       LEFT JOIN product p ON (p.id = op.product_id)
       WHERE DATE(delivery_date) = '${deliveryDate}' and o.tenant_id = '${tenantId}'
       GROUP BY
@@ -95,7 +95,7 @@ router.get('/api/packaging-list/grouped-by/product', async (req, res) => {
     op.package_size,
     op.package_type
     FROM "order" o
-    LEFT JOIN order_product op ON (op.order_id = o.id)
+    LEFT JOIN order_row op ON (op.order_id = o.id)
     LEFT JOIN product p ON (p.id = op.product_id)
     LEFT JOIN product_type pt ON (p.type = pt.type)
     LEFT JOIN product_subtype pst ON (p.type = pst.type AND p.subtype = pst.subtype)

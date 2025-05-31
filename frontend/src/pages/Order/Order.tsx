@@ -1,6 +1,6 @@
 import type React from 'react'
 
-import type { GetCustomerRequestDto, GetCustomersResponseDto, GetOrderDto, GetPackageSettings, GetProductResponseDto, OrderProduct, PostCreateCustomerRequestDto, PostOrderRequestDto, PostOrderResponseDto } from '@/types/types'
+import type { GetCustomerRequestDto, GetCustomersResponseDto, GetOrderDto, GetPackageSettings, GetProductResponseDto, OrderRow, PostOrderRequestDto, PostOrderResponseDto } from '@/types/types'
 
 import { captureException } from '@sentry/react'
 import axios from 'axios'
@@ -149,7 +149,7 @@ export default function CreateOrder() {
     }))
   }
 
-  const handleItemChange = (id: string, field: keyof OrderProduct, value: any) => {
+  const handleItemChange = (id: string, field: keyof OrderRow, value: any) => {
     if (!products) {
       return
     }
@@ -162,7 +162,7 @@ export default function CreateOrder() {
           if (field === 'productId') {
             const product = products.find(p => p.id === value)
             if (product) {
-              updatedItem.price = product.price?.toFixed(2) || ''
+              updatedItem.price = product.price ? formatMoneyFi(product.price) : ''
               updatedItem.packageSize = product.packageSize || undefined
               updatedItem.packageType = product.packageType || ''
             }

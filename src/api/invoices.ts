@@ -37,9 +37,9 @@ invoiceRoute.get(`/api/invoices`, isAuthenticated, async (req, res) => {
         deliveryDate: 'asc',
       },
       include: {
-        products: {
+        orderRows: {
           include: {
-            products: true,
+            product: true,
           },
         },
       },
@@ -54,15 +54,15 @@ invoiceRoute.get(`/api/invoices`, isAuthenticated, async (req, res) => {
     const today = new Date()
 
     const items = orders.map((o) => {
-      return o.products.map((p) => {
+      return o.orderRows.map((p) => {
         return {
           orderId: o.id,
-          orderNumber: 1,
-          amount: p.amount,
+          orderNumber: o.waybillNumber,
+          amount: p.amount.toNumber() ,
           deliveryDate: o.deliveryDate,
-          productName: p.products.name,
-          price: p.price,
-          price0: p.price0,
+          productName: p.product.name,
+          price: p.price.toNumber(),
+          price0: p.price0.toNumber(),
         }
       })
     },

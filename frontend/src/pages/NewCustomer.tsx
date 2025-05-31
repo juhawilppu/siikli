@@ -30,7 +30,7 @@ function instructionTooltip(text: string) {
 }
 
 export function formatNumberForUi(number?: number) {
-  return number?.toFixed(2) || ''
+  return number?.toFixed(2).replace('.', ',') || ''
 }
 
 export function NewCustomer({ closeDialog, customerToEdit, forwaredCustomerGroups, onSave }: {

@@ -31,7 +31,7 @@ model Tenant {
   trialEndDate          DateTime?         @map("trial_end_date")
   customers             Customer[]
   orders                Order[]
-  orderProducts         OrderProduct[]
+  orderRows             OrderRow[]
   users                 User[]
   products              Product[]
   productTypes          ProductType[]
@@ -171,28 +171,28 @@ model CustomerHistory {
   @@map("customer_history")
 }
 
-model OrderProduct {
+model OrderRow {
   id          String   @id @default(uuid()) @map("id") @db.Uuid
   orderId     String   @map("order_id") @db.Uuid
   tenantId    String   @map("tenant_id") @db.Uuid
   tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   productId   String   @map("product_id") @db.Uuid
-  amount      Int      @map("amount")
-  price       Float    @map("price")
+  amount      Decimal  @map("amount") @db.Decimal(10, 2)
+  price       Decimal  @map("price") @db.Decimal(10, 2)
+  price0      Decimal  @map("price0") @db.Decimal(10, 2)
   packageSize Int      @map("package_size")
   freetext    String?  @map("freetext") @db.VarChar(500)
   packageType String?  @map("package_type") @db.VarChar(3)
-  price0      Float    @default(0) @map("price0")
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
-  products    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
-  @@index([productId])
-  @@map("order_product")
+  @@index([tenantId])
+  @@map("order_row")
 }
 
-model OrderProductHistory {
+model OrderRowHistory {
   revision  Int    @id @default(autoincrement()) @map("revision")
   operation String @map("operation")
 
@@ -200,16 +200,16 @@ model OrderProductHistory {
   orderId     String   @map("order_id") @db.Uuid
   tenantId    String   @map("tenant_id") @db.Uuid
   productId   String   @map("product_id") @db.Uuid
-  amount      Int      @map("amount")
-  price       Float    @map("price")
+  amount      Decimal  @map("amount") @db.Decimal(10, 2)
+  price       Decimal  @map("price") @db.Decimal(10, 2)
+  price0      Decimal  @map("price0") @db.Decimal(10, 2)
   packageSize Int      @map("package_size")
   freetext    String?  @map("freetext") @db.VarChar(500)
   packageType String?  @map("package_type") @db.VarChar(3)
-  price0      Float    @map("price0")
   createdAt   DateTime @map("created_at")
   updatedAt   DateTime @map("updated_at")
 
-  @@map("order_product_history")
+  @@map("order_row_history")
 }
 
 model ProductType {
@@ -240,23 +240,23 @@ model ProductTypeHistory {
 }
 
 model Product {
-  id            String         @id @default(uuid()) @map("id") @db.Uuid
-  tenantId      String         @map("tenant_id") @db.Uuid
-  tenant        Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  name          String         @map("name") @db.VarChar(64)
-  variety       String?        @map("variety") @db.VarChar(32)
-  info          String?        @map("info") @db.VarChar(32)
-  price         Float?         @map("price")
-  type          String?        @map("type") @db.VarChar(32)
-  subtype       String?        @map("subtype") @db.VarChar(255)
-  packageSize   String?        @map("package_size") @db.VarChar(255)
-  packageType   String?        @map("package_type") @db.VarChar(255)
-  price0        Float?         @default(0) @map("price0")
-  customerGroup String?        @map("customer_group") @db.VarChar(256)
-  active        Boolean?       @default(true) @map("active")
-  createdAt     DateTime       @default(now()) @map("created_at")
-  updatedAt     DateTime       @default(now()) @updatedAt @map("updated_at")
-  orderProduct  OrderProduct[]
+  id            String     @id @default(uuid()) @map("id") @db.Uuid
+  tenantId      String     @map("tenant_id") @db.Uuid
+  tenant        Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name          String     @map("name") @db.VarChar(64)
+  variety       String?    @map("variety") @db.VarChar(32)
+  info          String?    @map("info") @db.VarChar(32)
+  price         Decimal?   @map("price") @db.Decimal(10, 2)
+  type          String?    @map("type") @db.VarChar(32)
+  subtype       String?    @map("subtype") @db.VarChar(255)
+  packageSize   String?    @map("package_size") @db.VarChar(255)
+  packageType   String?    @map("package_type") @db.VarChar(255)
+  price0        Decimal?   @map("price0") @db.Decimal(10, 2)
+  customerGroup String?    @map("customer_group") @db.VarChar(256)
+  active        Boolean?   @default(true) @map("active")
+  createdAt     DateTime   @default(now()) @map("created_at")
+  updatedAt     DateTime   @default(now()) @updatedAt @map("updated_at")
+  orderRows     OrderRow[]
 
   @@map("product")
 }
@@ -270,12 +270,12 @@ model ProductHistory {
   name          String   @map("name") @db.VarChar(64)
   variety       String?  @map("variety") @db.VarChar(32)
   info          String?  @map("info") @db.VarChar(32)
-  price         Float?   @map("price")
+  price         Decimal? @map("price") @db.Decimal(10, 2)
   type          String?  @map("type") @db.VarChar(32)
   subtype       String?  @map("subtype") @db.VarChar(255)
   packageSize   String?  @map("package_size") @db.VarChar(255)
   packageType   String?  @map("package_type") @db.VarChar(255)
-  price0        Float?   @map("price0")
+  price0        Decimal? @map("price0") @db.Decimal(10, 2)
   customerGroup String?  @map("customer_group") @db.VarChar(256)
   active        Boolean? @map("active")
   createdAt     DateTime @map("created_at")
@@ -285,22 +285,22 @@ model ProductHistory {
 }
 
 model Order {
-  id                  String         @id @default(uuid()) @map("id") @db.Uuid
-  waybillNumber       Int            @map("waybill_number") @db.Integer
-  customerId          String         @map("customer_id") @db.Uuid
-  deliveryDate        DateTime       @map("delivery_date") @db.Date
-  hasNote             Boolean        @map("has_note")
-  noteBody            String?        @map("note_body") @db.VarChar(1000)
-  noteHeader          String?        @map("note_header") @db.VarChar(255)
-  showPriceWithoutTax Boolean?       @default(false) @map("show_price_without_tax")
-  customerGroup       String?        @map("customer_group") @db.VarChar(256)
-  customer            Customer       @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  products            OrderProduct[]
-  tenantId            String         @map("tenant_id") @db.Uuid
-  tenant              Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  createdAt           DateTime       @default(now()) @map("created_at")
-  updatedAt           DateTime       @default(now()) @updatedAt @map("updated_at")
-  deletedAt           DateTime?      @map("deleted_at") @db.Date
+  id                  String     @id @default(uuid()) @map("id") @db.Uuid
+  waybillNumber       Int        @map("waybill_number") @db.Integer
+  customerId          String     @map("customer_id") @db.Uuid
+  deliveryDate        DateTime   @map("delivery_date") @db.Date
+  hasNote             Boolean    @map("has_note")
+  noteBody            String?    @map("note_body") @db.VarChar(1000)
+  noteHeader          String?    @map("note_header") @db.VarChar(255)
+  showPriceWithoutTax Boolean?   @default(false) @map("show_price_without_tax")
+  customerGroup       String?    @map("customer_group") @db.VarChar(256)
+  customer            Customer   @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  orderRows           OrderRow[]
+  tenantId            String     @map("tenant_id") @db.Uuid
+  tenant              Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  createdAt           DateTime   @default(now()) @map("created_at")
+  updatedAt           DateTime   @default(now()) @updatedAt @map("updated_at")
+  deletedAt           DateTime?  @map("deleted_at") @db.Date
 
   @@unique([waybillNumber, tenantId], map: "waybill_number_uniq")
   @@index([customerId], map: "customer_id")

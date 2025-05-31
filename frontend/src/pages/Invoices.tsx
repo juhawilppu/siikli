@@ -1,4 +1,4 @@
-import type { PostCreateCustomerRequestDto, GetCustomersResponseDto, InvoiceDto } from '@/types/types'
+import type { PostCreateCustomerRequestDto, GetCustomersResponseDto, InvoiceDto, GetCustomerRequestDto } from '@/types/types'
 import axios from 'axios'
 import { endOfMonth, startOfMonth } from 'date-fns'
 import { fi } from 'date-fns/locale'
@@ -25,7 +25,7 @@ export interface FlatOrderItem {
 }
 
 export function Invoices() {
-  const [customers, setCustomers] = useState<PostCreateCustomerRequestDto[]>()
+  const [customers, setCustomers] = useState<GetCustomerRequestDto[]>()
   const [invoice, setInvoice] = useState<InvoiceDto>()
   const [loading, setLoading] = useState(true)
   const [startDate, setStartDate] = useState<Date | undefined>(
@@ -92,8 +92,6 @@ export function Invoices() {
                 <SelectContent>
                   {customers.map(customer => (
                     <SelectItem key={customer.id} value={customer.id}>
-                      {customer.chain}
-                      {' '}
                       {customer.name}
                     </SelectItem>
                   ))}
@@ -103,6 +101,7 @@ export function Invoices() {
                 <p className="text-xs text-muted-foreground mt-1">
                   {selectedCustomer.streetAddress}
                   ,
+                  {' '}
                   {selectedCustomer.postalCode}
                   {' '}
                   {selectedCustomer.city}
