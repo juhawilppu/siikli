@@ -224,7 +224,9 @@ export function NewCustomer({ closeDialog, customerToEdit, forwaredCustomerGroup
                     <Input
                       placeholder="Hae tai lisää"
                       value={inputValueCustomerGroup}
-                      onChange={e => setInputValueCustomerGroup(e.target.value)}
+                      onChange={(e) => {
+                        setInputValueCustomerGroup(e.target.value)
+                      }}
                       className="mb-2"
                     />
                     {inputValueCustomerGroup && !customerGroups.includes(inputValueCustomerGroup) && (
@@ -241,15 +243,18 @@ export function NewCustomer({ closeDialog, customerToEdit, forwaredCustomerGroup
                     )}
                   </div>
                   <div className="max-h-[200px] overflow-y-auto">
-                    {customerGroups.map(customerGroup => (
+                    {customerGroups.sort((a, b) => a.localeCompare(b)).map(customerGroup => (
                       <Button
                         key={customerGroup}
                         variant="ghost"
                         className="w-full justify-start"
-                        onClick={() => setCustomer({ ...customer, customerGroup })}
+                        onClick={() => {
+                          setCustomer({ ...customer, customerGroup })
+                          setIsCustomerGroupPopoverOpen(false)
+                        }}
                       >
                         <Check className={cn('mr-2 h-4 w-4', customer.customerGroup === customerGroup ? 'opacity-100' : 'opacity-0')} />
-                        {customerGroup}
+                        {customerGroup || 'Ei ryhmää'}
                       </Button>
                     ))}
                   </div>
