@@ -21,6 +21,7 @@ import ConfirmDialog from './ConfirmDialog'
 export default function CompanySettings() {
   const [companyData, setCompanyData] = useState<GetCompanySettings>()
   const [showDeleteCompanyModal, setShowDeleteCompanyModal] = useState(false)
+  const [showSwitchSubscriptionModal, setShowSwitchSubscriptionModal] = useState<null | 'FREE' | 'PREMIUM'>(null)
   const { toast } = useToast()
 
   const handleDeleteCompany = async () => {
@@ -79,7 +80,12 @@ export default function CompanySettings() {
     })
   }
 
+  const askSwitchSubscription = async (subscription: 'FREE' | 'PREMIUM') => {
+    setShowSwitchSubscriptionModal(subscription)
+  }
+
   const switchSubscription = async (subscription: 'FREE' | 'PREMIUM') => {
+    setShowSwitchSubscriptionModal(null)
     const result = await axios.post<PostSubscriptionChangeRequest>('/tenants/subscription', {
       subscription,
     })
@@ -407,7 +413,7 @@ export default function CompanySettings() {
                           <span className="text-gray-500">Ei edistyneitä raportteja</span>
                         </li>
                       </ul>
-                      <Button onClick={() => switchSubscription('FREE')} variant="outline" className="w-full" disabled={companyData.subscriptionType === 'FREE'}>
+                      <Button onClick={() => askSwitchSubscription('FREE')} variant="outline" className="w-full" disabled={companyData.subscriptionType === 'FREE'}>
                         {companyData.subscriptionType === 'FREE' ? 'Nykyinen taso' : 'Vaihda tilaukseen'}
                       </Button>
                     </div>
@@ -496,7 +502,7 @@ export default function CompanySettings() {
                           <span>Edistyneet raportit</span>
                         </li>
                       </ul>
-                      <Button onClick={() => switchSubscription('PREMIUM')} className="w-full bg-blue-600 hover:bg-blue-700" disabled={companyData.subscriptionType === 'PREMIUM'}>
+                      <Button onClick={() => askSwitchSubscription('PREMIUM')} className="w-full bg-blue-600 hover:bg-blue-700" disabled={companyData.subscriptionType === 'PREMIUM'}>
                         {companyData.subscriptionType === 'PREMIUM' ? 'Nykyinen taso' : 'Vaihda tilaukseen'}
                       </Button>
                     </div>
@@ -561,6 +567,16 @@ export default function CompanySettings() {
           description="Oletko varma, että haluat poistaa yrityksen? Kaikki tiedot poistetaan, eikä niitä voi palauttaa."
           onConfirm={handleDeleteCompany}
           onCancel={() => setShowDeleteCompanyModal(false)}
+        />
+      )}
+
+      {showSwitchSubscriptionModal && (
+        <ConfirmDialog
+          title="Vaihda tilaus"
+          description={`Oletko varma, että haluat vaihtaa tilaukseen ${showSwitchSubscriptionModal === 'FREE' ? 'Free' : 'Premium'}?`}
+          confirmText="Vaihda tilaustaso"
+          onConfirm={() => switchSubscription(showSwitchSubscriptionModal)}
+          onCancel={() => setShowSwitchSubscriptionModal(null)}
         />
       )}
     </>
