@@ -107,7 +107,7 @@ export function calculateTotals(items: InvoiceItemDto[], discount: Decimal, useP
       const priceWithoutTax = undefined
 
       const totalWithTax = new Decimal(item.amount).mul(priceWithTax).toDecimalPlaces(2, Decimal.ROUND_HALF_UP)
-      const totalWithoutTax = totalWithTax.div(1.14)
+      const totalWithoutTax = totalWithTax.div(1.14).toDecimalPlaces(2, Decimal.ROUND_HALF_UP)
       const tax = (totalWithTax.sub(totalWithoutTax)).toDecimalPlaces(2, Decimal.ROUND_HALF_UP)
 
       invoiceRows.push({
@@ -141,12 +141,13 @@ export function calculateTotals(items: InvoiceItemDto[], discount: Decimal, useP
     .mul(new Decimal(discount).div(100))
     .toDecimalPlaces(2, Decimal.ROUND_HALF_UP)
 
-  finalSumWithoutTax = totalSumWithoutTax.sub(totalDiscount)
+  finalSumWithoutTax = totalSumWithoutTax.sub(totalDiscount).toDecimalPlaces(2, Decimal.ROUND_HALF_UP)
 
   totalTax = finalSumWithoutTax
     .mul(0.14)
     .toDecimalPlaces(2, Decimal.ROUND_HALF_UP)
 
+  // TODO: Rows are calculated differently regarding tax. Tax is there subtracted from the total-total without tax.
   finalSumWithTax = finalSumWithoutTax.add(totalTax)
 
   return {
