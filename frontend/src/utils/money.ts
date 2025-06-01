@@ -1,6 +1,12 @@
-export function formatNumber(amount?: number | string) {
+
+
+export function formatNumber(amount?: Decimal |number | string) {
   if (!amount) {
     return ''
+  }
+
+  if (amount instanceof Decimal) {
+    return amount.toNumber().toFixed(2).replace('.', ',')
   }
 
   // TODO: As a long-term plan, this function should never receive numbers or strings that don't have 2 decimals.

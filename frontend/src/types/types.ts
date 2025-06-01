@@ -199,16 +199,6 @@ export interface PostCreateCustomerRequestDto {
   customerGroup: string | null
 }
 
-export interface InvoiceItemDto {
-  orderId: string
-  orderNumber: number
-  deliveryDate: Date
-  productName: string
-  amount: number
-  price: number
-  price0: number
-}
-
 export type InvoiceRowDto = {
   usePrice0: true
   deliveryDate: Date
@@ -234,34 +224,8 @@ export type InvoiceRowDto = {
   tax: number
 }
 
-export interface InvoiceDto {
-  invoiceId: number
-  date: string
-  dueDate: string
-  customer: {
-    streetAddress: string | null
-    postalCode: string | null
-    city: string | null
-    name: string
-    legalName: string | null
-    businessId: string | null
-    showPriceWithoutTax: boolean
-  }
-  company: {
-    name: string
-  }
-  paymentCondition: string
-  interestRate: number
-  notificationPeriod: string
-  items: InvoiceRowDto[]
-  totals: {
-    totalSumWithTax: number
-    finalSumWithTax: number
-    totalSumWithoutTax: number
-    finalSumWithoutTax: number
-    totalTax: number
-    totalKg: number
-  }
+export interface GetInvoiceResponseDto {
+  total: string
 }
 
 export interface MetricDto {

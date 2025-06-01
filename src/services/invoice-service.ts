@@ -1,4 +1,3 @@
-import type { InvoiceItemDto } from '../frontend/src/types/types'
 import Decimal from 'decimal.js'
 
 export type InvoiceRow = {
@@ -6,7 +5,7 @@ export type InvoiceRow = {
   deliveryDate: Date
   orderNumber: number
   productName: string
-  quantity: number
+  quantity: Decimal
   priceWithTax: undefined
   priceWithoutTax: Decimal
   totalWithTax: Decimal
@@ -18,7 +17,7 @@ export type InvoiceRow = {
   deliveryDate: Date
   orderNumber: number
   productName: string
-  quantity: number
+  quantity: Decimal
   priceWithTax: Decimal
   priceWithoutTax: undefined
   totalWithTax: Decimal
@@ -26,14 +25,55 @@ export type InvoiceRow = {
   tax: Decimal
 }
 
-export function calculateTotals(items: InvoiceItemDto[], discount: number, usePrice0: boolean) {
+export interface InvoiceItemDto {
+  id: string
+  orderId: string
+  orderNumber: number
+  deliveryDate: Date
+  productName: string
+  amount: Decimal
+  price: Decimal
+  price0: Decimal
+}
+
+export interface InvoiceDto {
+  invoiceId: number
+  date: string
+  dueDate: string
+  customer: {
+    streetAddress: string | null
+    postalCode: string | null
+    city: string | null
+    name: string
+    legalName: string | null
+    businessId: string | null
+    showPriceWithoutTax: boolean
+  }
+  company: {
+    name: string
+  }
+  paymentCondition: string
+  interestRate: number
+  notificationPeriod: string
+  items: InvoiceRow[]
+  totals: {
+    totalSumWithTax: Decimal
+    finalSumWithTax: Decimal
+    totalSumWithoutTax: Decimal
+    finalSumWithoutTax: Decimal
+    totalTax: Decimal
+    totalKg: Decimal
+  }
+}
+
+export function calculateTotals(items: InvoiceItemDto[], discount: Decimal, usePrice0: boolean) {
   let totalSumWithoutTax = new Decimal(0)
   let totalSumWithTax = new Decimal(0)
   let totalDiscount = new Decimal(0)
   let totalTax = new Decimal(0)
   let finalSumWithoutTax = new Decimal(0)
   let finalSumWithTax = new Decimal(0)
-  let totalKg = 0
+  let totalKg = new Decimal(0)
 
   const invoiceRows: InvoiceRow[] = []
 
@@ -88,7 +128,7 @@ export function calculateTotals(items: InvoiceItemDto[], discount: number, usePr
   for (const invoiceRow of invoiceRows) {
     totalSumWithoutTax = totalSumWithoutTax.add(invoiceRow.totalWithoutTax)
     totalSumWithTax = totalSumWithTax.add(invoiceRow.totalWithTax)
-    totalKg += invoiceRow.quantity
+    totalKg = totalKg.add(invoiceRow.quantity)
   }
 
   totalSumWithTax = totalSumWithTax.toDecimalPlaces(2, Decimal.ROUND_HALF_DOWN)
@@ -112,33 +152,13 @@ export function calculateTotals(items: InvoiceItemDto[], discount: number, usePr
   return {
     items: invoiceRows,
     totals: {
-      totalSumWithoutTax: totalSumWithoutTax.toNumber(),
-      totalSumWithTax: totalSumWithTax.toNumber(),
-      totalDiscount: totalDiscount.toNumber(),
-      totalTax: totalTax.toNumber(),
-      finalSumWithoutTax: finalSumWithoutTax.toNumber(),
-      finalSumWithTax: finalSumWithTax.toNumber(),
+      totalSumWithoutTax: totalSumWithoutTax,
+      totalSumWithTax: totalSumWithTax,
+      totalDiscount: totalDiscount,
+      totalTax: totalTax,
+      finalSumWithoutTax: finalSumWithoutTax,
+      finalSumWithTax: finalSumWithTax,
       totalKg,
     },
-  }
-}
-
-/**
- * Function to convert from server-side Decimal objects to numbers for REST API
- * 
- * @param invoice
- * @returns 
- */
-export const serializeInvoice = (invoice: ReturnType<typeof calculateTotals>) => {
-  return {
-    ...invoice,
-    items: invoice.items.map((item) => ({
-        ...item,
-        priceWithTax: item.usePrice0 ? undefined : item.priceWithTax.toNumber(),
-        priceWithoutTax: item.usePrice0 ? item.priceWithoutTax.toNumber() : undefined,
-        totalWithTax: item.usePrice0 ? undefined : item.totalWithTax.toNumber(),
-        totalWithoutTax: item.usePrice0 ? item.totalWithoutTax.toNumber() : undefined,
-        tax: item.usePrice0 ? undefined : item.tax.toNumber(),
-    })),
   }
 }

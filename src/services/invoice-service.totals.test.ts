@@ -1,6 +1,6 @@
 import type { InvoiceItemDto } from '../frontend/src/types/types'
 import { describe, expect, it } from 'vitest'
-import { calculateTotals } from './invoice-service'
+import { calculateTotals } from './services/invoice-service'
 
 describe('calculateTotals', () => {
   it('calculates totals correctly with multiple items using VAT 0 % prices', () => {

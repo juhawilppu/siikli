@@ -1,4 +1,4 @@
-import type { GetCustomersResponseDto, InvoiceDto, GetCustomerRequestDto } from '@/types/types'
+import type { GetCustomersResponseDto, GetCustomerRequestDto, GetInvoiceResponseDto } from '@/types/types'
 import axios from 'axios'
 import { endOfMonth, startOfMonth } from 'date-fns'
 import { fi } from 'date-fns/locale'
@@ -14,8 +14,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { toast } from '@/hooks/use-toast'
 import SiikliPage from '@/SiikliPage'
 import { formatDate } from '@/utils/date'
-import { InvoiceAppendix } from './InvoiceAppendix'
-import { InvoiceView } from './InvoiceView'
 
 export interface FlatOrderItem {
   deliveryDate: Date
@@ -26,7 +24,7 @@ export interface FlatOrderItem {
 
 export function Invoices() {
   const [customers, setCustomers] = useState<GetCustomerRequestDto[]>()
-  const [invoice, setInvoice] = useState<InvoiceDto>()
+  const [invoice, setInvoice] = useState<GetInvoiceResponseDto>()
   const [loading, setLoading] = useState(true)
   const [startDate, setStartDate] = useState<Date | undefined>(
     startOfMonth(new Date(new Date().setMonth(new Date().getMonth() - 1))),
@@ -55,7 +53,7 @@ export function Invoices() {
       return
     }
     try {
-      const invoice = await axios.get<InvoiceDto>('/invoices', {
+      const invoice = await axios.get<GetInvoiceResponseDto>('/invoices', {
         params: {
           customerId,
           startDate: startDate.toISOString(),
@@ -176,7 +174,7 @@ export function Invoices() {
                 </PopoverContent>
               </Popover>
             </div>
-            <div className="flex justify-center items-center gap-2">
+            <div className="flex justify-end items-center gap-2">
               <Button disabled={!dirty || !customerId || !startDate || !endDate} onClick={getData}>
                 <RefreshCw className="w-4 h-4 mr-2" />
                 {' '}
@@ -195,22 +193,9 @@ export function Invoices() {
               Tulosta
             </Button>
           </div>
-          <div className="pdf p-5">
-            <InvoiceView
-              invoice={invoice}
-              reportData={
-                {
-                  totalPages: 1,
-                }
-              }
-              isEditMode={true}
-              onChange={() => { }}
-            />
-            <InvoiceAppendix
-              invoice={invoice}
-              showTotal={true}
-              totalPages={1}
-            />
+          <div>
+            <h2>Esikatselu</h2>
+            <p>Yhteensä: {invoice.total} €</p>
           </div>
         </Card>
       )}
