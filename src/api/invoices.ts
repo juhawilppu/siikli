@@ -140,7 +140,7 @@ invoiceRoute.get(`/api/invoices`, isAuthenticated, async (req, res) => {
     await page.setContent(html)
   
     const pdfBuffer = await page.pdf({
-      format: 'a5',
+      format: 'a4',
       margin: {
         top: '5mm',
         right: '5mm',
