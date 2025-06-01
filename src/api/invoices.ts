@@ -105,9 +105,12 @@ invoiceRoute.get(`/api/invoices`, isAuthenticated, async (req, res) => {
       city: customer.city,
       businessId: customer.businessId,
       showPriceWithoutTax: customer.showPriceWithoutTax,
+      discount: customer.discount,
     },
     company: {
       name: company.name,
+      bankNumber: company.invoiceBankAccount ?? '',
+      bankName: company.invoiceBankName ?? '',
     },
     ...calculateTotals(items, customer.discount, customer.showPriceWithoutTax),
   } satisfies InvoiceDto

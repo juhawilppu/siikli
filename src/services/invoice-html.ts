@@ -24,7 +24,7 @@ export function createInvoiceHtml(invoice: InvoiceDto) {
       margin-top: 1em;
     }
     td, th {
-      border: 1px solid #ccc;
+      border: 1px solid black;
       padding: 6px;
       text-align: left;
     }
@@ -76,9 +76,69 @@ export function createInvoiceHtml(invoice: InvoiceDto) {
     </tr>
     <tr>
       <td style="padding: 3mm; text-align: center; line-height: 1.5;"><strong>Yhteyshenkilönne</strong><br />&ndash;</td>
-      <td style="padding: 3mm; text-align: center; line-height: 1.5;"><strong>Viesti</strong><br />SIIKLI-OHJELMISTON YLLÄPITO 2024</td>
+      <td style="padding: 3mm; text-align: center; line-height: 1.5;"><strong>Viitteenne</strong><br />${invoice.customer.invoiceReference}</td>
     </tr>
   </table>
+
+  <table>
+    <tr>
+       <td><strong>Tuotenimike</strong></td>
+       <td><strong>Määrä (kg/kpl)</strong></td>
+       <td><strong>Ilman ALV<br />Yht EUR</strong></td>
+    </tr>
+    <tr>
+      <td>Perunaa, porkkanaa, sipulia, ym. - lähetteen mukaan</td>
+      <td>${invoice.totals.totalKg}</td>
+      <td>${invoice.totals.totalSumWithoutTax}</td>
+    </tr>
+    ${!invoice.totals.totalDiscount.isZero() ?
+        `<tr>
+          <td>Hyvitys (${invoice.customer.discount})</td>
+          <td>${invoice.totals.totalKg}</td>
+          <td>${invoice.totals.totalDiscount}</td>
+          </tr>`
+    : ''}
+    <tr>
+    <tr>
+      <td>Yhteensä (ALV 0 %)</td>
+      <td></td>
+      <td>${invoice.totals.finalSumWithoutTax}</td>
+    </tr>
+    <tr>
+      <td>ALV 14 %</td>
+      <td></td>
+      <td>${invoice.totals.totalTax}</td>
+    </tr>
+    <tr>
+      <td>Yhteensä (ALV 14 %)</td>
+      <td></td>
+      <td>${invoice.totals.finalSumWithTax}</td>
+    </tr>
+</table>
+
+<table>
+  <tr>
+    <td>
+      <strong>Maksettavaa EUR</strong><br />
+      <strong>${invoice.totals.finalSumWithTax}<strong>
+    </td>
+  </tr>
+  <tr>
+    <td><strong>Viitenumero:</strong> ${invoice.customer.invoiceReference}</td>
+  </tr>
+</table>
+
+<table>
+  <tr>
+    <td>
+      Saajan tilinumero
+    </td>
+    <td>
+      ${invoice.company.bankNumber}<br />
+      ${invoice.company.bankName}
+    </td>
+  </tr>
+</table>
 
 </body>
 </html>

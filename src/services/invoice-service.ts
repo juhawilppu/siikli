@@ -48,9 +48,13 @@ export interface InvoiceDto {
     legalName: string | null
     businessId: string | null
     showPriceWithoutTax: boolean
+    invoiceReference?: string
+    discount: Decimal
   }
   company: {
     name: string
+    bankNumber: string
+    bankName: string
   }
   paymentCondition: string
   interestRate: number
@@ -59,6 +63,7 @@ export interface InvoiceDto {
   totals: {
     totalSumWithTax: Decimal
     finalSumWithTax: Decimal
+    totalDiscount: Decimal
     totalSumWithoutTax: Decimal
     finalSumWithoutTax: Decimal
     totalTax: Decimal

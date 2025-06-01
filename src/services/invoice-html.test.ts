@@ -16,9 +16,12 @@ describe('createInvoiceHtml', () => {
         legalName: 'Test Legal Name',
         businessId: '1234567890',
         showPriceWithoutTax: false,
+        discount: new Decimal(0)
       },
       company: {
         name: 'Test Company',
+        bankNumber: '1234567890',
+        bankName: 'Test Bank'
       },
       paymentCondition: 'Test Payment Condition',
       interestRate: 0,
@@ -31,6 +34,7 @@ describe('createInvoiceHtml', () => {
         finalSumWithoutTax: new Decimal(100),
         totalTax: new Decimal(100),
         totalKg: new Decimal(100),
+        totalDiscount: new Decimal(0)
       },
     })
     expect(invoice).toContain('LASKU FAKTURA')
