@@ -1,27 +1,29 @@
-import type { InvoiceItemDto } from '../frontend/src/types/types'
 import { describe, expect, it } from 'vitest'
-import { calculateTotals } from './services/invoice-service'
+import { calculateTotals } from './invoice-service'
+import { InvoiceItemDto } from './invoice-service'
+import { Decimal } from '@prisma/client/runtime/library'
 
 describe('calculateTotals', () => {
   const sampleItems: InvoiceItemDto[] = [
     {
+      id: '1',
       orderId: '1',
       orderNumber: 1,
       deliveryDate: new Date('2024-01-01'),
       productName: 'Test Product 1',
-      amount: 100, // 100 kg
-      price: 1.32, // Calculating using 1,32 €/kg, VAT 0 % price would be 1.158 €/kg
-      price0: 1.16, // Calculating using 1,16 €/kg, VAT 14 % price would be 1.322 €/kg
+      amount: new Decimal(100), // 100 kg
+      price: new Decimal(1.32), // Calculating using 1,32 €/kg, VAT 0 % price would be 1.158 €/kg
+      price0: new Decimal(1.16), // Calculating using 1,16 €/kg, VAT 14 % price would be 1.322 €/kg
     },
   ]
 
   it('calculates sums using VAT 14 % prices', () => {
-    const result = calculateTotals(sampleItems, 0, false)
+    const result = calculateTotals(sampleItems, new Decimal(0), false)
 
     expect(result.items.length).toBe(1)
     expect(result.items[0].usePrice0).toBe(false)
     expect(result.items[0].productName).toBe('Test Product 1')
-    expect(result.items[0].quantity).toBe(100)
+    expect(result.items[0].quantity).toBeCloseTo(100)
     expect(result.items[0].priceWithTax).toBeCloseTo(1.32)
     expect(result.items[0].priceWithoutTax).toBeUndefined()
     expect(result.items[0].totalWithTax).toBeCloseTo(132)
@@ -36,12 +38,12 @@ describe('calculateTotals', () => {
   })
 
   it('calculates sums using VAT 0 % prices', () => {
-    const result = calculateTotals(sampleItems, 0, true)
+    const result = calculateTotals(sampleItems, new Decimal(0), true)
 
     expect(result.items.length).toBe(1)
     expect(result.items[0].usePrice0).toBe(true)
     expect(result.items[0].productName).toBe('Test Product 1')
-    expect(result.items[0].quantity).toBe(100)
+    expect(result.items[0].quantity).toBeCloseTo(100)
     expect(result.items[0].priceWithTax).toBeUndefined()
     expect(result.items[0].priceWithoutTax).toBeCloseTo(1.16)
     expect(result.items[0].totalWithTax).toBeCloseTo(132.24)

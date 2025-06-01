@@ -1,4 +1,4 @@
-
+import Decimal from "decimal.js"
 
 export function formatNumber(amount?: Decimal |number | string) {
   if (!amount) {

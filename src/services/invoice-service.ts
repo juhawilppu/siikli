@@ -82,11 +82,11 @@ export function calculateTotals(items: InvoiceItemDto[], discount: Decimal, useP
 
       // Calculation will be based on VAT 0 % price
       const priceWithTax = undefined
-      const priceWithoutTax = new Decimal(item.price0).toDecimalPlaces(2, Decimal.ROUND_HALF_DOWN)
+      const priceWithoutTax = new Decimal(item.price0).toDecimalPlaces(2, Decimal.ROUND_HALF_UP)
 
-      const totalWithoutTax = new Decimal(item.amount).mul(priceWithoutTax).toDecimalPlaces(2, Decimal.ROUND_HALF_DOWN)
-      const totalWithTax = totalWithoutTax.mul(1.14).toDecimalPlaces(2, Decimal.ROUND_HALF_DOWN)
-      const tax = (totalWithTax.sub(totalWithoutTax)).toDecimalPlaces(2, Decimal.ROUND_HALF_DOWN)
+      const totalWithoutTax = new Decimal(item.amount).mul(priceWithoutTax).toDecimalPlaces(2, Decimal.ROUND_HALF_UP)
+      const totalWithTax = totalWithoutTax.mul(1.14).toDecimalPlaces(2, Decimal.ROUND_HALF_UP)
+      const tax = (totalWithTax.sub(totalWithoutTax)).toDecimalPlaces(2, Decimal.ROUND_HALF_UP)
 
       invoiceRows.push({
         usePrice0,
@@ -103,12 +103,12 @@ export function calculateTotals(items: InvoiceItemDto[], discount: Decimal, useP
     }
     else {
       // Calculation will be based on VAT 14 % price
-      const priceWithTax = new Decimal(item.price).toDecimalPlaces(2, Decimal.ROUND_HALF_DOWN)
+      const priceWithTax = new Decimal(item.price).toDecimalPlaces(2, Decimal.ROUND_HALF_UP)
       const priceWithoutTax = undefined
 
-      const totalWithTax = new Decimal(item.amount).mul(priceWithTax).toDecimalPlaces(2, Decimal.ROUND_HALF_DOWN)
+      const totalWithTax = new Decimal(item.amount).mul(priceWithTax).toDecimalPlaces(2, Decimal.ROUND_HALF_UP)
       const totalWithoutTax = totalWithTax.div(1.14)
-      const tax = (totalWithTax.sub(totalWithoutTax)).toDecimalPlaces(2, Decimal.ROUND_HALF_DOWN)
+      const tax = (totalWithTax.sub(totalWithoutTax)).toDecimalPlaces(2, Decimal.ROUND_HALF_UP)
 
       invoiceRows.push({
         usePrice0,
@@ -131,21 +131,21 @@ export function calculateTotals(items: InvoiceItemDto[], discount: Decimal, useP
     totalKg = totalKg.add(invoiceRow.quantity)
   }
 
-  totalSumWithTax = totalSumWithTax.toDecimalPlaces(2, Decimal.ROUND_HALF_DOWN)
+  totalSumWithTax = totalSumWithTax.toDecimalPlaces(2, Decimal.ROUND_HALF_UP)
 
   totalSumWithoutTax = totalSumWithTax
     .div(1.14)
-    .toDecimalPlaces(2, Decimal.ROUND_HALF_DOWN)
+    .toDecimalPlaces(2, Decimal.ROUND_HALF_UP)
 
   totalDiscount = totalSumWithoutTax
     .mul(new Decimal(discount).div(100))
-    .toDecimalPlaces(2, Decimal.ROUND_HALF_DOWN)
+    .toDecimalPlaces(2, Decimal.ROUND_HALF_UP)
 
   finalSumWithoutTax = totalSumWithoutTax.sub(totalDiscount)
 
   totalTax = finalSumWithoutTax
     .mul(0.14)
-    .toDecimalPlaces(2, Decimal.ROUND_HALF_DOWN)
+    .toDecimalPlaces(2, Decimal.ROUND_HALF_UP)
 
   finalSumWithTax = finalSumWithoutTax.add(totalTax)
 

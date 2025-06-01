@@ -5,5 +5,5 @@ export function formatNumber(amount?: Decimal) {
     return ''
   }
 
-  return amount.toDecimalPlaces(2, Decimal.ROUND_HALF_DOWN).toFixed(2).replace('.', ',')
+  return amount.toDecimalPlaces(2, Decimal.ROUND_HALF_UP).toFixed(2).replace('.', ',')
 }

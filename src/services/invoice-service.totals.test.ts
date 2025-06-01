@@ -1,31 +1,33 @@
-import type { InvoiceItemDto } from '../frontend/src/types/types'
 import { describe, expect, it } from 'vitest'
-import { calculateTotals } from './services/invoice-service'
+import { calculateTotals, InvoiceItemDto } from './invoice-service'
+import { Decimal } from '@prisma/client/runtime/library'
 
 describe('calculateTotals', () => {
   it('calculates totals correctly with multiple items using VAT 0 % prices', () => {
     const sampleItems: InvoiceItemDto[] = [
       {
+        id: '1',
         orderId: '1',
         orderNumber: 1,
         deliveryDate: new Date('2024-01-01'),
         productName: 'Product A',
-        amount: 10,
-        price: 1.32, // ALV 14 % hinta (ei käytetä tässä)
-        price0: 1.16 // ALV 0 % hinta käytössä
+        amount: new Decimal(10),
+        price: new Decimal(1.32), // ALV 14 % hinta (ei käytetä tässä)
+        price0: new Decimal(1.16) // ALV 0 % hinta käytössä
       },
       {
+        id: '2',
         orderId: '2',
         orderNumber: 2,
         deliveryDate: new Date('2024-01-01'),
         productName: 'Product B',
-        amount: 5,
-        price: 2.28, // ALV 14 % hinta
-        price0: 2.00 // ALV 0 % hinta käytössä
+        amount: new Decimal(5),
+        price: new Decimal(2.28), // ALV 14 % hinta
+        price0: new Decimal(2.00) // ALV 0 % hinta käytössä
       },
     ]
   
-    const result = calculateTotals(sampleItems, 0, true)
+    const result = calculateTotals(sampleItems, new Decimal(0), true)
   
     // Product A: 10 × 1.16 = 11.60 (veroton), ALV = 1.62, verollinen = 13.22
     // Product B: 5 × 2.00 = 10.00 (veroton), ALV = 1.40, verollinen = 11.40
@@ -38,13 +40,13 @@ describe('calculateTotals', () => {
     const [row1, row2] = result.items
   
     expect(row1.productName).toBe('Product A')
-    expect(row1.quantity).toBe(10)
+    expect(row1.quantity).toBeCloseTo(10)
     expect(row1.totalWithoutTax).toBeCloseTo(11.60)
     expect(row1.totalWithTax).toBeCloseTo(13.22)
     expect(row1.tax).toBeCloseTo(1.62)
   
     expect(row2.productName).toBe('Product B')
-    expect(row2.quantity).toBe(5)
+    expect(row2.quantity).toBeCloseTo(5)
     expect(row2.totalWithoutTax).toBeCloseTo(10.00)
     expect(row2.totalWithTax).toBeCloseTo(11.40)
     expect(row2.tax).toBeCloseTo(1.40)
@@ -57,26 +59,28 @@ describe('calculateTotals', () => {
   it('calculates totals correctly with multiple items using VAT 14 % prices', () => {
     const sampleItems: InvoiceItemDto[] = [
       {
+        id: '1',
         orderId: '1',
         orderNumber: 1,
         deliveryDate: new Date('2024-01-01'),
         productName: 'Product A',
-        amount: 10,
-        price: 1.32,   // ALV 14 % hinta
-        price0: 1.16   // ALV 0 % hinta (ei käytetä tässä)
+        amount: new Decimal(10),
+        price: new Decimal(1.32),   // ALV 14 % hinta
+        price0: new Decimal(1.16)   // ALV 0 % hinta (ei käytetä tässä)
       },
       {
+        id: '2',
         orderId: '2',
         orderNumber: 2,
         deliveryDate: new Date('2024-01-01'),
         productName: 'Product B',
-        amount: 5,
-        price: 2.28,   // ALV 14 % hinta
-        price0: 2.00   // ALV 0 % hinta (ei käytetä tässä)
+        amount: new Decimal(5),
+        price: new Decimal(2.28),   // ALV 14 % hinta
+        price0: new Decimal(2.00)   // ALV 0 % hinta (ei käytetä tässä)
       },
     ]
   
-    const result = calculateTotals(sampleItems, 0, false)
+    const result = calculateTotals(sampleItems, new Decimal(0), false)
   
     // Product A: 10 × 1.32 = 13.20 (verollinen), veroton = 11.58, ALV = 1.62
     // Product B: 5 × 2.28 = 11.40 (verollinen), veroton = 10.00, ALV = 1.40
@@ -89,13 +93,13 @@ describe('calculateTotals', () => {
     const [row1, row2] = result.items
   
     expect(row1.productName).toBe('Product A')
-    expect(row1.quantity).toBe(10)
+    expect(row1.quantity).toBeCloseTo(10)
     expect(row1.totalWithTax).toBeCloseTo(13.20)
     expect(row1.totalWithoutTax).toBeCloseTo(11.58)
     expect(row1.tax).toBeCloseTo(1.62)
   
     expect(row2.productName).toBe('Product B')
-    expect(row2.quantity).toBe(5)
+    expect(row2.quantity).toBeCloseTo(5)
     expect(row2.totalWithTax).toBeCloseTo(11.40)
     expect(row2.totalWithoutTax).toBeCloseTo(10.00)
     expect(row2.tax).toBeCloseTo(1.40)

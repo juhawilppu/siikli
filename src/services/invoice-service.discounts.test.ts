@@ -1,31 +1,33 @@
-import type { InvoiceItemDto } from '../frontend/src/types/types'
 import { describe, expect, it } from 'vitest'
-import { calculateTotals } from './services/invoice-service'
+import { calculateTotals, InvoiceItemDto } from './invoice-service'
+import { Decimal } from '@prisma/client/runtime/library'
 
 describe('calculateTotals', () => {
     it('applies discount correctly when using VAT 14 % prices', () => {
         const sampleItems: InvoiceItemDto[] = [
           {
+            id: '1',
             orderId: '1',
             orderNumber: 1,
             deliveryDate: new Date('2024-01-01'),
             productName: 'Product A',
-            amount: 10,
-            price: 1.32,  // ALV 14 % sisältävä hinta
-            price0: 1.16  // ALV 0 % hinta (ei käytetä)
+            amount: new Decimal(10),
+            price: new Decimal(1.32),  // ALV 14 % sisältävä hinta
+            price0: new Decimal(1.16)  // ALV 0 % hinta (ei käytetä)
           },
           {
+            id: '2',
             orderId: '2',
             orderNumber: 2,
             deliveryDate: new Date('2024-01-01'),
             productName: 'Product B',
-            amount: 5,
-            price: 2.28,  // ALV 14 % sisältävä hinta
-            price0: 2.00
+            amount: new Decimal(5),
+            price: new Decimal(2.28),  // ALV 14 % sisältävä hinta
+            price0: new Decimal(2.00)
           },
         ]
       
-        const result = calculateTotals(sampleItems, 10, false)
+        const result = calculateTotals(sampleItems, new Decimal(10), false)
       
         // Ensin lasketaan kuten aiemmassa testissä (ilman alennusta):
         // Veroton A: 11.58 €
@@ -47,26 +49,28 @@ describe('calculateTotals', () => {
       it('applies discount correctly when using VAT 0 % prices', () => {
         const sampleItems: InvoiceItemDto[] = [
           {
+            id: '1',
             orderId: '1',
             orderNumber: 1,
             deliveryDate: new Date('2024-01-01'),
             productName: 'Product A',
-            amount: 10,
-            price: 1.32,  // ALV 14 % hinta (ei käytetä)
-            price0: 1.16  // ALV 0 % hinta
+            amount: new Decimal(10),
+            price: new Decimal(1.32),  // ALV 14 % hinta (ei käytetä)
+            price0: new Decimal(1.16)  // ALV 0 % hinta
           },
           {
+            id: '2',
             orderId: '2',
             orderNumber: 2,
             deliveryDate: new Date('2024-01-01'),
             productName: 'Product B',
-            amount: 5,
-            price: 2.28,  // ALV 14 % hinta (ei käytetä)
-            price0: 2.00  // ALV 0 % hinta
+            amount: new Decimal(5),
+            price: new Decimal(2.28),  // ALV 14 % hinta (ei käytetä)
+            price0: new Decimal(2.00)  // ALV 0 % hinta
           },
         ]
       
-        const result = calculateTotals(sampleItems, 10, true)
+        const result = calculateTotals(sampleItems, new Decimal(10), true)
       
         // Product A: 10 × 1.16 = 11.60 €
         // Product B: 5 × 2.00 = 10.00 €
