@@ -13,7 +13,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { toast } from '@/hooks/use-toast'
 import SiikliPage from '@/SiikliPage'
-import { formatDate } from '@/utils/date'
+import { dateToString, formatDate } from '@/utils/date'
 
 export interface FlatOrderItem {
   deliveryDate: Date
@@ -58,6 +58,7 @@ export function Invoices() {
           customerId,
           startDate: startDate.toISOString(),
           endDate: endDate.toISOString(),
+          preview: 'true',
         },
       })
       console.log('invoice', invoice.data)
@@ -75,6 +76,34 @@ export function Invoices() {
         })
       }
     }
+  }
+
+  const printInvoice = async () => {
+    console.log('printInvoice', customerId, startDate, endDate)
+    const response = await axios.get('/invoices', {
+      params: {
+        customerId,
+        startDate: startDate?.toISOString(),
+        endDate: endDate?.toISOString(),
+        preview: 'false',
+      },
+      responseType: 'blob',
+    })
+
+    // Create blob URL
+    const blob = new Blob([response.data], { type: 'application/pdf' })
+    const url = window.URL.createObjectURL(blob)
+
+    // Create temporary link and trigger download
+    const link = document.createElement('a')
+    link.href = url
+    link.setAttribute('download', `lasku-${startDate?.toLocaleString()}-${endDate?.toLocaleString()}.pdf`)
+    document.body.appendChild(link)
+    link.click()
+
+    // Cleanup
+    link.remove()
+    window.URL.revokeObjectURL(url)
   }
 
   useEffect(() => {
@@ -175,10 +204,15 @@ export function Invoices() {
               </Popover>
             </div>
             <div className="flex justify-end items-center gap-2">
-              <Button disabled={!dirty || !customerId || !startDate || !endDate} onClick={getData}>
+              <Button variant="outline" disabled={!dirty || !customerId || !startDate || !endDate} onClick={getData}>
                 <RefreshCw className="w-4 h-4 mr-2" />
                 {' '}
-                Hae tiedot
+                Esikatselu
+              </Button>
+              <Button disabled={!customerId || !startDate || !endDate} onClick={printInvoice}>
+                <RefreshCw className="w-4 h-4 mr-2" />
+                {' '}
+                Tulosta
               </Button>
             </div>
           </div>

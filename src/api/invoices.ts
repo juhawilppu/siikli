@@ -1,11 +1,13 @@
 import { addDays } from 'date-fns'
 import express from 'express'
 import { dateToString } from '../../frontend/src/utils/date'
-import { calculateTotals } from '../services/invoice-service'
+import { calculateTotals, InvoiceDto } from '../services/invoice-service'
 import { getUser, isAuthenticated } from '../middlewares/permissions'
 import prisma from '../prisma'
 import { GetInvoiceResponseDto } from '../../frontend/src/types/types'
 import { formatNumber } from '../utils/money'
+import puppeteer from 'puppeteer'
+import { createInvoiceHtml } from '../services/invoice-html'
 
 const invoiceRoute = express.Router()
 
@@ -14,6 +16,7 @@ invoiceRoute.get(`/api/invoices`, isAuthenticated, async (req, res) => {
   const customerId = req.query.customerId as string
   const startDate = new Date(req.query.startDate as string)
   const endDate = new Date(req.query.endDate as string)
+  const preview = req.query.preview === 'true'
 
   const customer = await prisma.customer.findUnique({
     where: {
@@ -107,7 +110,7 @@ invoiceRoute.get(`/api/invoices`, isAuthenticated, async (req, res) => {
       name: company.name,
     },
     ...calculateTotals(items, customer.discount, customer.showPriceWithoutTax),
-  }
+  } satisfies InvoiceDto
   
   await prisma.invoice.create({
     data: {
@@ -118,12 +121,48 @@ invoiceRoute.get(`/api/invoices`, isAuthenticated, async (req, res) => {
     },
   })
 
-  const invoiceSummary = {
-    total: formatNumber(invoice.totals.finalSumWithTax),
-  } satisfies GetInvoiceResponseDto
+  if (preview) {
+    const invoiceSummary = {
+      total: formatNumber(invoice.totals.finalSumWithTax),
+    } satisfies GetInvoiceResponseDto
 
-  return res.status(200).json(invoiceSummary)
-  },
+    return res.status(200).json(invoiceSummary)
+  }
+  else {
+    console.log('creating pdf')
+    const html = createInvoiceHtml(invoice)
+
+    const browser = await puppeteer.launch({
+      headless: true,
+      args: ['--no-sandbox'],
+    })
+    const page = await browser.newPage()
+    await page.setContent(html)
+  
+    const pdfBuffer = await page.pdf({
+      format: 'a5',
+      margin: {
+        top: '5mm',
+        right: '5mm',
+        bottom: '5mm',
+        left: '5mm',
+      },
+      displayHeaderFooter: true,
+      footerTemplate: '<div style="height: 22mm;">moi</div>',
+      printBackground: true,
+    })
+  
+    await browser.close()
+  
+    // Set headers for proper PDF display
+    res.setHeader('Content-Type', 'application/pdf')
+    res.setHeader('Content-Length', pdfBuffer.length)
+    res.setHeader('Content-Disposition', 'inline')
+    res.setHeader('Cache-Control', 'no-cache')
+    res.status(200)
+    res.end(pdfBuffer, 'binary')
+  }
+},
 )
 
 export default invoiceRoute
