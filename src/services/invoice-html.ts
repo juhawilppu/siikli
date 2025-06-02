@@ -1,7 +1,8 @@
-import { InvoiceDto } from "./invoice-service";
+import type { InvoiceDto } from './invoice-service'
+import { formatNumber } from '../utils/money'
 
 export function createInvoiceHtml(invoice: InvoiceDto) {
-    return `
+  return `
     <html>
 <!DOCTYPE html>
 <html lang="fi">
@@ -52,18 +53,18 @@ export function createInvoiceHtml(invoice: InvoiceDto) {
   </table>
   <table>
     <tr>
-      <td style="padding: 5mm;"><strong>Laskun saaja</strong><br>
+      <td style="padding: 5mm; width: 50%;"><strong>Laskun saaja</strong><br>
         ${invoice.customer.legalName}<br>
-        ${invoice.customer.businessId ? 'Y-tunnus ' + invoice.customer.businessId : ''}<br>
+        ${invoice.customer.businessId ? `Y-tunnus ${invoice.customer.businessId}` : ''}<br>
         ${invoice.customer.streetAddress}<br>
         ${invoice.customer.postalCode} ${invoice.customer.city}
       </td>
-      <td style="padding: 5mm;">
+      <td style="padding: 5mm; width: 50%;">
         <strong style="width: 40mm; display: inline-block;">Päivämäärä:</strong> ${invoice.date}<br>
         <strong style="width: 40mm; display: inline-block;">Laskun numero:</strong> ${invoice.invoiceId}<br>
         <strong style="width: 40mm; display: inline-block;">Maksuehdot:</strong> ${invoice.paymentCondition}<br>
         <strong style="width: 40mm; display: inline-block;">Eräpäivä:</strong> ${invoice.dueDate}<br>
-        <strong style="width: 40mm; display: inline-block;">Viivästyskorko:</strong> ${invoice.interestRate}%<br>
+        <strong style="width: 40mm; display: inline-block;">Viivästyskorko:</strong> ${invoice.interestRate} %<br>
         <strong style="width: 40mm; display: inline-block;">Huomautusaika:</strong> ${invoice.notificationPeriod}
       </td>
     </tr>
@@ -71,12 +72,12 @@ export function createInvoiceHtml(invoice: InvoiceDto) {
 
   <table>
     <tr>
-      <td style="padding: 3mm; text-align: center; line-height: 1.5;"><strong>Toimitusosoite (jos eri kuin laskutusosoite)</strong><br/>&ndash;</td>
-      <td style="padding: 3mm; text-align: center; line-height: 1.5;"><strong>Toimitusaika</strong><br />&ndash;</td>
+      <td style="padding: 3mm; text-align: center; line-height: 1.5; width: 50%;"><strong>Toimitusosoite (jos eri kuin laskutusosoite)</strong><br/>&ndash;</td>
+      <td style="padding: 3mm; text-align: center; line-height: 1.5; width: 50%;"><strong>Toimitusaika</strong><br />&ndash;</td>
     </tr>
     <tr>
-      <td style="padding: 3mm; text-align: center; line-height: 1.5;"><strong>Yhteyshenkilönne</strong><br />&ndash;</td>
-      <td style="padding: 3mm; text-align: center; line-height: 1.5;"><strong>Viitteenne</strong><br />${invoice.customer.invoiceReference}</td>
+      <td style="padding: 3mm; text-align: center; line-height: 1.5; width: 50%;"><strong>Yhteyshenkilönne</strong><br />&ndash;</td>
+      <td style="padding: 3mm; text-align: center; line-height: 1.5; width: 50%;"><strong>Viitteenne</strong><br />${invoice.customer.invoiceReference || '-'}</td>
     </tr>
   </table>
 
@@ -88,31 +89,31 @@ export function createInvoiceHtml(invoice: InvoiceDto) {
     </tr>
     <tr>
       <td>Perunaa, porkkanaa, sipulia, ym. - lähetteen mukaan</td>
-      <td>${invoice.totals.totalKg}</td>
-      <td>${invoice.totals.totalSumWithoutTax}</td>
+      <td>${formatNumber(invoice.totals.totalKg)}</td>
+      <td>${formatNumber(invoice.totals.totalSumWithoutTax)}</td>
     </tr>
-    ${!invoice.totals.totalDiscount.isZero() ?
-        `<tr>
-          <td>Hyvitys (${invoice.customer.discount})</td>
-          <td>${invoice.totals.totalKg}</td>
-          <td>${invoice.totals.totalDiscount}</td>
+    ${!invoice.totals.totalDiscount.isZero()
+      ? `<tr>
+          <td>Hyvitys (${formatNumber(invoice.customer.discount)})</td>
+          <td>${formatNumber(invoice.totals.totalKg)}</td>
+          <td>${formatNumber(invoice.totals.totalDiscount)}</td>
           </tr>`
-    : ''}
+      : ''}
     <tr>
     <tr>
       <td>Yhteensä (ALV 0 %)</td>
       <td></td>
-      <td>${invoice.totals.finalSumWithoutTax}</td>
+      <td>${formatNumber(invoice.totals.finalSumWithoutTax)}</td>
     </tr>
     <tr>
       <td>ALV 14 %</td>
       <td></td>
-      <td>${invoice.totals.totalTax}</td>
+      <td>${formatNumber(invoice.totals.totalTax)}</td>
     </tr>
     <tr>
       <td>Yhteensä (ALV 14 %)</td>
       <td></td>
-      <td>${invoice.totals.finalSumWithTax}</td>
+      <td>${formatNumber(invoice.totals.finalSumWithTax)}</td>
     </tr>
 </table>
 
@@ -120,11 +121,11 @@ export function createInvoiceHtml(invoice: InvoiceDto) {
   <tr>
     <td>
       <strong>Maksettavaa EUR</strong><br />
-      <strong>${invoice.totals.finalSumWithTax}<strong>
+      <strong>${formatNumber(invoice.totals.finalSumWithTax)}<strong>
     </td>
   </tr>
   <tr>
-    <td><strong>Viitenumero:</strong> ${invoice.customer.invoiceReference}</td>
+    <td><strong>Viitenumero:</strong> ${invoice.customer.invoiceReference || ''}</td>
   </tr>
 </table>
 
