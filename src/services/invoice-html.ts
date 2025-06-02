@@ -72,48 +72,48 @@ export function createInvoiceHtml(invoice: InvoiceDto) {
 
   <table>
     <tr>
-      <td style="padding: 3mm; text-align: center; line-height: 1.5; width: 50%;"><strong>Toimitusosoite (jos eri kuin laskutusosoite)</strong><br/>&ndash;</td>
-      <td style="padding: 3mm; text-align: center; line-height: 1.5; width: 50%;"><strong>Toimitusaika</strong><br />&ndash;</td>
+      <td style="padding: 2mm; text-align: center; line-height: 1.2; width: 50%;"><strong>Toimitusosoite (jos eri kuin laskutusosoite)</strong><br/>&ndash;</td>
+      <td style="padding: 2mm; text-align: center; line-height: 1.2; width: 50%;"><strong>Toimitusaika</strong><br />&ndash;</td>
     </tr>
     <tr>
-      <td style="padding: 3mm; text-align: center; line-height: 1.5; width: 50%;"><strong>Yhteyshenkilönne</strong><br />&ndash;</td>
-      <td style="padding: 3mm; text-align: center; line-height: 1.5; width: 50%;"><strong>Viitteenne</strong><br />${invoice.customer.invoiceReference || '-'}</td>
+      <td style="padding: 2mm; text-align: center; line-height: 1.2; width: 50%;"><strong>Yhteyshenkilönne</strong><br />&ndash;</td>
+      <td style="padding: 2mm; text-align: center; line-height: 1.2; width: 50%;"><strong>Viitteenne</strong><br />${invoice.customer.invoiceReference || '&ndash;'}</td>
     </tr>
   </table>
 
   <table>
     <tr>
        <td><strong>Tuotenimike</strong></td>
-       <td><strong>Määrä (kg/kpl)</strong></td>
-       <td><strong>Ilman ALV<br />Yht EUR</strong></td>
+       <td style="text-align: right;"><strong>Määrä (kg/kpl)</strong></td>
+       <td style="text-align: right;"><strong>Ilman ALV<br />Yht EUR</strong></td>
     </tr>
     <tr>
       <td>Perunaa, porkkanaa, sipulia, ym. - lähetteen mukaan</td>
-      <td>${formatNumber(invoice.totals.totalKg)}</td>
-      <td>${formatNumber(invoice.totals.totalSumWithoutTax)}</td>
+      <td style="text-align: right;">${formatNumber(invoice.totals.totalKg)}</td>
+      <td style="text-align: right;">${formatNumber(invoice.totals.totalSumWithoutTax)}</td>
     </tr>
     ${!invoice.totals.totalDiscount.isZero()
       ? `<tr>
           <td>Hyvitys (${formatNumber(invoice.customer.discount)})</td>
-          <td>${formatNumber(invoice.totals.totalKg)}</td>
-          <td>${formatNumber(invoice.totals.totalDiscount)}</td>
+          <td style="text-align: right;">${formatNumber(invoice.totals.totalKg)}</td>
+          <td style="text-align: right;">${formatNumber(invoice.totals.totalDiscount)}</td>
           </tr>`
       : ''}
     <tr>
     <tr>
       <td>Yhteensä (ALV 0 %)</td>
       <td></td>
-      <td>${formatNumber(invoice.totals.finalSumWithoutTax)}</td>
+      <td style="text-align: right;">${formatNumber(invoice.totals.finalSumWithoutTax)}</td>
     </tr>
     <tr>
       <td>ALV 14 %</td>
       <td></td>
-      <td>${formatNumber(invoice.totals.totalTax)}</td>
+      <td style="text-align: right;">${formatNumber(invoice.totals.totalTax)}</td>
     </tr>
     <tr>
       <td>Yhteensä (ALV 14 %)</td>
       <td></td>
-      <td>${formatNumber(invoice.totals.finalSumWithTax)}</td>
+      <td style="text-align: right;">${formatNumber(invoice.totals.finalSumWithTax)}</td>
     </tr>
 </table>
 
