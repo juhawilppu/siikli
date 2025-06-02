@@ -106,30 +106,34 @@ export function createInvoiceHtml(invoice: InvoiceDto) {
        <td class="border-right border-top-bottom" style="text-align: right;"><strong>Ilman ALV<br />Yht EUR</strong></td>
     </tr>
     <tr>
-      <td class="border-left border-top-bottom">Perunaa, porkkanaa, sipulia, ym. - lähetteen mukaan</td>
-      <td class="border-top-bottom" style="text-align: right;">${formatNumber(invoice.totals.totalKg)}</td>
-      <td class="border-right border-top-bottom" style="text-align: right;">${formatNumber(invoice.totals.totalSumWithoutTax)}</td>
+      <td class="border-left">Perunaa, porkkanaa, sipulia, ym. - lähetteen mukaan</td>
+      <td style="text-align: right;">${formatNumber(invoice.totals.totalKg)}</td>
+      <td class="border-right" style="text-align: right;">${formatNumber(invoice.totals.totalSumWithoutTax)}</td>
     </tr>
     ${!invoice.totals.totalDiscount.isZero()
       ? `<tr>
-          <td class="border-left border-top-bottom">Hyvitys (${formatNumber(invoice.customer.discount)})</td>
-          <td class="border-top-bottom" style="text-align: right;">${formatNumber(invoice.totals.totalKg)}</td>
-          <td class="border-right border-top-bottom" style="text-align: right;">${formatNumber(invoice.totals.totalDiscount)}</td>
+          <td class="border-left">Hyvitys (${formatNumber(invoice.customer.discount)})</td>
+          <td style="text-align: right;">${formatNumber(invoice.totals.totalKg)}</td>
+          <td class="border-right" style="text-align: right;">${formatNumber(invoice.totals.totalDiscount)}</td>
           </tr>`
       : ''}
+    <tr style="height: ${14 * 8}px;">
+      <td class="border-left"></td>
+      <td></td>
+      <td class="border-right"></td>
+    </tr>
     <tr>
-    <tr>
-      <td class="border-left border-top-bottom">Yhteensä (ALV 0 %)</td>
+      <td class="border-left border-top-bottom"><strong>Yhteensä (ALV 0 %)</strong></td>
       <td class="border-top-bottom"></td>
       <td class="border-right border-top-bottom" style="text-align: right;">${formatNumber(invoice.totals.finalSumWithoutTax)}</td>
     </tr>
     <tr>
-      <td class="border-left border-top-bottom">ALV 14 %</td>
+      <td class="border-left border-top-bottom"><strong>ALV 14 %</strong></td>
       <td class="border-top-bottom"></td>
       <td class="border-right border-top-bottom" style="text-align: right;">${formatNumber(invoice.totals.totalTax)}</td>
     </tr>
     <tr>
-      <td class="border-left border-top-bottom">Yhteensä (ALV 14 %)</td>
+      <td class="border-left border-top-bottom"><strong>Yhteensä (ALV 14 %)</strong></td>
       <td class="border-top-bottom"></td>
       <td class="border-right border-top-bottom" style="text-align: right;">${formatNumber(invoice.totals.finalSumWithTax)}</td>
     </tr>
@@ -153,10 +157,10 @@ export function createInvoiceHtml(invoice: InvoiceDto) {
 
 <table>
   <tr>
-    <td>
-      Saajan tilinumero
+    <td class="border-left border-top-bottom" style="width: 50%;">
+      <strong>Saajan tilinumero:</strong><br /><br />
     </td>
-    <td>
+    <td class="border-right border-top-bottom" style="width: 50%;">
       ${invoice.company.bankNumber}<br />
       ${invoice.company.bankName}
     </td>
