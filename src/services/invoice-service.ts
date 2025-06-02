@@ -55,6 +55,13 @@ export interface InvoiceDto {
     name: string
     bankNumber: string
     bankName: string
+    streetAddress: string | null
+    postalCode: string | null
+    city: string | null
+    phone: string | null
+    email: string | null
+    website: string | null
+    businessId: string | null
   }
   paymentCondition: string
   interestRate: number
@@ -84,7 +91,6 @@ export function calculateTotals(items: InvoiceItemDto[], discount: Decimal, useP
 
   for (const item of items) {
     if (usePrice0) {
-
       // Calculation will be based on VAT 0 % price
       const priceWithTax = undefined
       const priceWithoutTax = new Decimal(item.price0).toDecimalPlaces(2, Decimal.ROUND_HALF_UP)
@@ -158,12 +164,12 @@ export function calculateTotals(items: InvoiceItemDto[], discount: Decimal, useP
   return {
     items: invoiceRows,
     totals: {
-      totalSumWithoutTax: totalSumWithoutTax,
-      totalSumWithTax: totalSumWithTax,
-      totalDiscount: totalDiscount,
-      totalTax: totalTax,
-      finalSumWithoutTax: finalSumWithoutTax,
-      finalSumWithTax: finalSumWithTax,
+      totalSumWithoutTax,
+      totalSumWithTax,
+      totalDiscount,
+      totalTax,
+      finalSumWithoutTax,
+      finalSumWithTax,
       totalKg,
     },
   }

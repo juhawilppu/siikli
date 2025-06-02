@@ -1,13 +1,14 @@
+import type { GetInvoiceResponseDto } from '../../frontend/src/types/types'
+import type { InvoiceDto } from '../services/invoice-service'
 import { addDays } from 'date-fns'
 import express from 'express'
+import puppeteer from 'puppeteer'
 import { dateToString } from '../../frontend/src/utils/date'
-import { calculateTotals, InvoiceDto } from '../services/invoice-service'
 import { getUser, isAuthenticated } from '../middlewares/permissions'
 import prisma from '../prisma'
-import { GetInvoiceResponseDto } from '../../frontend/src/types/types'
-import { formatNumber } from '../utils/money'
-import puppeteer from 'puppeteer'
 import { createInvoiceHtml } from '../services/invoice-html'
+import { calculateTotals } from '../services/invoice-service'
+import { formatNumber } from '../utils/money'
 
 const invoiceRoute = express.Router()
 
@@ -76,7 +77,7 @@ invoiceRoute.get(`/api/invoices`, isAuthenticated, async (req, res) => {
   if (orders.length === 0 || items.length === 0) {
     return res.status(400).json({ error: 'No items found' })
   }
-  
+
   const notificationPeriod = 14
 
   const lastInvoice = await prisma.invoice.findFirst({
@@ -87,9 +88,9 @@ invoiceRoute.get(`/api/invoices`, isAuthenticated, async (req, res) => {
       invoiceNumber: 'desc',
     },
   })
-  
+
   const invoiceNumber = lastInvoice ? lastInvoice.invoiceNumber + 1 : 1000
-  
+
   const invoice = {
     invoiceId: invoiceNumber,
     date: dateToString(today),
@@ -111,10 +112,17 @@ invoiceRoute.get(`/api/invoices`, isAuthenticated, async (req, res) => {
       name: company.name,
       bankNumber: company.invoiceBankAccount ?? '',
       bankName: company.invoiceBankName ?? '',
+      streetAddress: company.streetAddress,
+      postalCode: company.postalCode,
+      city: company.city,
+      phone: company.phone,
+      email: company.email,
+      website: company.website,
+      businessId: company.businessId,
     },
     ...calculateTotals(items, customer.discount, customer.showPriceWithoutTax),
   } satisfies InvoiceDto
-  
+
   await prisma.invoice.create({
     data: {
       invoiceNumber,
@@ -141,7 +149,7 @@ invoiceRoute.get(`/api/invoices`, isAuthenticated, async (req, res) => {
     })
     const page = await browser.newPage()
     await page.setContent(html)
-  
+
     const pdfBuffer = await page.pdf({
       format: 'a4',
       margin: {
@@ -154,9 +162,9 @@ invoiceRoute.get(`/api/invoices`, isAuthenticated, async (req, res) => {
       footerTemplate: '<div style="height: 22mm;">moi</div>',
       printBackground: true,
     })
-  
+
     await browser.close()
-  
+
     // Set headers for proper PDF display
     res.setHeader('Content-Type', 'application/pdf')
     res.setHeader('Content-Length', pdfBuffer.length)
@@ -165,7 +173,6 @@ invoiceRoute.get(`/api/invoices`, isAuthenticated, async (req, res) => {
     res.status(200)
     res.end(pdfBuffer, 'binary')
   }
-},
-)
+})
 
 export default invoiceRoute

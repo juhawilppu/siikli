@@ -101,7 +101,7 @@ export function createInvoiceHtml(invoice: InvoiceDto) {
 
   <table>
     <tr>
-       <td class="border-left border-top-bottom"><strong>Tuotenimixe</strong></td>
+       <td class="border-left border-top-bottom"><strong>Tuotenimike</strong></td>
        <td class="border-top-bottom" style="text-align: right;"><strong>Määrä (kg/kpl)</strong></td>
        <td class="border-right border-top-bottom" style="text-align: right;"><strong>Ilman ALV<br />Yht EUR</strong></td>
     </tr>
@@ -117,7 +117,7 @@ export function createInvoiceHtml(invoice: InvoiceDto) {
           <td class="border-right" style="text-align: right;">${formatNumber(invoice.totals.totalDiscount)}</td>
           </tr>`
       : ''}
-    <tr style="height: ${14 * 8}px;">
+    <tr style="height: ${16 * 12}px;">
       <td class="border-left"></td>
       <td></td>
       <td class="border-right"></td>
@@ -142,8 +142,8 @@ export function createInvoiceHtml(invoice: InvoiceDto) {
 <table class="thick-borders">
   <tr>
     <td style="text-align: center;">
-      <strong>Maksettavaa EUR</strong><br />
-      <strong>${formatNumber(invoice.totals.finalSumWithTax)}<strong>
+      <strong>Maksettavaa</strong><br />
+      <strong>${formatNumber(invoice.totals.finalSumWithTax)} EUR<strong>
     </td>
   </tr>
   ${invoice.customer.invoiceReference
@@ -165,6 +165,28 @@ export function createInvoiceHtml(invoice: InvoiceDto) {
       ${invoice.company.bankName}
     </td>
   </tr>
+</table>
+
+<table style="margin-top: 15mm;">
+    <tr>
+      <td class="border-left border-top-bottom" style="width: 25%;"><strong>Osoite</strong><br />
+      ${invoice.company.name}<br />
+      ${invoice.company.streetAddress}<br />
+      ${invoice.company.postalCode} ${invoice.company.city}
+      </td>
+      <td class="border-top-bottom" style="width: 25%;">
+        <strong>Puhelin</strong><br />
+        ${invoice.company.phone}<br /><br /><br />
+      </td>
+      <td class="border-top-bottom" style="width: 25%;">
+        <strong>Sähköposti / WWW</strong><br />
+        ${invoice.company.email}<br />
+        ${invoice.company.website}<br /><br />
+      </td>
+      <td class="border-right border-top-bottom" style="width: 25%;"><strong>Y-tunnus</strong><br />
+        ${invoice.company.businessId}<br /><br /><br />
+      </td>
+    </tr>
 </table>
 
 </body>
