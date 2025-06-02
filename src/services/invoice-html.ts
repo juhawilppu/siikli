@@ -19,22 +19,39 @@ export function createInvoiceHtml(invoice: InvoiceDto) {
     h1 {
       text-align: center;
     }
+
     table {
       width: 100%;
-      border-collapse: collapse;
       margin-top: 1em;
+      border-collapse: collapse;
     }
+
     td, th {
-      border: 1px solid black;
       padding: 6px;
       text-align: left;
     }
-    .no-border td, .no-border th {
-      border: none;
+
+    table.borders td, th {
+      border: 1px solid black;
     }
-    .total {
-      font-weight: bold;
+
+    table.thick-borders td, th {
+      border: 4px solid black;
     }
+
+    td.border-top-bottom {
+      border-top: 1px solid black;
+      border-bottom: 1px solid black;
+    }
+
+    td.border-right {
+      border-right: 1px solid black;
+    }
+
+    td.border-left {
+      border-left: 1px solid black;
+    }
+
     .footer {
       margin-top: 2em;
       font-size: 0.9em;
@@ -44,14 +61,15 @@ export function createInvoiceHtml(invoice: InvoiceDto) {
 <body>
 
 
-  <table class="no-border">
+  <table>
     <tr>
       <td>${invoice.company.name}</td>
       <td>LASKU / FAKTURA</td>
       <td>Sivu 1/1</td>
     </tr>
   </table>
-  <table>
+
+  <table class="borders">
     <tr>
       <td style="padding: 5mm; width: 50%;"><strong>Laskun saaja</strong><br>
         ${invoice.customer.legalName}<br>
@@ -70,7 +88,7 @@ export function createInvoiceHtml(invoice: InvoiceDto) {
     </tr>
   </table>
 
-  <table>
+  <table class="borders">
     <tr>
       <td style="padding: 2mm; text-align: center; line-height: 1.2; width: 50%;"><strong>Toimitusosoite (jos eri kuin laskutusosoite)</strong><br/>&ndash;</td>
       <td style="padding: 2mm; text-align: center; line-height: 1.2; width: 50%;"><strong>Toimitusaika</strong><br />&ndash;</td>
@@ -83,50 +101,54 @@ export function createInvoiceHtml(invoice: InvoiceDto) {
 
   <table>
     <tr>
-       <td><strong>Tuotenimike</strong></td>
-       <td style="text-align: right;"><strong>Määrä (kg/kpl)</strong></td>
-       <td style="text-align: right;"><strong>Ilman ALV<br />Yht EUR</strong></td>
+       <td class="border-left border-top-bottom"><strong>Tuotenimixe</strong></td>
+       <td class="border-top-bottom" style="text-align: right;"><strong>Määrä (kg/kpl)</strong></td>
+       <td class="border-right border-top-bottom" style="text-align: right;"><strong>Ilman ALV<br />Yht EUR</strong></td>
     </tr>
     <tr>
-      <td>Perunaa, porkkanaa, sipulia, ym. - lähetteen mukaan</td>
-      <td style="text-align: right;">${formatNumber(invoice.totals.totalKg)}</td>
-      <td style="text-align: right;">${formatNumber(invoice.totals.totalSumWithoutTax)}</td>
+      <td class="border-left border-top-bottom">Perunaa, porkkanaa, sipulia, ym. - lähetteen mukaan</td>
+      <td class="border-top-bottom" style="text-align: right;">${formatNumber(invoice.totals.totalKg)}</td>
+      <td class="border-right border-top-bottom" style="text-align: right;">${formatNumber(invoice.totals.totalSumWithoutTax)}</td>
     </tr>
     ${!invoice.totals.totalDiscount.isZero()
       ? `<tr>
-          <td>Hyvitys (${formatNumber(invoice.customer.discount)})</td>
-          <td style="text-align: right;">${formatNumber(invoice.totals.totalKg)}</td>
-          <td style="text-align: right;">${formatNumber(invoice.totals.totalDiscount)}</td>
+          <td class="border-left border-top-bottom">Hyvitys (${formatNumber(invoice.customer.discount)})</td>
+          <td class="border-top-bottom" style="text-align: right;">${formatNumber(invoice.totals.totalKg)}</td>
+          <td class="border-right border-top-bottom" style="text-align: right;">${formatNumber(invoice.totals.totalDiscount)}</td>
           </tr>`
       : ''}
     <tr>
     <tr>
-      <td>Yhteensä (ALV 0 %)</td>
-      <td></td>
-      <td style="text-align: right;">${formatNumber(invoice.totals.finalSumWithoutTax)}</td>
+      <td class="border-left border-top-bottom">Yhteensä (ALV 0 %)</td>
+      <td class="border-top-bottom"></td>
+      <td class="border-right border-top-bottom" style="text-align: right;">${formatNumber(invoice.totals.finalSumWithoutTax)}</td>
     </tr>
     <tr>
-      <td>ALV 14 %</td>
-      <td></td>
-      <td style="text-align: right;">${formatNumber(invoice.totals.totalTax)}</td>
+      <td class="border-left border-top-bottom">ALV 14 %</td>
+      <td class="border-top-bottom"></td>
+      <td class="border-right border-top-bottom" style="text-align: right;">${formatNumber(invoice.totals.totalTax)}</td>
     </tr>
     <tr>
-      <td>Yhteensä (ALV 14 %)</td>
-      <td></td>
-      <td style="text-align: right;">${formatNumber(invoice.totals.finalSumWithTax)}</td>
+      <td class="border-left border-top-bottom">Yhteensä (ALV 14 %)</td>
+      <td class="border-top-bottom"></td>
+      <td class="border-right border-top-bottom" style="text-align: right;">${formatNumber(invoice.totals.finalSumWithTax)}</td>
     </tr>
 </table>
 
-<table>
+<table class="thick-borders">
   <tr>
-    <td>
+    <td style="text-align: center;">
       <strong>Maksettavaa EUR</strong><br />
       <strong>${formatNumber(invoice.totals.finalSumWithTax)}<strong>
     </td>
   </tr>
-  <tr>
-    <td><strong>Viitenumero:</strong> ${invoice.customer.invoiceReference || ''}</td>
-  </tr>
+  ${invoice.customer.invoiceReference
+    ? `
+    <tr>
+      <td style="text-align: center;"><strong>Viitenumero:</strong> ${invoice.customer.invoiceReference}</td>
+    </tr>
+  `
+    : ''}
 </table>
 
 <table>
