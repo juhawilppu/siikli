@@ -1,4 +1,5 @@
 import type { InvoiceDto } from './invoice-service'
+import { formatDate } from '../../frontend/src/utils/date'
 import { formatNumber } from '../utils/money'
 
 export function createInvoiceHtml(invoice: InvoiceDto) {
@@ -167,7 +168,7 @@ export function createInvoiceHtml(invoice: InvoiceDto) {
   </tr>
 </table>
 
-<table style="margin-top: 15mm;">
+<table style="margin-top: 20mm;">
     <tr>
       <td class="border-left border-top-bottom" style="width: 25%;"><strong>Osoite</strong><br />
       ${invoice.company.name}<br />
@@ -186,6 +187,34 @@ export function createInvoiceHtml(invoice: InvoiceDto) {
       <td class="border-right border-top-bottom" style="width: 25%;"><strong>Y-tunnus</strong><br />
         ${invoice.company.businessId}<br /><br /><br />
       </td>
+    </tr>
+</table>
+
+<table>
+    <tr>
+      <td class="border-left border-top-bottom"><strong>Toimituspäivä</strong></td>
+      <td class="border-top-bottom"><strong>Tilausnumero</strong></td>
+      <td class="border-top-bottom"><strong>Tuotenimike</strong></td>
+      <td class="border-top-bottom" style="text-align: right;"><strong>Määrä (kg/kpl)</strong></td>
+      <td class="border-top-bottom" style="text-align: right;"><strong>Yksikköhinta<br/>(€/kg/kpl)<br />sis. ALV 14 %</strong></td>
+      <td class="border-right border-top-bottom" style="text-align: right;"><strong>Kokonaishinta<br/>(€)<br />sis. ALV 14 %</strong></td>
+    </tr>
+    ${invoice.items.map(item => `
+      <tr>
+        <td class="border-left">${formatDate(item.deliveryDate)}</td>
+        <td class="border-top-bottom">${item.orderNumber}</td>
+        <td class="border-top-bottom">${item.productName}</td>
+        <td class="border-top-bottom" style="text-align: right;">${formatNumber(item.quantity)}</td>
+        <td class="border-top-bottom" style="text-align: right;">${formatNumber(item.priceWithTax)}</td>
+        <td class="border-right" style="text-align: right;">${formatNumber(item.totalWithTax)}</td>
+      </tr>
+    `).join('')}
+    <tr>
+      <td class="border-left border-top-bottom" colspan="2"><strong>Yhteensä (ALV 14 %)</strong></td>
+      <td class="border-top-bottom"></td>
+      <td class="border-top-bottom" style="text-align: right;">${formatNumber(invoice.totals.totalKg)}</td>
+      <td class="border-top-bottom"></td>
+      <td class="border-right border-top-bottom" style="text-align: right;">${formatNumber(invoice.totals.totalSumWithTax)}</td>
     </tr>
 </table>
 
