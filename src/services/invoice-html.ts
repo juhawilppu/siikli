@@ -12,24 +12,24 @@ export function createInvoiceHtml(invoice: InvoiceDto) {
   <style>
     body {
       font-family: sans-serif;
-      max-width: 800px;
-      margin: auto;
-      padding: 20px;
-      color: #333;
-    }
-    h1 {
-      text-align: center;
+      font-size: 12pt;
+      color: black;
     }
 
     table {
       width: 100%;
       margin-top: 1em;
       border-collapse: collapse;
+      border-spacing: 0;
     }
 
     td, th {
       padding: 6px;
       text-align: left;
+    }
+
+    td {
+      vertical-align: top;
     }
 
     table.borders td, th {
@@ -60,15 +60,6 @@ export function createInvoiceHtml(invoice: InvoiceDto) {
   </style>
 </head>
 <body>
-
-
-  <table>
-    <tr>
-      <td>${invoice.company.name}</td>
-      <td>LASKU / FAKTURA</td>
-      <td>Sivu 1/1</td>
-    </tr>
-  </table>
 
   <table class="borders">
     <tr>
