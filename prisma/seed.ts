@@ -1,11 +1,10 @@
-import { addMonths } from 'date-fns'
+import { addMonths, subDays } from 'date-fns'
 import prisma from '../src/prisma'
 
 async function main() {
   console.log('Running seed 🌱')
 
   // Create tenant 1
-
   const tenant = await prisma.tenant.create({
     data: {
       name: 'Siikli Solutions Oy',
@@ -29,7 +28,7 @@ async function main() {
     },
   })
 
-  await prisma.customer.create({
+  const sello = await prisma.customer.create({
     data: {
       name: 'Alepa Sello',
       tenantId: tenant.id,
@@ -63,16 +62,36 @@ async function main() {
       companyLegalName: 'Test company',
       businessId: '1234567890',
       customerGroup: 'Test group',
-
     },
   })
+
+  const packageSizes = [5, 10, 20, 30, 50, 100, 200, 300]
+  for (const size of packageSizes) {
+    await prisma.packageSize.create({
+      data: {
+        size,
+        tenantId: tenant.id,
+      },
+    })
+  }
+  const packageTypes = ['Ltk', 'A', 'Pnt']
+  for (const type of packageTypes) {
+    await prisma.packageType.create({
+      data: {
+        name: type,
+        tenantId: tenant.id,
+      },
+    })
+  }
 
   await prisma.product.create({
     data: {
       name: 'Siikli',
       tenantId: tenant.id,
       price: 1.40,
-      price0: 1.23,
+      price0: 1.40 * (1 / 1.14),
+      packageSize: '10',
+      packageType: 'Ltk',
     },
   })
 
@@ -82,9 +101,51 @@ async function main() {
       tenantId: tenant.id,
       price: 1.60,
       price0: 1.43,
+      packageSize: '20',
+      packageType: 'Ltk',
     },
   })
 
+  const products: string[] = []
+  for (let i = 0; i < 8; i++) {
+    const product = await prisma.product.create({
+      data: {
+        name: `Product ${i}`,
+        tenantId: tenant.id,
+        price: 1.40 + i,
+        price0: (1.40 + i) * (1 / 1.14),
+        packageSize: packageSizes[Math.floor(Math.random() * packageSizes.length)].toString(),
+        packageType: packageTypes[Math.floor(Math.random() * packageTypes.length)],
+      },
+    })
+    products.push(product.id)
+  }
+
+  for (let i = 0; i < 4; i++) {
+    const order = await prisma.order.create({
+      data: {
+        customerId: sello.id,
+        tenantId: tenant.id,
+        deliveryDate: subDays(new Date(), 30 - i * 7),
+        waybillNumber: 1000 + i,
+        hasNote: false,
+      },
+    })
+    for (const productId of products) {
+      await prisma.orderRow.create({
+        data: {
+          orderId: order.id,
+          productId,
+          amount: Math.floor(Math.random() * 10) + 1,
+          price: 1.40,
+          price0: 1.23,
+          packageSize: 1,
+          packageType: 'Ltk',
+          tenantId: tenant.id,
+        },
+      })
+    }
+  }
   await prisma.user.create({
     data: {
       email: 'juha.wilppu@gmail.com',
@@ -134,5 +195,4 @@ main()
   .catch(async (e) => {
     console.error(e)
     await prisma.$disconnect()
-    process.exit(1)
   })
