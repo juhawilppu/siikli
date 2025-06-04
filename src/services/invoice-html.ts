@@ -11,14 +11,13 @@ export function createInvoiceHtml(invoice: InvoiceDto) {
   <meta charset="UTF-8">
   <style>
     body {
-      font-family: sans-serif;
+      font-family: Arial, Helvetica, sans-serif;
       font-size: 12pt;
       color: black;
     }
 
     table {
       width: 100%;
-      margin-top: 1em;
       border-collapse: collapse;
       border-spacing: 0;
     }
@@ -80,7 +79,7 @@ export function createInvoiceHtml(invoice: InvoiceDto) {
     </tr>
   </table>
 
-  <table class="borders">
+  <table class="borders" style="margin-top: 5mm;">
     <tr>
       <td style="padding: 2mm; text-align: center; line-height: 1.2; width: 50%;"><strong>Toimitusosoite (jos eri kuin laskutusosoite)</strong><br/>&ndash;</td>
       <td style="padding: 2mm; text-align: center; line-height: 1.2; width: 50%;"><strong>Toimitusaika</strong><br />&ndash;</td>
@@ -91,7 +90,7 @@ export function createInvoiceHtml(invoice: InvoiceDto) {
     </tr>
   </table>
 
-  <table>
+  <table style="margin-top: 5mm;">
     <tr>
        <td class="border-left border-top-bottom"><strong>Tuotenimike</strong></td>
        <td class="border-top-bottom" style="text-align: right;"><strong>Määrä (kg/kpl)</strong></td>
@@ -131,7 +130,7 @@ export function createInvoiceHtml(invoice: InvoiceDto) {
     </tr>
 </table>
 
-<table class="thick-borders">
+<table class="thick-borders" style="margin-top: 5mm;">
   <tr>
     <td style="text-align: center;">
       <strong>Maksettavaa</strong><br />
@@ -147,7 +146,7 @@ export function createInvoiceHtml(invoice: InvoiceDto) {
     : ''}
 </table>
 
-<table>
+<table style="margin-top: 5mm;">
   <tr>
     <td class="border-left border-top-bottom" style="width: 50%;">
       <strong>Saajan tilinumero:</strong><br /><br />

@@ -153,14 +153,14 @@ invoiceRoute.get(`/api/invoices`, isAuthenticated, async (req, res) => {
     const pdfBuffer = await page.pdf({
       format: 'a4',
       margin: {
-        top: '40mm',
+        top: '15mm',
         right: '5mm',
         bottom: '20mm',
         left: '5mm',
       },
       displayHeaderFooter: true,
       headerTemplate: `
-        <table style="width: 100%; font-family: Arial, Helvetica, sans-serif; font-size: 10pt;">
+        <table style="width: 100%; margin-left: 5mm; margin-right: 5mm; font-family: Arial, Helvetica, sans-serif; font-weight: bold; font-size: 12pt;">
           <tr>
             <td style="width: 50%; text-align: left;">${invoice.company.name}</td>
             <td style="width: 30%; text-align: center;">LASKU / FAKTURA</td>
