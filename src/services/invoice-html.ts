@@ -209,9 +209,6 @@ export function createInvoiceHtml(invoice: InvoiceDto) {
 </table>
 
 </body>
-</html>
-
-    </html>
-    
+</html>    
   `
 }

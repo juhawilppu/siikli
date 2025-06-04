@@ -160,10 +160,10 @@ invoiceRoute.get(`/api/invoices`, isAuthenticated, async (req, res) => {
       },
       displayHeaderFooter: true,
       headerTemplate: `
-        <table style="width: 100%; margin-left: 5mm; margin-right: 5mm; font-family: Arial, Helvetica, sans-serif; font-weight: bold; font-size: 12pt;">
+        <table style="width: 100%; margin-left: 5mm; margin-right: 5mm; font-family: Arial, Helvetica, sans-serif; font-size: 12pt;">
           <tr>
-            <td style="width: 50%; text-align: left;">${invoice.company.name}</td>
-            <td style="width: 30%; text-align: center;">LASKU / FAKTURA</td>
+            <td style="width: 50%; text-align: left; font-weight: bold;">${invoice.company.name}</td>
+            <td style="width: 30%; text-align: center; font-weight: bold;">LASKU / FAKTURA</td>
             <td style="width: 20%; text-align: right;">Sivu <span class="pageNumber"></span>/<span class="totalPages"></span></td>
           </tr>
         </table>
