@@ -2,6 +2,9 @@ import type { InvoiceDto } from './invoice-service'
 import { formatDate } from '../../frontend/src/utils/date'
 import { formatNumber } from '../utils/money'
 
+// The max amount of invoice items per page in the appendix is 29
+const LAST_ITEM_INDEX = 29
+
 export function createInvoiceHtml(invoice: InvoiceDto) {
   return `
 <html>
@@ -40,6 +43,10 @@ export function createInvoiceHtml(invoice: InvoiceDto) {
 
       td.border-top-bottom {
         border-top: 1px solid black;
+        border-bottom: 1px solid black;
+      }
+      
+      td.border-bottom {
         border-bottom: 1px solid black;
       }
 
@@ -191,14 +198,14 @@ export function createInvoiceHtml(invoice: InvoiceDto) {
         </tr>
       </thead>
       <tbody>
-        ${invoice.items.map(item => `
+        ${invoice.items.map((item, i) => `
           <tr>
-            <td class="border-left">${formatDate(item.deliveryDate)}</td>
-            <td class="">${item.orderNumber}</td>
-            <td class="">${item.productName}</td>
-            <td class="" style="text-align: right;">${formatNumber(item.quantity)}</td>
-            <td class="" style="text-align: right;">${formatNumber(item.priceWithTax)}</td>
-            <td class="border-right" style="text-align: right;">${formatNumber(item.totalWithTax)}</td>
+            <td class="border-left ${i === LAST_ITEM_INDEX ? 'border-bottom' : ''}">${formatDate(item.deliveryDate)}</td>
+            <td class="${i === LAST_ITEM_INDEX ? 'border-bottom' : ''}">${item.orderNumber}</td>
+            <td class="${i === LAST_ITEM_INDEX ? 'border-bottom' : ''}">${item.productName}</td>
+            <td class="${i === LAST_ITEM_INDEX ? 'border-bottom' : ''}" style="text-align: right;">${formatNumber(item.quantity)}</td>
+            <td class="${i === LAST_ITEM_INDEX ? 'border-bottom' : ''}" style="text-align: right;">${formatNumber(item.priceWithTax)}</td>
+            <td class="border-right ${i === LAST_ITEM_INDEX ? 'border-bottom' : ''}" style="text-align: right;">${formatNumber(item.totalWithTax)}</td>
           </tr>
         `).join('')}
         <tr>
