@@ -1,4 +1,4 @@
-import type { GetCustomersResponseDto, GetCustomerRequestDto, GetInvoiceResponseDto } from '@/types/types'
+import type { GetCustomerRequestDto, GetCustomersResponseDto, GetInvoiceResponseDto } from '@/types/types'
 import axios from 'axios'
 import { endOfMonth, startOfMonth } from 'date-fns'
 import { fi } from 'date-fns/locale'
@@ -13,7 +13,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { toast } from '@/hooks/use-toast'
 import SiikliPage from '@/SiikliPage'
-import { dateToString, formatDate } from '@/utils/date'
+import { formatDate } from '@/utils/date'
 
 export interface FlatOrderItem {
   deliveryDate: Date
@@ -63,13 +63,15 @@ export function Invoices() {
       })
       console.log('invoice', invoice.data)
       setInvoice(invoice.data)
-    } catch (error:any) {
+    }
+    catch (error: any) {
       if (error.response?.data?.error === 'No items found') {
         toast({
           title: 'Ei tilauksia',
           description: 'Tällä asiakkaalla ei ole tilauksia tällä aikavälillä',
         })
-      } else {
+      }
+      else {
         toast({
           title: 'Jokin meni pieleen',
           description: 'Tarkista, että aloitus- ja lopetuspäivät ovat oikein',
@@ -79,6 +81,10 @@ export function Invoices() {
   }
 
   const printInvoice = async () => {
+    if (!startDate || !endDate || !customers) {
+      return
+    }
+
     console.log('printInvoice', customerId, startDate, endDate)
     const response = await axios.get('/invoices', {
       params: {
@@ -97,7 +103,7 @@ export function Invoices() {
     // Create temporary link and trigger download
     const link = document.createElement('a')
     link.href = url
-    link.setAttribute('download', `lasku-${startDate?.toLocaleString()}-${endDate?.toLocaleString()}.pdf`)
+    link.setAttribute('download', `lasku-${customers.find(c => c.id === customerId)?.name.toLowerCase().replace(' ', '-')}-${formatDate(new Date())}.pdf`)
     document.body.appendChild(link)
     link.click()
 
@@ -132,11 +138,14 @@ export function Invoices() {
           <div className="grid gap-4 md:grid-cols-4">
             <div className="space-y-2">
               <Label htmlFor="customer">Asiakas</Label>
-              <Select value={customerId} onValueChange={value => {
-                setCustomerId(value)
-                setDirty(true)
-                setInvoice(undefined)
-              }}>
+              <Select
+                value={customerId}
+                onValueChange={(value) => {
+                  setCustomerId(value)
+                  setDirty(true)
+                  setInvoice(undefined)
+                }}
+              >
                 <SelectTrigger id="customer">
                   <SelectValue placeholder="Valitse asiakas" />
                 </SelectTrigger>
@@ -172,7 +181,7 @@ export function Invoices() {
                   <CalendarComponent
                     mode="single"
                     selected={startDate}
-                    onSelect={date => {
+                    onSelect={(date) => {
                       setStartDate(date)
                       setDirty(true)
                       setInvoice(undefined)
@@ -195,11 +204,17 @@ export function Invoices() {
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0">
-                  <CalendarComponent mode="single" selected={endDate} onSelect={date => {
-                    setEndDate(date)
-                    setDirty(true)
-                    setInvoice(undefined)
-                  }} required locale={fi} />
+                  <CalendarComponent
+                    mode="single"
+                    selected={endDate}
+                    onSelect={(date) => {
+                      setEndDate(date)
+                      setDirty(true)
+                      setInvoice(undefined)
+                    }}
+                    required
+                    locale={fi}
+                  />
                 </PopoverContent>
               </Popover>
             </div>
@@ -229,7 +244,12 @@ export function Invoices() {
           </div>
           <div>
             <h2>Esikatselu</h2>
-            <p>Yhteensä: {invoice.total} €</p>
+            <p>
+              Yhteensä:
+              {invoice.total}
+              {' '}
+              €
+            </p>
           </div>
         </Card>
       )}
