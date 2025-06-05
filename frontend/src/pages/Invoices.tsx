@@ -3,7 +3,7 @@ import axios from 'axios'
 import { endOfMonth, startOfMonth } from 'date-fns'
 import { fi } from 'date-fns/locale'
 
-import { Calendar, Printer, RefreshCw } from 'lucide-react'
+import { Calendar, RefreshCw } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Calendar as CalendarComponent } from '@/components/ui/calendar'
@@ -26,6 +26,7 @@ export function Invoices() {
   const [customers, setCustomers] = useState<GetCustomerRequestDto[]>()
   const [invoice, setInvoice] = useState<GetInvoiceResponseDto>()
   const [loading, setLoading] = useState(true)
+  const [printing, setPrinting] = useState(false)
   const [startDate, setStartDate] = useState<Date | undefined>(
     startOfMonth(new Date(new Date().setMonth(new Date().getMonth() - 1))),
   )
@@ -84,6 +85,7 @@ export function Invoices() {
     if (!startDate || !endDate || !customers) {
       return
     }
+    setPrinting(true)
 
     console.log('printInvoice', customerId, startDate, endDate)
     const response = await axios.get('/invoices', {
@@ -110,6 +112,7 @@ export function Invoices() {
     // Cleanup
     link.remove()
     window.URL.revokeObjectURL(url)
+    setPrinting(false)
   }
 
   useEffect(() => {
@@ -224,7 +227,7 @@ export function Invoices() {
                 {' '}
                 Esikatselu
               </Button>
-              <Button disabled={!customerId || !startDate || !endDate} onClick={printInvoice}>
+              <Button disabled={!customerId || !startDate || !endDate || printing} onClick={printInvoice}>
                 <RefreshCw className="w-4 h-4 mr-2" />
                 {' '}
                 Tulosta
@@ -235,17 +238,11 @@ export function Invoices() {
       </Card>
       {invoice && (
         <Card className="p-5">
-          <div className="flex justify-end items-end">
-            <Button variant="outline" disabled={!invoice} onClick={print}>
-              <Printer className="w-4 h-4 mr-2" />
-              {' '}
-              Tulosta
-            </Button>
-          </div>
           <div>
-            <h2>Esikatselu</h2>
+            <strong>Esikatselu</strong>
             <p>
               Yhteensä:
+              {' '}
               {invoice.total}
               {' '}
               €
