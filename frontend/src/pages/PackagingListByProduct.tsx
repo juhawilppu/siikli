@@ -1,6 +1,6 @@
 import type { PackagingListGroupedByProduct } from '@/types/types'
-import '../App.css'
 import { formatNumber } from '@/utils/money'
+import '../App.css'
 
 export function PackagingListByProduct({ report }: {
   report: PackagingListGroupedByProduct

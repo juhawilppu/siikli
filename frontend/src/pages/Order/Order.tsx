@@ -518,10 +518,6 @@ export default function CreateOrder() {
                 <CardTitle>Tuotteet</CardTitle>
                 <CardDescription>Täytä tilauksen tuotteet</CardDescription>
               </div>
-              <Button variant="outline" type="button" onClick={handleAddItem} size="sm">
-                <Plus className="mr-2 h-4 w-4" />
-                Lisää tuote
-              </Button>
             </CardHeader>
             <CardContent>
               <ScrollArea>
@@ -831,6 +827,12 @@ export default function CreateOrder() {
                   ))}
                 </div>
               </ScrollArea>
+              <div className="mt-4 text-right">
+                <Button variant="outline" type="button" onClick={handleAddItem} size="sm">
+                  <Plus className="mr-2 h-4 w-4" />
+                  Lisää tuote
+                </Button>
+              </div>
             </CardContent>
             <CardFooter className="flex justify-between border-t p-4">
               <div>
