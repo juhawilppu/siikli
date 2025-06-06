@@ -12,7 +12,7 @@ import { formatMoneyFi } from '@/utils/money'
 
 function formatMetric(value: number, unit: 'money' | 'count') {
   if (unit === 'money') {
-    return formatMoneyFi(value, 0)
+    return formatMoneyFi(value)
   }
   else {
     return value
