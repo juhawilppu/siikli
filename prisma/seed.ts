@@ -1,4 +1,5 @@
 import { addMonths, subDays } from 'date-fns'
+import { Decimal } from 'decimal.js'
 import prisma from '../src/prisma'
 
 async function main() {
@@ -47,7 +48,7 @@ async function main() {
     },
   })
 
-  await prisma.customer.create({
+  const lintuvaara = await prisma.customer.create({
     data: {
       name: 'Alepa Lintuvaara',
       tenantId: tenant.id,
@@ -64,6 +65,8 @@ async function main() {
       customerGroup: 'Test group',
     },
   })
+
+  const customers = [sello, lintuvaara]
 
   const packageSizes = [5, 10, 20, 30, 50, 100, 200, 300]
   for (const size of packageSizes) {
@@ -90,7 +93,7 @@ async function main() {
       tenantId: tenant.id,
       price: 1.40,
       price0: 1.40 * (1 / 1.14),
-      packageSize: '10',
+      packageSize: 10,
       packageType: 'Ltk',
     },
   })
@@ -101,49 +104,65 @@ async function main() {
       tenantId: tenant.id,
       price: 1.60,
       price0: 1.43,
-      packageSize: '20',
+      packageSize: 20,
       packageType: 'Ltk',
     },
   })
 
-  const products: string[] = []
   for (let i = 0; i < 8; i++) {
-    const product = await prisma.product.create({
+    const price = new Decimal(1 + 2 * Math.random()).toDecimalPlaces(2)
+    const price0 = price.div(1.14).toDecimalPlaces(2)
+    await prisma.product.create({
       data: {
         name: `Product ${i}`,
         tenantId: tenant.id,
-        price: 1.40 + i,
-        price0: (1.40 + i) * (1 / 1.14),
-        packageSize: packageSizes[Math.floor(Math.random() * packageSizes.length)].toString(),
+        price,
+        price0,
+        packageSize: packageSizes[Math.floor(Math.random() * packageSizes.length)],
         packageType: packageTypes[Math.floor(Math.random() * packageTypes.length)],
       },
     })
-    products.push(product.id)
   }
 
-  for (let i = 0; i < 4; i++) {
-    const order = await prisma.order.create({
-      data: {
-        customerId: sello.id,
-        tenantId: tenant.id,
-        deliveryDate: subDays(new Date(), 30 - i * 7),
-        waybillNumber: 1000 + i,
-        hasNote: false,
-      },
-    })
-    for (const productId of products) {
-      await prisma.orderRow.create({
+  const products = await prisma.product.findMany({
+    where: {
+      tenantId: tenant.id,
+    },
+  })
+
+  let orderCount = 0
+  for (let customerIndex = 0; customerIndex < customers.length; customerIndex++) {
+    const customer = customers[customerIndex]
+    for (let orderIndex = 0; orderIndex < 6; orderIndex++) {
+      const hasNote = Math.random() > 0.95
+      const order = await prisma.order.create({
         data: {
-          orderId: order.id,
-          productId,
-          amount: Math.floor(Math.random() * 10) + 1,
-          price: 1.40,
-          price0: 1.23,
-          packageSize: 1,
-          packageType: 'Ltk',
+          customerId: customer.id,
           tenantId: tenant.id,
+          deliveryDate: subDays(new Date(), 37 - orderIndex * 7 - customerIndex),
+          waybillNumber: 1000 + orderCount,
+          hasNote,
+          noteHeader: hasNote ? 'Toimitus' : null,
+          noteBody: hasNote ? 'Toimitus ovelle H3. Nouto aamulla.' : null,
         },
       })
+      for (let productIdIndex = 0; productIdIndex < products.length; productIdIndex++) {
+        const product = products[productIdIndex]
+        await prisma.orderRow.create({
+          data: {
+            orderId: order.id,
+            productId: product.id,
+            amount: Math.floor(Math.random() * 10) + 1,
+            price: product.price || new Decimal(0.99).toDecimalPlaces(2),
+            price0: product.price0 || new Decimal(0.99).div(1.14).toDecimalPlaces(2),
+            packageSize: product.packageSize || 1,
+            packageType: product.packageType || 'Ltk',
+            tenantId: tenant.id,
+            freetext: Math.random() > 0.9 ? 'Erikoistuote' : null,
+          },
+        })
+      }
+      orderCount++
     }
   }
   await prisma.user.create({
