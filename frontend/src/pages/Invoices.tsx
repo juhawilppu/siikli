@@ -221,7 +221,7 @@ export function Invoices() {
                 </PopoverContent>
               </Popover>
             </div>
-            <div className="flex justify-end items-center gap-2">
+            <div className="flex justify-end items-end gap-2">
               <Button variant="outline" disabled={!dirty || !customerId || !startDate || !endDate} onClick={getData}>
                 <RefreshCw className="w-4 h-4 mr-2" />
                 {' '}

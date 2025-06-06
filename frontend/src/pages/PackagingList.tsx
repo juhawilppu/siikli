@@ -96,7 +96,7 @@ export function PackagingList() {
               </div>
             </div>
           </CardContent>
-          <CardFooter className="border-t bg-gray-50 flex justify-end gap-2">
+          <CardFooter className="pt-5 border-t bg-gray-50 flex justify-end items-center gap-2">
             <Button onClick={handleFetch} disabled={isLoading} className="bg-primary hover:bg-primary/90">
               {isLoading
                 ? (
