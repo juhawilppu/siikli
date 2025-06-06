@@ -1,4 +1,5 @@
 import type { PackagingListGroupedByCustomer } from '@/types/types'
+import { formatDate, stringToDate } from '@/utils/date'
 import { formatNumber } from '@/utils/money'
 
 export function PackagingListByCustomer({ report }: {
@@ -20,9 +21,11 @@ export function PackagingListByCustomer({ report }: {
     <div className="pdf">
       <h1>Kauppakohtainen pakkauslista</h1>
       <br />
-      <b>Päivämäärä:</b>
-      {' '}
-      <span>{report.deliveryDate}</span>
+      <p>
+        <strong>Päivämäärä:</strong>
+        {' '}
+        {formatDate(stringToDate(report.deliveryDate))}
+      </p>
 
       {!report.rows && <div>Ei tuotteita.</div>}
 
@@ -35,7 +38,7 @@ export function PackagingListByCustomer({ report }: {
                 <td className="align-left" style={{ width: '20%' }}>
                   Tuote
                 </td>
-                <td className="align-center" style={{ width: '15%' }}>
+                <td className="align-right" style={{ width: '15%' }}>
                   Pakkaus
                 </td>
                 <td className="align-right" style={{ width: '15%' }}>
@@ -44,7 +47,7 @@ export function PackagingListByCustomer({ report }: {
                 <td className="align-right" style={{ width: '25%' }}>
                   Kokonais&shy;määrä (kg)
                 </td>
-                <td className="align-left" style={{ width: '25%' }}>
+                <td className="align-left pl-5" style={{ width: '25%' }}>
                   Lisä&shy;tietoa
                 </td>
               </tr>
@@ -53,7 +56,7 @@ export function PackagingListByCustomer({ report }: {
               {rows.map((order, idx) => (
                 <tr key={idx}>
                   <td className="align-left" style={{ width: '20%' }}>{order.productName}</td>
-                  <td className="align-center" style={{ width: '15%' }}>
+                  <td className="align-right" style={{ width: '15%' }}>
                     {order.packageSize}
                     {' '}
                     {order.packageType}
@@ -62,7 +65,7 @@ export function PackagingListByCustomer({ report }: {
                     {formatNumber(order.amount / order.packageSize)}
                   </td>
                   <td className="align-right" style={{ width: '25%' }}>{formatNumber(order.amount)}</td>
-                  <td className="align-left" style={{ width: '25%' }}>{order.freetext}</td>
+                  <td className="align-left pl-5" style={{ width: '25%' }}>{order.freetext}</td>
                 </tr>
               ))}
             </tbody>

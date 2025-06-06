@@ -42,9 +42,9 @@ export function PackagingListByProduct({ report }: {
                 <thead>
                   <tr className="title border-top border-bottom">
                     <td className="align-left" style={{ width: '35%' }}>Tuote</td>
-                    <td className="align-center" colSpan={2} style={{ width: '15%' }}>Pakkaus</td>
-                    <td className="align-right" style={{ width: '20%' }}>Kappaletta</td>
-                    <td className="align-right" style={{ width: '30%' }}>Kokonaismäärä (kg)</td>
+                    <td className="align-right" style={{ width: '15%' }}>Pakkaus</td>
+                    <td className="align-right pl-5" style={{ width: '20%' }}>Kappaletta</td>
+                    <td className="align-right pl-5" style={{ width: '30%' }}>Kokonaismäärä (kg)</td>
                   </tr>
                 </thead>
                 <tbody>
@@ -59,13 +59,13 @@ export function PackagingListByProduct({ report }: {
                     return (
                       <tr key={index} className={addBorder ? 'border-bottom' : ''}>
                         <td className="align-left">{order.productName}</td>
-                        <td className="align-right">{order.packageSize}</td>
-                        <td className="align-left">
-                        &nbsp;
+                        <td className="align-right">
+                          {order.packageSize}
+                          {' '}
                           {order.packageType}
                         </td>
-                        <td className="align-right">{formatNumber(order.amount / order.packageSize)}</td>
-                        <td className="align-right">{formatNumber(order.amount)}</td>
+                        <td className="align-right pl-5">{formatNumber(order.amount / order.packageSize)}</td>
+                        <td className="align-right pl-5">{formatNumber(order.amount)}</td>
                       </tr>
                     )
                   })}

@@ -139,7 +139,7 @@ async function main() {
         data: {
           customerId: customer.id,
           tenantId: tenant.id,
-          deliveryDate: subDays(new Date(), 37 - orderIndex * 7 - customerIndex),
+          deliveryDate: subDays(new Date(), Math.floor(37 - orderIndex * 7 * Math.random())),
           waybillNumber: 1000 + orderCount,
           hasNote,
           noteHeader: hasNote ? 'Toimitus' : null,
@@ -152,7 +152,7 @@ async function main() {
           data: {
             orderId: order.id,
             productId: product.id,
-            amount: Math.floor(Math.random() * 10) + 1,
+            amount: Math.floor(Math.random() * 10) * (product.packageSize || 1) + (Math.random() > 0.99 ? 0.5 : 0),
             price: product.price || new Decimal(0.99).toDecimalPlaces(2),
             price0: product.price0 || new Decimal(0.99).div(1.14).toDecimalPlaces(2),
             packageSize: product.packageSize || 1,

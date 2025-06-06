@@ -137,7 +137,9 @@ export function PackagingList() {
         </Card>
         {report && (
           <Card className="p-5">
-            <Button onClick={() => window.print()}>Tulosta</Button>
+            <div className="flex justify-end">
+              <Button variant="outline" onClick={() => window.print()}>Tulosta</Button>
+            </div>
             {report.groupedBy === 'customer' && (
               <PackagingListByCustomer
                 report={report}
