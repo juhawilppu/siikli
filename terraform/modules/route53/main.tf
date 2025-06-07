@@ -92,3 +92,60 @@ resource "aws_route53_record" "dmarc" {
     "v=DMARC1; p=none; rua=mailto:admin@siikli.fi"
   ]
 }
+
+resource "aws_route53_record" "alb" {
+  zone_id = aws_route53_zone.siikli.id
+  name    = "v2.${var.domain_name}"
+  type    = "A"
+
+  alias {
+    name                   = var.alb_dns_name
+    zone_id                = var.alb_zone_id
+    evaluate_target_health = true
+  }
+}
+
+resource "aws_route53_record" "main" {
+  zone_id = aws_route53_zone.siikli.id
+  name    = "siikli.fi"
+  type    = "A"
+  ttl     = 300
+  records = ["95.85.27.23"]
+}
+
+resource "aws_route53_record" "main" {
+  zone_id = aws_route53_zone.siikli.id
+  name    = "www.siikli.fi"
+  type    = "A"
+  ttl     = 300
+  records = ["95.85.27.23"]
+}
+
+resource "aws_route53_record" "aromaentila" {
+  zone_id = aws_route53_zone.siikli.id
+  name    = "aromaentila.siikli.fi"
+  type    = "A"
+  ttl     = 300
+  records = ["95.85.27.23"]
+}
+
+resource "aws_route53_record" "caa" {
+  zone_id = aws_route53_zone.siikli.id
+  name    = var.domain_name
+  type    = "CAA"
+  ttl     = 300
+  records = [
+    "0 issue \"amazon.com\"",
+    "0 issue \"letsencrypt.org\"",
+    "0 issuewild \"amazon.com\"",
+    "0 issuewild \"letsencrypt.org\""
+  ]
+}
+
+resource "aws_route53_record" "mail_mx" {
+  zone_id = aws_route53_zone.siikli.id
+  name    = "mail.siikli.fi"
+  type    = "MX"
+  ttl     = 300
+  records = ["10 feedback-smtp.eu-north-1.amazonses.com"]
+}

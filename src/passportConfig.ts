@@ -63,7 +63,7 @@ async function createUserAndTenant(email: string, googleExternalId?: string) {
 
   <p>Parhaiten pääset alkuun kirjautumalla sisään ja luomalla ensimmäisen tilauksen tai tuotteen. Jos tarvitset apua, voit laittaa viestiä suoraan minulle.</p>
 
-  <p>➡️ <a href="https://v2.siikli.fi" style="color: #1a73e8;">Kirjaudu Siikliin</a></p>
+  <p>➡️ <a href="https://siikli.fi" style="color: #1a73e8;">Kirjaudu Siikliin</a></p>
 
   <p>Kiitos että käytät Siikliä &ndash; se auttaa minua kehittämään palvelusta entistä paremman.</p>
 

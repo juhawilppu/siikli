@@ -177,7 +177,7 @@ resource "aws_cloudfront_distribution" "cdn" {
 
 resource "aws_route53_record" "alias" {
   zone_id = var.route53_zone_id
-  name    = "v2.siikli.fi"
+  name    = "siikli.fi"
   type    = "A"
 
   alias {

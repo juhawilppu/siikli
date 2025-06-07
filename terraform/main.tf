@@ -24,10 +24,14 @@ module "vpc" {
 module "route53" {
   source = "./modules/route53"
   domain_name = var.domain_name
+  alb_dns_name = module.alb.alb_dns_name
+  alb_zone_id = module.alb.alb_zone_id
+
   providers = {
     aws           = aws
     aws.us-east-1 = aws.us-east-1
   }
+
 }
 
 module "ecr" {

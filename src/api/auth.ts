@@ -101,7 +101,7 @@ authRoute.post('/api/auth/email/create-pin', rateLimit(5, 15), async (req, res, 
                 <p>Terveisin,<br />
                 Siikli<br />
                 <a href="mailto:juha.wilppu@siikli.fi">juha.wilppu@siikli.fi</a><br />
-                <a href="https://v2.siikli.fi">https://v2.siikli.fi</a></p>
+                <a href="https://siikli.fi">https://siikli.fi</a></p>
               </div>
             `,
           },
