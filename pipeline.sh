@@ -2,6 +2,7 @@ set -e
 
 cd frontend
 npm run build
+cp not_ready.html ./dist/index.html
 aws s3 sync ./dist/ s3://siikli.fi --delete
 cd ..
 

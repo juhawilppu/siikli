@@ -1,11 +1,3 @@
-resource "aws_route53_zone" "main" {
-  name = var.domain_name
-
-  tags = {
-    Name = "HostedZone-${var.domain_name}"
-  }
-}
-
 resource "aws_acm_certificate" "main" {
   provider          = aws.us-east-1
   domain_name       = var.domain_name
@@ -30,7 +22,7 @@ resource "aws_route53_record" "acm_validation" {
     }
   }
 
-  zone_id = aws_route53_zone.main.id
+  zone_id = aws_route53_zone.siikli.id
   name    = each.value.name
   type    = each.value.type
   records = [each.value.value]
@@ -44,20 +36,20 @@ resource "aws_acm_certificate_validation" "main" {
 }
 
 resource "aws_route53_zone" "siikli" {
-  name = "siikli.fi"
+  name = var.domain_name
 
   tags = {
-    Name = "HostedZone-siikli.fi"
+    Name = "HostedZone-${var.domain_name}"
   }
 }
 
 resource "aws_ses_domain_identity" "siikli" {
-  domain = "siikli.fi"
+  domain = var.domain_name
 }
 
 resource "aws_ses_domain_mail_from" "siikli" {
-  domain           = "siikli.fi"
-  mail_from_domain = "mail.siikli.fi"
+  domain           = var.domain_name
+  mail_from_domain = "mail.${var.domain_name}"
   behavior_on_mx_failure = "UseDefaultValue"
 }
 
@@ -85,7 +77,7 @@ resource "aws_route53_record" "dkim_records" {
 resource "aws_route53_record" "dmarc" {
   zone_id = aws_route53_zone.siikli.id
 
-  name    = "_dmarc.siikli.fi"
+  name    = "_dmarc.${var.domain_name}"
   type    = "TXT"
   ttl     = 300
   records = [
@@ -93,37 +85,9 @@ resource "aws_route53_record" "dmarc" {
   ]
 }
 
-resource "aws_route53_record" "alb" {
-  zone_id = aws_route53_zone.siikli.id
-  name    = "v2.${var.domain_name}"
-  type    = "A"
-
-  alias {
-    name                   = var.alb_dns_name
-    zone_id                = var.alb_zone_id
-    evaluate_target_health = true
-  }
-}
-
-resource "aws_route53_record" "main" {
-  zone_id = aws_route53_zone.siikli.id
-  name    = "siikli.fi"
-  type    = "A"
-  ttl     = 300
-  records = ["95.85.27.23"]
-}
-
-resource "aws_route53_record" "main" {
-  zone_id = aws_route53_zone.siikli.id
-  name    = "www.siikli.fi"
-  type    = "A"
-  ttl     = 300
-  records = ["95.85.27.23"]
-}
-
 resource "aws_route53_record" "aromaentila" {
   zone_id = aws_route53_zone.siikli.id
-  name    = "aromaentila.siikli.fi"
+  name    = "aromaentila.${var.domain_name}"
   type    = "A"
   ttl     = 300
   records = ["95.85.27.23"]
@@ -144,7 +108,7 @@ resource "aws_route53_record" "caa" {
 
 resource "aws_route53_record" "mail_mx" {
   zone_id = aws_route53_zone.siikli.id
-  name    = "mail.siikli.fi"
+  name    = "mail.${var.domain_name}"
   type    = "MX"
   ttl     = 300
   records = ["10 feedback-smtp.eu-north-1.amazonses.com"]
