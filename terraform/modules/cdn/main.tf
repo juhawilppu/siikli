@@ -186,3 +186,76 @@ resource "aws_route53_record" "alias" {
     evaluate_target_health = false
   }
 }
+
+resource "aws_route53_record" "www" {
+  zone_id = var.route53_zone_id
+  name    = "www.siikli.fi"
+  type    = "A"
+
+  alias {
+    name                   = aws_cloudfront_distribution.redirect_www.domain_name
+    zone_id                = aws_cloudfront_distribution.redirect_www.hosted_zone_id
+    evaluate_target_health = false
+  }
+}
+
+
+resource "aws_s3_bucket" "redirect_www" {
+  bucket = "www.siikli.fi"
+
+  website {
+    redirect_all_requests_to = "https://siikli.fi"
+  }
+
+  tags = {
+    Name = "www.siikli.fi redirect"
+  }
+}
+
+resource "aws_cloudfront_distribution" "redirect_www" {
+  origin {
+    domain_name = aws_s3_bucket.redirect_www.website_endpoint
+    origin_id   = "www-redirect-origin"
+    custom_origin_config {
+      http_port              = 80
+      https_port             = 443
+      origin_protocol_policy = "http-only"
+      origin_ssl_protocols   = ["TLSv1.2"]
+    }
+  }
+
+  enabled             = true
+  is_ipv6_enabled     = true
+  default_root_object = ""
+
+  default_cache_behavior {
+    allowed_methods  = ["GET", "HEAD"]
+    cached_methods   = ["GET", "HEAD"]
+    target_origin_id = "www-redirect-origin"
+
+    forwarded_values {
+      query_string = false
+      cookies {
+        forward = "none"
+      }
+    }
+
+    viewer_protocol_policy = "redirect-to-https"
+    min_ttl                = 0
+    default_ttl            = 0
+    max_ttl                = 0
+  }
+
+  viewer_certificate {
+    acm_certificate_arn = var.acm_certificate_arn  # Must cover www.siikli.fi
+    ssl_support_method  = "sni-only"
+  }
+
+  restrictions {
+    geo_restriction {
+      restriction_type = "none"
+    }
+  }
+
+  aliases = ["www.siikli.fi"]
+}
