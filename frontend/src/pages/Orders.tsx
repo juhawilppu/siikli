@@ -185,7 +185,7 @@ export default function Orders() {
                     <TableHead>Tilausnumero</TableHead>
                     <TableHead>Päivämäärä</TableHead>
                     <TableHead>Asiakas</TableHead>
-                    <TableHead>Summa</TableHead>
+                    <TableHead>Summa sis. ALV 14 %</TableHead>
                     <TableHead className="text-right"></TableHead>
                   </TableRow>
                 </TableHeader>

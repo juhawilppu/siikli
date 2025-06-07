@@ -6,6 +6,7 @@ import { captureException } from '@sentry/react'
 import axios from 'axios'
 import { format } from 'date-fns'
 import { fi } from 'date-fns/locale'
+import { Decimal } from 'decimal.js'
 import {
   Calendar,
   Check,
@@ -169,10 +170,10 @@ export default function CreateOrder() {
           }
 
           if (field === 'price') {
-            updatedItem.price0 = (value * 1 / 1.14).toFixed(2)
+            updatedItem.price0 = (new Decimal(value).mul(1 / 1.14)).toDecimalPlaces(2).toString()
           }
           if (field === 'price0') {
-            updatedItem.price = (value * 1.14).toFixed(2)
+            updatedItem.price = (new Decimal(value).mul(1.14)).toDecimalPlaces(2).toString()
           }
 
           // Recalculate packages if amount or package size changed
@@ -192,7 +193,8 @@ export default function CreateOrder() {
   const selectedCustomer = customers?.find(c => c.id === customerId)
 
   const calculateTotal = () => {
-    return orderItems.reduce((sum, item) => sum + (Number.parseFloat(item.amount || '0')) * (Number.parseFloat(item.price || '0')), 0)
+    const total = orderItems.reduce((sum, item) => sum.plus((new Decimal(item.amount || '0')).mul(new Decimal(item.price || '0'))), new Decimal(0))
+    return total.toDecimalPlaces(2)
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -575,22 +577,51 @@ export default function CreateOrder() {
                           />
                         </div>
 
-                        <div className="space-y-2">
-                          <Label htmlFor={`price-${item.id}`}>Hinta (€/kg) ALV 14 %</Label>
-                          <Input
-                            id={`price-${item.id}`}
-                            type="number"
-                            min="0"
-                            step="0.01"
-                            value={item.price || ''}
-                            onChange={e =>
-                              handleItemChange(item.id, 'price', Number.parseFloat(e.target.value) || 0)}
-                            onBlur={() => {
-                              console.log('onBlur', item.price)
-                              handleItemChange(item.id, 'price', Number.parseFloat(item.price || '0').toFixed(2))
-                            }}
-                          />
-                        </div>
+                        {!selectedCustomer?.showPriceWithoutTax && (
+                          <div className="space-y-2">
+                            <Label htmlFor={`price-${item.id}`}>
+                              Hinta (€/kg)
+                              {' '}
+                              ALV 14 %
+                            </Label>
+                            <Input
+                              id={`price-${item.id}`}
+                              type="number"
+                              min="0"
+                              step="0.01"
+                              value={item.price || ''}
+                              onChange={e =>
+                                handleItemChange(item.id, 'price', Number.parseFloat(e.target.value) || 0)}
+                              onBlur={() => {
+                                console.log('onBlur', item.price)
+                                handleItemChange(item.id, 'price', Number.parseFloat(item.price || '0').toFixed(2))
+                              }}
+                            />
+                          </div>
+                        )}
+
+                        {selectedCustomer?.showPriceWithoutTax && (
+                          <div className="space-y-2">
+                            <Label htmlFor={`price-${item.id}`}>
+                              Hinta (€/kg)
+                              {' '}
+                              ALV 0 %
+                            </Label>
+                            <Input
+                              id={`price-${item.id}`}
+                              type="number"
+                              min="0"
+                              step="0.01"
+                              value={item.price0 || ''}
+                              onChange={e =>
+                                handleItemChange(item.id, 'price0', Number.parseFloat(e.target.value) || 0)}
+                              onBlur={() => {
+                                console.log('onBlur', item.price0)
+                                handleItemChange(item.id, 'price0', Number.parseFloat(item.price0 || '0').toFixed(2))
+                              }}
+                            />
+                          </div>
+                        )}
 
                         <div className="space-y-2">
                           <Label htmlFor={`package-size-${item.id}`}>Pakkauskoko</Label>
@@ -817,11 +848,20 @@ export default function CreateOrder() {
                       </div>
 
                       <div className="mt-4 text-right">
-                        <p className="text-sm font-medium">
-                          Tuote yhteensä:
-                          {' '}
-                          {formatMoneyFi(Number.parseFloat(item.amount || '0') * (Number.parseFloat(item.price || '0')))}
-                        </p>
+                        {!selectedCustomer?.showPriceWithoutTax && (
+                          <p className="text-sm font-medium">
+                            Tuote yhteensä (sis. ALV 14 %):
+                            {' '}
+                            {formatMoneyFi(Number.parseFloat(item.amount || '0') * (Number.parseFloat(item.price || '0')))}
+                          </p>
+                        )}
+                        {selectedCustomer?.showPriceWithoutTax && (
+                          <p className="text-sm font-medium">
+                            Tuote yhteensä (ALV 0 %):
+                            {' '}
+                            {formatMoneyFi(Number.parseFloat(item.amount || '0') * (Number.parseFloat(item.price0 || '0')))}
+                          </p>
+                        )}
                       </div>
                     </div>
                   ))}
@@ -846,7 +886,7 @@ export default function CreateOrder() {
                 </p>
               </div>
               <div className="text-right">
-                <p className="text-sm text-muted-foreground">Tilauksen kokonaissumma</p>
+                <p className="text-sm text-muted-foreground">Tilauksen kokonaissumma (sis. ALV 14 %)</p>
                 <p className="text-2xl font-bold">{formatMoneyFi(calculateTotal())}</p>
               </div>
             </CardFooter>
