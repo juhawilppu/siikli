@@ -137,18 +137,30 @@ export function PackagingList() {
         </Card>
         {report && (
           <Card className="p-5">
-            <div className="flex justify-end">
-              <Button variant="outline" onClick={() => window.print()}>Tulosta</Button>
-            </div>
-            {report.groupedBy === 'customer' && (
-              <PackagingListByCustomer
-                report={report}
-              />
+            {report.rows.length === 0 && (
+              <div className="flex justify-center items-center h-full">
+                <p className="text-sm text-muted-foreground">Ei tilauksia kyseisellä päivällä</p>
+              </div>
             )}
-            {report.groupedBy === 'product' && (
-              <PackagingListByProduct
-                report={report}
-              />
+            {report.rows.length > 0 && report.groupedBy === 'customer' && (
+              <>
+                <div className="flex justify-end">
+                  <Button variant="outline" onClick={() => window.print()}>Tulosta</Button>
+                </div>
+                <PackagingListByCustomer
+                  report={report}
+                />
+              </>
+            )}
+            {report.rows.length > 0 && report.groupedBy === 'product' && (
+              <>
+                <div className="flex justify-end">
+                  <Button variant="outline" onClick={() => window.print()}>Tulosta</Button>
+                </div>
+                <PackagingListByProduct
+                  report={report}
+                />
+              </>
             )}
           </Card>
         )}
