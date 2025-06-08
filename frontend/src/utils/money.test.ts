@@ -1,10 +1,5 @@
 import { expect, it } from 'vitest'
-import { formatMoneyFi, formatNumber, formatPercentage } from './money'
-
-it('formats money correctly', () => {
-  expect(formatMoneyFi(2)).toBe('2,00 €')
-  expect(formatMoneyFi(2.5)).toBe('2,50 €')
-})
+import { formatNumber, formatPercentage } from './money'
 
 it('formats numbers correctly', () => {
   expect(formatNumber(2)).toBe('2,00')

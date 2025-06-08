@@ -18,7 +18,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import SiikliPage from '@/SiikliPage'
 import { dateToString, formatDate } from '@/utils/date'
-import { formatMoneyFi } from '@/utils/money'
+import { formatNumber } from '@/utils/money'
 
 export default function Orders() {
   const now = new Date()
@@ -209,7 +209,11 @@ export default function Orders() {
                             <TableCell>
                               {order.customer.name}
                             </TableCell>
-                            <TableCell>{formatMoneyFi(order.total)}</TableCell>
+                            <TableCell>
+                              {formatNumber(order.total)}
+                              {' '}
+                              €
+                            </TableCell>
                             <TableCell className="text-right">
                               <Button
                                 variant="ghost"

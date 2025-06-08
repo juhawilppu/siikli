@@ -33,7 +33,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { useToast } from '@/hooks/use-toast'
 import SiikliPage from '@/SiikliPage'
-import { formatMoneyFi, formatNumber } from '@/utils/money'
+import { formatNumber } from '@/utils/money'
 import NewProduct from './NewProduct'
 
 export default function Products() {
@@ -337,8 +337,8 @@ export default function Products() {
                         <TableCell>{product.type}</TableCell>
                         <TableCell>{product.subtype}</TableCell>
                         */}
-                            <TableCell className="font-medium">{product.price ? formatNumber(product.price) : ''}</TableCell>
-                            <TableCell>{product.price0 ? formatMoneyFi(product.price0) : ''}</TableCell>
+                            <TableCell className="font-medium">{product.price ? `${formatNumber(product.price)} €` : ''}</TableCell>
+                            <TableCell>{product.price0 ? `${formatNumber(product.price0)} €` : ''}</TableCell>
                             <TableCell>
                               {[product.packageSize ? `${product.packageSize} kg` : '', product.packageType].filter(Boolean).join(', ')}
                             </TableCell>

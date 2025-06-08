@@ -8,11 +8,11 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import SiikliPage from '@/SiikliPage'
 import { formatDate } from '@/utils/date'
-import { formatMoneyFi } from '@/utils/money'
+import { formatNumber } from '@/utils/money'
 
 function formatMetric(value: number, unit: 'money' | 'count') {
   if (unit === 'money') {
-    return formatMoneyFi(value)
+    return `${formatNumber(value)} €`
   }
   else {
     return value

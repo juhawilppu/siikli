@@ -34,7 +34,7 @@ import { useToast } from '@/hooks/use-toast'
 import { cn } from '@/lib/utils'
 import SiikliPage from '@/SiikliPage'
 import { dateToString } from '@/utils/date'
-import { formatMoneyFi, formatNumber, parseDecimal, serializeNumber } from '@/utils/money'
+import { formatNumber, parseDecimal, serializeNumber } from '@/utils/money'
 import ConfirmDialog from '../ConfirmDialog'
 
 export default function CreateOrder() {
@@ -852,14 +852,18 @@ export default function CreateOrder() {
                           <p className="text-sm font-medium">
                             Tuote yhteensä (sis. ALV 14 %):
                             {' '}
-                            {formatMoneyFi(Number.parseFloat(item.amount || '0') * (Number.parseFloat(item.price || '0')))}
+                            {formatNumber(parseDecimal(item.amount || '0').mul(parseDecimal(item.price || '0')))}
+                            {' '}
+                            €
                           </p>
                         )}
                         {selectedCustomer?.showPriceWithoutTax && (
                           <p className="text-sm font-medium">
                             Tuote yhteensä (ALV 0 %):
                             {' '}
-                            {formatMoneyFi(Number.parseFloat(item.amount || '0') * (Number.parseFloat(item.price0 || '0')))}
+                            {formatNumber(parseDecimal(item.amount || '0').mul(parseDecimal(item.price0 || '0')))}
+                            {' '}
+                            €
                           </p>
                         )}
                       </div>
@@ -887,7 +891,11 @@ export default function CreateOrder() {
               </div>
               <div className="text-right">
                 <p className="text-sm text-muted-foreground">Tilauksen kokonaissumma (sis. ALV 14 %)</p>
-                <p className="text-2xl font-bold">{formatMoneyFi(calculateTotal())}</p>
+                <p className="text-2xl font-bold">
+                  {formatNumber(calculateTotal())}
+                  {' '}
+                  €
+                </p>
               </div>
             </CardFooter>
           </Card>

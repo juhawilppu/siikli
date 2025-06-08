@@ -1,6 +1,6 @@
 import type { Customer, Order, OrderRow, Product, Tenant } from '@prisma/client'
 import { formatDate } from '../../frontend/src/utils/date'
-import { formatMoneyFi } from '../../frontend/src/utils/money'
+import { formatNumber } from '../../frontend/src/utils/money'
 
 const defaultStyle = `
     <style type="text/css">
@@ -160,8 +160,8 @@ export default async function createWaybill(
                 <td class="align-left width-25">${item.product.name} ${item.price.lessThan(0) ? '(Hyvitys)' : ''
                 }</td>
                 <td class="align-right width-25">${item.amount}</td>
-                <td class="align-right width-25">${formatMoneyFi(item.price.toNumber())}</td>
-                <td class="align-right width-25">${formatMoneyFi(item.amount.mul(item.price).toNumber())}</td>
+                <td class="align-right width-25">${formatNumber(item.price)} €</td>
+                <td class="align-right width-25">${formatNumber(item.amount.mul(item.price))} €</td>
             </tr>`
   })
   const note = order.noteBody
