@@ -8,12 +8,12 @@ export type GetCurrentUserDto = {
   signupCompleted: boolean
 }
 
-export interface ProductOrderDto {
+export interface GetOrderRowDto {
   id: string
   productId: string
-  price: number | null
-  price0: number | null
-  amount: number
+  price: string
+  price0: string
+  amount: string
   packages: number
   packageSize: number
   packageType: string
@@ -25,9 +25,9 @@ export interface PostOrderItemRequestDto {
   id: string | undefined
   deleted?: boolean
   productId: string
-  price: number
-  price0: number
-  amount: number
+  price: string
+  price0: string
+  amount: string
   packages: number
   packageSize: number
   packageType: string
@@ -54,7 +54,7 @@ export interface GetOrderDto {
   hasNote: boolean
   noteBody: string | null
   noteHeader: string | null
-  items: ProductOrderDto[]
+  items: GetOrderRowDto[]
 }
 
 export interface GetOrderList {

@@ -4,15 +4,15 @@ import type {
   PostOrderRequestDto,
   PostOrderResponseDto,
 } from '../../frontend/src/types/types'
-import { captureException } from '@sentry/node'
 import { endOfDay, parse, startOfDay } from 'date-fns'
+import Decimal from 'decimal.js'
 import express from 'express'
 import puppeteer from 'puppeteer'
 import { dateToString, formatDate, stringToDate } from '../../frontend/src/utils/date'
 import { getUser, isAuthenticated } from '../middlewares/permissions'
 import prisma from '../prisma'
 import { createWaybills } from '../services/waybill'
-import Decimal from 'decimal.js'
+import { serializeNumber } from '../utils/money'
 
 async function verifyPackageSizeAndType(body: { packageType: string | null, packageSize: number | null }, tenantId: string) {
   console.log('checking type', body)
@@ -230,9 +230,9 @@ ordersRoute.get(`/api/orders/:id`, isAuthenticated, async (req, res) => {
       {
         id: p.id,
         productId: p.productId,
-        price: p.price.toNumber(),
-        price0: p.price0.toNumber(),
-        amount: p.amount.toNumber(),
+        price: serializeNumber(p.price),
+        price0: serializeNumber(p.price0),
+        amount: serializeNumber(p.amount),
         packages: p.amount.div(p.packageSize).toNumber(),
         packageSize: p.packageSize,
         packageType: p.packageType || '',
@@ -310,8 +310,8 @@ ordersRoute.post(`/api/orders`, isAuthenticated, async (req, res) => {
         tenantId,
         productId: r.productId,
         amount: r.amount,
-        price: r.price || 0,
-        price0: r.price0 || 0,
+        price: r.price,
+        price0: r.price0,
         freetext: r.freetext,
         packageSize: r.packageSize,
         packageType: r.packageType,

@@ -29,11 +29,12 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
 import { Textarea } from '@/components/ui/textarea'
+import { useIsMobile } from '@/hooks/use-mobile'
 import { useToast } from '@/hooks/use-toast'
 import { cn } from '@/lib/utils'
 import SiikliPage from '@/SiikliPage'
 import { dateToString } from '@/utils/date'
-import { formatMoneyFi } from '@/utils/money'
+import { formatMoneyFi, formatNumber, parseDecimal, serializeNumber } from '@/utils/money'
 import ConfirmDialog from '../ConfirmDialog'
 
 export default function CreateOrder() {
@@ -87,6 +88,8 @@ export default function CreateOrder() {
   const navigate = useNavigate()
   const { toast } = useToast()
 
+  const isMobile = useIsMobile()
+
   const handleAddItem = () => {
     setOrderItems([
       ...orderItems,
@@ -123,9 +126,9 @@ export default function CreateOrder() {
         const res = await axios.get<GetOrderDto>(`/orders/${orderId}`)
         setOrderItems(res.data.items.map(item => ({
           ...item,
-          price: item.price?.toFixed(2).toString() || '',
-          price0: item.price0?.toFixed(2).toString() || '',
-          amount: item.amount?.toFixed(2).toString() || '',
+          price: formatNumber(item.price),
+          price0: formatNumber(item.price0),
+          amount: formatNumber(item.amount),
           createdAt: new Date(item.createdAt),
         })))
         setCustomerId(res.data.customerId)
@@ -157,23 +160,26 @@ export default function CreateOrder() {
     setOrderItems(
       orderItems.map((item) => {
         if (item.id === id) {
+          console.log('item', item)
+          console.log('field', field)
+          console.log('value', value)
           const updatedItem = { ...item, [field]: value }
 
           // If product changed, update price and package details
           if (field === 'productId') {
             const product = products.find(p => p.id === value)
             if (product) {
-              updatedItem.price = product.price ? formatMoneyFi(product.price) : ''
+              updatedItem.price = product.price ? formatNumber(product.price) : ''
               updatedItem.packageSize = product.packageSize || undefined
               updatedItem.packageType = product.packageType || ''
             }
           }
 
           if (field === 'price') {
-            updatedItem.price0 = (new Decimal(value).mul(1 / 1.14)).toDecimalPlaces(2).toString()
+            updatedItem.price0 = formatNumber(parseDecimal(value || '0').mul(1 / 1.14))
           }
           if (field === 'price0') {
-            updatedItem.price = (new Decimal(value).mul(1.14)).toDecimalPlaces(2).toString()
+            updatedItem.price = formatNumber(parseDecimal(value || '0').mul(1.14))
           }
 
           // Recalculate packages if amount or package size changed
@@ -193,7 +199,7 @@ export default function CreateOrder() {
   const selectedCustomer = customers?.find(c => c.id === customerId)
 
   const calculateTotal = () => {
-    const total = orderItems.reduce((sum, item) => sum.plus((new Decimal(item.amount || '0')).mul(new Decimal(item.price || '0'))), new Decimal(0))
+    const total = orderItems.reduce((sum, item) => sum.plus((parseDecimal(item.amount || '0')).mul(parseDecimal(item.price || '0'))), new Decimal(0))
     return total.toDecimalPlaces(2)
   }
 
@@ -284,9 +290,9 @@ export default function CreateOrder() {
       items: orderItems.map(item => ({
         ...item,
         id: item.unsaved ? undefined : item.id,
-        price: item.price ? Number.parseFloat(item.price) : 0,
-        price0: item.price0 ? Number.parseFloat(item.price0) : 0,
-        amount: item.amount ? Number.parseFloat(item.amount) : 0,
+        price: serializeNumber(item.price),
+        price0: serializeNumber(item.price0),
+        amount: serializeNumber(item.amount),
         packageSize: item.packageSize || 0,
         packageType: item.packageType || '',
       })),
@@ -299,9 +305,9 @@ export default function CreateOrder() {
         const res = await axios.get<GetOrderDto>(`/orders/${orderId}`)
         setOrderItems(res.data.items.map(item => ({
           ...item,
-          price: item.price?.toFixed(2).toString() || '',
-          price0: item.price0?.toFixed(2).toString() || '',
-          amount: item.amount?.toFixed(2).toString() || '',
+          price: formatNumber(item.price),
+          price0: formatNumber(item.price0),
+          amount: formatNumber(item.amount),
           createdAt: new Date(item.createdAt),
         })))
         toast({
@@ -564,15 +570,13 @@ export default function CreateOrder() {
                           </Label>
                           <Input
                             id={`amount-${item.id}`}
-                            type="number"
-                            min="0"
-                            step="0.01"
                             value={item.amount || ''}
+                            type={isMobile ? 'number' : 'text'}
                             onChange={e =>
-                              handleItemChange(item.id, 'amount', Number.parseFloat(e.target.value) || 0)}
+                              handleItemChange(item.id, 'amount', e.target.value)}
                             onBlur={() => {
                               console.log('onBlur', item.amount)
-                              handleItemChange(item.id, 'amount', Number.parseFloat(item.amount || '0').toFixed(2))
+                              handleItemChange(item.id, 'amount', formatNumber(item.amount || '0'))
                             }}
                           />
                         </div>
@@ -586,15 +590,13 @@ export default function CreateOrder() {
                             </Label>
                             <Input
                               id={`price-${item.id}`}
-                              type="number"
-                              min="0"
-                              step="0.01"
                               value={item.price || ''}
+                              type={isMobile ? 'number' : 'text'}
                               onChange={e =>
-                                handleItemChange(item.id, 'price', Number.parseFloat(e.target.value) || 0)}
-                              onBlur={() => {
-                                console.log('onBlur', item.price)
-                                handleItemChange(item.id, 'price', Number.parseFloat(item.price || '0').toFixed(2))
+                                handleItemChange(item.id, 'price', e.target.value)}
+                              onBlur={(e) => {
+                                console.log('onBlur', e.target.value)
+                                handleItemChange(item.id, 'price', formatNumber(e.target.value || '0'))
                               }}
                             />
                           </div>
@@ -609,15 +611,13 @@ export default function CreateOrder() {
                             </Label>
                             <Input
                               id={`price-${item.id}`}
-                              type="number"
-                              min="0"
-                              step="0.01"
                               value={item.price0 || ''}
+                              type={isMobile ? 'number' : 'text'}
                               onChange={e =>
-                                handleItemChange(item.id, 'price0', Number.parseFloat(e.target.value) || 0)}
-                              onBlur={() => {
-                                console.log('onBlur', item.price0)
-                                handleItemChange(item.id, 'price0', Number.parseFloat(item.price0 || '0').toFixed(2))
+                                handleItemChange(item.id, 'price0', e.target.value)}
+                              onBlur={(e) => {
+                                console.log('onBlur', e.target.value)
+                                handleItemChange(item.id, 'price0', formatNumber(e.target.value || '0'))
                               }}
                             />
                           </div>

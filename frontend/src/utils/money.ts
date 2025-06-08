@@ -1,5 +1,33 @@
 import Decimal from 'decimal.js'
 
+export function parseDecimal(number: string) {
+  try {
+    return new Decimal(number.replace(',', '.'))
+  }
+  catch (error) {
+    console.warn('Error parsing decimal', error)
+    return new Decimal(0)
+  }
+}
+
+/**
+ * In REST Dto, we use a dot as the decimal separator.
+ * @param number - The number to serialize, like "2,55"
+ * @returns The serialized number, like "2.55"
+ */
+export function serializeNumber(number: string) {
+  if (number.includes('.')) {
+    throw new Error('Number already contains dot')
+  }
+  return number.replace(',', '.')
+}
+
+/**
+ * In Finland, numbers are formatted with a comma as the decimal separator.
+ * @param amount - The number to format, like "2.55" (string, serialized number) or 2.5 (Decimal, number)
+ * @returns The formatted number, like "2,55"
+ */
+
 export function formatNumber(amount?: Decimal | number | string) {
   if (!amount) {
     return ''
@@ -9,11 +37,10 @@ export function formatNumber(amount?: Decimal | number | string) {
     return amount.toNumber().toFixed(2).replace('.', ',')
   }
 
-  // TODO: As a long-term plan, this function should never receive numbers or strings that don't have 2 decimals.
-
   if (typeof amount === 'string') {
-    return Number.parseFloat(amount).toFixed(2).replace('.', ',')
+    return parseDecimal(amount).toFixed(2).replace('.', ',')
   }
+
   return `${amount
     .toFixed(2)
     .replace('.', ',')}`
