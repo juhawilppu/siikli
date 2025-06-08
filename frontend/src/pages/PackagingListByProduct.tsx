@@ -24,7 +24,7 @@ export function PackagingListByProduct({ report }: {
 
   return (
     <div className="pdf">
-      <h1>Tuotekohtainen pakkauslista</h1>
+      <h1 style={{ fontSize: '1.5em' }}>Tuotekohtainen pakkauslista</h1>
       <br />
       <b>Päivämäärä:</b>
       {' '}

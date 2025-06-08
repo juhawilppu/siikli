@@ -19,7 +19,7 @@ export function PackagingListByCustomer({ report }: {
 
   return (
     <div className="pdf">
-      <h1>Kauppakohtainen pakkauslista</h1>
+      <h1 style={{ fontSize: '1.5em' }}>Kauppakohtainen pakkauslista</h1>
       <br />
       <p>
         <strong>Päivämäärä:</strong>
@@ -31,7 +31,7 @@ export function PackagingListByCustomer({ report }: {
 
       {Object.entries(groupedData).map(([customerName, rows]) => (
         <div className="module" key={customerName}>
-          <h2 className="align-center no-page-break-after">{customerName}</h2>
+          <h2 className="align-center no-page-break-after" style={{ fontSize: '1.2em' }}>{customerName}</h2>
           <table className="border-bottom">
             <thead>
               <tr className="title border-top border-bottom">
