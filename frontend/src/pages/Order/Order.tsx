@@ -275,6 +275,15 @@ export default function CreateOrder() {
         setIsSubmitting(false)
         return
       }
+      if (!item.price0) {
+        toast({
+          title: 'Hinta ei voi olla tyhjä',
+          description: 'Valitse hinta tai poista rivi',
+          variant: 'destructive',
+        })
+        setIsSubmitting(false)
+        return
+      }
       if (!item.packageSize) {
         toast({
           title: 'Pakkauskoko ei voi olla tyhjä',

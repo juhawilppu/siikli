@@ -230,8 +230,8 @@ ordersRoute.get(`/api/orders/:id`, isAuthenticated, async (req, res) => {
       {
         id: p.id,
         productId: p.productId,
-        price: serializeNumber(p.price),
-        price0: serializeNumber(p.price0),
+        price: serializeNumber(p.price || 0),
+        price0: serializeNumber(p.price0 || 0),
         amount: serializeNumber(p.amount),
         packages: p.amount.div(p.packageSize).toNumber(),
         packageSize: p.packageSize,
