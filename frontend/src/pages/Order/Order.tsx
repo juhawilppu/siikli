@@ -84,6 +84,8 @@ export default function CreateOrder() {
     },
   ])
 
+  const [orderLimit, setOrderLimit] = useState<number | null>(null)
+
   const { orderId } = useParams()
   const navigate = useNavigate()
   const { toast } = useToast()
@@ -115,14 +117,15 @@ export default function CreateOrder() {
         axios.get<GetCustomersResponseDto>('/customers'),
         axios.get<GetProductResponseDto[]>('/products'),
         axios.get<GetPackageSettings>('/tenants/package-settings'),
+        axios.get<{ remaining: number }>(`/orders/limit`),
       ])
 
       setCustomers(promises[0].data.customers)
       setProducts(promises[1].data)
       setPackageTypes(promises[2].data.packageTypes)
       setPackageSizes(promises[2].data.packageSizes)
+      setOrderLimit(promises[3].data.remaining)
       if (orderId) {
-        console.log('has orderId')
         const res = await axios.get<GetOrderDto>(`/orders/${orderId}`)
         setOrderItems(res.data.items.map(item => ({
           ...item,
@@ -418,6 +421,25 @@ export default function CreateOrder() {
     navigate('/orders')
   }
 
+  if (!orderId && orderLimit !== null && orderLimit === 0) {
+    return (
+      <SiikliPage
+        title="Tilaus"
+        description="Täytä tilauksen tiedot"
+      >
+
+        <div className="text-sm bg-red-100 rounded-md px-4 py-2 mb-4">
+          Olet luonut maksimimäärän tilauksia tämän kuukauden aikana. Haluatko luoda enemmän? Päivitä
+          {' '}
+          <NavLink to="/own-company" className="underline text-primary">
+            Premium-tiliin
+          </NavLink>
+          .
+        </div>
+      </SiikliPage>
+    )
+  }
+
   return (
     <SiikliPage
       title={orderId ? 'Tilaus' : 'Uusi tilaus'}
@@ -426,7 +448,17 @@ export default function CreateOrder() {
         <></>
       }
     >
-
+      {!orderId && orderLimit !== null && orderLimit < 5 && orderLimit > 0 && (
+        <div className="text-sm bg-yellow-100 rounded-md px-4 py-2 mb-4">
+          Voit luoda vielä
+          {' '}
+          {orderLimit}
+          {' '}
+          {orderLimit === 1 ? 'tilauksen' : 'tilausta'}
+          {' '}
+          tämän kuukauden aikana.
+        </div>
+      )}
       {confirmDialog && (
         <ConfirmDialog
           title="Poista tilaus"

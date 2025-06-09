@@ -4,7 +4,7 @@ import type {
   PostOrderRequestDto,
   PostOrderResponseDto,
 } from '../../frontend/src/types/types'
-import { endOfDay, parse, startOfDay } from 'date-fns'
+import { endOfDay, endOfMonth, parse, startOfDay, startOfMonth } from 'date-fns'
 import Decimal from 'decimal.js'
 import express from 'express'
 import puppeteer from 'puppeteer'
@@ -61,6 +61,34 @@ async function verifyPackageSizeAndType(body: { packageType: string | null, pack
 }
 
 export const ordersRoute = express.Router()
+
+export interface GetOrderLimitResponseDto {
+  remaining: number
+}
+
+ordersRoute.get(`/api/orders/limit`, isAuthenticated, async (req, res) => {
+  const { tenantId } = getUser(req)
+
+  const tenant = await prisma.tenant.findFirstOrThrow({
+    where: {
+      id: tenantId,
+    },
+  })
+  if (tenant.subscriptionType === 'premium') {
+    return res.status(200).json({ remaining: 10000 })
+  }
+
+  const orders = await prisma.order.count({
+    where: {
+      tenantId,
+      createdAt: {
+        gte: startOfMonth(new Date()),
+        lte: endOfMonth(new Date()),
+      },
+    },
+  })
+  return res.status(200).json({ remaining: Math.max(0, 20 - orders) })
+})
 
 ordersRoute.get(`/api/orders`, isAuthenticated, async (req, res) => {
   console.log('getting orders')
@@ -269,6 +297,8 @@ ordersRoute.post(`/api/orders`, isAuthenticated, async (req, res) => {
   for (const item of data.items) {
     await verifyPackageSizeAndType(item, tenantId)
   }
+
+  // TODO: If free user, check order limit
 
   const waybillNumberResult = await prisma.order.findFirst({
     where: {
