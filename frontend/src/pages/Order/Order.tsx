@@ -233,6 +233,20 @@ export default function CreateOrder() {
       return
     }
 
+    const productIds = new Set()
+    for (const item of orderItems) {
+      if (productIds.has(item.productId)) {
+        toast({
+          title: 'Sama tuote useamman kerran',
+          description: `Tuote ${products?.find(p => p.id === item.productId)?.name} on jo lisätty tilaukseen`,
+          variant: 'destructive',
+        })
+        setIsSubmitting(false)
+        return
+      }
+      productIds.add(item.productId)
+    }
+
     for (const item of orderItems) {
       if (!item.productId) {
         toast({
@@ -243,10 +257,10 @@ export default function CreateOrder() {
         setIsSubmitting(false)
         return
       }
-      if (!item.amount) {
+      if (item.amount === '0,00' || item.amount === '') {
         toast({
           title: 'Määrä ei voi olla tyhjä',
-          description: 'Valitse määrä tai poista rivi',
+          description: `Valitse määrä tuotteelle ${products?.find(p => p.id === item.productId)?.name} tai poista rivi`,
           variant: 'destructive',
         })
         setIsSubmitting(false)
