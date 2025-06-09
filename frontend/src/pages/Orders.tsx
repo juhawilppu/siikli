@@ -24,13 +24,13 @@ export default function Orders() {
   const now = new Date()
 
   const [startDate, setStartDate] = useState<Date>(startOfWeek(now, { weekStartsOn: 1 }))
+  const [openStartDate, setOpenStartDate] = useState(false)
   const [endDate, setEndDate] = useState<Date>(endOfWeek(now, { weekStartsOn: 1 }))
-  const [isLoading, setIsLoading] = useState(false)
+  const [openEndDate, setOpenEndDate] = useState(false)
   const [isPrinting, setIsPrinting] = useState(false)
   const [orders, setOrders] = useState<GetOrderList[]>([])
 
   useEffect(() => {
-    setIsLoading(true)
     axios
       .get<GetOrderList[]>('/orders', {
         params: {
@@ -39,7 +39,6 @@ export default function Orders() {
         },
       })
       .then(res => setOrders(res.data))
-      .finally(() => setIsLoading(false))
   }, [startDate, endDate])
 
   const handlePrintWaybills = async () => {
@@ -74,9 +73,6 @@ export default function Orders() {
     }
   }
 
-  if (isLoading)
-    return <SiikliPage title="Tilaukset" description="Hallitse tilauksia tällä sivulla" />
-
   return (
     <>
       <SiikliPage
@@ -100,7 +96,7 @@ export default function Orders() {
             <div className="grid gap-4 md:grid-cols-4">
               <div className="space-y-2">
                 <label className="text-sm font-medium">Alkupäivä</label>
-                <Popover>
+                <Popover open={openStartDate} onOpenChange={setOpenStartDate}>
                   <PopoverTrigger asChild>
                     <Button variant="outline" className="w-full justify-start text-left font-normal">
                       <Calendar className="mr-2 h-4 w-4" />
@@ -111,7 +107,10 @@ export default function Orders() {
                     <CalendarComponent
                       mode="single"
                       selected={startDate}
-                      onSelect={value => setStartDate(value as Date)}
+                      onSelect={(value) => {
+                        setStartDate(value as Date)
+                        setOpenStartDate(false)
+                      }}
                       required
                       locale={fi}
                     />
@@ -121,7 +120,7 @@ export default function Orders() {
 
               <div className="space-y-2">
                 <label className="text-sm font-medium">Loppupäivä</label>
-                <Popover>
+                <Popover open={openEndDate} onOpenChange={setOpenEndDate}>
                   <PopoverTrigger asChild>
                     <Button variant="outline" className="w-full justify-start text-left font-normal">
                       <Calendar className="mr-2 h-4 w-4" />
@@ -129,7 +128,16 @@ export default function Orders() {
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0">
-                    <CalendarComponent mode="single" selected={endDate} onSelect={value => setEndDate(value as Date)} required locale={fi} />
+                    <CalendarComponent
+                      mode="single"
+                      selected={endDate}
+                      onSelect={(value) => {
+                        setEndDate(value as Date)
+                        setOpenEndDate(false)
+                      }}
+                      required
+                      locale={fi}
+                    />
                   </PopoverContent>
                 </Popover>
               </div>

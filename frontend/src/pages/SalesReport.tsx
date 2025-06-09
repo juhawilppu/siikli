@@ -15,10 +15,11 @@ export function SalesReport() {
   const [startDate, setStartDate] = useState<Date | undefined>(
     startOfWeek(now, { weekStartsOn: 1 }),
   )
+  const [openStartDate, setOpenStartDate] = useState(false)
   const [endDate, setEndDate] = useState<Date | undefined>(
     endOfWeek(now, { weekStartsOn: 1 }),
   )
-
+  const [openEndDate, setOpenEndDate] = useState(false)
   const getReport = async () => {
     const res = await fetch('/api/sales-report')
     const blob = await res.blob()
@@ -41,7 +42,7 @@ export function SalesReport() {
           <div className="grid gap-4 md:grid-cols-4">
             <div className="space-y-2">
               <label className="text-sm font-medium">Alkupäivä</label>
-              <Popover>
+              <Popover open={openStartDate} onOpenChange={setOpenStartDate}>
                 <PopoverTrigger asChild>
                   <Button variant="outline" className="w-full justify-start text-left font-normal">
                     <Calendar className="mr-2 h-4 w-4" />
@@ -52,7 +53,10 @@ export function SalesReport() {
                   <CalendarComponent
                     mode="single"
                     selected={startDate}
-                    onSelect={setStartDate}
+                    onSelect={(value) => {
+                      setStartDate(value as Date)
+                      setOpenStartDate(false)
+                    }}
                     required
                     initialFocus
                     locale={fi}
@@ -63,7 +67,7 @@ export function SalesReport() {
 
             <div className="space-y-2">
               <label className="text-sm font-medium">Loppupäivä</label>
-              <Popover>
+              <Popover open={openEndDate} onOpenChange={setOpenEndDate}>
                 <PopoverTrigger asChild>
                   <Button variant="outline" className="w-full justify-start text-left font-normal">
                     <Calendar className="mr-2 h-4 w-4" />
@@ -71,7 +75,16 @@ export function SalesReport() {
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0">
-                  <CalendarComponent mode="single" selected={endDate} onSelect={setEndDate} required locale={fi} />
+                  <CalendarComponent
+                    mode="single"
+                    selected={endDate}
+                    onSelect={(value) => {
+                      setEndDate(value as Date)
+                      setOpenEndDate(false)
+                    }}
+                    required
+                    locale={fi}
+                  />
                 </PopoverContent>
               </Popover>
             </div>

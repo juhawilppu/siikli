@@ -1,5 +1,6 @@
 import type { PackagingListGroupedByCustomer, PackagingListGroupedByProduct } from '@/types/types'
 import axios from 'axios'
+import { fi } from 'date-fns/locale'
 import { Calendar, RefreshCw } from 'lucide-react'
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
@@ -17,7 +18,7 @@ export function PackagingList() {
   const [deliveryDate, setDeliveryDate] = useState<Date | undefined>(new Date())
   const [groupBy, setGroupBy] = useState<'customer' | 'product'>('customer')
   const [isLoading, setIsLoading] = useState(false)
-
+  const [openDeliveryDate, setOpenDeliveryDate] = useState(false)
   const [report, setReport] = useState<PackagingListGroupedByProduct | PackagingListGroupedByCustomer>()
 
   const handleFetch = async () => {
@@ -49,7 +50,7 @@ export function PackagingList() {
                 <Label htmlFor="delivery-date" className="font-medium">
                   Toimituspäivä
                 </Label>
-                <Popover>
+                <Popover open={openDeliveryDate} onOpenChange={setOpenDeliveryDate}>
                   <PopoverTrigger asChild>
                     <Button
                       variant="outline"
@@ -67,8 +68,10 @@ export function PackagingList() {
                       onSelect={(value: Date | undefined) => {
                         setDeliveryDate(value)
                         setReport(undefined)
+                        setOpenDeliveryDate(false)
                       }}
                       initialFocus
+                      locale={fi}
                     />
                   </PopoverContent>
                 </Popover>

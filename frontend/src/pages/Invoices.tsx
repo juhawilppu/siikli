@@ -35,7 +35,8 @@ export function Invoices() {
   )
 
   const [customerId, setCustomerId] = useState<string>()
-
+  const [openStartDate, setOpenStartDate] = useState(false)
+  const [openEndDate, setOpenEndDate] = useState(false)
   const [dirty, setDirty] = useState(true)
 
   const getData = async () => {
@@ -173,7 +174,7 @@ export function Invoices() {
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium">Alkupäivä</label>
-              <Popover>
+              <Popover open={openStartDate} onOpenChange={setOpenStartDate}>
                 <PopoverTrigger asChild>
                   <Button variant="outline" className="w-full justify-start text-left font-normal">
                     <Calendar className="mr-2 h-4 w-4" />
@@ -188,6 +189,7 @@ export function Invoices() {
                       setStartDate(date)
                       setDirty(true)
                       setInvoice(undefined)
+                      setOpenStartDate(false)
                     }}
                     required
                     initialFocus
@@ -199,7 +201,7 @@ export function Invoices() {
 
             <div className="space-y-2">
               <label className="text-sm font-medium">Loppupäivä</label>
-              <Popover>
+              <Popover open={openEndDate} onOpenChange={setOpenEndDate}>
                 <PopoverTrigger asChild>
                   <Button variant="outline" className="w-full justify-start text-left font-normal">
                     <Calendar className="mr-2 h-4 w-4" />
@@ -214,6 +216,7 @@ export function Invoices() {
                       setEndDate(date)
                       setDirty(true)
                       setInvoice(undefined)
+                      setOpenEndDate(false)
                     }}
                     required
                     locale={fi}
