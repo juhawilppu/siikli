@@ -1,7 +1,7 @@
 import type { CreateTenantDto, GetCompanySettings, GetPackageSettings, GetUsersResponseDto, PostCompanySettings, PostSubscriptionChangeRequest } from '../../frontend/src/types/types'
 import { addMonths } from 'date-fns'
 import express from 'express'
-import { getUser, isAuthenticated } from '../middlewares/permissions'
+import { getUser, isAuthenticated, isOwner } from '../middlewares/permissions'
 import prisma from '../prisma'
 import { sendEventEmail } from '../services/email-service'
 
@@ -105,7 +105,7 @@ companiesRoute.post(`/api/tenants`, isAuthenticated, async (req, res) => {
   res.json(result)
 })
 
-companiesRoute.delete(`/api/tenants`, isAuthenticated, async (req, res) => {
+companiesRoute.delete(`/api/tenants`, isAuthenticated, isOwner, async (req, res) => {
   const { tenantId, userId } = getUser(req)
   await prisma.tenant.delete({
     where: {

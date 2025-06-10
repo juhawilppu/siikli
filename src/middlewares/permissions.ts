@@ -23,3 +23,13 @@ export function getUser(req: express.Request) {
   }
   return { userId: user.id, tenantId: user.tenantId }
 }
+
+export function isOwner(req: express.Request, res: express.Response, next: express.NextFunction) {
+  const user = req.user as User
+  console.log('user', user)
+  if (user.role !== 'OWNER') {
+    res.status(403).json({ error: 'Forbidden' })
+    return
+  }
+  next()
+}

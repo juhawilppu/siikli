@@ -212,6 +212,7 @@ async function main() {
       email: 'rajajarvi@gmail.com',
       googleExternalId: '118037848383891596587',
       tenantId: tenant2.id,
+      role: Role.OWNER,
     },
   })
 }
