@@ -16,10 +16,19 @@ async function verifyHistoryTables() {
     'rate_limit',
     'package_type',
     'package_size',
-    'invoice'
+    'invoice',
   ]
+  const errors: string[] = []
   for (const tableName of tablesToVerify) {
-    await verifyHistoryTable(tableName)
+    const result = await verifyHistoryTable(tableName)
+    if (!result) {
+      errors.push(tableName)
+    }
+  }
+  if (errors.length > 0) {
+    console.error('\n--------------\nVerification failed for tables:')
+    errors.forEach(error => console.error(` ❌ ${error}`))
+    console.error('--------------\n')
   }
 }
 
@@ -244,6 +253,7 @@ async function verifyHistoryTable(tableName: string) {
 
     if (!triggerExists || triggerStatus !== 'VALID') {
       console.log('❌ History trigger not found')
+      return false
     }
 
     const columnsForTrigger = tableColumns.filter(
@@ -264,14 +274,17 @@ async function verifyHistoryTable(tableName: string) {
       console.log('❌ History trigger needs update')
       console.log('\n--- Required Trigger SQL ---')
       console.log(triggerSQL)
+      return false
     }
     else {
       console.log('✅ History trigger is up to date')
+      return true
     }
   }
   else {
     console.log('❌ Schema validation failed:')
     schemaDifferences.forEach(diff => console.log(`  - ${diff}`))
+    return false
   }
 }
 
