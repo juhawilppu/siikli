@@ -1,5 +1,7 @@
 import type { Tenant, User } from '@prisma/client'
 import { SendEmailCommand, SESClient } from '@aws-sdk/client-ses'
+
+import { Role } from '@prisma/client'
 import { addMonths, subMinutes } from 'date-fns'
 
 import passport from 'passport'
@@ -33,6 +35,7 @@ async function createUserAndTenant(email: string, googleExternalId?: string) {
       email,
       tenantId: tenant.id,
       googleExternalId,
+      role: Role.OWNER,
       lastLoginAt: new Date(),
     },
   })
@@ -127,8 +130,8 @@ function init() {
     done(null, user as UserWithTenant)
   })
 
-  const clientID = process.env.GOOGLE_CLIENT_ID
-  const clientSecret = process.env.GOOGLE_CLIENT_SECRET
+  const clientID = process.env.GOOGLE_CLIENT_ID!
+  const clientSecret = process.env.GOOGLE_CLIENT_SECRET!
 
   passport.use(
     new GoogleStrategy(

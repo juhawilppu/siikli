@@ -23,6 +23,7 @@ export default function CompanySettings() {
   const [users, setUsers] = useState<GetUsersResponseDto[]>()
   const [showDeleteCompanyModal, setShowDeleteCompanyModal] = useState(false)
   const [showSwitchSubscriptionModal, setShowSwitchSubscriptionModal] = useState<null | 'FREE' | 'PREMIUM'>(null)
+  const [showDeleteUserModal, setShowDeleteUserModal] = useState<null | string>(null)
   const { toast } = useToast()
 
   const handleDeleteCompany = async () => {
@@ -106,6 +107,16 @@ export default function CompanySettings() {
         subscriptionEndDate: result.data.subscriptionEndDate,
       }
     })
+  }
+
+  const deleteUser = async (userId: string) => {
+    setShowDeleteUserModal(null)
+    await axios.delete(`/tenants/users/${userId}`)
+    toast({
+      title: 'Käyttäjä poistettu',
+      description: 'Käyttäjä on poistettu onnistuneesti.',
+    })
+    setUsers(prev => prev?.filter(user => user.id !== userId))
   }
 
   useEffect(() => {
@@ -281,13 +292,59 @@ export default function CompanySettings() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {users.map(user => (
-                    <div key={user.id}>
-                      <p>{user.email}</p>
-                      <p>{user.role === 'OWNER' ? 'Omistaja' : 'Käyttäjä'}</p>
-                      <p>{user.lastLoginAt ? formatDate(new Date(user.lastLoginAt)) : 'Ei kirjautunut sisään'}</p>
-                    </div>
-                  ))}
+                  <div className="rounded-md border">
+                    <table className="min-w-full divide-y divide-gray-200">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500">
+                            Sähköposti
+                          </th>
+                          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500">
+                            Rooli
+                          </th>
+                          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500">
+                            Viimeisin kirjautuminen
+                          </th>
+                          <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500">
+                            Toiminnot
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-200">
+                        {users.map(user => (
+                          <tr key={user.id}>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm font-medium text-gray-900">{user.email}</div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                user.role === 'OWNER' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'
+                              }`}
+                              >
+                                {user.role === 'OWNER' ? 'Omistaja' : 'Käyttäjä'}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                              {user.lastLoginAt ? formatDate(new Date(user.lastLoginAt)) : 'Ei ole kirjautunut sisään'}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                              {user.role !== 'OWNER' && (
+                                <Button
+                                  variant="destructive"
+                                  size="sm"
+                                  onClick={() => {
+                                    setShowDeleteUserModal(user.id)
+                                  }}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -589,6 +646,15 @@ export default function CompanySettings() {
           confirmText="Vaihda tilaustaso"
           onConfirm={() => switchSubscription(showSwitchSubscriptionModal)}
           onCancel={() => setShowSwitchSubscriptionModal(null)}
+        />
+      )}
+
+      {showDeleteUserModal && (
+        <ConfirmDialog
+          title="Poista käyttäjä"
+          description="Oletko varma, että haluat poistaa käyttäjän? Tämä toiminto on peruuttamaton."
+          onConfirm={() => deleteUser(showDeleteUserModal)}
+          onCancel={() => setShowDeleteUserModal(null)}
         />
       )}
     </>

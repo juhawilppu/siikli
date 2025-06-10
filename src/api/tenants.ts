@@ -123,6 +123,24 @@ companiesRoute.delete(`/api/tenants`, isAuthenticated, isOwner, async (req, res)
   res.status(200).end()
 })
 
+companiesRoute.delete(`/api/tenants/users/:userId`, isAuthenticated, isOwner, async (req, res) => {
+  const { userId, tenantId } = getUser(req)
+  await prisma.user.delete({
+    where: {
+      id: userId,
+      tenantId,
+    },
+  })
+  await prisma.log.create({
+    data: {
+      userId,
+      tenantId,
+      event: 'delete_user',
+    },
+  })
+  res.status(200).end()
+})
+
 companiesRoute.post(`/api/tenants/subscription`, isAuthenticated, async (req, res) => {
   const { tenantId, userId } = getUser(req)
   const body = req.body as { subscription: 'FREE' | 'PREMIUM' }
