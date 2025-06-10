@@ -158,6 +158,11 @@ export interface GetCompanySettings {
   trialEndDate: string | null
 }
 
+export interface GetUsersResponseDto {
+  id: string
+  email: string
+}
+
 export interface GetCustomersResponseDto {
   customerGroups: string[]
   customers: GetCustomerRequestDto[]

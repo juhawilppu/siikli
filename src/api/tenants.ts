@@ -1,4 +1,4 @@
-import type { CreateTenantDto, GetCompanySettings, GetPackageSettings, PostCompanySettings, PostSubscriptionChangeRequest } from '../../frontend/src/types/types'
+import type { CreateTenantDto, GetCompanySettings, GetPackageSettings, GetUsersResponseDto, PostCompanySettings, PostSubscriptionChangeRequest } from '../../frontend/src/types/types'
 import { addMonths } from 'date-fns'
 import express from 'express'
 import { getUser, isAuthenticated } from '../middlewares/permissions'
@@ -36,6 +36,21 @@ companiesRoute.get(`/api/tenants`, isAuthenticated, async (req, res) => {
     subscriptionStartDate: result.subscriptionStartDate?.toISOString() ?? null,
     trialEndDate: result.trialEndDate?.toISOString() ?? null,
   } satisfies GetCompanySettings)
+})
+
+companiesRoute.get(`/api/tenants/users`, isAuthenticated, async (req, res) => {
+  const { tenantId } = getUser(req)
+  const users = await prisma.user.findMany({
+    where: {
+      tenantId,
+    },
+  })
+  res.json(
+    users.map(user => ({
+      id: user.id,
+      email: user.email,
+    })) satisfies GetUsersResponseDto[],
+  )
 })
 
 companiesRoute.get(`/api/tenants/package-settings`, isAuthenticated, async (req, res) => {

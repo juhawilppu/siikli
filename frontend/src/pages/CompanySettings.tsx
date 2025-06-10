@@ -2,7 +2,7 @@
 
 import type React from 'react'
 
-import type { GetCompanySettings, PostCompanySettings, PostSubscriptionChangeRequest } from '@/types/types'
+import type { GetCompanySettings, GetUsersResponseDto, PostCompanySettings, PostSubscriptionChangeRequest } from '@/types/types'
 import axios from 'axios'
 
 import { Save, Trash2 } from 'lucide-react'
@@ -20,6 +20,7 @@ import ConfirmDialog from './ConfirmDialog'
 
 export default function CompanySettings() {
   const [companyData, setCompanyData] = useState<GetCompanySettings>()
+  const [users, setUsers] = useState<GetUsersResponseDto[]>()
   const [showDeleteCompanyModal, setShowDeleteCompanyModal] = useState(false)
   const [showSwitchSubscriptionModal, setShowSwitchSubscriptionModal] = useState<null | 'FREE' | 'PREMIUM'>(null)
   const { toast } = useToast()
@@ -108,14 +109,18 @@ export default function CompanySettings() {
   }
 
   useEffect(() => {
-    axios
-      .get<GetCompanySettings>(`/tenants`)
-      .then((response) => {
-        setCompanyData(response.data)
-      })
+    const fetchData = async () => {
+      const [companyResponse, usersResponse] = await Promise.all([
+        axios.get<GetCompanySettings>(`/tenants`),
+        axios.get<GetUsersResponseDto[]>(`/tenants/users`),
+      ])
+      setCompanyData(companyResponse.data)
+      setUsers(usersResponse.data)
+    }
+    fetchData()
   }, [])
 
-  if (!companyData)
+  if (!companyData || !users)
     return <SiikliPage title="Oma yritys" description="Voit hallinnoida yrityksesi asetuksia täällä" />
 
   return (
@@ -125,9 +130,7 @@ export default function CompanySettings() {
         <Tabs defaultValue="company" className="w-full">
           <TabsList className="grid w-full grid-cols-4 mb-6">
             <TabsTrigger value="company">Yritys</TabsTrigger>
-            {false && (
-              <TabsTrigger value="users">Käyttäjät</TabsTrigger>
-            )}
+            <TabsTrigger value="users">Käyttäjät</TabsTrigger>
             <TabsTrigger value="subscription">Tilaus</TabsTrigger>
             <TabsTrigger value="others">Muut</TabsTrigger>
           </TabsList>
@@ -270,19 +273,23 @@ export default function CompanySettings() {
             </form>
           </TabsContent>
 
-          {false && (
-            <TabsContent value="users">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Käyttäjät</CardTitle>
-                  <CardDescription>Hallitse käyttäjiä ja oikeuksia</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">User management settings will appear here.</p>
-                </CardContent>
-              </Card>
-            </TabsContent>
-          )}
+          <TabsContent value="users">
+            <Card>
+              <CardHeader>
+                <CardTitle>Käyttäjät</CardTitle>
+                <CardDescription>Hallitse käyttäjiä ja oikeuksia</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {users.map(user => (
+                    <div key={user.id}>
+                      <p>{user.email}</p>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
 
           <TabsContent value="subscription">
             <Card>

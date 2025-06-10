@@ -172,6 +172,12 @@ async function main() {
       tenantId: tenant.id,
     },
   })
+  await prisma.user.create({
+    data: {
+      email: 'juha.wilppu+2@gmail.com',
+      tenantId: tenant.id,
+    },
+  })
 
   // Create tenant 2
 
