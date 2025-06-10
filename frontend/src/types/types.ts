@@ -161,6 +161,8 @@ export interface GetCompanySettings {
 export interface GetUsersResponseDto {
   id: string
   email: string
+  role: 'OWNER' | 'USER'
+  lastLoginAt: string | null
 }
 
 export interface GetCustomersResponseDto {

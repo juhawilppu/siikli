@@ -284,6 +284,8 @@ export default function CompanySettings() {
                   {users.map(user => (
                     <div key={user.id}>
                       <p>{user.email}</p>
+                      <p>{user.role === 'OWNER' ? 'Omistaja' : 'Käyttäjä'}</p>
+                      <p>{user.lastLoginAt ? formatDate(new Date(user.lastLoginAt)) : 'Ei kirjautunut sisään'}</p>
                     </div>
                   ))}
                 </div>

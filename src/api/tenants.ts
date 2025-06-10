@@ -49,6 +49,8 @@ companiesRoute.get(`/api/tenants/users`, isAuthenticated, async (req, res) => {
     users.map(user => ({
       id: user.id,
       email: user.email,
+      role: user.role,
+      lastLoginAt: user.lastLoginAt?.toISOString() ?? null,
     })) satisfies GetUsersResponseDto[],
   )
 })

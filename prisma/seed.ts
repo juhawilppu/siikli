@@ -1,3 +1,4 @@
+import { Role } from '@prisma/client'
 import { addMonths, subDays } from 'date-fns'
 import { Decimal } from 'decimal.js'
 import prisma from '../src/prisma'
@@ -170,12 +171,14 @@ async function main() {
       email: 'juha.wilppu@gmail.com',
       googleExternalId: '103471389951515378481',
       tenantId: tenant.id,
+      role: Role.OWNER,
     },
   })
   await prisma.user.create({
     data: {
       email: 'juha.wilppu+2@gmail.com',
       tenantId: tenant.id,
+      role: Role.USER,
     },
   })
 
