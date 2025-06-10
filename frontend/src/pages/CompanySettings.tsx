@@ -9,8 +9,10 @@ import { Save, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useToast } from '@/hooks/use-toast'
@@ -24,6 +26,9 @@ export default function CompanySettings() {
   const [showDeleteCompanyModal, setShowDeleteCompanyModal] = useState(false)
   const [showSwitchSubscriptionModal, setShowSwitchSubscriptionModal] = useState<null | 'FREE' | 'PREMIUM'>(null)
   const [showDeleteUserModal, setShowDeleteUserModal] = useState<null | string>(null)
+  const [showAddUserModal, setShowAddUserModal] = useState(false)
+  const [email, setEmail] = useState('')
+  const [role, setRole] = useState('USER')
   const { toast } = useToast()
 
   const handleDeleteCompany = async () => {
@@ -117,6 +122,16 @@ export default function CompanySettings() {
       description: 'Käyttäjä on poistettu onnistuneesti.',
     })
     setUsers(prev => prev?.filter(user => user.id !== userId))
+  }
+
+  const addUser = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    await axios.post('/tenants/users', { email, role })
+    setShowAddUserModal(false)
+    toast({
+      title: 'Käyttäjä lisätty',
+      description: 'Käyttäjä on lisätty onnistuneesti.',
+    })
   }
 
   useEffect(() => {
@@ -292,6 +307,7 @@ export default function CompanySettings() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
+                  <Button onClick={() => setShowAddUserModal(true)}>Lisää käyttäjä</Button>
                   <div className="rounded-md border">
                     <table className="min-w-full divide-y divide-gray-200">
                       <thead className="bg-gray-50">
@@ -656,6 +672,52 @@ export default function CompanySettings() {
           onConfirm={() => deleteUser(showDeleteUserModal)}
           onCancel={() => setShowDeleteUserModal(null)}
         />
+      )}
+
+      {showAddUserModal && (
+        <Dialog open={showAddUserModal} onOpenChange={setShowAddUserModal}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Lisää käyttäjä</DialogTitle>
+              <DialogDescription>
+                <form onSubmit={addUser}>
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="email">Sähköposti</Label>
+                      <Input
+                        type="email"
+                        placeholder="Käyttäjän sähköposti"
+                        name="email"
+                        value={email}
+                        onChange={e => setEmail(e.target.value)}
+                      />
+                    </div>
+                    <div className="my-4">
+                      <Label htmlFor="role">Rooli</Label>
+                      <Select
+                        name="role"
+                        value={role}
+                        onValueChange={value => setRole(value)}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Valitse rooli" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="USER">Käyttäjä</SelectItem>
+                          <SelectItem value="OWNER">Omistaja</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <DialogFooter>
+                    <Button variant="outline" onClick={() => setShowAddUserModal(false)}>Peruuta</Button>
+                    <Button type="submit">Lisää käyttäjä</Button>
+                  </DialogFooter>
+                </form>
+              </DialogDescription>
+            </DialogHeader>
+          </DialogContent>
+        </Dialog>
       )}
     </>
   )

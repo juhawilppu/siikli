@@ -141,6 +141,19 @@ companiesRoute.delete(`/api/tenants/users/:userId`, isAuthenticated, isOwner, as
   res.status(200).end()
 })
 
+companiesRoute.post(`/api/tenants/users`, isAuthenticated, isOwner, async (req, res) => {
+  const { tenantId } = getUser(req)
+  const body = req.body as { email: string, role: 'USER' | 'OWNER' }
+  await prisma.user.create({
+    data: {
+      email: body.email,
+      role: body.role,
+      tenantId,
+    },
+  })
+  res.status(200).json({ message: 'OKkk' })
+})
+
 companiesRoute.post(`/api/tenants/subscription`, isAuthenticated, async (req, res) => {
   const { tenantId, userId } = getUser(req)
   const body = req.body as { subscription: 'FREE' | 'PREMIUM' }
