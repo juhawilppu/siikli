@@ -403,8 +403,6 @@ export default function LandingPage() {
                     t('landing.pricing.premium.feature2'),
                     t('landing.pricing.premium.feature3'),
                     t('landing.pricing.premium.feature4'),
-                    t('landing.pricing.premium.feature5'),
-                    t('landing.pricing.premium.feature6'),
                   ].map(feature => (
                     <li key={feature} className="flex items-center gap-2">
                       <Check className="h-4 w-4 text-primary" />

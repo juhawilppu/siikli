@@ -470,6 +470,24 @@ export default function CompanySettings() {
                             >
                             </path>
                           </svg>
+                          <span>Kaikki ominaisuudet</span>
+                        </li>
+                        <li className="flex items-start">
+                          <svg
+                            className="h-5 w-5 text-green-500 mr-2 mt-0.5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M5 13l4 4L19 7"
+                            >
+                            </path>
+                          </svg>
                           <span>Rajoitettu määrä käyttäjiä (1)</span>
                         </li>
                         <li className="flex items-start">
@@ -488,43 +506,7 @@ export default function CompanySettings() {
                             >
                             </path>
                           </svg>
-                          <span>Perusominaisuudet</span>
-                        </li>
-                        <li className="flex items-start">
-                          <svg
-                            className="h-5 w-5 text-green-500 mr-2 mt-0.5"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth="2"
-                              d="M5 13l4 4L19 7"
-                            >
-                            </path>
-                          </svg>
                           <span>Rajoitettu määrä tilauksia (20/kk)</span>
-                        </li>
-                        <li className="flex items-start">
-                          <svg
-                            className="h-5 w-5 text-red-500 mr-2 mt-0.5"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth="2"
-                              d="M6 18L18 6M6 6l12 12"
-                            >
-                            </path>
-                          </svg>
-                          <span className="text-gray-500">Ei edistyneitä raportteja</span>
                         </li>
                       </ul>
                       <Button onClick={() => askSwitchSubscription('FREE')} variant="outline" className="w-full" disabled={companyData.subscriptionType === 'FREE'}>
@@ -559,24 +541,6 @@ export default function CompanySettings() {
                             >
                             </path>
                           </svg>
-                          <span>Rajoittamaton määrä käyttäjiä</span>
-                        </li>
-                        <li className="flex items-start">
-                          <svg
-                            className="h-5 w-5 text-green-500 mr-2 mt-0.5"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth="2"
-                              d="M5 13l4 4L19 7"
-                            >
-                            </path>
-                          </svg>
                           <span>Kaikki ominaisuudet</span>
                         </li>
                         <li className="flex items-start">
@@ -595,7 +559,7 @@ export default function CompanySettings() {
                             >
                             </path>
                           </svg>
-                          <span>Rajoittamaton määrä tilauksia</span>
+                          <span>Rajoittamaton määrä käyttäjiä</span>
                         </li>
                         <li className="flex items-start">
                           <svg
@@ -613,7 +577,7 @@ export default function CompanySettings() {
                             >
                             </path>
                           </svg>
-                          <span>Edistyneet raportit</span>
+                          <span>Rajoittamaton määrä tilauksia</span>
                         </li>
                       </ul>
                       <Button onClick={() => askSwitchSubscription('PREMIUM')} className="w-full bg-blue-600 hover:bg-blue-700" disabled={companyData.subscriptionType === 'PREMIUM'}>
