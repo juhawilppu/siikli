@@ -15,12 +15,14 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { useApp } from '@/context/AppContext'
 import { useToast } from '@/hooks/use-toast'
 import SiikliPage from '@/SiikliPage'
 import { formatDate } from '@/utils/date'
 import ConfirmDialog from './ConfirmDialog'
 
 export default function CompanySettings() {
+  const { user } = useApp()
   const [companyData, setCompanyData] = useState<GetCompanySettings>()
   const [users, setUsers] = useState<GetUsersResponseDto[]>()
   const [showDeleteCompanyModal, setShowDeleteCompanyModal] = useState(false)
@@ -160,7 +162,7 @@ export default function CompanySettings() {
     fetchData()
   }, [])
 
-  if (!companyData || !users)
+  if (!companyData || !users || !user)
     return <SiikliPage title="Oma yritys" description="Voit hallinnoida yrityksesi asetuksia täällä" />
 
   return (
@@ -321,7 +323,9 @@ export default function CompanySettings() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <Button onClick={() => setShowAddUserModal(true)}>Lisää käyttäjä</Button>
+                  {user.authenticated && user.role === 'OWNER' && (
+                    <Button onClick={() => setShowAddUserModal(true)}>Lisää käyttäjä</Button>
+                  )}
                   <div className="rounded-md border">
                     <table className="min-w-full divide-y divide-gray-200">
                       <thead className="bg-gray-50">
@@ -335,50 +339,52 @@ export default function CompanySettings() {
                           <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500">
                             Viimeisin kirjautuminen
                           </th>
-                          <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500">
-                            Toiminnot
-                          </th>
+                          {user.authenticated && user.role === 'OWNER' && (
+                            <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500">
+                              Toiminnot
+                            </th>
+                          )}
                         </tr>
                       </thead>
                       <tbody className="bg-white divide-y divide-gray-200">
-                        {users.map(user => (
-                          <tr key={user.id}>
+                        {users.map(u => (
+                          <tr key={u.id}>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm font-medium text-gray-900">{user.email}</div>
+                              <div className="text-sm font-medium text-gray-900">{u.email}</div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                user.role === 'OWNER' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'
+                                u.role === 'OWNER' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'
                               }`}
                               >
-                                {user.role === 'OWNER' ? 'Omistaja' : 'Käyttäjä'}
+                                {u.role === 'OWNER' ? 'Omistaja' : 'Käyttäjä'}
                               </span>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                              {user.lastLoginAt ? formatDate(new Date(user.lastLoginAt)) : 'Ei ole kirjautunut sisään'}
+                              {u.lastLoginAt ? formatDate(new Date(u.lastLoginAt)) : 'Ei ole kirjautunut sisään'}
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => {
-                                  setShowEditUserModal(user)
-                                }}
-                              >
-                                <Pencil className="h-4 w-4" />
-                              </Button>
-                              {user.role !== 'OWNER' && (
+                            {user.authenticated && user.role === 'OWNER' && (
+                              <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => {
+                                    setShowEditUserModal(u)
+                                  }}
+                                >
+                                  <Pencil className="h-4 w-4" />
+                                </Button>
                                 <Button
                                   variant="destructive"
                                   size="sm"
                                   onClick={() => {
-                                    setShowDeleteUserModal(user.id)
+                                    setShowDeleteUserModal(u.id)
                                   }}
                                 >
                                   <Trash2 className="h-4 w-4" />
                                 </Button>
-                              )}
-                            </td>
+                              </td>
+                            )}
                           </tr>
                         ))}
                       </tbody>

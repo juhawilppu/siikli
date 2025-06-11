@@ -1,5 +1,4 @@
 import type { GetCurrentUserDto } from './types/types'
-import * as Sentry from '@sentry/react'
 import axios from 'axios'
 import { Building2, ClipboardList, FileText, HelpCircle, LineChart, PlusCircle, Receipt, Search, ShoppingBasket, Users } from 'lucide-react'
 import { useEffect, useState } from 'react'
@@ -53,17 +52,11 @@ const navItems = [
 
 function App() {
   const navigate = useNavigate()
-  const [user, setUser] = useState<GetCurrentUserDto>()
-  const [loading, setLoading] = useState(true)
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false)
 
   const location = useLocation()
 
-  const logout = async () => {
-    await axios.post('/auth/logout')
-    setUser({ authenticated: false })
-    Sentry.setUser(null)
-  }
+  const { user, logout } = useApp()
 
   const handleCookieConsentAccept = () => {
     initPosthog()
@@ -82,28 +75,7 @@ function App() {
     }
   }, [])
 
-  useEffect(() => {
-    axios
-      .get<GetCurrentUserDto>('/auth/current-user')
-      .then((response) => {
-        const userData = response.data
-        if (userData.authenticated) {
-          setUser(userData)
-          // Update Sentry user context
-          Sentry.setUser({
-            id: userData.userId,
-            initials: userData.initials,
-            tenantId: userData.tenantId,
-          })
-        }
-        else {
-          setUser({ authenticated: false })
-        }
-      })
-      .finally(() => setLoading(false))
-  }, [])
-
-  if (loading || user === undefined) {
+  if (user === undefined) {
     return (
       <div style={{ marginTop: '100px' }}>
         <div></div>
