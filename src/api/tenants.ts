@@ -154,6 +154,16 @@ companiesRoute.post(`/api/tenants/users`, isAuthenticated, isOwner, async (req, 
   res.status(200).json({ message: 'OKkk' })
 })
 
+companiesRoute.put(`/api/tenants/users/:userId`, isAuthenticated, isOwner, async (req, res) => {
+  const { tenantId } = getUser(req)
+  const body = req.body as { role: 'USER' | 'OWNER' }
+  await prisma.user.update({
+    data: { role: body.role },
+    where: { id: req.params.userId, tenantId },
+  })
+  res.status(200).json({ message: 'OK' })
+})
+
 companiesRoute.post(`/api/tenants/subscription`, isAuthenticated, async (req, res) => {
   const { tenantId, userId } = getUser(req)
   const body = req.body as { subscription: 'FREE' | 'PREMIUM' }

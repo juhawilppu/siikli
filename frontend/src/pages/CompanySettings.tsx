@@ -5,7 +5,7 @@ import type React from 'react'
 import type { GetCompanySettings, GetUsersResponseDto, PostCompanySettings, PostSubscriptionChangeRequest } from '@/types/types'
 import axios from 'axios'
 
-import { Save, Trash2 } from 'lucide-react'
+import { Pencil, Save, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
@@ -27,6 +27,7 @@ export default function CompanySettings() {
   const [showSwitchSubscriptionModal, setShowSwitchSubscriptionModal] = useState<null | 'FREE' | 'PREMIUM'>(null)
   const [showDeleteUserModal, setShowDeleteUserModal] = useState<null | string>(null)
   const [showAddUserModal, setShowAddUserModal] = useState(false)
+  const [showEditUserModal, setShowEditUserModal] = useState<GetUsersResponseDto | null>(null)
   const [email, setEmail] = useState('')
   const [role, setRole] = useState('USER')
   const { toast } = useToast()
@@ -132,6 +133,19 @@ export default function CompanySettings() {
       title: 'Käyttäjä lisätty',
       description: 'Käyttäjä on lisätty onnistuneesti.',
     })
+  }
+
+  const editUser = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    if (!showEditUserModal)
+      return
+    await axios.put(`/tenants/users/${showEditUserModal.id}`, { role: showEditUserModal.role })
+    toast({
+      title: 'Käyttäjän rooli muutettu',
+      description: 'Käyttäjän rooli muutettu onnistuneesti.',
+    })
+    setUsers(prev => prev?.map(user => user.id === showEditUserModal.id ? { ...user, role: showEditUserModal.role } : user))
+    setShowEditUserModal(null)
   }
 
   useEffect(() => {
@@ -344,6 +358,15 @@ export default function CompanySettings() {
                               {user.lastLoginAt ? formatDate(new Date(user.lastLoginAt)) : 'Ei ole kirjautunut sisään'}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                  setShowEditUserModal(user)
+                                }}
+                              >
+                                <Pencil className="h-4 w-4" />
+                              </Button>
                               {user.role !== 'OWNER' && (
                                 <Button
                                   variant="destructive"
@@ -712,6 +735,51 @@ export default function CompanySettings() {
                   <DialogFooter>
                     <Button variant="outline" onClick={() => setShowAddUserModal(false)}>Peruuta</Button>
                     <Button type="submit">Lisää käyttäjä</Button>
+                  </DialogFooter>
+                </form>
+              </DialogDescription>
+            </DialogHeader>
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {showEditUserModal && (
+        <Dialog open={!!showEditUserModal} onOpenChange={() => setShowEditUserModal(null)}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Muuta käyttäjän roolia</DialogTitle>
+              <DialogDescription>
+                <form onSubmit={editUser}>
+
+                  <div className="space-y-4 mt-4 mb-4">
+                    <div>
+                      <Label htmlFor="name">Sähköposti</Label>
+                      <Input
+                        name="name"
+                        readOnly
+                        value={showEditUserModal.email}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="role">Rooli</Label>
+                      <Select
+                        name="role"
+                        value={showEditUserModal.role}
+                        onValueChange={value => setShowEditUserModal({ ...showEditUserModal, role: value as 'USER' | 'OWNER' })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Valitse rooli" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="USER">Käyttäjä</SelectItem>
+                          <SelectItem value="OWNER">Omistaja</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <DialogFooter>
+                    <Button variant="outline" onClick={() => setShowEditUserModal(null)}>Peruuta</Button>
+                    <Button type="submit">Tallenna</Button>
                   </DialogFooter>
                 </form>
               </DialogDescription>
