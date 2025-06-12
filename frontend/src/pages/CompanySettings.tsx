@@ -674,7 +674,7 @@ export default function CompanySettings() {
               <DialogTitle>Lisää käyttäjä</DialogTitle>
               <DialogDescription>
                 <form onSubmit={addUser}>
-                  <div className="space-y-4">
+                  <div className="space-y-4 mt-4 mb-4">
                     <div className="space-y-2">
                       <Label htmlFor="email">Sähköposti</Label>
                       <Input
@@ -722,7 +722,7 @@ export default function CompanySettings() {
                 <form onSubmit={editUser}>
 
                   <div className="space-y-4 mt-4 mb-4">
-                    <div>
+                    <div className="space-y-2">
                       <Label htmlFor="name">Sähköposti</Label>
                       <Input
                         name="name"
@@ -730,7 +730,7 @@ export default function CompanySettings() {
                         value={showEditUserModal.email}
                       />
                     </div>
-                    <div>
+                    <div className="my-4">
                       <Label htmlFor="role">Rooli</Label>
                       <Select
                         name="role"
