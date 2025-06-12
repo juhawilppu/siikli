@@ -142,7 +142,7 @@ companiesRoute.delete(`/api/tenants/users/:userId`, isAuthenticated, isOwner, as
 })
 
 companiesRoute.post(`/api/tenants/users`, isAuthenticated, isOwner, async (req, res) => {
-  const { tenantId } = getUser(req)
+  const { userId, tenantId } = getUser(req)
   const body = req.body as { email: string, role: 'USER' | 'OWNER' }
   await prisma.user.create({
     data: {
@@ -151,7 +151,19 @@ companiesRoute.post(`/api/tenants/users`, isAuthenticated, isOwner, async (req, 
       tenantId,
     },
   })
-  res.status(200).json({ message: 'OKkk' })
+  await sendEventEmail('User invited', `Tenant: ${tenantId}\nUser: ${body.email}\nRole: ${body.role}`)
+  await prisma.log.create({
+    data: {
+      userId,
+      tenantId,
+      data: {
+        email: body.email,
+        role: body.role,
+      },
+      event: 'create_user',
+    },
+  })
+  res.status(200).json({ message: 'OK' })
 })
 
 companiesRoute.put(`/api/tenants/users/:userId`, isAuthenticated, isOwner, async (req, res) => {

@@ -129,12 +129,23 @@ export default function CompanySettings() {
 
   const addUser = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    await axios.post('/tenants/users', { email, role })
-    setShowAddUserModal(false)
-    toast({
-      title: 'Käyttäjä lisätty',
-      description: 'Käyttäjä on lisätty onnistuneesti.',
-    })
+    try {
+      await axios.post('/tenants/users', { email, role })
+      setShowAddUserModal(false)
+      toast({
+        title: 'Käyttäjä lisätty',
+        description: 'Käyttäjä on lisätty onnistuneesti.',
+      })
+    }
+
+    catch (error) {
+      console.error(error)
+      toast({
+        title: 'Käyttäjän lisääminen epäonnistui',
+        description: 'Käyttäjän lisääminen epäonnistui. Tarkista sähköposti ja rooli.',
+        variant: 'destructive',
+      })
+    }
   }
 
   const editUser = async (e: React.FormEvent<HTMLFormElement>) => {
