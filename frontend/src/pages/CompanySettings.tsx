@@ -364,7 +364,7 @@ export default function CompanySettings() {
                               {u.lastLoginAt ? formatDate(new Date(u.lastLoginAt)) : 'Ei ole kirjautunut sisään'}
                             </td>
                             {user.authenticated && user.role === 'OWNER' && (
-                              <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                              <td className="px-6 space-x-2 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 <Button
                                   variant="outline"
                                   size="sm"
@@ -675,7 +675,7 @@ export default function CompanySettings() {
               <DialogDescription>
                 <form onSubmit={addUser}>
                   <div className="space-y-4 mt-4 mb-4">
-                    <div className="space-y-2">
+                    <div>
                       <Label htmlFor="email">Sähköposti</Label>
                       <Input
                         type="email"
@@ -685,7 +685,7 @@ export default function CompanySettings() {
                         onChange={e => setEmail(e.target.value)}
                       />
                     </div>
-                    <div className="my-4">
+                    <div>
                       <Label htmlFor="role">Rooli</Label>
                       <Select
                         name="role"
@@ -722,7 +722,7 @@ export default function CompanySettings() {
                 <form onSubmit={editUser}>
 
                   <div className="space-y-4 mt-4 mb-4">
-                    <div className="space-y-2">
+                    <div>
                       <Label htmlFor="name">Sähköposti</Label>
                       <Input
                         name="name"
@@ -730,7 +730,7 @@ export default function CompanySettings() {
                         value={showEditUserModal.email}
                       />
                     </div>
-                    <div className="my-4">
+                    <div>
                       <Label htmlFor="role">Rooli</Label>
                       <Select
                         name="role"
