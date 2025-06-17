@@ -335,7 +335,10 @@ export default function CompanySettings() {
               <CardContent>
                 <div className="space-y-4">
                   {user.authenticated && user.role === 'OWNER' && (
-                    <Button onClick={() => setShowAddUserModal(true)}>Lisää käyttäjä</Button>
+                    <Button disabled={companyData.subscriptionType === 'FREE'} onClick={() => setShowAddUserModal(true)}>
+                      Lisää käyttäjä
+                      {companyData.subscriptionType === 'FREE' ? ' (Premium-ominaisuus)' : ''}
+                    </Button>
                   )}
                   <div className="rounded-md border">
                     <table className="min-w-full divide-y divide-gray-200">
@@ -350,7 +353,7 @@ export default function CompanySettings() {
                           <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500">
                             Viimeisin kirjautuminen
                           </th>
-                          {user.authenticated && user.role === 'OWNER' && (
+                          {user.authenticated && user.role === 'OWNER' && companyData.subscriptionType === 'PREMIUM' && (
                             <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500">
                               Toiminnot
                             </th>
@@ -374,7 +377,7 @@ export default function CompanySettings() {
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                               {u.lastLoginAt ? formatDate(new Date(u.lastLoginAt)) : 'Ei ole kirjautunut sisään'}
                             </td>
-                            {user.authenticated && user.role === 'OWNER' && (
+                            {user.authenticated && user.role === 'OWNER' && companyData.subscriptionType === 'PREMIUM' && (
                               <td className="px-6 space-x-2 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 <Button
                                   variant="outline"

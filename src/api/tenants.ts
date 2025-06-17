@@ -125,6 +125,16 @@ companiesRoute.delete(`/api/tenants`, isAuthenticated, isOwner, async (req, res)
 
 companiesRoute.delete(`/api/tenants/users/:userId`, isAuthenticated, isOwner, async (req, res) => {
   const { userId, tenantId } = getUser(req)
+
+  const tenant = await prisma.tenant.findFirstOrThrow({
+    where: {
+      id: tenantId,
+    },
+  })
+  if (tenant.subscriptionType === 'FREE') {
+    return res.status(403).json({ error: 'Free tenants cannot delete users' })
+  }
+
   await prisma.user.delete({
     where: {
       id: userId,
@@ -143,6 +153,16 @@ companiesRoute.delete(`/api/tenants/users/:userId`, isAuthenticated, isOwner, as
 
 companiesRoute.post(`/api/tenants/users`, isAuthenticated, isOwner, async (req, res) => {
   const { userId, tenantId } = getUser(req)
+
+  const tenant = await prisma.tenant.findFirstOrThrow({
+    where: {
+      id: tenantId,
+    },
+  })
+  if (tenant.subscriptionType === 'FREE') {
+    return res.status(403).json({ error: 'Free tenants cannot delete users' })
+  }
+
   const body = req.body as { email: string, role: 'USER' | 'OWNER' }
   await prisma.user.create({
     data: {
@@ -168,6 +188,16 @@ companiesRoute.post(`/api/tenants/users`, isAuthenticated, isOwner, async (req, 
 
 companiesRoute.put(`/api/tenants/users/:userId`, isAuthenticated, isOwner, async (req, res) => {
   const { tenantId } = getUser(req)
+
+  const tenant = await prisma.tenant.findFirstOrThrow({
+    where: {
+      id: tenantId,
+    },
+  })
+  if (tenant.subscriptionType === 'FREE') {
+    return res.status(403).json({ error: 'Free tenants cannot delete users' })
+  }
+
   const body = req.body as { role: 'USER' | 'OWNER' }
   await prisma.user.update({
     data: { role: body.role },
