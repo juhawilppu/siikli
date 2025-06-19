@@ -4,10 +4,10 @@ import { useEffect, useRef } from 'react'
 import { NavLink } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { useApp } from './context/AppContext'
+import { useApp } from '../context/AppContext'
+import { useTranslation } from '../translations'
 import Footer from './Footer'
 import TopBar from './TopBar'
-import { useTranslation } from './translations'
 import UiCarousel from './UiCarousel'
 
 export default function LandingPage() {

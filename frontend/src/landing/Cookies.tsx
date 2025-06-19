@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
-import { Button } from './components/ui/button'
-import { Separator } from './components/ui/separator'
+import { Button } from '../components/ui/button'
+import { Separator } from '../components/ui/separator'
 import Footer from './Footer'
 import TopBar from './TopBar'
 

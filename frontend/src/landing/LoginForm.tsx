@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useToast } from '@/hooks/use-toast'
-import { useTranslation } from './translations'
+import { useTranslation } from '../translations'
 
 export default function LoginForm() {
   const t = useTranslation()
