@@ -106,3 +106,11 @@ Note: High availability is not currently enabled to reduce cost — the app runs
 - No unnecessary abstractions
 - Readable code favored over clever tricks
 - Prefer boring technology that works
+
+## 📄 License
+
+This is a private project.
+
+All rights reserved.
+
+Do not distribute, copy, or reuse any part of the code or design without explicit permission.
