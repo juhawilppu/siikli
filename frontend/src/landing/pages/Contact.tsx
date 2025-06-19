@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
-import { useTranslation } from '../translations'
-import Footer from './Footer'
-import TopBar from './TopBar'
+import { useTranslation } from '../../translations'
+import Footer from '../components/Footer'
+import TopBar from '../components/TopBar'
 
 export default function ContactPage() {
   const t = useTranslation()

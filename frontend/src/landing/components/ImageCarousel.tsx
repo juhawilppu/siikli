@@ -19,7 +19,7 @@ const images = [
   },
 ]
 
-export default function UiCarousel() {
+export default function ImageCarousel() {
   const [index, setIndex] = useState(0)
 
   useEffect(() => {

@@ -4,11 +4,11 @@ import { useEffect, useRef } from 'react'
 import { NavLink } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { useApp } from '../context/AppContext'
-import { useTranslation } from '../translations'
-import Footer from './Footer'
-import TopBar from './TopBar'
-import UiCarousel from './UiCarousel'
+import { useApp } from '../../context/AppContext'
+import { useTranslation } from '../../translations'
+import Footer from '../components/Footer'
+import ImageCarousel from '../components/ImageCarousel'
+import TopBar from '../components/TopBar'
 
 export default function LandingPage() {
   const t = useTranslation()
@@ -134,7 +134,7 @@ export default function LandingPage() {
             )}
           </div>
           <div className="w-full md:w-1/2">
-            <UiCarousel />
+            <ImageCarousel />
           </div>
 
         </div>

@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
-import Footer from './Footer'
-import TopBar from './TopBar'
+import Footer from '../components/Footer'
+import TopBar from '../components/TopBar'
 
 export default function TermsOfService() {
   const scrollToTop = () => {

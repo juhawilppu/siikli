@@ -3,9 +3,9 @@ import { MapPin } from 'lucide-react'
 import { useEffect } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
-import { useTranslation } from '../translations'
-import Footer from './Footer'
-import TopBar from './TopBar'
+import { useTranslation } from '../../translations'
+import Footer from '../components/Footer'
+import TopBar from '../components/TopBar'
 
 export default function AboutUsPage() {
   const t = useTranslation()

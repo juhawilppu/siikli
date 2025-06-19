@@ -1,12 +1,12 @@
 import { HelpCircle } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../components/ui/accordion'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../components/ui/card'
-import { useTranslation } from '../translations'
-import Footer from './Footer'
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../../components/ui/accordion'
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../../components/ui/card'
+import { useTranslation } from '../../translations'
+import Footer from '../components/Footer'
+import TopBar from '../components/TopBar'
 import LoginForm from './LoginForm'
-import TopBar from './TopBar'
 
 export default function LoginPage2() {
   const t = useTranslation()

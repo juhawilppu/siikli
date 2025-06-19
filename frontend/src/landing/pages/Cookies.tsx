@@ -1,8 +1,8 @@
 import { useEffect } from 'react'
-import { Button } from '../components/ui/button'
-import { Separator } from '../components/ui/separator'
-import Footer from './Footer'
-import TopBar from './TopBar'
+import { Button } from '../../components/ui/button'
+import { Separator } from '../../components/ui/separator'
+import Footer from '../components/Footer'
+import TopBar from '../components/TopBar'
 
 export default function Cookies() {
   const scrollToTop = () => {

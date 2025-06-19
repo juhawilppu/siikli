@@ -1,8 +1,8 @@
 import { ArrowLeft } from 'lucide-react'
 import { NavLink } from 'react-router-dom'
-import LanguageSwitcher from '../components/LanguageSwitcher'
-import { Button } from '../components/ui/button'
-import { useTranslation } from '../translations'
+import LanguageSwitcher from '../../components/LanguageSwitcher'
+import { Button } from '../../components/ui/button'
+import { useTranslation } from '../../translations'
 
 export default function TopBar({ showBackButton, hideLoginButton }: { showBackButton?: boolean, hideLoginButton?: boolean }) {
   const t = useTranslation()
