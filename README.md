@@ -47,6 +47,7 @@ siikli/
 ├── frontend/      # React frontend
 ├── src/           # Backend source code
 ├── prisma/        # Prisma schema and migrations
+├── terraform/     # Terraform files for AWS infra and deployment
 ├── .env           # Environment variables
 └── ...
 ```
