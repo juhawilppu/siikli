@@ -54,20 +54,32 @@ siikli/
 
 ## 🧱 Core architectural decisions
 
-### Modular monolith
+### Pragmatic monolith
 
-Siikli uses a modular monolith structure. It's organized by feature-based folders with domain-driven boundaries, allowing future extraction to microservices if needed.
+Siikli uses a pragmatic monolith architecture. The codebase is organized by features, with shared libraries extracted only when they offer meaningful reuse or clarity.
+
+Most logic lives directly inside route handlers to maximize simplicity and development speed. There’s no service or repository abstraction unless it provides real value.
+
+Modules can import from each other freely — strict domain boundaries are intentionally avoided to reduce friction and keep iteration fast.
 
 ```
-src/
-  modules/
-    invoices/
-    users/
-    auth/
-  libs/
-    db/
-    logger/
-    config/
+siikli/
+└── src/
+    ├── api/
+    │   ├── auth.ts
+    │   ├── customers.ts
+    │   ├── invoices.ts
+    │   └── ...
+    ├── middlewares/
+    │   ├── permissions.ts
+    │   ├── rate-limit.ts
+    │   └── ...
+    └── services/
+        ├── email-service.ts
+        ├── invoice-service.ts
+        ├── waybill-service.ts
+        └── ...
+
 ```
 
 ### Prefer ORM
