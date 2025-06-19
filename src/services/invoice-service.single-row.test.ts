@@ -1,7 +1,7 @@
+import type { InvoiceItemDto } from './invoice-service'
+import { Decimal } from '@prisma/client/runtime/library'
 import { describe, expect, it } from 'vitest'
 import { calculateTotals } from './invoice-service'
-import { InvoiceItemDto } from './invoice-service'
-import { Decimal } from '@prisma/client/runtime/library'
 
 describe('calculateTotals', () => {
   const sampleItems: InvoiceItemDto[] = [

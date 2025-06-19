@@ -1,5 +1,8 @@
 set -e
 
+npm run lint
+npm run format
+
 cd frontend
 npm run build
 cp not_ready.html ./dist/index.html
