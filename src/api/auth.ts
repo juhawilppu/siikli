@@ -5,7 +5,7 @@ import nodeCrypto from 'node:crypto'
 import { SendEmailCommand, SESClient } from '@aws-sdk/client-ses'
 import express from 'express'
 import passport from 'passport'
-import { rateLimit } from '../../middlewares/rateLimit'
+import { rateLimit } from '../middlewares/rate-limit'
 import prisma from '../prisma'
 
 export const authRoute = express.Router()

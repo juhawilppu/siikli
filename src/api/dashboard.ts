@@ -2,7 +2,7 @@ import type { DashboardDataDto } from '../../frontend/src/types/types'
 import { addDays, endOfDay, startOfDay, startOfYear } from 'date-fns'
 import express from 'express'
 import { getUser, isAuthenticated } from '../middlewares/permissions'
-import { setSentryUser } from '../middlewares/sentryUser'
+import { setSentryUser } from '../middlewares/sentry-user'
 import prisma from '../prisma'
 
 export const dashboardRoute = express.Router()

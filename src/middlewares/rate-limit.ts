@@ -1,5 +1,5 @@
 import type { NextFunction, Request, Response } from 'express'
-import prisma from '../src/prisma'
+import prisma from '../prisma'
 
 /***
  * Rate-limiting middleware based on client IP address. Rate-limiting is done per endpoint (method, url).
