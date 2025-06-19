@@ -61,13 +61,13 @@ async function startServer() {
     process.exit(1)
   })
 
-  process.on('unhandledRejection', (reason, promise) => {
+  process.on('unhandledRejection', (reason, _promise) => {
     console.error('Unhandled Rejection:', reason)
     Sentry.captureException(reason)
     process.exit(1)
   })
 
-  app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+  app.use((err: Error, req: Request, res: Response, _next: NextFunction) => {
     console.error('General error handler caught:', {
       message: err.message,
       name: err.name,
@@ -150,13 +150,13 @@ async function startServer() {
   })
 
   // custom 404
-  app.use((req, res, next) => {
+  app.use((req, res, _next) => {
     res.status(404).send(`Sorry can't find that!`)
   })
 
   // Error handlers must be after all routes
   app.use(authErrorHandler) // Auth errors first
-  app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+  app.use((err: Error, req: Request, res: Response, _next: NextFunction) => {
     console.error('General error handler caught:', {
       message: err.message,
       name: err.name,
