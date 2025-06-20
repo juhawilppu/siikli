@@ -102,6 +102,10 @@ This provides:
 - ✅ Emergency restore without full DB rollback
 - ✅ Continuous change history alongside regular backups
 
+> This design is based on experience — I once lost two weeks of customer data.
+> Since then, I've been almost paranoid in building systems that can recover from human mistakes, not just hardware failures.
+> Credit goes to Xuan, my former boss and current friend, who introduced me to this history table pattern in 2015 — I'm still using it.
+
 To ensure schema consistency, run:
 
 ```bash
