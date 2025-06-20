@@ -114,6 +114,24 @@ npx tsx ./src/dev/verify-history-tables.ts
 
 This script checks that all history tables exist, verifies column types, and prints the expected trigger definition if changes are needed.
 
+### Handling numbers
+
+Siikli handles monetary values with strict precision — floats are not used anywhere in the stack.
+
+- 💾 Database: Values are stored using `@db.Decimal(10, 2)` for exact precision
+- 🔄 API: REST requests and responses use strings with international format, e.g. `"10.00"`
+- 🧑‍💻 UI (input): Users can enter loosely formatted strings like `"10"`, `"10,0"`, `"10.0"` etc.
+  - On blur, values are formatted to `"10,00"` using Finnish-style decimals
+- ➕ Calculations: All math uses `decimal.js` for safety and accuracy
+
+Additionally, since customers can negotiate prices with or without VAT, the system stores both:
+- `price` (including 14 % VAT)
+- `price0` (without VAT)
+
+Note: due to rounding differences, `price / 1.14` is not guaranteed to exactly match `price0`.
+
+> This approach avoids rounding bugs, preserves financial accuracy, and matches how real users think about money.
+
 ### Deployment: ECS + Fargate
 
 Siikli runs in containers using Amazon ECS and Fargate, with RDS as the database layer. Infrastructure is provisioned with Terraform. Currently all resources run in eu-north-1 (Sweden).
