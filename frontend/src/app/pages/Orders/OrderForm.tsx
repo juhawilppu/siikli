@@ -17,6 +17,7 @@ import {
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { NavLink, useNavigate, useParams } from 'react-router-dom'
+import SiikliPage from '@/app/components/SiikliPage'
 import { Button } from '@/components/ui/button'
 import { Calendar as CalendarComponent } from '@/components/ui/calendar'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
@@ -32,10 +33,9 @@ import { Textarea } from '@/components/ui/textarea'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { useToast } from '@/hooks/use-toast'
 import { cn } from '@/lib/utils'
-import SiikliPage from '@/app/components/SiikliPage'
 import { dateToString } from '@/utils/date'
 import { formatNumber, parseDecimal, serializeNumber } from '@/utils/money'
-import ConfirmDialog from '../ConfirmDialog'
+import ConfirmDialog from '../../components/ConfirmDialog'
 
 export default function CreateOrder() {
   const [customers, setCustomers] = useState<GetCustomerRequestDto[]>()

@@ -34,7 +34,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { useToast } from '@/hooks/use-toast'
 import { formatNumber } from '@/utils/money'
-import NewProduct from './NewProduct'
+import NewProduct from './ProductForm'
 
 export default function Products() {
   const [searchQuery, setSearchQuery] = useState('')

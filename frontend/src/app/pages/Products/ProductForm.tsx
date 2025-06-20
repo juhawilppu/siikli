@@ -27,8 +27,8 @@ import { PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Separator } from '@/components/ui/separator'
 import { toast } from '@/hooks/use-toast'
 import { cn } from '@/lib/utils'
-import { formatNumber } from '@/utils/money'
-import { calculatePricesFromVat0, calculatePricesFromVat14 } from '../lib/price-utils'
+import { formatNumber } from '@/utils/money.js'
+import { calculatePricesFromVat0, calculatePricesFromVat14 } from '../../lib/price-utils.js'
 
 export default function NewProduct({ productToEdit, hide, onSave, productTypes, refPackageTypes, refPackageSizes }: { productToEdit?: GetProductResponseDto, hide: () => void, onSave: (product: GetProductResponseDto) => void, productTypes: ProductTypeResponse[], refPackageTypes: string[], refPackageSizes: number[] }) {
   const mode = productToEdit ? 'edit' : 'create'

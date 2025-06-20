@@ -30,7 +30,7 @@ import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { useToast } from '@/hooks/use-toast'
-import { NewCustomer } from './NewCustomer'
+import { NewCustomer } from './CustomerForm'
 
 function SortableTableRow({ customer, onEdit, onDelete }: {
   customer: GetCustomerRequestDto

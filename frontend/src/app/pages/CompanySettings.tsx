@@ -19,7 +19,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useApp } from '@/context/AppContext'
 import { useToast } from '@/hooks/use-toast'
 import { formatDate } from '@/utils/date'
-import ConfirmDialog from './ConfirmDialog'
+import ConfirmDialog from '../components/ConfirmDialog'
 
 export default function CompanySettings() {
   const { user } = useApp()

@@ -11,8 +11,8 @@ import { Label } from '@/components/ui/label'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { dateToString, formatDate } from '@/utils/date'
-import PackagingListByCustomer from './PackagingListByCustomer'
-import PackagingListByProduct from './PackagingListByProduct'
+import PackagingListByCustomer from './PackagingListByCustomer.js'
+import PackagingListByProduct from './PackagingListByProduct.js'
 
 export function PackagingList() {
   const [deliveryDate, setDeliveryDate] = useState<Date | undefined>(new Date())
