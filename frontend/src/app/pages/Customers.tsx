@@ -6,6 +6,7 @@ import {
   Trash2,
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import SiikliPage from '@/app/components/SiikliPage'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -29,7 +30,6 @@ import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { useToast } from '@/hooks/use-toast'
-import SiikliPage from '@/SiikliPage'
 import { NewCustomer } from './NewCustomer'
 
 function SortableTableRow({ customer, onEdit, onDelete }: {

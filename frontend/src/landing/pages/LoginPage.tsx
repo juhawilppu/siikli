@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../../components/ui/accordion'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../../components/ui/card'
-import { useTranslation } from '../../translations'
+import { useTranslation } from '../../lib/translations'
 import Footer from '../components/Footer'
 import TopBar from '../components/TopBar'
 import LoginForm from './LoginForm'

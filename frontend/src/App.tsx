@@ -3,13 +3,24 @@ import { Building2, ClipboardList, FileText, HelpCircle, LineChart, PlusCircle, 
 import { useEffect, useState } from 'react'
 import { Navigate, NavLink, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
+import CompanySettings from './app/pages/CompanySettings.js'
+import { Customers } from './app/pages/Customers.js'
+import { Invoices } from './app/pages/Invoices.js'
+import Order from './app/pages/Order/Order.js'
+import Orders from './app/pages/Orders.js'
+import { PackagingList } from './app/pages/PackagingList.js'
+import Products from './app/pages/Products.js'
+import TuoteryhmatJarjestely from './app/pages/ProductTypeReorder.js'
+import { SalesReport } from './app/pages/SalesReport.js'
+import SelfSignup from './app/pages/SelfSignup.js'
 import LanguageSwitcher from './components/LanguageSwitcher'
 import { Button } from './components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from './components/ui/dropdown-menu'
 import { Input } from './components/ui/input'
 import { Toaster } from './components/ui/toaster'
 import { useApp } from './context/AppContext'
-import ErrorPage from './ErrorPage'
+import ErrorPage from './landing/components/ErrorPage.js'
+
 import SiikliCookieConsent from './landing/components/SiikliCookieConsent.js'
 import AboutUs from './landing/pages/AboutUs.js'
 import ContactPage from './landing/pages/Contact.js'
@@ -19,20 +30,7 @@ import LoginPage2 from './landing/pages/LoginPage.js'
 import PrivacyPolicy from './landing/pages/PrivacyPolicy.js'
 import Support from './landing/pages/Support.js'
 import TermsOfService from './landing/pages/TermsOfService.js'
-import CompanySettings from './pages/CompanySettings'
-import { CustomerPage } from './pages/CustomerPage'
-import { Customers } from './pages/Customers'
-
-import { Invoices } from './pages/Invoices'
-import Order from './pages/Order/Order'
-import Orders from './pages/Orders'
-import { PackageConfiguration } from './pages/PackageConfiguration'
-import { PackagingList } from './pages/PackagingList'
-import Products from './pages/Products'
-import TuoteryhmatJarjestely from './pages/ProductTypeReorder'
-import { SalesReport } from './pages/SalesReport'
-import SelfSignup from './pages/SelfSignup'
-import { initPosthog } from './posthog.js'
+import { initPosthog } from './lib/posthog.js'
 import './App.css'
 
 axios.defaults.baseURL = '/api'
@@ -207,15 +205,9 @@ function App() {
                 <Route path="/packaging-list" element={<PackagingList />} />
                 <Route path="/invoices" element={<Invoices />} />
                 <Route path="/customers" element={<Customers />} />
-                <Route path="/customers/:customerId" element={<CustomerPage />} />
-                <Route path="/customers/:customerId/:edit" element={<CustomerPage />} />
                 <Route path="/products" element={<Products />} />
                 <Route path="/products/reorder" element={<TuoteryhmatJarjestely />} />
                 <Route path="/support" element={<Support inApp />} />
-                <Route
-                  path="/package_configuration"
-                  element={<PackageConfiguration />}
-                />
                 <Route path="/own-company" element={<CompanySettings />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>

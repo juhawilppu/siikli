@@ -5,6 +5,7 @@ import { fi } from 'date-fns/locale'
 
 import { Calendar, RefreshCw } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import SiikliPage from '@/app/components/SiikliPage'
 import { Button } from '@/components/ui/button'
 import { Calendar as CalendarComponent } from '@/components/ui/calendar'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -12,7 +13,6 @@ import { Label } from '@/components/ui/label'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { toast } from '@/hooks/use-toast'
-import SiikliPage from '@/SiikliPage'
 import { formatDate } from '@/utils/date'
 
 export interface FlatOrderItem {

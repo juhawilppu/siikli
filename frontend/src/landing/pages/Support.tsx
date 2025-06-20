@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { useTranslation } from '../../translations'
+import { useTranslation } from '../../lib/translations'
 import Footer from '../components/Footer'
 import TopBar from '../components/TopBar'
 
