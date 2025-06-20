@@ -92,6 +92,24 @@ Naming convention:
 - Database: `snake_case`
 - TypeScript: `camelCase`
 
+### History tables
+
+Every database table (e.g. `order`, `customer`) has a corresponding `_history` table (e.g. `order_history`, `customer_history`). All `INSERT`, `UPDATE`, and `DELETE` operations are automatically mirrored via triggers.
+
+This provides:
+
+- ✅ Easy debugging and traceability
+- ✅ Emergency restore without full DB rollback
+- ✅ Continuous change history alongside regular backups
+
+To ensure schema consistency, run:
+
+```bash
+npx tsx ./src/dev/verify-history-tables.ts
+```
+
+This script checks that all history tables exist, verifies column types, and prints the expected trigger definition if changes are needed.
+
 ### Deployment: ECS + Fargate
 
 Siikli runs in containers using Amazon ECS and Fargate, with RDS as the database layer. Infrastructure is provisioned with Terraform. Currently all resources run in eu-north-1 (Sweden).
