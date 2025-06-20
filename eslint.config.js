@@ -5,5 +5,5 @@ export default antfu({
     'no-console': 'off',
     'node/prefer-global/process': 'off',
   },
-  ignores: ['frontend/src/components/ui/**'],
+  ignores: ['frontend/src/components/ui/**', 'prisma/migrations/migration_lock.toml'],
 })

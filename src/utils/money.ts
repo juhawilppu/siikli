@@ -2,7 +2,7 @@ import { Prisma } from '@prisma/client'
 import { Decimal } from '@prisma/client/runtime/library'
 import { parseDecimal } from '../../frontend/src/utils/money'
 
-export function formatNumber(amount?: Decimal) {
+export function formatNumber(amount?: Decimal | null) {
   if (!amount) {
     return ''
   }

@@ -271,12 +271,13 @@ export interface GetProductResponseDto {
   name: string
   info: string | null
   price?: string
-  price0?: number
+  price0?: string
   variety: string | null
   type: string | null
   subtype: string | null
   packageSize: number | null
   packageType: string | null
+  customerGroup: string | null
 }
 
 export interface PostProductCreateRequestDto {
@@ -287,6 +288,7 @@ export interface PostProductCreateRequestDto {
   subtype?: string
   packageSize?: number
   packageType?: string
+  customerGroup?: string
   variety: string
   info: string
 }

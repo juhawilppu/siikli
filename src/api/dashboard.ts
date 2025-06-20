@@ -1,4 +1,5 @@
 import type { DashboardDataDto } from '../../frontend/src/types/types'
+import { Decimal } from '@prisma/client/runtime/library'
 import { addDays, endOfDay, startOfDay, startOfYear } from 'date-fns'
 import express from 'express'
 import { getUser, isAuthenticated } from '../middlewares/permissions'
@@ -8,19 +9,11 @@ import prisma from '../prisma'
 export const dashboardRoute = express.Router()
 
 dashboardRoute.get(`/api/dashboard`, isAuthenticated, setSentryUser, async (req, res) => {
-  const { userId, tenantId } = getUser(req)
+  const { tenantId } = getUser(req)
 
   const now = new Date()
 
   console.log('getting dashboard data')
-  const result = await prisma.customer.findMany({
-    where: {
-      tenantId,
-    },
-    orderBy: {
-      name: 'asc',
-    },
-  })
 
   const salesThisYear = (await prisma.order.findMany({
     where: {
@@ -30,13 +23,18 @@ dashboardRoute.get(`/api/dashboard`, isAuthenticated, setSentryUser, async (req,
       tenantId,
     },
     include: {
-      products: true,
+      orderRows: {
+        include: {
+          product: true,
+        },
+      },
     },
-  })).map(o => o.products.map((p) => {
+  })).map(o => o.orderRows.map((p) => {
     return {
-      sum: p.amount * p.price,
+      sum: p.amount.mul(p.price),
     }
-  })).flat().reduce((a, b) => a + b.sum, 0)
+  }),
+  ).flat().reduce((a, b) => a.add(b.sum), new Decimal(0))
 
   const ordersYesterday = await prisma.order.count({
     where: {
@@ -64,7 +62,7 @@ dashboardRoute.get(`/api/dashboard`, isAuthenticated, setSentryUser, async (req,
   res.json({
     metrics: {
       salesThisYear: {
-        value: salesThisYear,
+        value: salesThisYear.toNumber(),
         change: null,
         unit: 'money',
       },
@@ -88,7 +86,7 @@ dashboardRoute.get(`/api/dashboard`, isAuthenticated, setSentryUser, async (req,
       return {
         orderId: o.id,
         deliveryDate: o.deliveryDate,
-        customerName: `${o.customer.chain} ${o.customer.name}`,
+        customerName: o.customer.name,
         amount: 1,
       }
     }),

@@ -1,7 +1,8 @@
-import type { GetProductResponseDto, PostProductCreateRequestDto, ProductTypeResponse, ReorderDto } from '../../frontend/src/types/types'
+import type { GetProductResponseDto, PostProductCreateRequestDto, ProductTypeResponse } from '../../frontend/src/types/types'
 import express from 'express'
 import { getUser, isAuthenticated } from '../middlewares/permissions'
 import prisma from '../prisma'
+import { formatNumber } from '../utils/money'
 
 const productsRoute = express.Router()
 
@@ -20,11 +21,11 @@ productsRoute.get(`/api/products`, isAuthenticated, async (req, res) => {
     return {
       id: p.id,
       name: p.name,
-      price: p.price,
-      price0: p.price0,
-      packageSize: p.packageSize ? Number.parseInt(p.packageSize) : null,
+      price: formatNumber(p.price),
+      price0: formatNumber(p.price0),
+      packageSize: p.packageSize ? p.packageSize : null,
       packageType: p.packageType,
-      chain: p.customerGroup,
+      customerGroup: p.customerGroup,
       variety: p.variety,
       type: p.type,
       subtype: p.subtype,
@@ -165,9 +166,9 @@ productsRoute.post(`/api/products`, isAuthenticated, async (req, res) => {
       price0: body.price0,
       price: body.price,
       subtype: body.subtype,
-      packageSize: body.packageSize?.toString(), // TODO change to number
+      packageSize: body.packageSize,
       packageType: body.packageType,
-      customerGroup: body.chain,
+      customerGroup: body.customerGroup,
       tenantId,
     },
   })
@@ -260,9 +261,9 @@ productsRoute.post(`/api/products/:id`, isAuthenticated, async (req, res) => {
       price0: body.price0,
       price: body.price,
       subtype: body.subtype,
-      packageSize: `${body.packageSize}`,
+      packageSize: body.packageSize,
       packageType: body.packageType,
-      customerGroup: body.chain,
+      customerGroup: body.customerGroup,
     },
     where: {
       id,
