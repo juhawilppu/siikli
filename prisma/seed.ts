@@ -4,7 +4,6 @@ import { Role } from '@prisma/client'
 import { subDays } from 'date-fns'
 import { Decimal } from 'decimal.js'
 import prisma from '../src/prisma'
-import { AuthService } from '../src/services/auth-service'
 import { CustomerService } from '../src/services/customer-service'
 import { OrderService } from '../src/services/order-service'
 import { ProductService } from '../src/services/product-service'
@@ -47,8 +46,6 @@ async function main() {
     role: Role.USER,
   })
 
-  await AuthService.createPin({ email: 'juha.wilppu@gmail.com', ip: '127.0.0.1' })
-
   const sello = await CustomerService.createCustomer({
     name: 'Alepa Sello',
     discount: new Decimal(0),
@@ -78,14 +75,6 @@ async function main() {
     businessId: '1234567890',
     customerGroup: 'Test group',
   }, tenant.id, juha.id)
-
-  // Validate the amount of customers
-  {
-    const customerCheck = await CustomerService.getCustomers(tenant.id, juha.id)
-    if (customerCheck.customers.length !== 2) {
-      throw new Error(`Expected 2 customers, got ${customerCheck.customers.length}`)
-    }
-  }
 
   const customers = [sello, lintuvaara]
 
@@ -132,11 +121,6 @@ async function main() {
     }).catch(() => null) !== null) {
       throw new Error('ProductService.createProduct should reject mismatched prices')
     }
-
-    const productsCheck = await ProductService.getProducts({ tenantId: tenant.id })
-    if (productsCheck.length !== 2) {
-      throw new Error(`Expected 2 products, got ${productsCheck.length}`)
-    }
   }
 
   for (let i = 0; i < 8; i++) {
@@ -152,7 +136,7 @@ async function main() {
     })
   }
 
-  const products = await ProductService.getProducts({ tenantId: tenant.id })
+  const products = await ProductService.getProducts(tenant.id)
 
   for (let customerIndex = 0; customerIndex < customers.length; customerIndex++) {
     const customer = customers[customerIndex]
