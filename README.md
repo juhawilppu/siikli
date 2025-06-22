@@ -54,33 +54,27 @@ siikli/
 
 ## 🧱 Core architectural decisions
 
-### Pragmatic monolith
+### 🧩 Layered structure
 
-Siikli uses a pragmatic monolith architecture. The codebase is organized by features, with shared libraries extracted only when they offer meaningful reuse or clarity.
+Siikli follows a **Service–Controller–Model** architecture, inspired by Spring Boot. The goal is clarity, testability, and separation of concerns:
 
-Most logic lives directly inside route handlers to maximize simplicity and development speed. There’s no service or repository abstraction unless it provides real value.
+- **Controller**
+  - Handles HTTP input/output  
+  - Deserializes request data (e.g. `"10.00"` ➝ `Decimal`)  
+  - Checks user permissions
+    - Verifies the request is made within the correct tenant (tenant ID from JWT)
+    - Enforces access control (e.g. owner-only endpoints)
 
-Modules can import from each other freely — strict domain boundaries are intentionally avoided to reduce friction and keep iteration fast.
+- **Service**
+  - Contains business logic and orchestration  
+  - Performs calculations, database mutations, and multi-step workflows  
+  - Independent of HTTP — can be reused by schedulers or CLI tools
 
-```
-siikli/
-└── src/
-    ├── api/
-    │   ├── auth.ts
-    │   ├── customers.ts
-    │   ├── invoices.ts
-    │   └── ...
-    ├── middlewares/
-    │   ├── permissions.ts
-    │   ├── rate-limit.ts
-    │   └── ...
-    └── services/
-        ├── email-service.ts
-        ├── invoice-service.ts
-        ├── waybill-service.ts
-        └── ...
+- **Model**
+  - Maps to the database via Prisma  
+  - No business logic — just queries, inserts, and schema definitions
 
-```
+> This structure keeps code modular, readable, and easy to evolve. It’s designed to scale naturally as the product grows.
 
 ### Prefer ORM
 
