@@ -5,6 +5,7 @@ import prisma from '../src/prisma'
 import { TenantService } from '../src/services/tenant-service'
 import { CustomerService } from '../src/services/customer-service'
 import { ProductService } from '../src/services/product-service'
+import { exit } from 'node:process'
 
 async function main() {
   console.log('Running seed 🌱')
@@ -32,55 +33,55 @@ async function main() {
   })
 
   const sello = await CustomerService.createCustomer({
-      name: 'Alepa Sello',
-      tenantId: tenant.id,
-      discount: 0,
-      streetAddress: 'Leppävaarankatu 3',
-      postalCode: '02600',
-      city: 'Espoo',
-      phone: '010 7669010',
-      email: 'test@example.com',
-      showPriceWithoutTax: true,
-      invoiceReference: '1234567890',
-      companyLegalName: 'Test company',
-      businessId: '1234567890',
-      customerGroup: 'Test group',
+    name: 'Alepa Sello',
+    tenantId: tenant.id,
+    discount: 0,
+    streetAddress: 'Leppävaarankatu 3',
+    postalCode: '02600',
+    city: 'Espoo',
+    phone: '010 7669010',
+    email: 'test@example.com',
+    showPriceWithoutTax: true,
+    invoiceReference: '1234567890',
+    companyLegalName: 'Test company',
+    businessId: '1234567890',
+    customerGroup: 'Test group',
   })
 
   const lintuvaara = await CustomerService.createCustomer({
-      name: 'Alepa Lintuvaara',
-      tenantId: tenant.id,
-      discount: 0,
-      streetAddress: 'Linnuntie 2',
-      postalCode: '02660',
-      city: 'Espoo',
-      phone: '010 7669920',
-      email: 'test@example.com',
-      showPriceWithoutTax: true,
-      invoiceReference: '1234567890',
-      companyLegalName: 'Test company',
-      businessId: '1234567890',
-      customerGroup: 'Test group',
+    name: 'Alepa Lintuvaara',
+    tenantId: tenant.id,
+    discount: 0,
+    streetAddress: 'Linnuntie 2',
+    postalCode: '02660',
+    city: 'Espoo',
+    phone: '010 7669920',
+    email: 'test@example.com',
+    showPriceWithoutTax: true,
+    invoiceReference: '1234567890',
+    companyLegalName: 'Test company',
+    businessId: '1234567890',
+    customerGroup: 'Test group',
   })
 
   const customers = [sello, lintuvaara]
 
   const packageSizes = [5, 10, 20, 30, 50, 100, 200, 300]
   for (const size of packageSizes) {
-    await TenantService.createPackageSize({size, tenantId: tenant.id})
+    await TenantService.createPackageSize({ size, tenantId: tenant.id })
   }
   const packageTypes = ['Ltk', 'A', 'Pnt']
   for (const type of packageTypes) {
-    await TenantService.createPackageType({name: type, tenantId: tenant.id})
+    await TenantService.createPackageType({ name: type, tenantId: tenant.id })
   }
 
   await ProductService.createProduct({
     name: 'Siikli',
-      tenantId: tenant.id,
-      price: new Decimal(1.40),
-      price0: new Decimal(1.40).div(1.14),
-      packageSize: 10,
-      packageType: 'Ltk',
+    tenantId: tenant.id,
+    price: new Decimal(1.40),
+    price0: new Decimal(1.40).div(1.14),
+    packageSize: 10,
+    packageType: 'Ltk',
   })
 
   await ProductService.createProduct({
@@ -91,6 +92,26 @@ async function main() {
       packageSize: 20,
       packageType: 'Ltk',
   })
+
+  // Verify that product creation fails when price and price0 don't match
+  const price = new Decimal(1.60)
+  const invalidPrice0 = price.div(1.14).mul(1.1) // Intentionally wrong price0
+  
+  if (await ProductService.createProduct({
+    name: 'Rosamunda wrong price',
+    tenantId: tenant.id,
+    price,
+    price0: invalidPrice0,
+    packageSize: 20,
+    packageType: 'Ltk',
+  }).catch(() => null) !== null) {
+    throw new Error('ProductService.createProduct should reject mismatched prices')
+  }
+
+  const productsCheck = await ProductService.getProducts({ tenantId: tenant.id })
+  if (productsCheck.length !== 2) {
+    throw new Error('Expected 2 products, got ' + productsCheck.length)
+  }
 
   for (let i = 0; i < 8; i++) {
     const price = new Decimal(1 + 2 * Math.random()).toDecimalPlaces(2)
@@ -105,11 +126,7 @@ async function main() {
     })
   }
 
-  const products = await prisma.product.findMany({
-    where: {
-      tenantId: tenant.id,
-    },
-  })
+  const products = await ProductService.getProducts({tenantId: tenant.id})
 
   let orderCount = 0
   for (let customerIndex = 0; customerIndex < customers.length; customerIndex++) {
@@ -164,8 +181,8 @@ async function main() {
 
   // Create tenant 2
 
-  const tenant2 = await prisma.tenant.create({
-    data: {
+  const tenant2 = await TenantService.createTenant({
+    tenantId: 'tenant-2',
       name: 'New company',
       businessId: 'Y-11111111-1',
       streetAddress: 'Testikatu 1',
@@ -182,9 +199,7 @@ async function main() {
       signupCompleted: true,
       subscriptionType: 'PREMIUM',
       subscriptionEndDate: null,
-      subscriptionStartDate: null,
-      trialEndDate: addMonths(new Date(), 3).toISOString(),
-    },
+      subscriptionStartDate: null
   })
 
   await prisma.user.create({
@@ -204,4 +219,5 @@ main()
   .catch(async (e) => {
     console.error(e)
     await prisma.$disconnect()
+    exit(1)
   })

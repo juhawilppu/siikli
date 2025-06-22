@@ -1,3 +1,5 @@
+set -e
+
 npx prisma format
 npx prisma migrate reset -f
 # npx prisma migrate deploy

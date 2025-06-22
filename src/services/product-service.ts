@@ -14,6 +14,10 @@ export const ProductService = {
             packageType,
         } = input
 
+        if (price.div(1.14).toDecimalPlaces(2).toNumber() !== price0.toDecimalPlaces(2).toNumber()) {
+            throw new Error('Price and price0 do not match')
+        }
+
         const product = await prisma.product.create({
             data: {
                 name,
@@ -26,5 +30,19 @@ export const ProductService = {
         })
         
         return product
+    },
+
+    async getProducts(input: {tenantId: string}): Promise<Product[]> {
+        const {
+            tenantId,
+        } = input
+
+        const products = await prisma.product.findMany({
+            where: {
+                tenantId,
+            },
+        })
+
+        return products
     }
 }
