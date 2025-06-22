@@ -5,5 +5,16 @@ export default defineConfig({
     globals: true,
     environment: 'node', // or 'happy-dom' / 'jsdom' for frontend
     include: ['**/*.{test,spec}.{ts,tsx}'],
+    coverage: {
+      include: ['src/**/*.ts', 'frontend/**/*.ts', 'frontend/src/**/*.tsx'],
+      exclude: [
+        'src/dev/**',
+        'src/types/**',
+        'src/test/**',
+        'frontend/src/components/ui/**',
+        '**/*.config.*',
+      ],
+      reporter: ['text', 'html'],
+    },
   },
 })

@@ -7,6 +7,7 @@ command -v aws >/dev/null 2>&1 || { echo >&2 "❌ AWS CLI is not installed. Abor
 
 echo "🔍 Running tests..."
 npm run test
+npm run test:coverage
 
 echo "🔍 Running linter..."
 npm run lint

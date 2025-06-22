@@ -16,7 +16,6 @@ async function main() {
 
   // Create tenant 1
   const tenant = await TenantService.createTenant({
-    tenantId: 'tenant-1',
     name: 'Siikli Solutions Oy',
     businessId: 'Y-1234567-8',
     streetAddress: 'Test street 1',
@@ -52,7 +51,6 @@ async function main() {
 
   const sello = await CustomerService.createCustomer({
     name: 'Alepa Sello',
-    tenantId: tenant.id,
     discount: new Decimal(0),
     streetAddress: 'Leppävaarankatu 3',
     postalCode: '02600',
@@ -64,11 +62,10 @@ async function main() {
     companyLegalName: 'Test company',
     businessId: '1234567890',
     customerGroup: 'Test group',
-  })
+  }, tenant.id, juha.id)
 
   const lintuvaara = await CustomerService.createCustomer({
     name: 'Alepa Lintuvaara',
-    tenantId: tenant.id,
     discount: new Decimal(0),
     streetAddress: 'Linnuntie 2',
     postalCode: '02660',
@@ -80,7 +77,7 @@ async function main() {
     companyLegalName: 'Test company',
     businessId: '1234567890',
     customerGroup: 'Test group',
-  })
+  }, tenant.id, juha.id)
 
   // Validate the amount of customers
   {
@@ -227,7 +224,6 @@ async function main() {
   // Create tenant 2
 
   const tenant2 = await TenantService.createTenant({
-    tenantId: 'tenant-2',
     name: 'New company',
     businessId: 'Y-11111111-1',
     streetAddress: 'Testikatu 1',

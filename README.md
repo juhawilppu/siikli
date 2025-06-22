@@ -193,4 +193,9 @@ This is a private project.
 
 All rights reserved.
 
+## Testing
+
+Coverage
+- 2025-06-22 - 2.25 %
+
 Do not distribute, copy, or reuse any part of the code or design without explicit permission.

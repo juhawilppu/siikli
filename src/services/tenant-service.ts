@@ -1,9 +1,8 @@
-import { PackageSize, PackageType, Tenant } from '@prisma/client'
+import type { PackageSize, PackageType, Tenant } from '@prisma/client'
 import { addMonths } from 'date-fns'
 import prisma from '../prisma'
 
 interface TenantCreateInput {
-  tenantId: string
   name: string
   businessId: string
   streetAddress: string
@@ -24,120 +23,129 @@ interface TenantCreateInput {
 }
 
 export const TenantService = {
-    async createTenant(input: TenantCreateInput): Promise<Tenant> {
-        const {
-            name,
-            businessId,
-            streetAddress,
-            postalCode,
-            city,
-            phone,
-            email,
-            website,
-            invoiceBankName,
-            invoiceBankAccount,
-            invoiceSwiftBic,
-            invoiceReference,
-            invoiceSumRow,
-            signupCompleted,
-            subscriptionType,
-            subscriptionEndDate,
-            subscriptionStartDate,
-        } = input
+  async createTenant(input: TenantCreateInput): Promise<Tenant> {
+    const {
+      name,
+      businessId,
+      streetAddress,
+      postalCode,
+      city,
+      phone,
+      email,
+      website,
+      invoiceBankName,
+      invoiceBankAccount,
+      invoiceSwiftBic,
+      invoiceReference,
+      invoiceSumRow,
+      signupCompleted,
+      subscriptionType,
+      subscriptionEndDate,
+      subscriptionStartDate,
+    } = input
 
-        const tenant = await prisma.$transaction(async (tx) => {
-            const newTenant = await tx.tenant.create({
-                data: {
-                    name,
-                    businessId,
-                    streetAddress,
-                    postalCode,
-                    city,
-                    phone,
-                    email,
-                    website,
-                    invoiceBankName,
-                    invoiceBankAccount,
-                    invoiceSwiftBic,
-                    invoiceReference,
-                    invoiceSumRow,
-                    signupCompleted,
-                    subscriptionType,
-                    subscriptionEndDate,
-                    subscriptionStartDate,
-                    trialEndDate: addMonths(new Date(), 3).toISOString(),
-                },
-            })
+    const tenant = await prisma.$transaction(async (tx) => {
+      const newTenant = await tx.tenant.create({
+        data: {
+          name,
+          businessId,
+          streetAddress,
+          postalCode,
+          city,
+          phone,
+          email,
+          website,
+          invoiceBankName,
+          invoiceBankAccount,
+          invoiceSwiftBic,
+          invoiceReference,
+          invoiceSumRow,
+          signupCompleted,
+          subscriptionType,
+          subscriptionEndDate,
+          subscriptionStartDate,
+          trialEndDate: addMonths(new Date(), 3).toISOString(),
+        },
+      })
 
-            await tx.log.create({
-                data: {
-                    tenantId: newTenant.id,
-                    event: 'TENANT_CREATED',
-                },
-            })
+      await tx.log.create({
+        data: {
+          tenantId: newTenant.id,
+          event: 'TENANT_CREATED',
+        },
+      })
 
-            return newTenant
-        })
+      return newTenant
+    })
 
-        return tenant
-    },
+    return tenant
+  },
 
-    async createPackageSize(input: {size: number, tenantId: string}): Promise<PackageSize> {
-        const {
+  async createPackageSize(input: { size: number, tenantId: string }): Promise<PackageSize> {
+    const {
+      size,
+      tenantId,
+    } = input
+    const packageSize = await prisma.$transaction(async (tx) => {
+      const newPackageSize = await tx.packageSize.create({
+        data: {
+          size,
+          tenantId,
+        },
+      })
+
+      await tx.log.create({
+        data: {
+          tenantId,
+          event: 'PACKAGE_SIZE_CREATED',
+          data: {
             size,
-            tenantId,
-        } = input
-        const packageSize = await prisma.$transaction(async (tx) => {
-            const newPackageSize = await tx.packageSize.create({
-                data: {
-                    size,
-                    tenantId,
-                },
-            })
+          },
+        },
+      })
 
-            await tx.log.create({
-                data: {
-                    tenantId,
-                    event: 'PACKAGE_SIZE_CREATED',
-                    data: {
-                        size,
-                    },
-                },
-            })
+      return newPackageSize
+    })
 
-            return newPackageSize
-        })
+    return packageSize
+  },
 
-        return packageSize
-    },
+  async createPackageType(input: { name: string, tenantId: string }): Promise<PackageType> {
+    const {
+      name,
+      tenantId,
+    } = input
 
-    async createPackageType(input: {name: string, tenantId: string}): Promise<PackageType> {
-        const {
+    const packageType = await prisma.$transaction(async (tx) => {
+      const newPackageType = await tx.packageType.create({
+        data: {
+          name,
+          tenantId,
+        },
+      })
+
+      await tx.log.create({
+        data: {
+          tenantId,
+          event: 'PACKAGE_TYPE_CREATED',
+          data: {
             name,
-            tenantId,
-        } = input
+          },
+        },
+      })
 
-        const packageType = await prisma.$transaction(async (tx) => {
-            const newPackageType = await tx.packageType.create({
-                data: {
-                    name,
-                    tenantId,
-                },
-            })
+      return newPackageType
+    })
 
-            await tx.log.create({
-                data: {
-                    tenantId,
-                    event: 'PACKAGE_TYPE_CREATED',
-                    data: {
-                        name,
-                    },
-                },
-            })
-
-            return newPackageType
-        })
-
-        return packageType
+    return packageType
+  },
+  async getTenant(id: string): Promise<Tenant> {
+    const tenant = await prisma.tenant.findUnique({
+      where: { id },
+    })
+    if (!tenant) {
+      throw new Error(`Tenant with id ${id} not found`)
     }
+    return tenant
+  },
 }
