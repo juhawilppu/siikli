@@ -4,6 +4,7 @@ import { Decimal } from 'decimal.js'
 import prisma from '../src/prisma'
 import { TenantService } from '../src/services/tenant-service'
 import { CustomerService } from '../src/services/customer-service'
+import { ProductService } from '../src/services/product-service'
 
 async function main() {
   console.log('Running seed 🌱')
@@ -73,40 +74,34 @@ async function main() {
     await TenantService.createPackageType({name: type, tenantId: tenant.id})
   }
 
-  await prisma.product.create({
-    data: {
-      name: 'Siikli',
+  await ProductService.createProduct({
+    name: 'Siikli',
       tenantId: tenant.id,
-      price: 1.40,
-      price0: 1.40 * (1 / 1.14),
+      price: new Decimal(1.40),
+      price0: new Decimal(1.40).div(1.14),
       packageSize: 10,
       packageType: 'Ltk',
-    },
   })
 
-  await prisma.product.create({
-    data: {
+  await ProductService.createProduct({
       name: 'Rosamunda',
       tenantId: tenant.id,
-      price: 1.60,
-      price0: 1.43,
+      price: new Decimal(1.60),
+      price0: new Decimal(1.60).div(1.14),
       packageSize: 20,
       packageType: 'Ltk',
-    },
   })
 
   for (let i = 0; i < 8; i++) {
     const price = new Decimal(1 + 2 * Math.random()).toDecimalPlaces(2)
     const price0 = price.div(1.14).toDecimalPlaces(2)
-    await prisma.product.create({
-      data: {
+    await ProductService.createProduct({
         name: `Product ${i}`,
         tenantId: tenant.id,
         price,
         price0,
         packageSize: packageSizes[Math.floor(Math.random() * packageSizes.length)],
         packageType: packageTypes[Math.floor(Math.random() * packageTypes.length)],
-      },
     })
   }
 
