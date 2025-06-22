@@ -2,36 +2,35 @@ import { Role } from '@prisma/client'
 import { addMonths, subDays } from 'date-fns'
 import { Decimal } from 'decimal.js'
 import prisma from '../src/prisma'
+import { TenantService } from '../src/services/tenant-service'
+import { CustomerService } from '../src/services/customer-service'
 
 async function main() {
   console.log('Running seed 🌱')
 
   // Create tenant 1
-  const tenant = await prisma.tenant.create({
-    data: {
-      name: 'Siikli Solutions Oy',
-      businessId: 'Y-1234567-8',
-      streetAddress: 'Test street 1',
-      postalCode: '12345',
-      city: 'Helsinki',
-      phone: '1234567890',
-      email: 'siikli@siikli.fi',
-      website: 'https://siikli.fi',
-      invoiceBankName: 'Test bank',
-      invoiceBankAccount: '1234567890',
-      invoiceSwiftBic: '1234567890',
-      invoiceReference: '1234567890',
-      invoiceSumRow: 'Test sum row',
-      signupCompleted: true,
-      subscriptionType: 'PREMIUM',
-      subscriptionEndDate: null,
-      subscriptionStartDate: null,
-      trialEndDate: addMonths(new Date(), 3).toISOString(),
-    },
+  const tenant = await TenantService.createTenant({
+    tenantId: 'tenant-1',
+    name: 'Siikli Solutions Oy',
+    businessId: 'Y-1234567-8',
+    streetAddress: 'Test street 1',
+    postalCode: '12345',
+    city: 'Helsinki',
+    phone: '1234567890',
+    email: 'siikli@siikli.fi',
+    website: 'https://siikli.fi',
+    invoiceBankName: 'Test bank',
+    invoiceBankAccount: '1234567890',
+    invoiceSwiftBic: '1234567890',
+    invoiceReference: '1234567890',
+    invoiceSumRow: 'Test sum row',
+    signupCompleted: true,
+    subscriptionType: 'PREMIUM',
+    subscriptionEndDate: null,
+    subscriptionStartDate: null
   })
 
-  const sello = await prisma.customer.create({
-    data: {
+  const sello = await CustomerService.createCustomer({
       name: 'Alepa Sello',
       tenantId: tenant.id,
       discount: 0,
@@ -45,12 +44,9 @@ async function main() {
       companyLegalName: 'Test company',
       businessId: '1234567890',
       customerGroup: 'Test group',
-
-    },
   })
 
-  const lintuvaara = await prisma.customer.create({
-    data: {
+  const lintuvaara = await CustomerService.createCustomer({
       name: 'Alepa Lintuvaara',
       tenantId: tenant.id,
       discount: 0,
@@ -64,28 +60,17 @@ async function main() {
       companyLegalName: 'Test company',
       businessId: '1234567890',
       customerGroup: 'Test group',
-    },
   })
 
   const customers = [sello, lintuvaara]
 
   const packageSizes = [5, 10, 20, 30, 50, 100, 200, 300]
   for (const size of packageSizes) {
-    await prisma.packageSize.create({
-      data: {
-        size,
-        tenantId: tenant.id,
-      },
-    })
+    await TenantService.createPackageSize({size, tenantId: tenant.id})
   }
   const packageTypes = ['Ltk', 'A', 'Pnt']
   for (const type of packageTypes) {
-    await prisma.packageType.create({
-      data: {
-        name: type,
-        tenantId: tenant.id,
-      },
-    })
+    await TenantService.createPackageType({name: type, tenantId: tenant.id})
   }
 
   await prisma.product.create({
