@@ -59,19 +59,19 @@ siikli/
 Siikli follows a **Service–Controller–Model** architecture, inspired by Spring Boot. The goal is clarity, testability, and separation of concerns:
 
 - **Controller**
-  - Handles HTTP input/output  
-  - Deserializes request data (e.g. `"10.00"` ➝ `Decimal`)  
+  - Handles HTTP input/output
+  - Deserializes request data (e.g. `"10.00"` ➝ `Decimal`)
   - Checks user permissions
     - Verifies the request is made within the correct tenant (tenant ID from JWT)
     - Enforces access control (e.g. owner-only endpoints)
 
 - **Service**
-  - Contains business logic and orchestration  
-  - Performs calculations, database mutations, and multi-step workflows  
+  - Contains business logic and orchestration
+  - Performs calculations, database mutations, and multi-step workflows
   - Independent of HTTP — can be reused by schedulers or CLI tools
 
 - **Model**
-  - Maps to the database via Prisma  
+  - Maps to the database via Prisma
   - No business logic — just queries, inserts, and schema definitions
 
 > This structure keeps code modular, readable, and easy to evolve. It’s designed to scale naturally as the product grows.
@@ -175,6 +175,17 @@ Siikli was built with the help of AI tools — always under full human supervisi
 - 🎨 v0.dev was used to explore UI mockups. Most of the initial layouts were copied and modified to fit the real needs and made more consistent across all pages
 
 > All code is reviewed, verified, and adapted — AI helps speed up flow, but never replaces intent or ownership.
+
+### Explicit nulls in DTOs
+
+I've decided to use
+```
+  companyLegalName: string | null
+```
+instead of
+```
+  companyLegalName?: string
+```
 
 ## 📄 License
 

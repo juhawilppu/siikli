@@ -36,7 +36,7 @@ async function main() {
     subscriptionStartDate: null,
   })
 
-  await UserService.createUser({
+  const juha = await UserService.createUser({
     email: 'juha.wilppu@gmail.com',
     tenantId: tenant.id,
     role: Role.OWNER,
@@ -53,7 +53,7 @@ async function main() {
   const sello = await CustomerService.createCustomer({
     name: 'Alepa Sello',
     tenantId: tenant.id,
-    discount: 0,
+    discount: new Decimal(0),
     streetAddress: 'Leppävaarankatu 3',
     postalCode: '02600',
     city: 'Espoo',
@@ -69,7 +69,7 @@ async function main() {
   const lintuvaara = await CustomerService.createCustomer({
     name: 'Alepa Lintuvaara',
     tenantId: tenant.id,
-    discount: 0,
+    discount: new Decimal(0),
     streetAddress: 'Linnuntie 2',
     postalCode: '02660',
     city: 'Espoo',
@@ -82,12 +82,21 @@ async function main() {
     customerGroup: 'Test group',
   })
 
+  // Validate the amount of customers
+  {
+    const customerCheck = await CustomerService.getCustomers(tenant.id, juha.id)
+    if (customerCheck.customers.length !== 2) {
+      throw new Error(`Expected 2 customers, got ${customerCheck.customers.length}`)
+    }
+  }
+
   const customers = [sello, lintuvaara]
 
   const packageSizes = [5, 10, 20, 30, 50, 100, 200, 300]
   for (const size of packageSizes) {
     await TenantService.createPackageSize({ size, tenantId: tenant.id })
   }
+
   const packageTypes = ['Ltk', 'A', 'Pnt']
   for (const type of packageTypes) {
     await TenantService.createPackageType({ name: type, tenantId: tenant.id })

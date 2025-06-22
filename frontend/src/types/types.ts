@@ -1,3 +1,5 @@
+import type Decimal from 'decimal.js'
+
 export type GetCurrentUserDto = {
   authenticated: false
 } | {
@@ -166,6 +168,27 @@ export interface GetUsersResponseDto {
   lastLoginAt: string | null
 }
 
+export interface GetCustomersResponse {
+  customerGroups: string[]
+  customers: GetCustomerRequest[]
+}
+
+export interface GetCustomerRequest {
+  id: string
+  name: string
+  companyLegalName: string | null
+  discount: Decimal
+  invoiceReference: string | null
+  streetAddress: string | null
+  postalCode: string | null
+  city: string | null
+  showPriceWithoutTax: boolean
+  email: string | null
+  phone: string | null
+  businessId: string | null
+  customerGroup: string | null
+}
+
 export interface GetCustomersResponseDto {
   customerGroups: string[]
   customers: GetCustomerRequestDto[]
@@ -175,7 +198,7 @@ export interface GetCustomerRequestDto {
   id: string
   name: string
   companyLegalName: string | null
-  discount: number
+  discount: string
   invoiceReference: string | null
   streetAddress: string | null
   postalCode: string | null

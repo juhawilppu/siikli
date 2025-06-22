@@ -2,6 +2,7 @@ import type { DeleteCustomerResponseDto, GetCustomersResponseDto, PostCreateCust
 import express from 'express'
 import { getUser, isAuthenticated } from '../middlewares/permissions'
 import prisma from '../prisma'
+import { CustomerService } from '../services/customer-service'
 
 export const customersRoute = express.Router()
 
@@ -9,56 +10,14 @@ customersRoute.get(`/api/customers`, isAuthenticated, async (req, res) => {
   console.log('getting customers', req.user)
 
   const { userId, tenantId } = getUser(req)
-
-  await prisma.log.create({
-    data: {
-      userId,
-      tenantId,
-      event: 'get_customers',
-    },
-  })
-
-  const result = await prisma.customer.findMany({
-    where: {
-      tenantId,
-    },
-    orderBy: {
-      name: 'asc',
-    },
-  })
-  const customerGroups = await prisma.customer.findMany({
-    where: {
-      tenantId,
-      customerGroup: {
-        not: null,
-      },
-    },
-    select: {
-      customerGroup: true,
-    },
-    distinct: ['customerGroup'],
-  })
+  const result = await CustomerService.getCustomers(tenantId, userId)
 
   res.json({
-    customerGroups: customerGroups.map(r => r.customerGroup as string),
-    customers: result.map((r) => {
-      return {
-        id: r.id,
-        name: r.name,
-        companyLegalName: r.companyLegalName,
-        discount: r.discount,
-        invoiceReference: r.invoiceReference,
-        streetAddress: r.streetAddress,
-        postalCode: r.postalCode,
-        city: r.city,
-        businessId: r.businessId,
-        email: r.email,
-        phone: r.phone,
-        showPriceWithoutTax: r.showPriceWithoutTax,
-        tenantId: r.tenantId,
-        customerGroup: r.customerGroup,
-      }
-    }),
+    customerGroups: result.customerGroups,
+    customers: result.customers.map(customer => ({
+      ...customer,
+      discount: customer.discount.toDecimalPlaces(2).toString(),
+    })),
   } satisfies GetCustomersResponseDto)
 })
 
