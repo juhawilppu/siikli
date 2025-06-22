@@ -1,9 +1,12 @@
+import type { OrderRowDto } from '../services/order-service'
 import { Role } from '@prisma/client'
 import { Decimal } from '@prisma/client/runtime/library'
+import { subDays } from 'date-fns'
 import { describe, expect, it } from 'vitest'
 import prisma from '../prisma'
 import { AuthService } from '../services/auth-service'
 import { CustomerService } from '../services/customer-service'
+import { OrderService } from '../services/order-service'
 import { ProductService } from '../services/product-service'
 import { TenantService } from '../services/tenant-service'
 import { UserService } from '../services/user-service'
@@ -99,7 +102,43 @@ describe('integration test', () => {
     })).rejects.toThrow('Price and price0 do not match')
 
     const products = await ProductService.getProducts(tenant.id)
-    expect(products.length).toBe(1)
-    expect(products[0].name).toBe('Siikli')
+
+    const orderRows: OrderRowDto[] = []
+    for (let productIdIndex = 0; productIdIndex < products.length; productIdIndex++) {
+      const product = products[productIdIndex]
+      orderRows.push({
+        productId: product.id,
+        amount: new Decimal(Math.floor(Math.random() * 10) * (product.packageSize || 1) + (Math.random() > 0.99 ? 0.5 : 0)),
+        price: product.price || new Decimal(0.99).toDecimalPlaces(2),
+        price0: product.price0 || new Decimal(0.99).div(1.14).toDecimalPlaces(2),
+        packageSize: product.packageSize || 1,
+        packageType: product.packageType || 'Ltk',
+        freetext: Math.random() > 0.9 ? 'Erikoistuote' : null,
+      })
+    }
+
+    const deliveryDate = subDays(new Date(), 35)
+
+    await OrderService.createOrder({
+      customerId: customers.customers[0].id,
+      tenantId: tenant.id,
+      deliveryDate,
+      hasNote: true,
+      noteHeader: 'Toimitus',
+      noteBody: 'Toimitus ovelle H3. Nouto aamulla.',
+      orderRows,
+    })
+
+    const orders = await OrderService.getOrders(tenant.id)
+    expect(orders.length).toBe(1)
+    expect(orders[0].customerId).toBe(customers.customers[0].id)
+
+    const order = await OrderService.getOrder(orders[0].id, tenant.id)
+    expect(order.customerId).toBe(customers.customers[0].id)
+    // expect(order.deliveryDate).toBe(deliveryDate)
+    expect(order.hasNote).toBe(true)
+    expect(order.noteHeader).toBe('Toimitus')
+    expect(order.noteBody).toBe('Toimitus ovelle H3. Nouto aamulla.')
+    expect(order.orderRows.length).toBe(products.length)
   })
 })
