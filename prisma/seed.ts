@@ -6,6 +6,7 @@ import { TenantService } from '../src/services/tenant-service'
 import { CustomerService } from '../src/services/customer-service'
 import { ProductService } from '../src/services/product-service'
 import { exit } from 'node:process'
+import { UserService } from '../src/services/user-service'
 
 async function main() {
   console.log('Running seed 🌱')
@@ -163,20 +164,15 @@ async function main() {
       orderCount++
     }
   }
-  await prisma.user.create({
-    data: {
-      email: 'juha.wilppu@gmail.com',
-      googleExternalId: '103471389951515378481',
-      tenantId: tenant.id,
-      role: Role.OWNER,
-    },
+  await UserService.createUser({
+    email: 'juha.wilppu@gmail.com',
+    tenantId: tenant.id,
+    role: Role.OWNER,
   })
-  await prisma.user.create({
-    data: {
-      email: 'juha.wilppu+2@gmail.com',
-      tenantId: tenant.id,
-      role: Role.USER,
-    },
+  await UserService.createUser({
+    email: 'juha.wilppu+2@gmail.com',
+    tenantId: tenant.id,
+    role: Role.USER,
   })
 
   // Create tenant 2
@@ -202,13 +198,10 @@ async function main() {
       subscriptionStartDate: null
   })
 
-  await prisma.user.create({
-    data: {
-      email: 'rajajarvi@gmail.com',
-      googleExternalId: '118037848383891596587',
-      tenantId: tenant2.id,
-      role: Role.OWNER,
-    },
+  await UserService.createUser({
+    email: 'rajajarvi@gmail.com',
+    tenantId: tenant2.id,
+    role: Role.OWNER,
   })
 }
 
