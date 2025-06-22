@@ -45,28 +45,40 @@ export const TenantService = {
             subscriptionStartDate,
         } = input
 
-        const tenant = await prisma.tenant.create({
-            data: {
-                name,
-                businessId,
-                streetAddress,
-                postalCode,
-                city,
-                phone,
-                email,
-                website,
-                invoiceBankName,
-                invoiceBankAccount,
-                invoiceSwiftBic,
-                invoiceReference,
-                invoiceSumRow,
-                signupCompleted,
-                subscriptionType,
-                subscriptionEndDate,
-                subscriptionStartDate,
-                trialEndDate: addMonths(new Date(), 3).toISOString(),
-            },
+        const tenant = await prisma.$transaction(async (tx) => {
+            const newTenant = await tx.tenant.create({
+                data: {
+                    name,
+                    businessId,
+                    streetAddress,
+                    postalCode,
+                    city,
+                    phone,
+                    email,
+                    website,
+                    invoiceBankName,
+                    invoiceBankAccount,
+                    invoiceSwiftBic,
+                    invoiceReference,
+                    invoiceSumRow,
+                    signupCompleted,
+                    subscriptionType,
+                    subscriptionEndDate,
+                    subscriptionStartDate,
+                    trialEndDate: addMonths(new Date(), 3).toISOString(),
+                },
+            })
+
+            await tx.log.create({
+                data: {
+                    tenantId: newTenant.id,
+                    event: 'TENANT_CREATED',
+                },
+            })
+
+            return newTenant
         })
+
         return tenant
     },
 
@@ -75,13 +87,27 @@ export const TenantService = {
             size,
             tenantId,
         } = input
+        const packageSize = await prisma.$transaction(async (tx) => {
+            const newPackageSize = await tx.packageSize.create({
+                data: {
+                    size,
+                    tenantId,
+                },
+            })
 
-        const packageSize = await prisma.packageSize.create({
-            data: {
-                size,
-                tenantId,
-            },
+            await tx.log.create({
+                data: {
+                    tenantId,
+                    event: 'PACKAGE_SIZE_CREATED',
+                    data: {
+                        size,
+                    },
+                },
+            })
+
+            return newPackageSize
         })
+
         return packageSize
     },
 
@@ -91,12 +117,27 @@ export const TenantService = {
             tenantId,
         } = input
 
-        const packageType = await prisma.packageType.create({
-            data: {
-                name,
-                tenantId,
-            },
+        const packageType = await prisma.$transaction(async (tx) => {
+            const newPackageType = await tx.packageType.create({
+                data: {
+                    name,
+                    tenantId,
+                },
+            })
+
+            await tx.log.create({
+                data: {
+                    tenantId,
+                    event: 'PACKAGE_TYPE_CREATED',
+                    data: {
+                        name,
+                    },
+                },
+            })
+
+            return newPackageType
         })
+
         return packageType
     }
 }
