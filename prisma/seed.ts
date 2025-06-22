@@ -1,13 +1,15 @@
-import { OrderRow, Role } from '@prisma/client'
-import { addMonths, subDays } from 'date-fns'
+import type { OrderRowDto } from '../src/services/order-service'
+import { exit } from 'node:process'
+import { Role } from '@prisma/client'
+import { subDays } from 'date-fns'
 import { Decimal } from 'decimal.js'
 import prisma from '../src/prisma'
-import { TenantService } from '../src/services/tenant-service'
+import { AuthService } from '../src/services/auth-service'
 import { CustomerService } from '../src/services/customer-service'
+import { OrderService } from '../src/services/order-service'
 import { ProductService } from '../src/services/product-service'
-import { exit } from 'node:process'
+import { TenantService } from '../src/services/tenant-service'
 import { UserService } from '../src/services/user-service'
-import { OrderRowDto, OrderService } from '../src/services/order-service'
 
 async function main() {
   console.log('Running seed 🌱')
@@ -31,8 +33,22 @@ async function main() {
     signupCompleted: true,
     subscriptionType: 'PREMIUM',
     subscriptionEndDate: null,
-    subscriptionStartDate: null
+    subscriptionStartDate: null,
   })
+
+  await UserService.createUser({
+    email: 'juha.wilppu@gmail.com',
+    tenantId: tenant.id,
+    role: Role.OWNER,
+  })
+
+  await UserService.createUser({
+    email: 'juha.wilppu+2@gmail.com',
+    tenantId: tenant.id,
+    role: Role.USER,
+  })
+
+  await AuthService.createPin({ email: 'juha.wilppu@gmail.com', ip: '127.0.0.1' })
 
   const sello = await CustomerService.createCustomer({
     name: 'Alepa Sello',
@@ -99,7 +115,7 @@ async function main() {
   {
     const price = new Decimal(1.60)
     const invalidPrice0 = price.div(1.14).mul(1.1) // Intentionally wrong price0
-  
+
     if (await ProductService.createProduct({
       name: 'Rosamunda wrong price',
       tenantId: tenant.id,
@@ -113,7 +129,7 @@ async function main() {
 
     const productsCheck = await ProductService.getProducts({ tenantId: tenant.id })
     if (productsCheck.length !== 2) {
-      throw new Error('Expected 2 products, got ' + productsCheck.length)
+      throw new Error(`Expected 2 products, got ${productsCheck.length}`)
     }
   }
 
@@ -132,7 +148,6 @@ async function main() {
 
   const products = await ProductService.getProducts({ tenantId: tenant.id })
 
-  let orderCount = 0
   for (let customerIndex = 0; customerIndex < customers.length; customerIndex++) {
     const customer = customers[customerIndex]
     for (let orderIndex = 0; orderIndex < 6; orderIndex++) {
@@ -161,8 +176,6 @@ async function main() {
         noteBody: hasNote ? 'Toimitus ovelle H3. Nouto aamulla.' : null,
         orderRows,
       })
-      
-      orderCount++
     }
   }
 
@@ -177,7 +190,7 @@ async function main() {
         packageSize: 1,
         packageType: 'Ltk',
         freetext: null,
-      }
+      },
     ]
     await OrderService.createOrder({
       tenantId: tenant.id,
@@ -189,51 +202,40 @@ async function main() {
       orderRows,
     })
     throw new Error('Expected order creation with invalid IDs to fail')
-  } catch (error) {
+  }
+  catch (error) {
     // Expected error
     if (!(error instanceof Error) || !error.message.includes('Price and price0 do not match')) {
       throw new Error('Expected error to be instance of Error and to include "Price and price0 do not match"')
     }
   }
 
-  const orders = await OrderService.getOrders({tenantId: tenant.id})
+  const orders = await OrderService.getOrders({ tenantId: tenant.id })
   if (orders.length !== 12) {
-    throw new Error('Expected 12 orders, got ' + orders.length)
+    throw new Error(`Expected 12 orders, got ${orders.length}`)
   }
-
-
-  await UserService.createUser({
-    email: 'juha.wilppu@gmail.com',
-    tenantId: tenant.id,
-    role: Role.OWNER,
-  })
-  await UserService.createUser({
-    email: 'juha.wilppu+2@gmail.com',
-    tenantId: tenant.id,
-    role: Role.USER,
-  })
 
   // Create tenant 2
 
   const tenant2 = await TenantService.createTenant({
     tenantId: 'tenant-2',
-      name: 'New company',
-      businessId: 'Y-11111111-1',
-      streetAddress: 'Testikatu 1',
-      postalCode: '11111',
-      city: 'Espoo',
-      phone: '0500000000',
-      email: 'rajajarvi@gmail.com',
-      website: 'https://juhawilppu.fi',
-      invoiceBankName: 'Danske Bank',
-      invoiceBankAccount: '1111111111',
-      invoiceSwiftBic: '1111111111',
-      invoiceReference: '1111111111',
-      invoiceSumRow: 'Test sum row',
-      signupCompleted: true,
-      subscriptionType: 'PREMIUM',
-      subscriptionEndDate: null,
-      subscriptionStartDate: null
+    name: 'New company',
+    businessId: 'Y-11111111-1',
+    streetAddress: 'Testikatu 1',
+    postalCode: '11111',
+    city: 'Espoo',
+    phone: '0500000000',
+    email: 'rajajarvi@gmail.com',
+    website: 'https://juhawilppu.fi',
+    invoiceBankName: 'Danske Bank',
+    invoiceBankAccount: '1111111111',
+    invoiceSwiftBic: '1111111111',
+    invoiceReference: '1111111111',
+    invoiceSumRow: 'Test sum row',
+    signupCompleted: true,
+    subscriptionType: 'PREMIUM',
+    subscriptionEndDate: null,
+    subscriptionStartDate: null,
   })
 
   await UserService.createUser({
