@@ -89,6 +89,15 @@ describe('integration test', () => {
     })
     expect(siikli).toBeDefined()
 
+    await expect(ProductService.createProduct({
+      name: 'Siikli',
+      tenantId: tenant.id,
+      price: new Decimal(1.40),
+      price0: new Decimal(1.40), // This is wrong on purpose
+      packageSize: 10,
+      packageType: 'Ltk',
+    })).rejects.toThrow('Price and price0 do not match')
+
     const products = await ProductService.getProducts(tenant.id)
     expect(products.length).toBe(1)
     expect(products[0].name).toBe('Siikli')
