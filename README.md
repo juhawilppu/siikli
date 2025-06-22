@@ -92,6 +92,16 @@ Naming convention:
 - Database: `snake_case`
 - TypeScript: `camelCase`
 
+### 🏢 Tenant isolation
+
+Siikli is a multi-tenant system. Each company has its own data, and strict isolation is enforced at the application layer.
+
+- ✅ All relevant database tables include a `company_id` column
+- ✅ Prisma middleware automatically validates that a `WHERE company_id = ...` clause is used when accessing tenant-specific tables
+- ✅ Role-based access control (RBAC) is scoped to tenant context
+- ✅ Tenant ID is included in the JWT payload
+- ✅ No shared mutable data between tenants
+
 ### History tables
 
 Every database table (e.g. `order`, `customer`) has a corresponding `_history` table (e.g. `order_history`, `customer_history`). All `INSERT`, `UPDATE`, and `DELETE` operations are automatically mirrored via triggers.
@@ -145,7 +155,8 @@ Security has been a core principle from day one.
 ✅ SQL injection prevented by framework
 ✅ XSS prevented by framework
 ✅ Role-based access
-✅ Tenant isolation via prisma middleware
+✅ Tenant isolation verified by prisma middleware
+✅ UUID to prevent easily enumerable endpoints
 ✅ Rate-limiting
 ✅ Passwordless login
 ✅ Cookie flags (HttpOnly authentication cookie)
