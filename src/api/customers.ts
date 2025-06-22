@@ -1,4 +1,5 @@
 import type { DeleteCustomerResponseDto, GetCustomersResponseDto, PostCreateCustomerRequestDto } from '../../frontend/src/types/types'
+import { Decimal } from 'decimal.js'
 import express from 'express'
 import { getUser, isAuthenticated } from '../middlewares/permissions'
 import prisma from '../prisma'
@@ -25,42 +26,18 @@ customersRoute.post(`/api/customers`, isAuthenticated, async (req, res) => {
   console.log('creating customer')
 
   const { userId, tenantId } = getUser(req)
-
   const body = req.body as PostCreateCustomerRequestDto
-  const result = await prisma.customer.create({
-    data: {
-      tenant: {
-        connect: {
-          id: tenantId,
-        },
-      },
-      name: body.name,
-      companyLegalName: body.companyLegalName,
-      discount: body.discount || 0,
-      invoiceReference: body.invoiceReference,
-      streetAddress: body.streetAddress,
-      postalCode: body.postalCode,
-      city: body.city,
-      email: body.email,
-      phone: body.phone,
-      showPriceWithoutTax: body.showPriceWithoutTax,
-      businessId: body.businessId,
-      customerGroup: body.customerGroup,
-    },
-  })
 
-  await prisma.log.create({
-    data: {
-      userId,
-      tenantId,
-      event: 'create_customer',
-      data: {
-        customer: result.id,
-        name: result.name,
-      },
+  const result = await CustomerService.createCustomer(
+    {
+      ...body,
+      discount: new Decimal(body.discount),
     },
-  })
-  res.status(201).json({ id: result.id })
+    tenantId,
+    userId,
+  )
+
+  return res.status(201).json({ id: result.id })
 })
 
 customersRoute.put(`/api/customers/:id`, isAuthenticated, async (req, res) => {

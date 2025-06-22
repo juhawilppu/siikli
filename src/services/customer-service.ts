@@ -5,18 +5,17 @@ import prisma from '../prisma'
 
 interface CustomerCreateInput {
   name: string
-  tenantId: string
+  companyLegalName: string | null
   discount: Decimal
-  streetAddress: string
-  postalCode: string
-  city: string
-  phone: string
-  email: string
+  invoiceReference: string | null
+  streetAddress: string | null
+  postalCode: string | null
+  city: string | null
   showPriceWithoutTax: boolean
-  invoiceReference: string
-  companyLegalName: string
-  businessId: string
-  customerGroup: string
+  email: string | null
+  phone: string | null
+  businessId: string | null
+  customerGroup: string | null
 }
 
 export const CustomerService = {
@@ -72,10 +71,9 @@ export const CustomerService = {
       }),
     }
   },
-  async createCustomer(input: CustomerCreateInput): Promise<Customer> {
+  async createCustomer(input: CustomerCreateInput, tenantId: string, userId: string): Promise<Customer> {
     const {
       name,
-      tenantId,
       discount,
       streetAddress,
       postalCode,
@@ -89,23 +87,38 @@ export const CustomerService = {
       customerGroup,
     } = input
 
-    const customer = await prisma.customer.create({
-      data: {
-        name,
-        tenantId,
-        discount,
-        streetAddress,
-        postalCode,
-        city,
-        phone,
-        email,
-        showPriceWithoutTax,
-        invoiceReference,
-        companyLegalName,
-        businessId,
-        customerGroup,
+    const customer = await prisma.$transaction(async (tx) => {
+      const customer = await tx.customer.create({
+        data: {
+          name,
+          tenantId,
+          discount,
+          streetAddress,
+          postalCode,
+          city,
+          phone,
+          email,
+          showPriceWithoutTax,
+          invoiceReference,
+          companyLegalName,
+          businessId,
+          customerGroup,
+        },
+      })
 
-      },
+      await tx.log.create({
+        data: {
+          userId,
+          tenantId,
+          event: 'create_customer',
+          data: {
+            customer: customer.id,
+            name: customer.name,
+          },
+        },
+      })
+
+      return customer
     })
 
     return customer
