@@ -1,4 +1,4 @@
-import { Role } from '@prisma/client'
+import { OrderRow, Role } from '@prisma/client'
 import { addMonths, subDays } from 'date-fns'
 import { Decimal } from 'decimal.js'
 import prisma from '../src/prisma'
@@ -7,6 +7,7 @@ import { CustomerService } from '../src/services/customer-service'
 import { ProductService } from '../src/services/product-service'
 import { exit } from 'node:process'
 import { UserService } from '../src/services/user-service'
+import { OrderRowDto, OrderService } from '../src/services/order-service'
 
 async function main() {
   console.log('Running seed 🌱')
@@ -86,84 +87,121 @@ async function main() {
   })
 
   await ProductService.createProduct({
-      name: 'Rosamunda',
-      tenantId: tenant.id,
-      price: new Decimal(1.60),
-      price0: new Decimal(1.60).div(1.14),
-      packageSize: 20,
-      packageType: 'Ltk',
+    name: 'Rosamunda',
+    tenantId: tenant.id,
+    price: new Decimal(1.60),
+    price0: new Decimal(1.60).div(1.14),
+    packageSize: 20,
+    packageType: 'Ltk',
   })
 
   // Verify that product creation fails when price and price0 don't match
-  const price = new Decimal(1.60)
-  const invalidPrice0 = price.div(1.14).mul(1.1) // Intentionally wrong price0
+  {
+    const price = new Decimal(1.60)
+    const invalidPrice0 = price.div(1.14).mul(1.1) // Intentionally wrong price0
   
-  if (await ProductService.createProduct({
-    name: 'Rosamunda wrong price',
-    tenantId: tenant.id,
-    price,
-    price0: invalidPrice0,
-    packageSize: 20,
-    packageType: 'Ltk',
-  }).catch(() => null) !== null) {
-    throw new Error('ProductService.createProduct should reject mismatched prices')
-  }
+    if (await ProductService.createProduct({
+      name: 'Rosamunda wrong price',
+      tenantId: tenant.id,
+      price,
+      price0: invalidPrice0,
+      packageSize: 20,
+      packageType: 'Ltk',
+    }).catch(() => null) !== null) {
+      throw new Error('ProductService.createProduct should reject mismatched prices')
+    }
 
-  const productsCheck = await ProductService.getProducts({ tenantId: tenant.id })
-  if (productsCheck.length !== 2) {
-    throw new Error('Expected 2 products, got ' + productsCheck.length)
+    const productsCheck = await ProductService.getProducts({ tenantId: tenant.id })
+    if (productsCheck.length !== 2) {
+      throw new Error('Expected 2 products, got ' + productsCheck.length)
+    }
   }
 
   for (let i = 0; i < 8; i++) {
     const price = new Decimal(1 + 2 * Math.random()).toDecimalPlaces(2)
     const price0 = price.div(1.14).toDecimalPlaces(2)
     await ProductService.createProduct({
-        name: `Product ${i}`,
-        tenantId: tenant.id,
-        price,
-        price0,
-        packageSize: packageSizes[Math.floor(Math.random() * packageSizes.length)],
-        packageType: packageTypes[Math.floor(Math.random() * packageTypes.length)],
+      name: `Product ${i}`,
+      tenantId: tenant.id,
+      price,
+      price0,
+      packageSize: packageSizes[Math.floor(Math.random() * packageSizes.length)],
+      packageType: packageTypes[Math.floor(Math.random() * packageTypes.length)],
     })
   }
 
-  const products = await ProductService.getProducts({tenantId: tenant.id})
+  const products = await ProductService.getProducts({ tenantId: tenant.id })
 
   let orderCount = 0
   for (let customerIndex = 0; customerIndex < customers.length; customerIndex++) {
     const customer = customers[customerIndex]
     for (let orderIndex = 0; orderIndex < 6; orderIndex++) {
       const hasNote = Math.random() > 0.95
-      const order = await prisma.order.create({
-        data: {
-          customerId: customer.id,
-          tenantId: tenant.id,
-          deliveryDate: subDays(new Date(), Math.floor(37 - orderIndex * 7 * Math.random())),
-          waybillNumber: 1000 + orderCount,
-          hasNote,
-          noteHeader: hasNote ? 'Toimitus' : null,
-          noteBody: hasNote ? 'Toimitus ovelle H3. Nouto aamulla.' : null,
-        },
-      })
+
+      const orderRows: OrderRowDto[] = []
       for (let productIdIndex = 0; productIdIndex < products.length; productIdIndex++) {
         const product = products[productIdIndex]
-        await prisma.orderRow.create({
-          data: {
-            orderId: order.id,
-            productId: product.id,
-            amount: Math.floor(Math.random() * 10) * (product.packageSize || 1) + (Math.random() > 0.99 ? 0.5 : 0),
-            price: product.price || new Decimal(0.99).toDecimalPlaces(2),
-            price0: product.price0 || new Decimal(0.99).div(1.14).toDecimalPlaces(2),
-            packageSize: product.packageSize || 1,
-            packageType: product.packageType || 'Ltk',
-            tenantId: tenant.id,
-            freetext: Math.random() > 0.9 ? 'Erikoistuote' : null,
-          },
+        orderRows.push({
+          productId: product.id,
+          amount: new Decimal(Math.floor(Math.random() * 10) * (product.packageSize || 1) + (Math.random() > 0.99 ? 0.5 : 0)),
+          price: product.price || new Decimal(0.99).toDecimalPlaces(2),
+          price0: product.price0 || new Decimal(0.99).div(1.14).toDecimalPlaces(2),
+          packageSize: product.packageSize || 1,
+          packageType: product.packageType || 'Ltk',
+          freetext: Math.random() > 0.9 ? 'Erikoistuote' : null,
         })
       }
+
+      await OrderService.createOrder({
+        customerId: customer.id,
+        tenantId: tenant.id,
+        deliveryDate: subDays(new Date(), Math.floor(37 - orderIndex * 7 * Math.random())),
+        hasNote,
+        noteHeader: hasNote ? 'Toimitus' : null,
+        noteBody: hasNote ? 'Toimitus ovelle H3. Nouto aamulla.' : null,
+        orderRows,
+      })
+      
       orderCount++
     }
   }
+
+  // Test order creation with invalid price and price0
+  try {
+    const orderRows: OrderRowDto[] = [
+      {
+        productId: products[0].id,
+        amount: new Decimal(1),
+        price: new Decimal(1),
+        price0: new Decimal(1),
+        packageSize: 1,
+        packageType: 'Ltk',
+        freetext: null,
+      }
+    ]
+    await OrderService.createOrder({
+      tenantId: tenant.id,
+      customerId: sello.id,
+      deliveryDate: new Date(),
+      hasNote: false,
+      noteHeader: null,
+      noteBody: null,
+      orderRows,
+    })
+    throw new Error('Expected order creation with invalid IDs to fail')
+  } catch (error) {
+    // Expected error
+    if (!(error instanceof Error) || !error.message.includes('Price and price0 do not match')) {
+      throw new Error('Expected error to be instance of Error and to include "Price and price0 do not match"')
+    }
+  }
+
+  const orders = await OrderService.getOrders({tenantId: tenant.id})
+  if (orders.length !== 12) {
+    throw new Error('Expected 12 orders, got ' + orders.length)
+  }
+
+
   await UserService.createUser({
     email: 'juha.wilppu@gmail.com',
     tenantId: tenant.id,
