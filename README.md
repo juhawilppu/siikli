@@ -160,6 +160,17 @@ Note: High availability is not currently enabled to reduce cost — the app runs
 - Readable code favored over clever tricks
 - Prefer boring technology that works
 
+## 🤖 AI-assisted but driven by human
+
+Siikli was built with the help of AI tools — always under full human supervision.
+
+- 🧠 Architecture, business logic, and design decisions are made by hand — no part of the core app was generated
+- 💬 ChatGPT was used to reflect on architectural decisions, help prioritize tickets, and pressure-test ideas
+- ✍️ Cursor AI provided autocompletion and small code snippets — especially for utility functions or boilerplate
+- 🎨 v0.dev was used to explore UI mockups. Most of the initial layouts were copied and modified to fit the real needs and made more consistent across all pages
+
+> All code is reviewed, verified, and adapted — AI helps speed up flow, but never replaces intent or ownership.
+
 ## 📄 License
 
 This is a private project.
