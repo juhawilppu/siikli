@@ -134,41 +134,46 @@ export const CustomerService = {
     return customer
   },
   async updateCustomer(id: string, body: CustomerCreateInput, tenantId: string, userId: string): Promise<Customer> {
-    const result = await prisma.customer.update({
-      where: {
-        id,
-        tenantId,
-      },
-      data: {
-        tenant: {
-          connect: {
-            id: tenantId,
+    const result = await prisma.$transaction(async (tx) => {
+      const customer = await tx.customer.update({
+        where: {
+          id,
+          tenantId,
+        },
+        data: {
+          tenant: {
+            connect: {
+              id: tenantId,
+            },
+          },
+          name: body.name,
+          companyLegalName: body.companyLegalName,
+          discount: body.discount,
+          streetAddress: body.streetAddress,
+          postalCode: body.postalCode,
+          city: body.city,
+          email: body.email,
+          phone: body.phone,
+          showPriceWithoutTax: body.showPriceWithoutTax,
+          invoiceReference: body.invoiceReference,
+          businessId: body.businessId,
+          customerGroup: body.customerGroup,
+        },
+      })
+
+      await tx.log.create({
+        data: {
+          userId,
+          tenantId,
+          event: 'update_customer',
+          data: {
+            customer: customer.id,
+            name: customer.name,
           },
         },
-        name: body.name,
-        companyLegalName: body.companyLegalName,
-        discount: body.discount,
-        streetAddress: body.streetAddress,
-        postalCode: body.postalCode,
-        city: body.city,
-        email: body.email,
-        phone: body.phone,
-        showPriceWithoutTax: body.showPriceWithoutTax,
-        invoiceReference: body.invoiceReference,
-        businessId: body.businessId,
-        customerGroup: body.customerGroup,
-      },
-    })
-    await prisma.log.create({
-      data: {
-        userId,
-        tenantId,
-        event: 'update_customer',
-        data: {
-          customer: result.id,
-          name: result.name,
-        },
-      },
+      })
+
+      return customer
     })
 
     return result
