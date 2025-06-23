@@ -91,6 +91,24 @@ describe('integration test', () => {
       await TenantService.createPackageType({ name: type, tenantId: tenant.id })
     }
 
+    const created = await TenantService.verifyPackageSizeAndType('Ltk', 10, tenant.id)
+    expect(created.packageType).toBe(false)
+    expect(created.packageSize).toBe(false)
+
+    const created2 = await TenantService.verifyPackageSizeAndType('A', 11, tenant.id)
+    expect(created2.packageType).toBe(false)
+    expect(created2.packageSize).toBe(true)
+
+    const created3 = await TenantService.verifyPackageSizeAndType('KT', 12, tenant.id)
+    expect(created3.packageType).toBe(true)
+    expect(created3.packageSize).toBe(true)
+
+    const packageSizes2 = await TenantService.getPackageSizes(tenant.id)
+    expect(packageSizes2.length).toBe(packageSizes.length + 2)
+
+    const packageTypes2 = await TenantService.getPackageTypes(tenant.id)
+    expect(packageTypes2.length).toBe(packageTypes.length + 1)
+
     const siikli = await ProductService.createProduct({
       name: 'Siikli',
       tenantId: tenant.id,

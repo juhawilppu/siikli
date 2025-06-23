@@ -11,54 +11,9 @@ import puppeteer from 'puppeteer'
 import { dateToString, formatDate, stringToDate } from '../../frontend/src/utils/date'
 import { getUser, isAuthenticated } from '../middlewares/permissions'
 import prisma from '../prisma'
+import { TenantService } from '../services/tenant-service'
 import { createWaybills } from '../services/waybill'
 import { serializeNumber } from '../utils/money'
-
-async function verifyPackageSizeAndType(body: { packageType: string | null, packageSize: number | null }, tenantId: string) {
-  console.log('checking type', body)
-
-  if (body.packageType) {
-    const packageType = await prisma.packageType.findFirst({
-      where: {
-        name: body.packageType,
-        tenantId,
-      },
-    })
-    if (!packageType) {
-      console.log('creating package type', body.packageType)
-      await prisma.packageType.create({
-        data: {
-          tenantId,
-          name: body.packageType,
-        },
-      })
-    }
-    else {
-      console.log('package type OK')
-    }
-  }
-
-  if (body.packageSize) {
-    const packageSize = await prisma.packageSize.findFirst({
-      where: {
-        size: body.packageSize,
-        tenantId,
-      },
-    })
-    if (!packageSize) {
-      console.log('creating package size', body.packageSize)
-      await prisma.packageSize.create({
-        data: {
-          tenantId,
-          size: body.packageSize,
-        },
-      })
-    }
-    else {
-      console.log('package size OK')
-    }
-  }
-}
 
 export const ordersRoute = express.Router()
 
@@ -295,7 +250,7 @@ ordersRoute.post(`/api/orders`, isAuthenticated, async (req, res) => {
   const { tenantId, userId } = getUser(req)
 
   for (const item of data.items) {
-    await verifyPackageSizeAndType(item, tenantId)
+    await TenantService.verifyPackageSizeAndType(item.packageType, item.packageSize, tenantId)
   }
 
   // TODO: If free user, check order limit
@@ -370,7 +325,7 @@ ordersRoute.post(`/api/orders/:id`, isAuthenticated, async (req, res) => {
   const { tenantId, userId } = getUser(req)
 
   for (const item of data.items) {
-    await verifyPackageSizeAndType(item, tenantId)
+    await TenantService.verifyPackageSizeAndType(item.packageType, item.packageSize, tenantId)
   }
   const result = await prisma.order.update({
     data: {

@@ -139,6 +139,70 @@ export const TenantService = {
 
     return packageType
   },
+  async verifyPackageSizeAndType(packageType: string | null, packageSize: number | null, tenantId: string): Promise<{ packageType: boolean, packageSize: boolean }> {
+    const created = {
+      packageType: false,
+      packageSize: false,
+    }
+
+    if (packageType) {
+      const p = await prisma.packageType.findFirst({
+        where: {
+          name: packageType,
+          tenantId,
+        },
+      })
+      if (!p) {
+        console.log('creating package type', packageType)
+        await prisma.packageType.create({
+          data: {
+            tenantId,
+            name: packageType,
+          },
+        })
+        created.packageType = true
+      }
+      else {
+        console.log('package type OK')
+      }
+    }
+
+    if (packageSize) {
+      const s = await prisma.packageSize.findFirst({
+        where: {
+          size: packageSize,
+          tenantId,
+        },
+      })
+      if (!s) {
+        console.log('creating package size', packageSize)
+        await prisma.packageSize.create({
+          data: {
+            tenantId,
+            size: packageSize,
+          },
+        })
+        created.packageSize = true
+      }
+      else {
+        console.log('package size OK')
+      }
+    }
+
+    return created
+  },
+  async getPackageSizes(tenantId: string): Promise<PackageSize[]> {
+    const packageSizes = await prisma.packageSize.findMany({
+      where: { tenantId },
+    })
+    return packageSizes
+  },
+  async getPackageTypes(tenantId: string): Promise<PackageType[]> {
+    const packageTypes = await prisma.packageType.findMany({
+      where: { tenantId },
+    })
+    return packageTypes
+  },
   async getTenant(id: string): Promise<Tenant> {
     const tenant = await prisma.tenant.findUnique({
       where: { id },
