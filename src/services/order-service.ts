@@ -1,6 +1,8 @@
 import type { Order } from '@prisma/client'
-import type { Decimal } from 'decimal.js'
-import { endOfMonth, startOfMonth, subDays } from 'date-fns'
+import type { GetOrderList } from '../../frontend/src/types/types'
+import { endOfDay, endOfMonth, startOfDay, startOfMonth } from 'date-fns'
+import { Decimal } from 'decimal.js'
+import { dateToString } from '../../frontend/src/utils/date'
 import prisma from '../prisma'
 
 export interface OrderRowDto {
@@ -69,12 +71,44 @@ export const OrderService = {
     })
   },
 
-  async getOrders(tenantId: string): Promise<Order[]> {
-    return prisma.order.findMany({
+  async getOrders(tenantId: string, startDate: Date, endDate: Date): Promise<GetOrderList[]> {
+    const result = await prisma.order.findMany({
+      include: {
+        customer: true,
+        orderRows: true,
+      },
+      orderBy: [
+        {
+          deliveryDate: 'asc',
+        },
+        {
+          customer: {
+            name: 'asc',
+          },
+        },
+      ],
       where: {
+        deliveryDate: {
+          gt: startOfDay(startDate),
+          lte: endOfDay(endDate),
+        },
         tenantId,
       },
     })
+    const mapped = result.map((o) => {
+      return {
+        id: o.id,
+        waybillNumber: o.waybillNumber,
+        deliveryDate: dateToString(o.deliveryDate),
+        total: o.orderRows.map(o => o.amount.mul(o.price)).reduce((a, b) => a.add(b), new Decimal(0)).toNumber(),
+        customer: {
+          id: o.customerId,
+          name: o.customer.name,
+        },
+      }
+    })
+
+    return mapped satisfies GetOrderList[]
   },
 
   async getOrder(id: string, tenantId: string): Promise<any> {

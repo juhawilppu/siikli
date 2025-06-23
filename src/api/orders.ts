@@ -24,9 +24,7 @@ export interface GetOrderLimitResponseDto {
 
 ordersRoute.get(`/api/orders/limit`, isAuthenticated, async (req, res) => {
   const { tenantId } = getUser(req)
-
   const remaining = await OrderService.getRemainingOrders(tenantId)
-
   return res.status(200).json({ remaining })
 })
 
@@ -41,42 +39,9 @@ ordersRoute.get(`/api/orders`, isAuthenticated, async (req, res) => {
   const endDate = stringToDate(req.query.endDate as string)
   const { tenantId } = getUser(req)
 
-  const result = await prisma.order.findMany({
-    include: {
-      customer: true,
-      orderRows: true,
-    },
-    orderBy: [
-      {
-        deliveryDate: 'asc',
-      },
-      {
-        customer: {
-          name: 'asc',
-        },
-      },
-    ],
-    where: {
-      deliveryDate: {
-        gt: startOfDay(startDate),
-        lte: endOfDay(endDate),
-      },
-      tenantId,
-    },
-  })
-  const mapped = result.map((o) => {
-    return {
-      id: o.id,
-      waybillNumber: o.waybillNumber,
-      deliveryDate: formatDate(o.deliveryDate),
-      total: o.orderRows.map(o => o.amount.mul(o.price)).reduce((a, b) => a.add(b), new Decimal(0)).toNumber(),
-      customer: {
-        id: o.customerId,
-        name: o.customer.name,
-      },
-    } satisfies GetOrderList
-  })
-  res.json(mapped)
+  const orders = await OrderService.getOrders(tenantId, startDate, endDate)
+
+  res.json(orders)
 })
 
 ordersRoute.get(`/api/orders/waybills`, isAuthenticated, async (req, res) => {

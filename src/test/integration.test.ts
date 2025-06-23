@@ -1,8 +1,9 @@
 import type { OrderRowDto } from '../services/order-service'
 import { Role } from '@prisma/client'
 import { Decimal } from '@prisma/client/runtime/library'
-import { subDays } from 'date-fns'
+import { addDays, subDays } from 'date-fns'
 import { describe, expect, it } from 'vitest'
+import { dateToString } from '../../frontend/src/utils/date'
 import prisma from '../prisma'
 import { AuthService } from '../services/auth-service'
 import { CustomerService } from '../services/customer-service'
@@ -156,9 +157,10 @@ describe('integration test', () => {
       orderRows,
     })
 
-    const orders = await OrderService.getOrders(tenant.id)
+    const orders = await OrderService.getOrders(tenant.id, subDays(new Date(), 1), addDays(new Date(), 1))
     expect(orders.length).toBe(1)
-    expect(orders[0].customerId).toBe(customers.customers[0].id)
+    expect(orders[0].customer.id).toBe(customers.customers[0].id)
+    expect(orders[0].deliveryDate).toBe(dateToString(deliveryDate))
 
     const order = await OrderService.getOrder(orders[0].id, tenant.id)
     expect(order.customerId).toBe(customers.customers[0].id)
@@ -187,7 +189,7 @@ describe('integration test', () => {
     const deletedCustomer = await CustomerService.getCustomer(sello.id, tenant.id)
     expect(deletedCustomer).toBeNull()
 
-    const deletedOrders = await OrderService.getOrders(tenant.id)
+    const deletedOrders = await OrderService.getOrders(tenant.id, subDays(new Date(), 1), addDays(new Date(), 1))
     expect(deletedOrders.length).toBe(0)
   })
 })
