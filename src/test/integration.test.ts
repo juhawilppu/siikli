@@ -184,7 +184,7 @@ describe('integration test', () => {
     expect(order.hasNote).toBe(true)
     expect(order.noteHeader).toBe('Toimitus')
     expect(order.noteBody).toBe('Toimitus ovelle H3. Nouto aamulla.')
-    expect(order.orderRows.length).toBe(products.length)
+    expect(order.items.length).toBe(products.length)
 
     const invoice = await InvoiceService.getInvoice(sello.id, tenant.id, subDays(new Date(), 30), new Date())
     expect(invoice).toBeDefined()

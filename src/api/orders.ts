@@ -4,16 +4,12 @@ import type {
   PostOrderRequestDto,
   PostOrderResponseDto,
 } from '../../frontend/src/types/types'
-import { endOfDay, parse, startOfDay } from 'date-fns'
-import Decimal from 'decimal.js'
 import express from 'express'
-import puppeteer from 'puppeteer'
-import { dateToString, formatDate, stringToDate } from '../../frontend/src/utils/date'
+import { dateToString, stringToDate } from '../../frontend/src/utils/date'
 import { getUser, isAuthenticated } from '../middlewares/permissions'
 import prisma from '../prisma'
 import { OrderService } from '../services/order-service'
 import { TenantService } from '../services/tenant-service'
-import { createWaybills } from '../services/waybill'
 import { serializeNumber } from '../utils/money'
 
 export const ordersRoute = express.Router()
@@ -72,50 +68,9 @@ ordersRoute.get(`/api/orders/:id`, isAuthenticated, async (req, res) => {
   const orderId = req.params.id
   const { tenantId } = getUser(req)
 
-  const result = await prisma.order.findFirstOrThrow({
-    include: {
-      customer: true,
-      orderRows: true,
-    },
-    orderBy: [
-      {
-        deliveryDate: 'asc',
-      },
-      {
-        customer: {
-          name: 'asc',
-        },
-      },
-    ],
-    where: {
-      id: orderId,
-      tenantId,
-    },
-  })
+  const order = await OrderService.getOrder(orderId, tenantId)
 
-  res.json({
-    id: result.id,
-    deliveryDate: dateToString(result.deliveryDate),
-    customerId: result.customerId,
-    hasNote: result.hasNote,
-    noteBody: result.noteBody,
-    noteHeader: result.noteHeader,
-    items: result.orderRows.map(p => (
-      {
-        id: p.id,
-        productId: p.productId,
-        price: serializeNumber(p.price || 0),
-        price0: serializeNumber(p.price0 || 0),
-        amount: serializeNumber(p.amount),
-        packages: p.amount.div(p.packageSize).toNumber(),
-        packageSize: p.packageSize,
-        packageType: p.packageType || '',
-        freetext: p.freetext || '',
-        createdAt: p.createdAt,
-      }
-    )),
-
-  } satisfies GetOrderDto)
+  res.json(order satisfies GetOrderDto)
 })
 
 ordersRoute.delete(`/api/orders/:id`, isAuthenticated, async (req, res) => {

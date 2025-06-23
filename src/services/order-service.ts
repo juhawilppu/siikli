@@ -1,10 +1,11 @@
 import type { Order } from '@prisma/client'
-import type { GetOrderList } from '../../frontend/src/types/types'
+import type { GetOrderDto, GetOrderList } from '../../frontend/src/types/types'
 import { endOfDay, endOfMonth, parse, startOfDay, startOfMonth } from 'date-fns'
 import { Decimal } from 'decimal.js'
 import puppeteer from 'puppeteer'
 import { dateToString } from '../../frontend/src/utils/date'
 import prisma from '../prisma'
+import { serializeNumber } from '../utils/money'
 import { createWaybills } from './waybill'
 
 export interface OrderRowDto {
@@ -114,15 +115,50 @@ export const OrderService = {
   },
 
   async getOrder(id: string, tenantId: string): Promise<any> {
-    return await prisma.order.findUnique({
+    const result = await prisma.order.findFirstOrThrow({
+      include: {
+        customer: true,
+        orderRows: true,
+      },
+      orderBy: [
+        {
+          deliveryDate: 'asc',
+        },
+        {
+          customer: {
+            name: 'asc',
+          },
+        },
+      ],
       where: {
         id,
         tenantId,
       },
-      include: {
-        orderRows: true,
-      },
     })
+
+    return {
+      id: result.id,
+      deliveryDate: dateToString(result.deliveryDate),
+      customerId: result.customerId,
+      hasNote: result.hasNote,
+      noteBody: result.noteBody,
+      noteHeader: result.noteHeader,
+      items: result.orderRows.map(p => (
+        {
+          id: p.id,
+          productId: p.productId,
+          price: serializeNumber(p.price || 0),
+          price0: serializeNumber(p.price0 || 0),
+          amount: serializeNumber(p.amount),
+          packages: p.amount.div(p.packageSize).toNumber(),
+          packageSize: p.packageSize,
+          packageType: p.packageType || '',
+          freetext: p.freetext || '',
+          createdAt: p.createdAt,
+        }
+      )),
+
+    } satisfies GetOrderDto
   },
 
   async getRemainingOrders(tenantId: string): Promise<number> {
