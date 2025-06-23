@@ -37,6 +37,19 @@ export interface PostOrderItemRequestDto {
   freetext: string
 }
 
+export interface PostOrderItemRequest {
+  id: string | undefined
+  deleted?: boolean
+  productId: string
+  price: Decimal
+  price0: Decimal
+  amount: Decimal
+  packages: number
+  packageSize: number
+  packageType: string
+  freetext: string
+}
+
 export interface PostOrderRequestDto {
   deliveryDate: string
   customerId: string

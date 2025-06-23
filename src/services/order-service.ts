@@ -1,5 +1,5 @@
 import type { Order } from '@prisma/client'
-import type { GetOrderDto, GetOrderList } from '../../frontend/src/types/types'
+import type { GetOrderDto, GetOrderList, PostOrderItemRequest, PostOrderItemRequestDto } from '../../frontend/src/types/types'
 import { endOfDay, endOfMonth, parse, startOfDay, startOfMonth } from 'date-fns'
 import { Decimal } from 'decimal.js'
 import puppeteer from 'puppeteer'
@@ -20,7 +20,7 @@ export interface OrderRowDto {
 
 export const OrderService = {
 
-  async createOrder(input: { tenantId: string, customerId: string, deliveryDate: Date, hasNote: boolean, noteHeader: string | null, noteBody: string | null, orderRows: any[] }): Promise<Order> {
+  async createOrder(input: { tenantId: string, customerId: string, deliveryDate: Date, hasNote: boolean, noteHeader: string | null, noteBody: string | null, items: PostOrderItemRequest[] }): Promise<Order> {
     const {
       tenantId,
       customerId,
@@ -28,15 +28,22 @@ export const OrderService = {
       hasNote,
       noteHeader,
       noteBody,
-      orderRows,
+      items,
     } = input
 
     return await prisma.$transaction(async (tx) => {
-      const waybillNumber = await tx.order.count({
+      const waybillNumberResult = await tx.order.findFirst({
         where: {
           tenantId,
         },
-      }) + 1
+        orderBy: {
+          waybillNumber: 'desc',
+        },
+        select: {
+          waybillNumber: true,
+        },
+      })
+      const waybillNumber = waybillNumberResult && waybillNumberResult.waybillNumber ? waybillNumberResult.waybillNumber + 1 : 1000
 
       const order = await tx.order.create({
         data: {
@@ -50,7 +57,7 @@ export const OrderService = {
         },
       })
 
-      for (const orderRow of orderRows) {
+      for (const orderRow of items) {
         if (orderRow.price.div(1.14).toDecimalPlaces(2).cmp(orderRow.price0) !== 0) {
           throw new Error('Price and price0 do not match')
         }

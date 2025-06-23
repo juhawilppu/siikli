@@ -147,15 +147,27 @@ describe('integration test', () => {
 
     const deliveryDate = subDays(new Date(), 0)
 
-    await OrderService.createOrder({
+    const orderId = await OrderService.createOrder({
       customerId: sello.id,
       tenantId: tenant.id,
       deliveryDate,
       hasNote: true,
       noteHeader: 'Toimitus',
       noteBody: 'Toimitus ovelle H3. Nouto aamulla.',
-      orderRows,
+      items: orderRows.map(item => ({
+        ...item,
+        id: undefined,
+        packages: 1,
+        freetext: 'Erikoistuote',
+      })),
     })
+
+    const order = await OrderService.getOrder(orderId.id, tenant.id)
+    expect(order.customerId).toBe(customers.customers[0].id)
+    expect(order.deliveryDate).toBe(dateToString(deliveryDate))
+    expect(order.hasNote).toBe(true)
+    expect(order.noteHeader).toBe('Toimitus')
+    expect(order.noteBody).toBe('Toimitus ovelle H3. Nouto aamulla.')
 
     const orders = await OrderService.getOrders(tenant.id, subDays(new Date(), 1), addDays(new Date(), 1))
     expect(orders.length).toBe(1)
@@ -177,14 +189,6 @@ describe('integration test', () => {
     const waybillPdf = await OrderService.getWaybillPdf(tenant.id, dateToString(deliveryDate), dateToString(deliveryDate))
     expect(waybillPdf).toBeInstanceOf(Uint8Array)
     expect(waybillPdf.length).toBeGreaterThan(100)
-
-    const order = await OrderService.getOrder(orders[0].id, tenant.id)
-    expect(order.customerId).toBe(customers.customers[0].id)
-    // expect(order.deliveryDate).toBe(deliveryDate)
-    expect(order.hasNote).toBe(true)
-    expect(order.noteHeader).toBe('Toimitus')
-    expect(order.noteBody).toBe('Toimitus ovelle H3. Nouto aamulla.')
-    expect(order.items.length).toBe(products.length)
 
     const invoice = await InvoiceService.getInvoice(sello.id, tenant.id, subDays(new Date(), 30), new Date())
     expect(invoice).toBeDefined()

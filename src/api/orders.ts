@@ -4,6 +4,7 @@ import type {
   PostOrderRequestDto,
   PostOrderResponseDto,
 } from '../../frontend/src/types/types'
+import { Decimal } from 'decimal.js'
 import express from 'express'
 import { dateToString, stringToDate } from '../../frontend/src/utils/date'
 import { getUser, isAuthenticated } from '../middlewares/permissions'
@@ -88,74 +89,20 @@ ordersRoute.post(`/api/orders`, isAuthenticated, async (req, res) => {
   console.log('saving order')
 
   const data = req.body as PostOrderRequestDto
-  const { tenantId, userId } = getUser(req)
+  const { tenantId } = getUser(req)
 
-  for (const item of data.items) {
-    await TenantService.verifyPackageSizeAndType(item.packageType, item.packageSize, tenantId)
-  }
-
-  // TODO: If free user, check order limit
-
-  const waybillNumberResult = await prisma.order.findFirst({
-    where: {
-      tenantId,
-    },
-    orderBy: {
-      waybillNumber: 'desc',
-    },
-    select: {
-      waybillNumber: true,
-    },
-  })
-  const waybillNumber = waybillNumberResult && waybillNumberResult.waybillNumber ? waybillNumberResult.waybillNumber + 1 : 1000
-
-  const result = await prisma.order.create({
-    data: {
-      waybillNumber,
-      deliveryDate: stringToDate(data.deliveryDate),
-      hasNote: data.hasNote,
-      noteHeader: data.hasNote ? data.noteHeader : undefined,
-      noteBody: data.hasNote ? data.noteBody : undefined,
-      showPriceWithoutTax: false,
-      customer: {
-        connect: {
-          id: data.customerId,
-        },
-      },
-      tenant: {
-        connect: {
-          id: tenantId,
-        },
-      },
-    },
-  })
-  await prisma.orderRow.createMany({
-    data: data.items.map((r) => {
-      return {
-        orderId: result.id,
-        tenantId,
-        productId: r.productId,
-        amount: r.amount,
-        price: r.price,
-        price0: r.price0,
-        freetext: r.freetext,
-        packageSize: r.packageSize,
-        packageType: r.packageType,
-      }
-    }),
+  const result = await OrderService.createOrder({
+    ...data,
+    tenantId,
+    deliveryDate: stringToDate(data.deliveryDate),
+    items: data.items.map(item => ({
+      ...item,
+      price: new Decimal(item.price),
+      price0: new Decimal(item.price0),
+      amount: new Decimal(item.amount),
+    })),
   })
 
-  await prisma.log.create({
-    data: {
-      userId,
-      tenantId,
-      event: 'create_order',
-      data: {
-        order: result.id,
-        customer: result.customerId,
-      },
-    },
-  })
   res.json({ id: result.id } satisfies PostOrderResponseDto)
 })
 
