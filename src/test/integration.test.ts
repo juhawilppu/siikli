@@ -144,7 +144,7 @@ describe('integration test', () => {
       })
     }
 
-    const deliveryDate = subDays(new Date(), 5)
+    const deliveryDate = subDays(new Date(), 0)
 
     await OrderService.createOrder({
       customerId: sello.id,
@@ -178,6 +178,9 @@ describe('integration test', () => {
     expect(invoice.totals.finalSumWithTax.equals(new Decimal(51.88))).toBe(true)
     expect(invoice.totals.finalSumWithoutTax.equals(new Decimal(45.51))).toBe(true)
     expect(invoice.totals.totalKg.equals(new Decimal(37))).toBe(true)
+
+    const remaining = await OrderService.getRemainingOrders(tenant.id)
+    expect(remaining).toBe(19)
 
     await CustomerService.deleteCustomer(sello.id, tenant.id, juha.id)
 

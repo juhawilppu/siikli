@@ -1,6 +1,6 @@
 import type { Order } from '@prisma/client'
 import type { Decimal } from 'decimal.js'
-import { subDays } from 'date-fns'
+import { endOfMonth, startOfMonth, subDays } from 'date-fns'
 import prisma from '../prisma'
 
 export interface OrderRowDto {
@@ -87,5 +87,28 @@ export const OrderService = {
         orderRows: true,
       },
     })
+  },
+
+  async getRemainingOrders(tenantId: string): Promise<number> {
+    const tenant = await prisma.tenant.findFirstOrThrow({
+      where: {
+        id: tenantId,
+      },
+    })
+    if (tenant.subscriptionType === 'premium') {
+      return 10000
+    }
+
+    const orders = await prisma.order.count({
+      where: {
+        tenantId,
+        createdAt: {
+          gte: startOfMonth(new Date()),
+          lte: endOfMonth(new Date()),
+        },
+      },
+    })
+
+    return Math.max(0, 20 - orders)
   },
 }

@@ -4,13 +4,14 @@ import type {
   PostOrderRequestDto,
   PostOrderResponseDto,
 } from '../../frontend/src/types/types'
-import { endOfDay, endOfMonth, parse, startOfDay, startOfMonth } from 'date-fns'
+import { endOfDay, parse, startOfDay } from 'date-fns'
 import Decimal from 'decimal.js'
 import express from 'express'
 import puppeteer from 'puppeteer'
 import { dateToString, formatDate, stringToDate } from '../../frontend/src/utils/date'
 import { getUser, isAuthenticated } from '../middlewares/permissions'
 import prisma from '../prisma'
+import { OrderService } from '../services/order-service'
 import { TenantService } from '../services/tenant-service'
 import { createWaybills } from '../services/waybill'
 import { serializeNumber } from '../utils/money'
@@ -24,25 +25,9 @@ export interface GetOrderLimitResponseDto {
 ordersRoute.get(`/api/orders/limit`, isAuthenticated, async (req, res) => {
   const { tenantId } = getUser(req)
 
-  const tenant = await prisma.tenant.findFirstOrThrow({
-    where: {
-      id: tenantId,
-    },
-  })
-  if (tenant.subscriptionType === 'premium') {
-    return res.status(200).json({ remaining: 10000 })
-  }
+  const remaining = await OrderService.getRemainingOrders(tenantId)
 
-  const orders = await prisma.order.count({
-    where: {
-      tenantId,
-      createdAt: {
-        gte: startOfMonth(new Date()),
-        lte: endOfMonth(new Date()),
-      },
-    },
-  })
-  return res.status(200).json({ remaining: Math.max(0, 20 - orders) })
+  return res.status(200).json({ remaining })
 })
 
 ordersRoute.get(`/api/orders`, isAuthenticated, async (req, res) => {
