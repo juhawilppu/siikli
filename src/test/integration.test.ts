@@ -200,6 +200,9 @@ describe('integration test', () => {
     const remaining = await OrderService.getRemainingOrders(tenant.id)
     expect(remaining).toBe(19)
 
+    await OrderService.deleteOrder(order.id, tenant.id)
+    await expect(OrderService.getOrder(order.id, tenant.id)).rejects.toThrow()
+
     await CustomerService.deleteCustomer(sello.id, tenant.id, juha.id)
 
     const deletedCustomer = await CustomerService.getCustomer(sello.id, tenant.id)

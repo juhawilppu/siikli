@@ -254,4 +254,13 @@ export const OrderService = {
 
     return pdfBuffer
   },
+
+  async deleteOrder(id: string, tenantId: string): Promise<void> {
+    await prisma.order.delete({
+      where: {
+        id,
+        tenantId,
+      },
+    })
+  },
 }

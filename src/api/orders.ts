@@ -79,12 +79,7 @@ ordersRoute.delete(`/api/orders/:id`, isAuthenticated, async (req, res) => {
   const orderId = req.params.id
   const { tenantId } = getUser(req)
 
-  await prisma.order.delete({
-    where: {
-      id: orderId,
-      tenantId,
-    },
-  })
+  await OrderService.deleteOrder(orderId, tenantId)
 
   res.status(200).json({ message: 'Order deleted' })
 })
