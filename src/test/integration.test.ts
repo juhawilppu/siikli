@@ -1,7 +1,7 @@
 import type { OrderRowDto } from '../services/order-service'
 import { Role } from '@prisma/client'
 import { Decimal } from '@prisma/client/runtime/library'
-import { addDays, subDays } from 'date-fns'
+import { addDays, formatDate, subDays } from 'date-fns'
 import { describe, expect, it } from 'vitest'
 import { dateToString } from '../../frontend/src/utils/date'
 import prisma from '../prisma'
@@ -162,6 +162,22 @@ describe('integration test', () => {
     expect(orders[0].customer.id).toBe(customers.customers[0].id)
     expect(orders[0].deliveryDate).toBe(dateToString(deliveryDate))
 
+    const waybills = await OrderService.getWaybillHtmls(tenant.id, dateToString(deliveryDate), dateToString(deliveryDate))
+    expect(waybills).toBeDefined()
+    expect(waybills.includes('Siikli')).toBe(true)
+    expect(waybills).toContain('<h1>Kuormakirja</h1>')
+    expect(waybills).toContain('Alepa Sello 2')
+    expect(waybills).toContain(formatDate(deliveryDate, 'd.M.yyyy'))
+    expect(waybills).toContain('Siikli')
+    expect(waybills).toContain('37')
+    expect(waybills).toContain('51,80 €')
+    expect(waybills.trim().startsWith('<html')).toBe(true)
+    expect(waybills.trim().endsWith('</html>')).toBe(true)
+
+    const waybillPdf = await OrderService.getWaybillPdf(tenant.id, dateToString(deliveryDate), dateToString(deliveryDate))
+    expect(waybillPdf).toBeInstanceOf(Uint8Array)
+    expect(waybillPdf.length).toBeGreaterThan(100)
+
     const order = await OrderService.getOrder(orders[0].id, tenant.id)
     expect(order.customerId).toBe(customers.customers[0].id)
     // expect(order.deliveryDate).toBe(deliveryDate)
@@ -192,4 +208,4 @@ describe('integration test', () => {
     const deletedOrders = await OrderService.getOrders(tenant.id, subDays(new Date(), 1), addDays(new Date(), 1))
     expect(deletedOrders.length).toBe(0)
   })
-})
+}, 9000)

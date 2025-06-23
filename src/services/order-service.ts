@@ -1,9 +1,11 @@
 import type { Order } from '@prisma/client'
 import type { GetOrderList } from '../../frontend/src/types/types'
-import { endOfDay, endOfMonth, startOfDay, startOfMonth } from 'date-fns'
+import { endOfDay, endOfMonth, parse, startOfDay, startOfMonth } from 'date-fns'
 import { Decimal } from 'decimal.js'
+import puppeteer from 'puppeteer'
 import { dateToString } from '../../frontend/src/utils/date'
 import prisma from '../prisma'
+import { createWaybills } from './waybill'
 
 export interface OrderRowDto {
   productId: string
@@ -144,5 +146,76 @@ export const OrderService = {
     })
 
     return Math.max(0, 20 - orders)
+  },
+
+  async getWaybillHtmls(tenantId: string, startDate: string, endDate: string): Promise<string> {
+    const orders = await prisma.order.findMany({
+      include: {
+        customer: true,
+        orderRows: {
+          include: {
+            product: true,
+          },
+        },
+      },
+      orderBy: [
+        {
+          deliveryDate: 'asc',
+        },
+
+        {
+          customer: {
+            name: 'asc',
+          },
+        },
+      ],
+      where: {
+        deliveryDate: {
+          gte: startOfDay(parse(startDate as string, 'yyyy-MM-dd', new Date())),
+          lte: endOfDay(parse(endDate as string, 'yyyy-MM-dd', new Date())),
+        },
+        tenantId,
+      },
+    })
+
+    const company = await prisma.tenant.findFirstOrThrow({
+      where: {
+        id: tenantId,
+      },
+    })
+
+    const document = await createWaybills(company, orders)
+
+    return document
+  },
+
+  async getWaybillPdf(tenantId: string, startDate: string, endDate: string): Promise<Uint8Array> {
+    const document = await this.getWaybillHtmls(tenantId, startDate, endDate)
+
+    console.log('creating pdf')
+    console.log(document)
+    const browser = await puppeteer.launch({
+      headless: true,
+      args: ['--no-sandbox'],
+    })
+    const page = await browser.newPage()
+    await page.setContent(document)
+
+    const pdfBuffer = await page.pdf({
+      format: 'a5',
+      margin: {
+        top: '5mm',
+        right: '5mm',
+        bottom: '5mm',
+        left: '5mm',
+      },
+      displayHeaderFooter: true,
+      footerTemplate: '<div style="height: 22mm;">moi</div>',
+      printBackground: true,
+    })
+
+    await browser.close()
+
+    return pdfBuffer
   },
 }

@@ -41,7 +41,7 @@ ordersRoute.get(`/api/orders`, isAuthenticated, async (req, res) => {
 
   const orders = await OrderService.getOrders(tenantId, startDate, endDate)
 
-  res.json(orders)
+  res.json(orders satisfies GetOrderList[])
 })
 
 ordersRoute.get(`/api/orders/waybills`, isAuthenticated, async (req, res) => {
@@ -53,68 +53,9 @@ ordersRoute.get(`/api/orders/waybills`, isAuthenticated, async (req, res) => {
 
   const { tenantId } = getUser(req)
 
-  console.log('startDate', startOfDay(parse(req.query.startDate as string, 'yyyy-MM-dd', new Date())))
+  const pdfBuffer = await OrderService.getWaybillPdf(tenantId, req.query.startDate as string, req.query.endDate as string)
 
-  const orders = await prisma.order.findMany({
-    include: {
-      customer: true,
-      orderRows: {
-        include: {
-          product: true,
-        },
-      },
-    },
-    orderBy: [
-      {
-        deliveryDate: 'asc',
-      },
-
-      {
-        customer: {
-          name: 'asc',
-        },
-      },
-    ],
-    where: {
-      deliveryDate: {
-        gte: startOfDay(parse(req.query.startDate as string, 'yyyy-MM-dd', new Date())),
-        lte: endOfDay(parse(req.query.endDate as string, 'yyyy-MM-dd', new Date())),
-      },
-      tenantId,
-    },
-  })
-
-  const company = await prisma.tenant.findFirstOrThrow({
-    where: {
-      id: tenantId,
-    },
-  })
-
-  const document = await createWaybills(company, orders)
-
-  console.log('creating pdf')
-  console.log(document)
-  const browser = await puppeteer.launch({
-    headless: true,
-    args: ['--no-sandbox'],
-  })
-  const page = await browser.newPage()
-  await page.setContent(document)
-
-  const pdfBuffer = await page.pdf({
-    format: 'a5',
-    margin: {
-      top: '5mm',
-      right: '5mm',
-      bottom: '5mm',
-      left: '5mm',
-    },
-    displayHeaderFooter: true,
-    footerTemplate: '<div style="height: 22mm;">moi</div>',
-    printBackground: true,
-  })
-
-  await browser.close()
+  console.log('pdfBuffer', pdfBuffer)
 
   // Set headers for proper PDF display
   res.setHeader('Content-Type', 'application/pdf')
