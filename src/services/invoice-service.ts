@@ -1,4 +1,7 @@
+import { addDays } from 'date-fns'
 import Decimal from 'decimal.js'
+import { dateToString } from '../../frontend/src/utils/date'
+import prisma from '../prisma'
 
 export type InvoiceRow = {
   usePrice0: true
@@ -76,6 +79,125 @@ export interface InvoiceDto {
     totalTax: Decimal
     totalKg: Decimal
   }
+}
+
+export const InvoiceService = {
+  async getInvoice(customerId: string, tenantId: string, startDate: Date, endDate: Date) {
+    const customer = await prisma.customer.findUnique({
+      where: {
+        id: customerId,
+        tenantId,
+      },
+    })
+
+    if (!customer)
+      throw new Error('Customer not found')
+
+    const orders = await prisma.order.findMany({
+      where: {
+        customerId: customer.id,
+        tenantId,
+        deliveryDate: {
+          gte: startDate,
+          lte: endDate,
+        },
+      },
+      orderBy: {
+        deliveryDate: 'asc',
+      },
+      include: {
+        orderRows: {
+          include: {
+            product: true,
+          },
+        },
+      },
+    })
+
+    const company = await prisma.tenant.findFirstOrThrow({
+      where: {
+        id: tenantId,
+      },
+    })
+
+    const today = new Date()
+
+    const items = orders.map((o) => {
+      return o.orderRows.map((p) => {
+        return {
+          id: p.id,
+          orderId: o.id,
+          orderNumber: o.waybillNumber,
+          amount: p.amount,
+          deliveryDate: o.deliveryDate,
+          productName: p.product.name,
+          price: p.price,
+          price0: p.price0,
+        }
+      })
+    },
+    ).flat()
+
+    if (orders.length === 0 || items.length === 0) {
+      throw new Error('No items found')
+    }
+
+    const notificationPeriod = 14
+
+    const lastInvoice = await prisma.invoice.findFirst({
+      where: {
+        tenantId,
+      },
+      orderBy: {
+        invoiceNumber: 'desc',
+      },
+    })
+
+    const invoiceNumber = lastInvoice ? lastInvoice.invoiceNumber + 1 : 1000
+
+    const invoice = {
+      invoiceId: invoiceNumber,
+      date: dateToString(today),
+      dueDate: dateToString(addDays(today, notificationPeriod)),
+      paymentCondition: `${notificationPeriod} päivää`,
+      notificationPeriod: `${notificationPeriod} päivää`,
+      interestRate: 7,
+      customer: {
+        name: customer.name,
+        legalName: customer.companyLegalName,
+        streetAddress: customer.streetAddress,
+        postalCode: customer.postalCode,
+        city: customer.city,
+        businessId: customer.businessId,
+        showPriceWithoutTax: customer.showPriceWithoutTax,
+        discount: customer.discount,
+      },
+      company: {
+        name: company.name,
+        bankNumber: company.invoiceBankAccount ?? '',
+        bankName: company.invoiceBankName ?? '',
+        streetAddress: company.streetAddress,
+        postalCode: company.postalCode,
+        city: company.city,
+        phone: company.phone,
+        email: company.email,
+        website: company.website,
+        businessId: company.businessId,
+      },
+      ...calculateTotals(items, customer.discount, customer.showPriceWithoutTax),
+    } satisfies InvoiceDto
+
+    await prisma.invoice.create({
+      data: {
+        invoiceNumber,
+        customerId: customer.id,
+        tenantId,
+        content: JSON.stringify(invoice),
+      },
+    })
+
+    return invoice
+  },
 }
 
 export function calculateTotals(items: InvoiceItemDto[], discount: Decimal, usePrice0: boolean) {

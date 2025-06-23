@@ -2,7 +2,6 @@ import type { DeleteCustomerResponseDto, GetCustomersResponseDto, PostCreateCust
 import { Decimal } from 'decimal.js'
 import express from 'express'
 import { getUser, isAuthenticated } from '../middlewares/permissions'
-import prisma from '../prisma'
 import { CustomerService } from '../services/customer-service'
 
 export const customersRoute = express.Router()

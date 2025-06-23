@@ -6,6 +6,7 @@ import { describe, expect, it } from 'vitest'
 import prisma from '../prisma'
 import { AuthService } from '../services/auth-service'
 import { CustomerService } from '../services/customer-service'
+import { InvoiceService } from '../services/invoice-service'
 import { OrderService } from '../services/order-service'
 import { ProductService } from '../services/product-service'
 import { TenantService } from '../services/tenant-service'
@@ -116,19 +117,19 @@ describe('integration test', () => {
       const product = products[productIdIndex]
       orderRows.push({
         productId: product.id,
-        amount: new Decimal(Math.floor(Math.random() * 10) * (product.packageSize || 1) + (Math.random() > 0.99 ? 0.5 : 0)),
+        amount: new Decimal(37),
         price: product.price || new Decimal(0.99).toDecimalPlaces(2),
         price0: product.price0 || new Decimal(0.99).div(1.14).toDecimalPlaces(2),
         packageSize: product.packageSize || 1,
         packageType: product.packageType || 'Ltk',
-        freetext: Math.random() > 0.9 ? 'Erikoistuote' : null,
+        freetext: 'Erikoistuote',
       })
     }
 
-    const deliveryDate = subDays(new Date(), 35)
+    const deliveryDate = subDays(new Date(), 5)
 
     await OrderService.createOrder({
-      customerId: customers.customers[0].id,
+      customerId: sello.id,
       tenantId: tenant.id,
       deliveryDate,
       hasNote: true,
@@ -148,6 +149,17 @@ describe('integration test', () => {
     expect(order.noteHeader).toBe('Toimitus')
     expect(order.noteBody).toBe('Toimitus ovelle H3. Nouto aamulla.')
     expect(order.orderRows.length).toBe(products.length)
+
+    const invoice = await InvoiceService.getInvoice(sello.id, tenant.id, subDays(new Date(), 30), new Date())
+    expect(invoice).toBeDefined()
+    expect(invoice.items.length).toBe(products.length)
+    expect(invoice.totals.totalSumWithTax.equals(new Decimal(51.88))).toBe(true)
+    expect(invoice.totals.totalSumWithoutTax.equals(new Decimal(45.51))).toBe(true)
+    expect(invoice.totals.totalDiscount.equals(new Decimal(0))).toBe(true)
+    expect(invoice.totals.totalTax.equals(new Decimal(6.37))).toBe(true)
+    expect(invoice.totals.finalSumWithTax.equals(new Decimal(51.88))).toBe(true)
+    expect(invoice.totals.finalSumWithoutTax.equals(new Decimal(45.51))).toBe(true)
+    expect(invoice.totals.totalKg.equals(new Decimal(37))).toBe(true)
 
     await CustomerService.deleteCustomer(sello.id, tenant.id, juha.id)
 
