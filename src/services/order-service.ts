@@ -3,9 +3,10 @@ import type { GetOrderDto, GetOrderList, PostOrderItemRequest, PostOrderItemRequ
 import { endOfDay, endOfMonth, parse, startOfDay, startOfMonth } from 'date-fns'
 import { Decimal } from 'decimal.js'
 import puppeteer from 'puppeteer'
-import { dateToString } from '../../frontend/src/utils/date'
+import { dateToString, stringToDate } from '../../frontend/src/utils/date'
 import prisma from '../prisma'
 import { serializeNumber } from '../utils/money'
+import { TenantService } from './tenant-service'
 import { createWaybills } from './waybill'
 
 export interface OrderRowDto {
@@ -78,6 +79,98 @@ export const OrderService = {
       }
 
       return order
+    })
+  },
+
+  async updateOrder(data: { tenantId: string, userId: string, customerId: string, id: string, deliveryDate: string, hasNote: boolean, noteHeader: string | null, noteBody: string | null, items: PostOrderItemRequest[] }): Promise<void> {
+    for (const item of data.items) {
+      await TenantService.verifyPackageSizeAndType(item.packageType, item.packageSize, data.tenantId)
+    }
+    const result = await prisma.order.update({
+      data: {
+        deliveryDate: stringToDate(data.deliveryDate),
+        hasNote: data.hasNote,
+        noteHeader: data.hasNote ? data.noteHeader : undefined,
+        noteBody: data.hasNote ? data.noteBody : undefined,
+        showPriceWithoutTax: false,
+        customer: {
+          connect: {
+            id: data.customerId,
+          },
+        },
+        tenant: {
+          connect: {
+            id: data.tenantId,
+          },
+        },
+      },
+      where: {
+        id: data.id,
+        tenantId: data.tenantId,
+      },
+    })
+    console.log(data.items)
+    const toCreate = data.items.filter(r => !r.id)
+    if (toCreate.length > 0) {
+      await prisma.orderRow.createMany({
+        data: toCreate.map((r) => {
+          return {
+            orderId: result.id,
+            tenantId: data.tenantId,
+            productId: r.productId,
+            amount: r.amount,
+            price: r.price || 0,
+            price0: r.price0 || 0,
+            freetext: r.freetext,
+            packageSize: r.packageSize,
+            packageType: r.packageType,
+          }
+        }),
+      })
+    }
+    const toUpdate = data.items.filter(r => r.id)
+    if (toUpdate.length > 0) {
+      const promises = toUpdate.map((r) => {
+        console.log(r)
+        return prisma.orderRow.update({
+          data: {
+            orderId: result.id,
+            productId: r.productId,
+            amount: r.amount,
+            price: r.price || 0,
+            price0: r.price0 || 0,
+            freetext: r.freetext,
+            packageSize: r.packageSize,
+            packageType: r.packageType,
+          },
+          where: {
+            id: r.id as string,
+            orderId: result.id,
+          },
+        })
+      })
+
+      const promises2 = toUpdate.filter(r => r.deleted).map((r) => {
+        return prisma.orderRow.delete({
+          where: {
+            id: r.id as string,
+            orderId: result.id,
+          },
+        })
+      })
+      await Promise.all([...promises, ...promises2])
+    }
+
+    await prisma.log.create({
+      data: {
+        userId: data.userId,
+        tenantId: data.tenantId,
+        event: 'update_order',
+        data: {
+          order: result.id,
+          customer: result.customerId,
+        },
+      },
     })
   },
 

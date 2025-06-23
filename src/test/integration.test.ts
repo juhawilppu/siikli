@@ -168,6 +168,24 @@ describe('integration test', () => {
     expect(order.hasNote).toBe(true)
     expect(order.noteHeader).toBe('Toimitus')
     expect(order.noteBody).toBe('Toimitus ovelle H3. Nouto aamulla.')
+    expect(order.items.length).toBe(1)
+
+    await OrderService.updateOrder({
+      tenantId: tenant.id,
+      userId: juha.id,
+      customerId: sello.id,
+      id: orderId.id,
+      deliveryDate: dateToString(deliveryDate),
+      hasNote: true,
+      noteHeader: 'Toimitus',
+      noteBody: 'Toimitus ovelle H3. Nouto aamulla.',
+      items: order.items.map(item => ({
+        ...item,
+        id: item.id,
+        packages: 1,
+        freetext: 'Erikoistuote',
+      })),
+    })
 
     const orders = await OrderService.getOrders(tenant.id, subDays(new Date(), 1), addDays(new Date(), 1))
     expect(orders.length).toBe(1)
