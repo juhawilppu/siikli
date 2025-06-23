@@ -1,6 +1,6 @@
 import type { Customer } from '@prisma/client'
 import type Decimal from 'decimal.js'
-import type { GetCustomersResponse } from '../../frontend/src/types/types'
+import type { DeleteCustomerResponseDto, GetCustomersResponse } from '../../frontend/src/types/types'
 import prisma from '../prisma'
 
 interface CustomerCreateInput {
@@ -174,6 +174,42 @@ export const CustomerService = {
       })
 
       return customer
+    })
+
+    return result
+  },
+  async deleteCustomer(id: string, tenantId: string, userId: string): Promise<DeleteCustomerResponseDto> {
+    const result = await prisma.$transaction(async (tx) => {
+      const deletedOrders = await tx.order.deleteMany({
+        where: {
+          customerId: id,
+          tenantId,
+        },
+      })
+
+      const deletedCustomer = await tx.customer.delete({
+        where: {
+          id,
+          tenantId,
+        },
+      })
+
+      await tx.log.create({
+        data: {
+          userId,
+          tenantId,
+          event: 'delete_customer',
+          data: {
+            customer: deletedCustomer.id,
+            name: deletedCustomer.name,
+          },
+        },
+      })
+
+      return {
+        deletedOrders: deletedOrders.count,
+        deletedCustomer: deletedCustomer.id,
+      } satisfies DeleteCustomerResponseDto
     })
 
     return result

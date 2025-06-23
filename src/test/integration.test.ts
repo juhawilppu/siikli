@@ -148,5 +148,13 @@ describe('integration test', () => {
     expect(order.noteHeader).toBe('Toimitus')
     expect(order.noteBody).toBe('Toimitus ovelle H3. Nouto aamulla.')
     expect(order.orderRows.length).toBe(products.length)
+
+    await CustomerService.deleteCustomer(sello.id, tenant.id, juha.id)
+
+    const deletedCustomer = await CustomerService.getCustomer(sello.id, tenant.id)
+    expect(deletedCustomer).toBeNull()
+
+    const deletedOrders = await OrderService.getOrders(tenant.id)
+    expect(deletedOrders.length).toBe(0)
   })
 })

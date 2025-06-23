@@ -58,36 +58,12 @@ customersRoute.put(`/api/customers/:id`, isAuthenticated, async (req, res) => {
 
 customersRoute.delete(`/api/customers/:id`, isAuthenticated, async (req, res) => {
   const { userId, tenantId } = getUser(req)
-
   const id = req.params.id
-  console.log('deleting customer', id)
 
-  const deletedOrders = await prisma.order.deleteMany({
-    where: {
-      customerId: id,
-      tenantId,
-    },
-  })
+  const result = await CustomerService.deleteCustomer(id, tenantId, userId)
 
-  const result = await prisma.customer.delete({
-    where: {
-      id,
-      tenantId,
-    },
-  })
-  await prisma.log.create({
-    data: {
-      userId,
-      tenantId,
-      event: 'delete_customer',
-      data: {
-        customer: result.id,
-        name: result.name,
-      },
-    },
-  })
-  res.json({
-    deletedOrders: deletedOrders.count,
-    deletedCustomer: result.id,
+  return res.json({
+    deletedOrders: result.deletedOrders,
+    deletedCustomer: result.deletedCustomer,
   } satisfies DeleteCustomerResponseDto)
 })
