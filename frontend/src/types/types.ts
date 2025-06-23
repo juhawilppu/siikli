@@ -230,6 +230,25 @@ export interface PostCreateCustomerRequestDto {
   customerGroup: string | null
 }
 
+export interface PutUpdateCustomerRequestDto {
+  name: string
+  companyLegalName: string | null
+  discount: number
+  invoiceReference: string | null
+  streetAddress: string | null
+  postalCode: string | null
+  city: string | null
+  showPriceWithoutTax: boolean
+  email: string | null
+  phone: string | null
+  businessId: string | null
+  customerGroup: string | null
+}
+
+export interface PutUpdateCustomerResponseDto {
+  id: string
+}
+
 export type InvoiceRowDto = {
   usePrice0: true
   deliveryDate: Date

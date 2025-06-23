@@ -71,6 +71,16 @@ export const CustomerService = {
       }),
     }
   },
+  async getCustomer(id: string, tenantId: string): Promise<Customer | null> {
+    const result = await prisma.customer.findUnique({
+      where: {
+        id,
+        tenantId,
+      },
+    })
+
+    return result
+  },
   async createCustomer(input: CustomerCreateInput, tenantId: string, userId: string): Promise<Customer> {
     const {
       name,
@@ -122,5 +132,45 @@ export const CustomerService = {
     })
 
     return customer
+  },
+  async updateCustomer(id: string, body: CustomerCreateInput, tenantId: string, userId: string): Promise<Customer> {
+    const result = await prisma.customer.update({
+      where: {
+        id,
+        tenantId,
+      },
+      data: {
+        tenant: {
+          connect: {
+            id: tenantId,
+          },
+        },
+        name: body.name,
+        companyLegalName: body.companyLegalName,
+        discount: body.discount,
+        streetAddress: body.streetAddress,
+        postalCode: body.postalCode,
+        city: body.city,
+        email: body.email,
+        phone: body.phone,
+        showPriceWithoutTax: body.showPriceWithoutTax,
+        invoiceReference: body.invoiceReference,
+        businessId: body.businessId,
+        customerGroup: body.customerGroup,
+      },
+    })
+    await prisma.log.create({
+      data: {
+        userId,
+        tenantId,
+        event: 'update_customer',
+        data: {
+          customer: result.id,
+          name: result.name,
+        },
+      },
+    })
+
+    return result
   },
 }

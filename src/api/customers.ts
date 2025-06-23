@@ -1,4 +1,4 @@
-import type { DeleteCustomerResponseDto, GetCustomersResponseDto, PostCreateCustomerRequestDto } from '../../frontend/src/types/types'
+import type { DeleteCustomerResponseDto, GetCustomersResponseDto, PostCreateCustomerRequestDto, PutUpdateCustomerRequestDto, PutUpdateCustomerResponseDto } from '../../frontend/src/types/types'
 import { Decimal } from 'decimal.js'
 import express from 'express'
 import { getUser, isAuthenticated } from '../middlewares/permissions'
@@ -45,45 +45,15 @@ customersRoute.put(`/api/customers/:id`, isAuthenticated, async (req, res) => {
   const { userId, tenantId } = getUser(req)
 
   const id = req.params.id
-  const body = req.body as PostCreateCustomerRequestDto
-  const result = await prisma.customer.update({
-    where: {
-      id,
-      tenantId,
-    },
-    data: {
-      tenant: {
-        connect: {
-          id: tenantId,
-        },
-      },
-      name: body.name,
-      companyLegalName: body.companyLegalName,
-      discount: body.discount,
-      streetAddress: body.streetAddress,
-      postalCode: body.postalCode,
-      city: body.city,
-      email: body.email,
-      phone: body.phone,
-      showPriceWithoutTax: body.showPriceWithoutTax,
-      invoiceReference: body.invoiceReference,
-      businessId: body.businessId,
-      customerGroup: body.customerGroup,
-    },
-  })
-  await prisma.log.create({
-    data: {
-      userId,
-      tenantId,
-      event: 'update_customer',
-      data: {
-        customer: result.id,
-        name: result.name,
-      },
-    },
-  })
+  const body = req.body as PutUpdateCustomerRequestDto
+  const result = await CustomerService.updateCustomer(id, {
+    ...body,
+    discount: new Decimal(body.discount),
+  }, tenantId, userId)
 
-  res.json(result)
+  return res.json({
+    id: result.id,
+  } satisfies PutUpdateCustomerResponseDto)
 })
 
 customersRoute.delete(`/api/customers/:id`, isAuthenticated, async (req, res) => {

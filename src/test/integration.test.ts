@@ -72,6 +72,14 @@ describe('integration test', () => {
     expect(customers.customers.length).toBe(1)
     expect(customers.customers[0].name).toBe('Alepa Sello')
 
+    await CustomerService.updateCustomer(sello.id, {
+      ...sello,
+      name: 'Alepa Sello 2',
+    }, tenant.id, juha.id)
+
+    const updatedCustomer = await CustomerService.getCustomer(sello.id, tenant.id)
+    expect(updatedCustomer?.name).toBe('Alepa Sello 2')
+
     const packageSizes = [5, 10, 20, 30, 50, 100, 200, 300]
     for (const size of packageSizes) {
       await TenantService.createPackageSize({ size, tenantId: tenant.id })
