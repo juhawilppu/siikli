@@ -9,6 +9,7 @@ import { AuthService } from '../services/auth-service'
 import { CustomerService } from '../services/customer-service'
 import { InvoiceService } from '../services/invoice-service'
 import { OrderService } from '../services/order-service'
+import { PackagingListService } from '../services/packaging-list-service'
 import { ProductService } from '../services/product-service'
 import { TenantService } from '../services/tenant-service'
 import { UserService } from '../services/user-service'
@@ -207,6 +208,21 @@ describe('integration test', () => {
     const waybillPdf = await OrderService.getWaybillPdf(tenant.id, dateToString(deliveryDate), dateToString(deliveryDate))
     expect(waybillPdf).toBeInstanceOf(Uint8Array)
     expect(waybillPdf.length).toBeGreaterThan(100)
+
+    const packagingListByCustomer = await PackagingListService.getPackagingListGroupedByCustomer(tenant.id, dateToString(deliveryDate))
+    expect(packagingListByCustomer).toBeDefined()
+    expect(packagingListByCustomer.groupedBy).toBe('customer')
+    expect(packagingListByCustomer.rows.length).toBe(products.length)
+    expect(packagingListByCustomer.rows[0].customerId).toBe(sello.id)
+    expect(packagingListByCustomer.rows[0].productName).toBe(products[0].name)
+    expect(packagingListByCustomer.rows[0].amount.equals(new Decimal(37))).toBe(true)
+
+    const packagingListByProduct = await PackagingListService.getPackagingListGroupedByProduct(tenant.id, dateToString(deliveryDate))
+    expect(packagingListByProduct).toBeDefined()
+    expect(packagingListByProduct.groupedBy).toBe('product')
+    expect(packagingListByProduct.rows.length).toBe(products.length)
+    expect(packagingListByProduct.rows[0].productId).toBe(products[0].id)
+    expect(packagingListByProduct.rows[0].amount.equals(new Decimal(37))).toBe(true)
 
     const invoice = await InvoiceService.getInvoice(sello.id, tenant.id, subDays(new Date(), 30), new Date())
     expect(invoice).toBeDefined()

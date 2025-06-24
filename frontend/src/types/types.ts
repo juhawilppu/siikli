@@ -136,7 +136,7 @@ export interface PackagingListGroupedByCustomer {
     packageSize: number
     packageType: string
     freetext: string
-    amount: number
+    amount: Decimal
   }[]
 }
 
@@ -150,7 +150,7 @@ export interface PackagingListGroupedByProduct {
     productName: string
     packageSize: number
     packageType: string
-    amount: number
+    amount: Decimal
   }[]
 }
 
