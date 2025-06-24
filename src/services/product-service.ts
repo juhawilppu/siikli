@@ -1,37 +1,60 @@
-import type { Product } from '@prisma/client'
 import type Decimal from 'decimal.js'
-import type { GetProductResponse, GetProductResponseDto, ProductTypeResponse } from '../../frontend/src/types/types'
+import type { GetProductResponse, ProductTypeResponse } from '../../frontend/src/types/types'
 import prisma from '../prisma'
-import { formatNumber } from '../utils/money'
+import { TenantService } from './tenant-service'
 
 export const ProductService = {
 
-  async createProduct(input: { name: string, tenantId: string, price: Decimal, price0: Decimal, packageSize: number, packageType: string }): Promise<Product> {
+  async createProduct(input: { name: string, tenantId: string, userId: string, price: Decimal | null, price0: Decimal | null, packageSize: number | null, packageType: string | null, type: string | null, variety: string | null, info: string | null, subtype: string | null, customerGroup: string | null }): Promise<string> {
     const {
       name,
       tenantId,
+      userId,
       price,
       price0,
       packageSize,
       packageType,
+      type,
+      variety,
+      info,
+      subtype,
+      customerGroup,
     } = input
 
-    if (price.div(1.14).toDecimalPlaces(2).toNumber() !== price0.toDecimalPlaces(2).toNumber()) {
+    if (price && price0 && price.div(1.14).toDecimalPlaces(2).toNumber() !== price0.toDecimalPlaces(2).toNumber()) {
       throw new Error('Price and price0 do not match')
     }
 
-    const product = await prisma.product.create({
+    await TenantService.verifyPackageSizeAndType(packageType, packageSize, tenantId)
+    await ProductService.verifyProductTypeAndSubtype({ type, subtype }, tenantId)
+
+    const result = await prisma.product.create({
       data: {
         name,
-        tenantId,
-        price,
+        type,
+        variety,
+        info,
         price0,
+        price,
+        subtype,
         packageSize,
         packageType,
+        customerGroup,
+        tenantId,
       },
     })
-
-    return product
+    await prisma.log.create({
+      data: {
+        userId,
+        tenantId,
+        event: 'create_product',
+        data: {
+          product: result.id,
+          name: result.name,
+        },
+      },
+    })
+    return result.id
   },
 
   async getProducts(tenantId: string): Promise<GetProductResponse[]> {
@@ -73,7 +96,7 @@ export const ProductService = {
     return rows.map((r) => {
       return {
         id: r.id,
-        name: r.type!,
+        type: r.type!,
         orderIndex: r.orderIndex,
         subtypes: r.productSubtypes.map((s) => {
           return {
@@ -84,5 +107,56 @@ export const ProductService = {
         }),
       }
     })
+  },
+
+  async verifyProductTypeAndSubtype(body: { type: string | null, subtype: string | null }, tenantId: string) {
+    console.log('checking type', body.type)
+
+    if (body.type) {
+      const type = await prisma.productType.findFirst({
+        where: {
+          type: body.type,
+          tenantId,
+        },
+      })
+      if (!type) {
+        console.log('creating type', body.type)
+        await prisma.productType.create({
+          data: {
+            tenantId,
+            type: body.type,
+            orderIndex: 0,
+          },
+        })
+      }
+      else {
+        console.log('type OK')
+      }
+    }
+
+    if (body.subtype) {
+      console.log('checking subtype', body.subtype)
+      const subtype = await prisma.productSubtypes.findFirst({
+        where: {
+          type: body.type,
+          subtype: body.subtype,
+          tenantId,
+        },
+      })
+      if (!subtype) {
+        console.log('creating subtype', body.subtype)
+        await prisma.productSubtypes.create({
+          data: {
+            tenantId,
+            type: body.type,
+            subtype: body.subtype,
+            orderIndex: 0,
+          },
+        })
+      }
+      else {
+        console.log('subtype OK')
+      }
+    }
   },
 }

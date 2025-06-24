@@ -139,7 +139,7 @@ export const TenantService = {
 
     return packageType
   },
-  async verifyPackageSizeAndType(packageType: string | null, packageSize: number | null, tenantId: string): Promise<{ packageType: boolean, packageSize: boolean }> {
+  async verifyPackageSizeAndType(packageType: string | null | undefined, packageSize: number | null | undefined, tenantId: string): Promise<{ packageType: boolean, packageSize: boolean }> {
     const created = {
       packageType: false,
       packageSize: false,

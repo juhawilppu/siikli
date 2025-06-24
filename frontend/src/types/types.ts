@@ -364,7 +364,7 @@ export interface PostProductCreateRequestDto {
 
 export interface ProductTypeResponse {
   id: string
-  name: string
+  type: string
   orderIndex: number
   subtypes: {
     id: string

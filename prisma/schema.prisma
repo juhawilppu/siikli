@@ -231,6 +231,7 @@ model ProductType {
   updatedAt       DateTime          @default(now()) @updatedAt @map("updated_at")
   productSubtypes ProductSubtypes[]
 
+  @@unique([type, tenantId], map: "product_type_uniq")
   @@map("product_type")
 }
 
@@ -378,7 +379,7 @@ model ProductSubtypes {
   createdAt    DateTime     @default(now()) @map("created_at")
   updatedAt    DateTime     @default(now()) @updatedAt @map("updated_at")
 
-  @@unique([type, subtype], map: "product_subtype_uniq")
+  @@unique([type, subtype, tenantId], map: "product_subtype_uniq")
   @@index([orderId])
   @@map("product_subtype")
 }

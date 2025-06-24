@@ -118,6 +118,12 @@ describe('integration test', () => {
       price0: new Decimal(1.40).div(1.14),
       packageSize: 10,
       packageType: 'Ltk',
+      userId: juha.id,
+      type: 'Ltk',
+      variety: 'Siikli',
+      info: 'Erikoistuote',
+      subtype: 'Siikli',
+      customerGroup: null,
     })
     expect(siikli).toBeDefined()
 
@@ -128,6 +134,12 @@ describe('integration test', () => {
       price0: new Decimal(1.40), // This is wrong on purpose
       packageSize: 10,
       packageType: 'Ltk',
+      userId: juha.id,
+      type: 'Ltk',
+      variety: 'Siikli',
+      info: 'Erikoistuote',
+      subtype: 'Siikli',
+      customerGroup: null,
     })).rejects.toThrow('Price and price0 do not match')
 
     const products = await ProductService.getProducts(tenant.id)
@@ -140,7 +152,10 @@ describe('integration test', () => {
     expect(products[0].customerGroup).toBeNull()
 
     const productTypes = await ProductService.getProductTypes(tenant.id)
-    expect(productTypes.length).toBe(0) // No product types yet
+    expect(productTypes.length).toBe(1)
+    expect(productTypes[0].type).toBe('Ltk')
+    expect(productTypes[0].subtypes.length).toBe(0)
+    expect(productTypes[0].id).toBeDefined()
 
     const orderRows: OrderRowDto[] = []
     for (let productIdIndex = 0; productIdIndex < products.length; productIdIndex++) {
