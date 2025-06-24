@@ -1,6 +1,8 @@
 import type { Product } from '@prisma/client'
 import type Decimal from 'decimal.js'
+import type { GetProductResponse, GetProductResponseDto, ProductTypeResponse } from '../../frontend/src/types/types'
 import prisma from '../prisma'
+import { formatNumber } from '../utils/money'
 
 export const ProductService = {
 
@@ -32,13 +34,55 @@ export const ProductService = {
     return product
   },
 
-  async getProducts(tenantId: string): Promise<Product[]> {
+  async getProducts(tenantId: string): Promise<GetProductResponse[]> {
     const products = await prisma.product.findMany({
       where: {
         tenantId,
       },
+      orderBy: {
+        name: 'asc',
+      },
+    })
+    return products.map((p) => {
+      return {
+        id: p.id,
+        name: p.name,
+        price: p.price,
+        price0: p.price0,
+        packageSize: p.packageSize ? p.packageSize : null,
+        packageType: p.packageType,
+        customerGroup: p.customerGroup,
+        variety: p.variety,
+        type: p.type,
+        subtype: p.subtype,
+        info: p.info,
+      }
+    })
+  },
+
+  async getProductTypes(tenantId: string): Promise<ProductTypeResponse[]> {
+    const rows = await prisma.productType.findMany({
+      where: {
+        tenantId,
+      },
+      include: {
+        productSubtypes: true,
+      },
     })
 
-    return products
+    return rows.map((r) => {
+      return {
+        id: r.id,
+        name: r.type!,
+        orderIndex: r.orderIndex,
+        subtypes: r.productSubtypes.map((s) => {
+          return {
+            id: s.id,
+            name: s.subtype!,
+            orderIndex: s.orderIndex,
+          }
+        }),
+      }
+    })
   },
 }

@@ -131,6 +131,16 @@ describe('integration test', () => {
     })).rejects.toThrow('Price and price0 do not match')
 
     const products = await ProductService.getProducts(tenant.id)
+    expect(products.length).toBe(1)
+    expect(products[0].name).toBe('Siikli')
+    expect(products[0].price).toBeDefined()
+    expect(products[0].price0).toBeDefined()
+    expect(products[0].packageSize).toBe(10)
+    expect(products[0].packageType).toBe('Ltk')
+    expect(products[0].customerGroup).toBeNull()
+
+    const productTypes = await ProductService.getProductTypes(tenant.id)
+    expect(productTypes.length).toBe(0) // No product types yet
 
     const orderRows: OrderRowDto[] = []
     for (let productIdIndex = 0; productIdIndex < products.length; productIdIndex++) {

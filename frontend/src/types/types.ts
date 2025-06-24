@@ -321,6 +321,20 @@ export interface ProductDto {
   packageType: string
 }
 
+export interface GetProductResponse {
+  id: string
+  name: string
+  info: string | null
+  price: Decimal | null
+  price0: Decimal | null
+  variety: string | null
+  type: string | null
+  subtype: string | null
+  packageSize: number | null
+  packageType: string | null
+  customerGroup: string | null
+}
+
 export interface GetProductResponseDto {
   id: string
   name: string

@@ -2,6 +2,8 @@ import type { GetProductResponseDto, PostProductCreateRequestDto, ProductTypeRes
 import express from 'express'
 import { getUser, isAuthenticated } from '../middlewares/permissions'
 import prisma from '../prisma'
+import { ProductService } from '../services/product-service'
+import { TenantService } from '../services/tenant-service'
 import { formatNumber } from '../utils/money'
 
 const productsRoute = express.Router()
@@ -9,21 +11,14 @@ const productsRoute = express.Router()
 productsRoute.get(`/api/products`, isAuthenticated, async (req, res) => {
   console.log('getting products')
   const { tenantId } = getUser(req)
-  const products = await prisma.product.findMany({
-    where: {
-      tenantId,
-    },
-    orderBy: {
-      name: 'asc',
-    },
-  })
-  res.json(products.map((p) => {
+  const products = await ProductService.getProducts(tenantId)
+  res.status(200).json(products.map((p) => {
     return {
       id: p.id,
       name: p.name,
       price: formatNumber(p.price),
       price0: formatNumber(p.price0),
-      packageSize: p.packageSize ? p.packageSize : null,
+      packageSize: p.packageSize,
       packageType: p.packageType,
       customerGroup: p.customerGroup,
       variety: p.variety,
@@ -37,75 +32,14 @@ productsRoute.get(`/api/products`, isAuthenticated, async (req, res) => {
 productsRoute.get(`/api/products/product-types`, isAuthenticated, async (req, res) => {
   console.log('getting product-types')
   const { tenantId } = getUser(req)
-  const rows = await prisma.productType.findMany({
-    where: {
-      tenantId,
-    },
-    include: {
-      productSubtypes: true,
-    },
-  })
-
-  res.status(200).json(rows.map((r) => {
-    return {
-      id: r.id,
-      name: r.type!,
-      orderIndex: r.orderIndex,
-      subtypes: r.productSubtypes.map((s) => {
-        return {
-          id: s.id,
-          name: s.subtype!,
-          orderIndex: s.orderIndex,
-        }
-      }),
-    }
-  }) satisfies ProductTypeResponse[])
+  const productTypes = await ProductService.getProductTypes(tenantId)
+  res.status(200).json(productTypes satisfies ProductTypeResponse[])
 })
 
 async function verifyProductTypeAndSubtype(body: { packageType: string | null, packageSize: number | null, type: string, subtype: string }, tenantId: string) {
   console.log('checking type', body.type)
 
-  if (body.packageType) {
-    const packageType = await prisma.packageType.findFirst({
-      where: {
-        name: body.packageType,
-        tenantId,
-      },
-    })
-    if (!packageType) {
-      console.log('creating package type', body.packageType)
-      await prisma.packageType.create({
-        data: {
-          tenantId,
-          name: body.packageType,
-        },
-      })
-    }
-    else {
-      console.log('package type OK')
-    }
-  }
-
-  if (body.packageSize) {
-    const packageSize = await prisma.packageSize.findFirst({
-      where: {
-        size: body.packageSize,
-        tenantId,
-      },
-    })
-    if (!packageSize) {
-      console.log('creating package size', body.packageSize)
-      await prisma.packageSize.create({
-        data: {
-          tenantId,
-          size: body.packageSize,
-        },
-      })
-    }
-    else {
-      console.log('package size OK')
-    }
-  }
+  await TenantService.verifyPackageSizeAndType(body.packageType, body.packageSize, tenantId)
 
   const type = await prisma.productType.findFirst({
     where: {
