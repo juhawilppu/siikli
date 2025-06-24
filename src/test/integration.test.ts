@@ -128,7 +128,7 @@ describe('integration test', () => {
     expect(siikli).toBeDefined()
 
     const productToDelete = await ProductService.createProduct({
-      name: 'Siikli To Delete',
+      name: 'Siikli To Update',
       tenantId: tenant.id,
       price: new Decimal(1.40),
       price0: new Decimal(1.40).div(1.14),
@@ -142,6 +142,20 @@ describe('integration test', () => {
       customerGroup: null,
     })
     expect(productToDelete).toBeDefined()
+
+    await ProductService.updateProduct(productToDelete, tenant.id, {
+      id: productToDelete,
+      name: 'Siikli To Delete',
+      price: new Decimal(1.40).toString(),
+      price0: new Decimal(1.40).div(1.14).toString(),
+      packageSize: 10,
+      packageType: 'Ltk',
+      type: 'Ltk',
+      variety: 'Siikli',
+      info: 'Erikoistuote',
+      subtype: 'Siikli',
+      customerGroup: null,
+    }, juha.id)
 
     const products2 = await ProductService.getProducts(tenant.id)
     expect(products2.length).toBe(2)

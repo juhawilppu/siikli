@@ -1,5 +1,5 @@
 import type Decimal from 'decimal.js'
-import type { GetProductResponse, ProductTypeResponse } from '../../frontend/src/types/types'
+import type { GetProductResponse, GetProductResponseDto, ProductTypeResponse } from '../../frontend/src/types/types'
 import prisma from '../prisma'
 import { TenantService } from './tenant-service'
 
@@ -179,5 +179,40 @@ export const ProductService = {
         },
       }),
     ])
+  },
+
+  async updateProduct(id: string, tenantId: string, body: GetProductResponseDto, userId: string): Promise<void> {
+    await TenantService.verifyPackageSizeAndType(body.packageType, body.packageSize, tenantId)
+    await ProductService.verifyProductTypeAndSubtype(body as any, tenantId)
+
+    await prisma.product.update({
+      data: {
+        name: body.name,
+        type: body.type,
+        variety: body.variety,
+        info: body.info,
+        price0: body.price0,
+        price: body.price,
+        subtype: body.subtype,
+        packageSize: body.packageSize,
+        packageType: body.packageType,
+        customerGroup: body.customerGroup,
+      },
+      where: {
+        id,
+        tenantId,
+      },
+    })
+    await prisma.log.create({
+      data: {
+        userId,
+        tenantId,
+        event: 'update_product',
+        data: {
+          product: id,
+          name: body.name,
+        },
+      },
+    })
   },
 }

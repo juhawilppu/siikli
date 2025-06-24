@@ -2,9 +2,7 @@ import type { GetProductResponseDto, PostProductCreateRequestDto, ProductTypeRes
 import { Decimal } from '@prisma/client/runtime/library'
 import express from 'express'
 import { getUser, isAuthenticated } from '../middlewares/permissions'
-import prisma from '../prisma'
 import { ProductService } from '../services/product-service'
-import { TenantService } from '../services/tenant-service'
 import { formatNumber } from '../utils/money'
 
 const productsRoute = express.Router()
@@ -68,63 +66,14 @@ productsRoute.delete(`/api/products/:id`, isAuthenticated, async (req, res) => {
   res.status(200).json({ message: 'OK' })
 })
 
-/*
-productsRoute.post(`/api/products/reorder`, isAuthenticated, async (req, res) => {
-  console.log('reorder', req.body)
-  const body = req.body as ReorderDto
-  const { tenantId } = getUser(req)
-  await prisma.product.update({
-    data: {
-      orderIndex: body.first.orderIndex,
-    },
-    where: {
-      id: body.first.id,
-      tenantId,
-    },
-  },
-  )
-  await prisma.product.update({
-    data: {
-      orderIndex: body.second.orderIndex,
-    },
-    where: {
-      id: body.second.id,
-      tenantId,
-    },
-  },
-  )
-  res.status(201).json({ message: 'OK' })
-})
-  */
-
-productsRoute.post(`/api/products/:id`, isAuthenticated, async (req, res) => {
+productsRoute.put(`/api/products/:id`, isAuthenticated, async (req, res) => {
   const id = req.params.id
   console.log(`updating product ${id}`)
-  const { tenantId } = getUser(req)
+  const { tenantId, userId } = getUser(req)
   const body = req.body as GetProductResponseDto
 
-  await TenantService.verifyPackageSizeAndType(body.packageType, body.packageSize, tenantId)
-  await ProductService.verifyProductTypeAndSubtype(body as any, tenantId)
-
-  const result = await prisma.product.update({
-    data: {
-      name: body.name,
-      type: body.type,
-      variety: body.variety,
-      info: body.info,
-      price0: body.price0,
-      price: body.price,
-      subtype: body.subtype,
-      packageSize: body.packageSize,
-      packageType: body.packageType,
-      customerGroup: body.customerGroup,
-    },
-    where: {
-      id,
-      tenantId,
-    },
-  })
-  res.json(result)
+  await ProductService.updateProduct(id, tenantId, body, userId)
+  res.status(200).json({ message: 'OK' })
 })
 
 export default productsRoute
