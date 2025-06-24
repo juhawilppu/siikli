@@ -63,29 +63,9 @@ productsRoute.delete(`/api/products/:id`, isAuthenticated, async (req, res) => {
   console.log('delete', req.body)
   const { tenantId, userId } = getUser(req)
   const id = req.params.id
-  try {
-    await prisma.product.delete({
-      where: {
-        id,
-        tenantId,
-      },
-    })
-    await prisma.log.create({
-      data: {
-        userId,
-        tenantId,
-        event: 'delete_product',
-        data: {
-          product: id,
-        },
-      },
-    })
-    res.status(200).json({ message: 'OK' })
-  }
-  catch (e) {
-    console.log('delete error', e)
-    res.status(400).json({ message: 'Failed' })
-  }
+
+  await ProductService.deleteProduct(id, tenantId, userId)
+  res.status(200).json({ message: 'OK' })
 })
 
 /*

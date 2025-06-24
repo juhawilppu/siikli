@@ -159,4 +159,25 @@ export const ProductService = {
       }
     }
   },
+
+  async deleteProduct(id: string, tenantId: string, userId: string) {
+    await prisma.$transaction([
+      prisma.product.delete({
+        where: {
+          id,
+          tenantId,
+        },
+      }),
+      prisma.log.create({
+        data: {
+          userId,
+          tenantId,
+          event: 'delete_product',
+          data: {
+            product: id,
+          },
+        },
+      }),
+    ])
+  },
 }
