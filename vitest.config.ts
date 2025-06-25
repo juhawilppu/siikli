@@ -5,6 +5,7 @@ export default defineConfig({
     globals: true,
     environment: 'node', // or 'happy-dom' / 'jsdom' for frontend
     include: ['**/*.{test,spec}.{ts,tsx}'],
+    setupFiles: ['./src/test/setup.ts'],
     coverage: {
       include: ['src/**/*.ts', 'frontend/**/*.ts', 'frontend/src/**/*.tsx'],
       exclude: [
