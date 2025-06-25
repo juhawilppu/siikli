@@ -92,30 +92,7 @@ companiesRoute.put(`/api/tenants/users/:userId`, isAuthenticated, isOwner, async
 companiesRoute.post(`/api/tenants/subscription`, isAuthenticated, async (req, res) => {
   const { tenantId, userId } = getUser(req)
   const body = req.body as { subscription: 'FREE' | 'PREMIUM' }
-  const currentSubscription = await prisma.tenant.findFirst({
-    where: {
-      id: tenantId,
-    },
-  })
-  const result = await prisma.tenant.update({
-    data: {
-      subscriptionType: body.subscription,
-      subscriptionEndDate: body.subscription === 'FREE' ? addMonths(currentSubscription?.subscriptionStartDate || new Date(), 1).toISOString() : null,
-      subscriptionStartDate: body.subscription === 'PREMIUM' ? new Date().toISOString() : null,
-      trialEndDate: null,
-    },
-    where: {
-      id: tenantId,
-    },
-  })
-  await prisma.log.create({
-    data: {
-      userId,
-      tenantId,
-      event: 'update_tenant_subscription',
-    },
-  })
-  await sendEventEmail('Subscription changed', `Tenant: ${tenantId}\nSubscription: ${body.subscription}`)
+  const result = await TenantService.updateSubscription(tenantId, body.subscription, userId)
   res.status(200).json({
     subscriptionType: result.subscriptionType,
     subscriptionEndDate: result.subscriptionEndDate?.toISOString() ?? null,

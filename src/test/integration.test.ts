@@ -378,6 +378,13 @@ describe('integration test', () => {
     expect(users4[0].email).toBe(email2)
     expect(users4[0].role).toBe(Role.OWNER)
 
+    await TenantService.updateSubscription(tenant.id, 'FREE', juha.id)
+    const tenant2 = await TenantService.getTenant(tenant.id)
+    expect(tenant2.subscriptionType).toBe('FREE')
+    expect(tenant2.subscriptionEndDate).toBeDefined()
+    expect(tenant2.subscriptionStartDate).toBeNull()
+    expect(tenant2.trialEndDate).toBeNull()
+
     await TenantService.deleteTenant(tenant.id, juha.id)
 
     await expect(TenantService.getTenant(tenant.id)).rejects.toThrow()

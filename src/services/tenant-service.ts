@@ -374,4 +374,34 @@ export const TenantService = {
     })
     await sendEventEmail('User role updated', `Tenant: ${tenantId}\nUser: ${userId}\nRole: ${role}\nAdmin: ${adminUserId}`)
   },
+  async updateSubscription(tenantId: string, subscription: 'FREE' | 'PREMIUM', adminUserId: string): Promise<Tenant> {
+    const currentSubscription = await prisma.tenant.findFirst({
+      where: {
+        id: tenantId,
+      },
+    })
+    const result = await prisma.$transaction(async (tx) => {
+      const updatedTenant = await tx.tenant.update({
+        data: {
+          subscriptionType: subscription,
+          subscriptionEndDate: subscription === 'FREE' ? addMonths(currentSubscription?.subscriptionStartDate || new Date(), 1).toISOString() : null,
+          subscriptionStartDate: subscription === 'PREMIUM' ? new Date().toISOString() : null,
+          trialEndDate: null,
+        },
+        where: {
+          id: tenantId,
+        },
+      })
+      await prisma.log.create({
+        data: {
+          userId: adminUserId,
+          tenantId,
+          event: 'update_tenant_subscription',
+        },
+      })
+      await sendEventEmail('Subscription changed', `Tenant: ${tenantId}\nSubscription: ${subscription}`)
+      return updatedTenant
+    })
+    return result
+  },
 }
