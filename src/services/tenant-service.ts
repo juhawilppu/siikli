@@ -290,4 +290,31 @@ export const TenantService = {
     })
     await sendEventEmail('Tenant deleted', `Tenant: ${tenantId}\nUser: ${userId}`)
   },
+  async deleteUser(tenantId: string, userId: string, adminUserId: string): Promise<void> {
+    await prisma.$transaction(async (tx) => {
+      const tenant = await tx.tenant.findFirstOrThrow({
+        where: {
+          id: tenantId,
+        },
+      })
+      if (tenant.subscriptionType === 'FREE') {
+        throw new Error('Free tenants cannot delete users')
+      }
+
+      await tx.user.delete({
+        where: {
+          id: userId,
+          tenantId,
+        },
+      })
+      await tx.log.create({
+        data: {
+          userId: adminUserId,
+          tenantId,
+          event: 'delete_user',
+        },
+      })
+    })
+    await sendEventEmail('User deleted', `Tenant: ${tenantId}\nUser: ${userId}\nAdmin: ${adminUserId}`)
+  },
 }

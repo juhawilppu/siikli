@@ -71,28 +71,7 @@ companiesRoute.delete(`/api/tenants`, isAuthenticated, isOwner, async (req, res)
 companiesRoute.delete(`/api/tenants/users/:userId`, isAuthenticated, isOwner, async (req, res) => {
   const { userId, tenantId } = getUser(req)
 
-  const tenant = await prisma.tenant.findFirstOrThrow({
-    where: {
-      id: tenantId,
-    },
-  })
-  if (tenant.subscriptionType === 'FREE') {
-    return res.status(403).json({ error: 'Free tenants cannot delete users' })
-  }
-
-  await prisma.user.delete({
-    where: {
-      id: userId,
-      tenantId,
-    },
-  })
-  await prisma.log.create({
-    data: {
-      userId,
-      tenantId,
-      event: 'delete_user',
-    },
-  })
+  await TenantService.deleteUser(tenantId, req.params.userId, userId)
   res.status(200).end()
 })
 
