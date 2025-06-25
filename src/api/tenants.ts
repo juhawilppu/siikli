@@ -58,33 +58,8 @@ companiesRoute.get(`/api/tenants/package-settings`, isAuthenticated, async (req,
 companiesRoute.post(`/api/tenants`, isAuthenticated, async (req, res) => {
   const { tenantId, userId } = getUser(req)
   const body = req.body as PostCompanySettings
-  const result = await prisma.tenant.update({
-    data: {
-      name: body.name,
-      businessId: body.businessId,
-      streetAddress: body.streetAddress,
-      postalCode: body.postalCode,
-      city: body.city,
-      invoiceBankName: body.invoiceBankName,
-      invoiceBankAccount: body.invoiceBankAccount,
-      invoiceReference: body.invoiceReference,
-      invoiceSumRow: body.invoiceSumRow,
-      phone: body.phone,
-      email: body.email,
-      website: body.website,
-    },
-    where: {
-      id: tenantId,
-    },
-  })
-  await prisma.log.create({
-    data: {
-      userId,
-      tenantId,
-      event: 'update_tenant',
-    },
-  })
-  res.json(result)
+  await TenantService.updateTenant(tenantId, body, userId)
+  res.json({ message: 'OK' })
 })
 
 companiesRoute.delete(`/api/tenants`, isAuthenticated, isOwner, async (req, res) => {

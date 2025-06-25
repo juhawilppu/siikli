@@ -1,4 +1,5 @@
 import type { PackageSize, PackageType, Tenant, User } from '@prisma/client'
+import type { PostCompanySettings } from '../../frontend/src/types/types'
 import { addMonths } from 'date-fns'
 import prisma from '../prisma'
 
@@ -218,5 +219,56 @@ export const TenantService = {
         tenantId,
       },
     })
+  },
+  async updateTenant(tenantId: string, input: PostCompanySettings, userId: string): Promise<Tenant> {
+    const {
+      name,
+      businessId,
+      streetAddress,
+      postalCode,
+      city,
+      invoiceBankName,
+      invoiceSwiftBic,
+      invoiceBankAccount,
+      invoiceReference,
+      invoiceSumRow,
+      phone,
+      email,
+      website,
+    } = input
+    const result = await prisma.$transaction(async (tx) => {
+      const updatedTenant = await tx.tenant.update({
+        data: {
+          name,
+          businessId,
+          streetAddress,
+          postalCode,
+          city,
+          invoiceBankName,
+          invoiceSwiftBic,
+          invoiceBankAccount,
+          invoiceReference,
+          invoiceSumRow,
+          phone,
+          email,
+          website,
+        },
+        where: {
+          id: tenantId,
+        },
+      })
+
+      await tx.log.create({
+        data: {
+          userId,
+          tenantId,
+          event: 'update_tenant',
+        },
+      })
+
+      return updatedTenant
+    })
+
+    return result
   },
 }

@@ -400,6 +400,7 @@ export interface PostCompanySettings {
   postalCode: string | null
   city: string | null
   invoiceBankName: string | null
+  invoiceSwiftBic: string | null
   invoiceBankAccount: string | null
   invoiceReference: string | null
   invoiceSumRow: string | null

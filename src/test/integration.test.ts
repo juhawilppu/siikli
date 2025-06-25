@@ -48,6 +48,22 @@ describe('integration test', () => {
     })
     expect(juha).toBeDefined()
 
+    await TenantService.updateTenant(tenant.id, {
+      name: tenantName,
+      businessId: 'Y-1234567-8',
+      streetAddress: 'Test street 1',
+      postalCode: '12345',
+      city: 'Helsinki',
+      phone: '1234567890',
+      email: 'siikli@siikli.fi',
+      website: 'https://siikli.fi',
+      invoiceBankName: 'Test bank',
+      invoiceBankAccount: '1234567890',
+      invoiceSwiftBic: '1234567890',
+      invoiceReference: '1234567890',
+      invoiceSumRow: 'Test sum row',
+    }, juha.id)
+
     const users = await TenantService.getUsers(tenant.id)
     expect(users.length).toBe(1)
     expect(users[0].email).toBe(email)
