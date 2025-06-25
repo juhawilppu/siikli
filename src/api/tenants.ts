@@ -104,32 +104,7 @@ companiesRoute.post(`/api/tenants/subscription`, isAuthenticated, async (req, re
 companiesRoute.post(`/api/tenants/create`, isAuthenticated, async (req, res) => {
   const { tenantId, userId } = getUser(req)
   const body = req.body as CreateTenantDto
-  const result = await prisma.tenant.update({
-    data: {
-      name: body.name,
-      businessId: req.body.businessId,
-      signupCompleted: true,
-    },
-    where: {
-      id: tenantId,
-    },
-  })
-  await prisma.user.update({
-    data: {
-      marketingConsent: body.user.marketingConsent,
-    },
-    where: {
-      id: userId,
-    },
-  })
-  await sendEventEmail('Tenant completed onboarding', `Tenant: ${tenantId}\nUser: ${userId}`)
-  await prisma.log.create({
-    data: {
-      userId,
-      tenantId,
-      event: 'create_tenant',
-    },
-  })
+  const result = await TenantService.completeOnboarding(tenantId, body, userId)
   res.json(result)
 })
 

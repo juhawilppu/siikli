@@ -48,6 +48,14 @@ describe('integration test', () => {
     })
     expect(juha).toBeDefined()
 
+    await TenantService.completeOnboarding(tenant.id, {
+      name: tenantName,
+      businessId: 'Y-1234567-8',
+      user: {
+        marketingConsent: true,
+      },
+    }, juha.id)
+
     await TenantService.updateTenant(tenant.id, {
       name: tenantName,
       businessId: 'Y-1234567-8',

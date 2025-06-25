@@ -1,5 +1,5 @@
 import type { PackageSize, PackageType, Tenant, User } from '@prisma/client'
-import type { PostCompanySettings } from '../../frontend/src/types/types'
+import type { CreateTenantDto, PostCompanySettings } from '../../frontend/src/types/types'
 import { addMonths } from 'date-fns'
 import prisma from '../prisma'
 import { sendEventEmail } from './email-service'
@@ -402,6 +402,41 @@ export const TenantService = {
       await sendEventEmail('Subscription changed', `Tenant: ${tenantId}\nSubscription: ${subscription}`)
       return updatedTenant
     })
+    return result
+  },
+  async completeOnboarding(tenantId: string, input: CreateTenantDto, adminUserId: string): Promise<Tenant> {
+    const result = await prisma.$transaction(async (tx) => {
+      const tenant = await tx.tenant.update({
+        data: {
+          name: input.name,
+          businessId: input.businessId,
+          signupCompleted: true,
+        },
+        where: {
+          id: tenantId,
+        },
+      })
+
+      await tx.user.update({
+        data: {
+          marketingConsent: input.user.marketingConsent,
+        },
+        where: {
+          id: adminUserId,
+        },
+      })
+
+      await tx.log.create({
+        data: {
+          userId: adminUserId,
+          tenantId,
+          event: 'create_tenant',
+        },
+      })
+
+      return tenant
+    })
+    await sendEventEmail('Tenant completed onboarding', `Tenant: ${tenantId}\nUser: ${adminUserId}`)
     return result
   },
 }
