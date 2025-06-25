@@ -76,6 +76,19 @@ Siikli follows a **Service–Controller–Model** architecture, inspired by Spri
 
 > This structure keeps code modular, readable, and easy to evolve. It’s designed to scale naturally as the product grows.
 
+### Strict type-safety
+
+Siikli avoids complex TypeScript abstractions like `Omit`, `Partial`, or `extends` — on purpose. In my experience, types work best when they’re simple, explicit, and boring. Even if it means violating DRY.
+
+Every REST endpoint defines its own dedicated DTO types:
+- Request: `PostCreateCustomerRequestDto`
+- Response: `PostCreateCustomerResponseDto`
+
+This approach may feel repetitive, but it pays off:
+- ✅ Zero surprises in serialization
+- ✅ Easier refactoring
+- ✅ Fewer bugs at runtime
+
 ### Prefer ORM
 
 Prisma is the primary method for database access, providing type-safety, composability, and security by default.
