@@ -2,6 +2,7 @@ import type { PackageSize, PackageType, Tenant, User } from '@prisma/client'
 import type { PostCompanySettings } from '../../frontend/src/types/types'
 import { addMonths } from 'date-fns'
 import prisma from '../prisma'
+import { sendEventEmail } from './email-service'
 
 interface TenantCreateInput {
   name: string
@@ -270,5 +271,23 @@ export const TenantService = {
     })
 
     return result
+  },
+  async deleteTenant(tenantId: string, userId: string): Promise<void> {
+    await prisma.$transaction(async (tx) => {
+      await tx.tenant.delete({
+        where: {
+          id: tenantId,
+        },
+      })
+
+      await tx.log.create({
+        data: {
+          userId,
+          tenantId,
+          event: 'delete_tenant',
+        },
+      })
+    })
+    await sendEventEmail('Tenant deleted', `Tenant: ${tenantId}\nUser: ${userId}`)
   },
 }

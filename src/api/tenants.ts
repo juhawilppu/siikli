@@ -64,19 +64,7 @@ companiesRoute.post(`/api/tenants`, isAuthenticated, async (req, res) => {
 
 companiesRoute.delete(`/api/tenants`, isAuthenticated, isOwner, async (req, res) => {
   const { tenantId, userId } = getUser(req)
-  await prisma.tenant.delete({
-    where: {
-      id: tenantId,
-    },
-  })
-  await prisma.log.create({
-    data: {
-      userId,
-      tenantId,
-      event: 'delete_tenant',
-    },
-  })
-  await sendEventEmail('Tenant deleted', `Tenant: ${tenantId}\nUser: ${userId}`)
+  await TenantService.deleteTenant(tenantId, userId)
   res.status(200).end()
 })
 

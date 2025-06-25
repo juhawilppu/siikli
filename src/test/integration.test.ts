@@ -359,5 +359,9 @@ describe('integration test', () => {
 
     const deletedOrders = await OrderService.getOrders(tenant.id, subDays(new Date(), 1), addDays(new Date(), 1))
     expect(deletedOrders.length).toBe(0)
+
+    await TenantService.deleteTenant(tenant.id, juha.id)
+
+    await expect(TenantService.getTenant(tenant.id)).rejects.toThrow()
   })
 }, 9000)
