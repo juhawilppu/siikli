@@ -1,9 +1,6 @@
 import type { CreateTenantDto, GetCompanySettings, GetPackageSettings, GetUsersResponseDto, PostCompanySettings, PostSubscriptionChangeRequest } from '../../frontend/src/types/types'
-import { addMonths } from 'date-fns'
 import express from 'express'
 import { getUser, isAuthenticated, isOwner } from '../middlewares/permissions'
-import prisma from '../prisma'
-import { sendEventEmail } from '../services/email-service'
 import { TenantService } from '../services/tenant-service'
 
 const companiesRoute = express.Router()
