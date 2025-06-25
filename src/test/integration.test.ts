@@ -364,6 +364,14 @@ describe('integration test', () => {
     const users2 = await TenantService.getUsers(tenant.id)
     expect(users2.length).toBe(0)
 
+    const email2 = `${crypto.randomUUID()}@example.com`
+
+    await TenantService.createUser(tenant.id, email2, 'USER', juha.id)
+    const users3 = await TenantService.getUsers(tenant.id)
+    expect(users3.length).toBe(1)
+    expect(users3[0].email).toBe(email2)
+    expect(users3[0].role).toBe(Role.USER)
+
     await TenantService.deleteTenant(tenant.id, juha.id)
 
     await expect(TenantService.getTenant(tenant.id)).rejects.toThrow()

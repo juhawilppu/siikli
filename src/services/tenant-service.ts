@@ -317,4 +317,35 @@ export const TenantService = {
     })
     await sendEventEmail('User deleted', `Tenant: ${tenantId}\nUser: ${userId}\nAdmin: ${adminUserId}`)
   },
+  async createUser(tenantId: string, email: string, role: 'USER' | 'OWNER', adminUserId: string): Promise<void> {
+    await prisma.$transaction(async (tx) => {
+      const tenant = await tx.tenant.findFirstOrThrow({
+        where: {
+          id: tenantId,
+        },
+      })
+      if (tenant.subscriptionType === 'FREE') {
+        throw new Error('Free tenants cannot add users')
+      }
+      await tx.user.create({
+        data: {
+          email,
+          role,
+          tenantId,
+        },
+      })
+      await tx.log.create({
+        data: {
+          userId: adminUserId,
+          tenantId,
+          data: {
+            email,
+            role,
+          },
+          event: 'create_user',
+        },
+      })
+    })
+    await sendEventEmail('User invited', `Tenant: ${tenantId}\nUser: ${email}\nRole: ${role}`)
+  },
 }
