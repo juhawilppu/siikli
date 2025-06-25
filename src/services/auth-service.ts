@@ -1,6 +1,7 @@
 import nodeCrypto from 'node:crypto'
 import { SendEmailCommand, SESClient } from '@aws-sdk/client-ses'
 import prisma from '../prisma'
+import { sendEmail, sendEventEmail } from './email-service'
 
 export const AuthService = {
 
@@ -39,65 +40,29 @@ export const AuthService = {
       },
     })
 
-    // Send pin code via AWS SES
-    const client = new SESClient({ region: 'eu-north-1' })
+    await sendEmail(email, 'Kirjautumiskoodi Siikli-palveluun',
+      `
+        <div style="font-family: Arial, sans-serif; font-size: 16px; color: #333;">
+          <p>Hei,</p>
+          <p>Tässä on kirjautumiskoodisi Siikli-palveluun:</p>
 
-    const command = new SendEmailCommand({
-      Source: 'Siikli <no-reply@siikli.fi>',
-      Destination: {
-        ToAddresses: [email],
-      },
-      Message: {
-        Subject: {
-          Data: 'Kirjautumiskoodi Siikli-palveluun',
-        },
-        Body: {
-          Html: {
-            Data: `
-                    <div style="font-family: Arial, sans-serif; font-size: 16px; color: #333;">
-                      <p>Hei,</p>
-                      <p>Tässä on kirjautumiskoodisi Siikli-palveluun:</p>
-          
-                      <p style="font-size: 20px; font-weight: bold; color: #1a202c;">
-                        🔑 Koodi: ${pin}
-                      </p>
-          
-                      <p>Koodi on voimassa 15 minuuttia.</p>
-          
-                      <p>Jos et pyytänyt tätä koodia, voit huoletta jättää viestin huomiotta.</p>
-          
-                      <p>Terveisin,<br />
-                      Siikli<br />
-                      <a href="mailto:juha.wilppu@siikli.fi">juha.wilppu@siikli.fi</a><br />
-                      <a href="https://siikli.fi">https://siikli.fi</a></p>
-                    </div>
-                  `,
-          },
-        },
-      },
-    })
+          <p style="font-size: 20px; font-weight: bold; color: #1a202c;">
+            🔑 Koodi: ${pin}
+          </p>
 
-    await client.send(command)
+          <p>Koodi on voimassa 15 minuuttia.</p>
 
-    await new Promise(resolve => setTimeout(resolve, 1500))
+          <p>Jos et pyytänyt tätä koodia, voit huoletta jättää viestin huomiotta.</p>
 
-    const command2 = new SendEmailCommand({
-      Source: 'Siikli Event <no-reply@siikli.fi>',
-      Destination: {
-        ToAddresses: ['juha.wilppu@gmail.com'],
-      },
-      Message: {
-        Subject: {
-          Data: 'New event: PIN code',
-        },
-        Body: {
-          Html: {
-            Data: `A pin code was just sent to ${email}`,
-          },
-        },
-      },
-    })
-    await client.send(command2)
+          <p>Terveisin,<br />
+          Siikli<br />
+          <a href="mailto:juha.wilppu@siikli.fi">juha.wilppu@siikli.fi</a><br />
+          <a href="https://siikli.fi">https://siikli.fi</a></p>
+        </div>
+      `
+    )
+
+    await sendEventEmail('New event: PIN code', `Pin ${pin} sent to ${email} via AWS SES`)
 
     console.log(`Pin ${pin} sent to ${email} via AWS SES`)
     console.log(`Event notified`)

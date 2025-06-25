@@ -20,7 +20,7 @@ export async function sendEmail(to: string, subject: string, body: string) {
         Html: {
           Data: `
               <div style="font-family: Arial, sans-serif; font-size: 16px; color: #333;">
-                <p>${body}</p>
+                ${body}
               </div>
             `,
         },
