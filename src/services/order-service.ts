@@ -214,7 +214,7 @@ export const OrderService = {
     return mapped satisfies GetOrderList[]
   },
 
-  async getOrder(id: string, tenantId: string): Promise<any> {
+  async getOrder(id: string, tenantId: string): Promise<GetOrderDto> {
     const result = await prisma.order.findFirstOrThrow({
       include: {
         customer: true,
@@ -238,6 +238,7 @@ export const OrderService = {
 
     return {
       id: result.id,
+      waybillNumber: result.waybillNumber,
       deliveryDate: dateToString(result.deliveryDate),
       customerId: result.customerId,
       hasNote: result.hasNote,
@@ -258,7 +259,7 @@ export const OrderService = {
         }
       )),
 
-    } satisfies GetOrderDto
+    }
   },
 
   async getRemainingOrders(tenantId: string): Promise<number> {

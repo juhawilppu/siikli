@@ -11,6 +11,7 @@ import { InvoiceService } from '../services/invoice-service'
 import { OrderService } from '../services/order-service'
 import { PackagingListService } from '../services/packaging-list-service'
 import { ProductService } from '../services/product-service'
+import { SalesReportService } from '../services/sales-report-service'
 import { TenantService } from '../services/tenant-service'
 import { UserService } from '../services/user-service'
 
@@ -230,6 +231,8 @@ describe('integration test', () => {
     })
 
     const order = await OrderService.getOrder(orderId.id, tenant.id)
+    expect(order.id.length).toBe(36) // uuid
+    expect(order.waybillNumber).toBe(1000)
     expect(order.customerId).toBe(customers.customers[0].id)
     expect(order.deliveryDate).toBe(dateToString(deliveryDate))
     expect(order.hasNote).toBe(true)
@@ -248,9 +251,9 @@ describe('integration test', () => {
       noteBody: 'Toimitus ovelle H3. Nouto aamulla.',
       items: order.items.map(item => ({
         ...item,
-        id: item.id,
-        packages: 1,
-        freetext: 'Erikoistuote',
+        price: new Decimal(item.price),
+        price0: new Decimal(item.price0),
+        amount: new Decimal(item.amount),
       })),
     })
 
@@ -303,6 +306,27 @@ describe('integration test', () => {
 
     const remaining = await OrderService.getRemainingOrders(tenant.id)
     expect(remaining).toBe(19)
+
+    const salesReport = await SalesReportService.getSalesReportData(tenant.id, juha.id)
+    expect(salesReport).toBeDefined()
+    expect(salesReport.length).toBe(1)
+    expect(salesReport[0].date).toBe(formatDate(deliveryDate, 'd.M.yyyy'))
+    expect(salesReport[0].waybillNumber).toBe(order.waybillNumber)
+    expect(salesReport[0].customerName).toBe('Alepa Sello 2')
+    expect(salesReport[0].productName).toBe(products[0].name)
+    expect(salesReport[0].amount).toBe(37)
+    expect(salesReport[0].price).toBe(1.4)
+    expect(salesReport[0].packageSize).toBe(10)
+    expect(salesReport[0].packageType).toBe('Ltk')
+    expect(salesReport[0].freetext).toBe('Erikoistuote')
+
+    const workbook = SalesReportService.createExcelReport(salesReport)
+    expect(workbook).toBeDefined()
+    expect(workbook.worksheets.length).toBe(1)
+    expect(workbook.worksheets[0].name).toBe('Myyntiraportti')
+    // expect(workbook.worksheets[0].rows.length).toBe(2)
+    // expect(workbook.worksheets[0].rows[0].values).toEqual(['Päivämäärä', 'Tilaus', 'Asiakas', 'Tuote', 'Määrä', 'Hinta', 'Pakkauskoko', 'Pakkaustyyppi', 'Lisätieto'])
+    // expect(workbook.worksheets[0].rows[1].values).toEqual([dateToString(deliveryDate), order.id, customers.customers[0].name, products[0].name, 37, 51.80, 10, 'Ltk', 'Erikoistuote'])
 
     await OrderService.deleteOrder(order.id, tenant.id)
     await expect(OrderService.getOrder(order.id, tenant.id)).rejects.toThrow()
