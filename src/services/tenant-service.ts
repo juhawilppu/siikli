@@ -1,10 +1,10 @@
 import type { PackageSize, PackageType, Tenant, User } from '@prisma/client'
-import type { CreateTenantDto, PostCompanySettings } from '../../frontend/src/types/types'
+import type { CreateTenantDto } from '../../frontend/src/types/types'
 import { addMonths } from 'date-fns'
 import prisma from '../prisma'
 import { sendEventEmail } from './email-service'
 
-interface TenantCreateInput {
+interface CreateTenant {
   name: string
   businessId: string
   streetAddress: string
@@ -24,56 +24,39 @@ interface TenantCreateInput {
   subscriptionStartDate: Date | null
 }
 
+export interface UpdateTenant {
+  name?: string
+  businessId?: string | null
+  streetAddress?: string | null
+  postalCode?: string | null
+  city?: string | null
+  invoiceBankName?: string | null
+  invoiceSwiftBic?: string | null
+  invoiceBankAccount?: string | null
+  invoiceReference?: string | null
+  invoiceSumRow?: string | null
+  phone?: string | null
+  email?: string | null
+  website?: string | null
+}
+
+const TRIAL_DURATION_MONTHS = 3
+
 export const TenantService = {
-  async createTenant(input: TenantCreateInput): Promise<Tenant> {
-    const {
-      name,
-      businessId,
-      streetAddress,
-      postalCode,
-      city,
-      phone,
-      email,
-      website,
-      invoiceBankName,
-      invoiceBankAccount,
-      invoiceSwiftBic,
-      invoiceReference,
-      invoiceSumRow,
-      signupCompleted,
-      subscriptionType,
-      subscriptionEndDate,
-      subscriptionStartDate,
-    } = input
+  async createTenant(input: CreateTenant): Promise<Tenant> {
 
     const tenant = await prisma.$transaction(async (tx) => {
       const newTenant = await tx.tenant.create({
         data: {
-          name,
-          businessId,
-          streetAddress,
-          postalCode,
-          city,
-          phone,
-          email,
-          website,
-          invoiceBankName,
-          invoiceBankAccount,
-          invoiceSwiftBic,
-          invoiceReference,
-          invoiceSumRow,
-          signupCompleted,
-          subscriptionType,
-          subscriptionEndDate,
-          subscriptionStartDate,
-          trialEndDate: addMonths(new Date(), 3).toISOString(),
+          ...input,
+          trialEndDate: addMonths(new Date(), TRIAL_DURATION_MONTHS),
         },
       })
 
       await tx.log.create({
         data: {
           tenantId: newTenant.id,
-          event: 'TENANT_CREATED',
+          event: 'tenant_created',
         },
       })
 
@@ -81,6 +64,58 @@ export const TenantService = {
     })
 
     return tenant
+  },
+
+  async updateTenant(tenantId: string, input: UpdateTenant, userId: string): Promise<Tenant> {
+    const {
+      name,
+      businessId,
+      streetAddress,
+      postalCode,
+      city,
+      invoiceBankName,
+      invoiceSwiftBic,
+      invoiceBankAccount,
+      invoiceReference,
+      invoiceSumRow,
+      phone,
+      email,
+      website,
+    } = input
+    const result = await prisma.$transaction(async (tx) => {
+      const updatedTenant = await tx.tenant.update({
+        data: {
+          name,
+          businessId,
+          streetAddress,
+          postalCode,
+          city,
+          invoiceBankName,
+          invoiceSwiftBic,
+          invoiceBankAccount,
+          invoiceReference,
+          invoiceSumRow,
+          phone,
+          email,
+          website,
+        },
+        where: {
+          id: tenantId,
+        },
+      })
+
+      await tx.log.create({
+        data: {
+          userId,
+          tenantId,
+          event: 'update_tenant',
+        },
+      })
+
+      return updatedTenant
+    })
+
+    return result
   },
 
   async createPackageSize(input: { size: number, tenantId: string }): Promise<PackageSize> {
@@ -220,57 +255,6 @@ export const TenantService = {
         tenantId,
       },
     })
-  },
-  async updateTenant(tenantId: string, input: PostCompanySettings, userId: string): Promise<Tenant> {
-    const {
-      name,
-      businessId,
-      streetAddress,
-      postalCode,
-      city,
-      invoiceBankName,
-      invoiceSwiftBic,
-      invoiceBankAccount,
-      invoiceReference,
-      invoiceSumRow,
-      phone,
-      email,
-      website,
-    } = input
-    const result = await prisma.$transaction(async (tx) => {
-      const updatedTenant = await tx.tenant.update({
-        data: {
-          name,
-          businessId,
-          streetAddress,
-          postalCode,
-          city,
-          invoiceBankName,
-          invoiceSwiftBic,
-          invoiceBankAccount,
-          invoiceReference,
-          invoiceSumRow,
-          phone,
-          email,
-          website,
-        },
-        where: {
-          id: tenantId,
-        },
-      })
-
-      await tx.log.create({
-        data: {
-          userId,
-          tenantId,
-          event: 'update_tenant',
-        },
-      })
-
-      return updatedTenant
-    })
-
-    return result
   },
   async deleteTenant(tenantId: string, userId: string): Promise<void> {
     await prisma.$transaction(async (tx) => {

@@ -1,6 +1,8 @@
 import type { CreateTenantDto } from '../../../frontend/src/types/types'
 import { faker } from '@faker-js/faker'
 import { TenantService } from '../../services/tenant-service'
+import prisma from '../../prisma'
+import { User } from '@prisma/client'
 
 export const TenantFactory = {
   async createTenant(overrides: Partial<CreateTenantDto> = {}) {
@@ -26,5 +28,16 @@ export const TenantFactory = {
     },
     )
     return tenant
+  },
+  async createUser(tenantId: string, overrides: Partial<User> = {}) {
+    const user = await prisma.user.create({
+      data: {
+        tenantId,
+        email: faker.internet.email(),
+        role: 'USER',
+        ...overrides,
+      },
+    })
+    return user
   },
 }
