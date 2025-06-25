@@ -4,19 +4,13 @@ import express from 'express'
 import { getUser, isAuthenticated, isOwner } from '../middlewares/permissions'
 import prisma from '../prisma'
 import { sendEventEmail } from '../services/email-service'
+import { TenantService } from '../services/tenant-service'
 
 const companiesRoute = express.Router()
 
 companiesRoute.get(`/api/tenants`, isAuthenticated, async (req, res) => {
   const { tenantId } = getUser(req)
-  const result = await prisma.tenant.findFirst({
-    where: {
-      id: tenantId,
-    },
-  })
-  if (!result) {
-    return res.status(404).json({ error: 'Tenant not found' })
-  }
+  const result = await TenantService.getTenant(tenantId)
   res.json({
     id: result.id,
     name: result.name,
