@@ -34,11 +34,7 @@ companiesRoute.get(`/api/tenants`, isAuthenticated, async (req, res) => {
 
 companiesRoute.get(`/api/tenants/users`, isAuthenticated, async (req, res) => {
   const { tenantId } = getUser(req)
-  const users = await prisma.user.findMany({
-    where: {
-      tenantId,
-    },
-  })
+  const users = await TenantService.getUsers(tenantId)
   res.json(
     users.map(user => ({
       id: user.id,

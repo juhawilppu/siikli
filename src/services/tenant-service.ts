@@ -1,4 +1,4 @@
-import type { PackageSize, PackageType, Tenant } from '@prisma/client'
+import type { PackageSize, PackageType, Tenant, User } from '@prisma/client'
 import { addMonths } from 'date-fns'
 import prisma from '../prisma'
 
@@ -211,5 +211,12 @@ export const TenantService = {
       throw new Error(`Tenant with id ${id} not found`)
     }
     return tenant
+  },
+  async getUsers(tenantId: string): Promise<User[]> {
+    return await prisma.user.findMany({
+      where: {
+        tenantId,
+      },
+    })
   },
 }

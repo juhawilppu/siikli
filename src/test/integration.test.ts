@@ -48,6 +48,11 @@ describe('integration test', () => {
     })
     expect(juha).toBeDefined()
 
+    const users = await TenantService.getUsers(tenant.id)
+    expect(users.length).toBe(1)
+    expect(users[0].email).toBe(email)
+    expect(users[0].role).toBe(Role.OWNER)
+
     await AuthService.createPin({ email, ip: '127.0.0.1' })
     const pin = await prisma.emailLoginPinCode.findFirst({
       where: {
