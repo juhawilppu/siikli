@@ -47,16 +47,8 @@ companiesRoute.get(`/api/tenants/users`, isAuthenticated, async (req, res) => {
 
 companiesRoute.get(`/api/tenants/package-settings`, isAuthenticated, async (req, res) => {
   const { tenantId } = getUser(req)
-  const packageTypes = await prisma.packageType.findMany({
-    where: {
-      tenantId,
-    },
-  })
-  const packageSizes = await prisma.packageSize.findMany({
-    where: {
-      tenantId,
-    },
-  })
+  const packageTypes = await TenantService.getPackageTypes(tenantId)
+  const packageSizes = await TenantService.getPackageSizes(tenantId)
   res.json({
     packageTypes: packageTypes.map(row => row.name),
     packageSizes: packageSizes.map(row => row.size),
