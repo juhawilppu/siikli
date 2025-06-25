@@ -348,4 +348,30 @@ export const TenantService = {
     })
     await sendEventEmail('User invited', `Tenant: ${tenantId}\nUser: ${email}\nRole: ${role}`)
   },
+  async updateUser(tenantId: string, userId: string, role: 'USER' | 'OWNER', adminUserId: string): Promise<void> {
+    await prisma.$transaction(async (tx) => {
+      const tenant = await tx.tenant.findFirstOrThrow({
+        where: {
+          id: tenantId,
+        },
+      })
+      if (tenant.subscriptionType === 'FREE') {
+        throw new Error('Free tenants cannot modify users')
+      }
+
+      await tx.user.update({
+        data: { role },
+        where: { id: userId, tenantId },
+      })
+      await tx.log.create({
+        data: {
+          userId: adminUserId,
+          tenantId,
+          data: { role },
+          event: 'update_user',
+        },
+      })
+    })
+    await sendEventEmail('User role updated', `Tenant: ${tenantId}\nUser: ${userId}\nRole: ${role}\nAdmin: ${adminUserId}`)
+  },
 }

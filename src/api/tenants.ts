@@ -83,22 +83,9 @@ companiesRoute.post(`/api/tenants/users`, isAuthenticated, isOwner, async (req, 
 })
 
 companiesRoute.put(`/api/tenants/users/:userId`, isAuthenticated, isOwner, async (req, res) => {
-  const { tenantId } = getUser(req)
+  const { tenantId, userId } = getUser(req)
 
-  const tenant = await prisma.tenant.findFirstOrThrow({
-    where: {
-      id: tenantId,
-    },
-  })
-  if (tenant.subscriptionType === 'FREE') {
-    return res.status(403).json({ error: 'Free tenants cannot delete users' })
-  }
-
-  const body = req.body as { role: 'USER' | 'OWNER' }
-  await prisma.user.update({
-    data: { role: body.role },
-    where: { id: req.params.userId, tenantId },
-  })
+  await TenantService.updateUser(tenantId, req.params.userId, req.body.role, userId)
   res.status(200).json({ message: 'OK' })
 })
 
