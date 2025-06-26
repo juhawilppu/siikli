@@ -1,116 +1,15 @@
 import type { Tenant, User } from '@prisma/client'
-import { SendEmailCommand, SESClient } from '@aws-sdk/client-ses'
-
-import { Role } from '@prisma/client'
-import { addMonths, subMinutes } from 'date-fns'
+import { subMinutes } from 'date-fns'
 
 import passport from 'passport'
 import GoogleStrategy from 'passport-google-oidc'
 
 import { Strategy as LocalStrategy } from 'passport-local'
 import prisma from './prisma'
+import { TenantService } from './services/tenant-service'
 
 export interface UserWithTenant extends User {
   tenant: Tenant
-}
-
-async function createUserAndTenant(email: string, googleExternalId?: string) {
-  const tenant = await prisma.tenant.create({
-    data: {
-      name: '',
-      signupCompleted: false,
-      subscriptionType: 'PREMIUM',
-      subscriptionEndDate: null,
-      trialEndDate: addMonths(new Date(), 3).toISOString(),
-    },
-  })
-  await prisma.log.create({
-    data: {
-      data: { email, tenantId: tenant.id },
-      event: 'tenant-created',
-    },
-  })
-  const user = await prisma.user.create({
-    data: {
-      email,
-      tenantId: tenant.id,
-      googleExternalId,
-      role: Role.OWNER,
-      lastLoginAt: new Date(),
-    },
-  })
-  await prisma.log.create({
-    data: {
-      data: { email, tenantId: tenant.id, googleExternalId },
-      event: 'user-created',
-    },
-  })
-  const client = new SESClient({ region: 'eu-north-1' })
-
-  const command = new SendEmailCommand({
-    Source: 'Juha Wilppu <juha.wilppu@siikli.fi>',
-    Destination: {
-      ToAddresses: [email],
-    },
-    Message: {
-      Subject: {
-        Data: 'Tervetuloa Siikliin',
-      },
-      Body: {
-        Html: {
-          Data: `
-<div style="font-family: Arial, sans-serif; font-size: 16px; color: #333;">
-  <p>Hei, ja tervetuloa Siikliin!</p>
-
-  <p>Olen Juha, Siiklin kehittäjä.</p>
-
-  <p>Parhaiten pääset alkuun kirjautumalla sisään ja luomalla ensimmäisen tilauksen tai tuotteen. Jos tarvitset apua, voit laittaa viestiä suoraan minulle.</p>
-
-  <p>➡️ <a href="https://siikli.fi" style="color: #1a73e8;">Kirjaudu Siikliin</a></p>
-
-  <p>Kiitos että käytät Siikliä &ndash; se auttaa minua kehittämään palvelusta entistä paremman.</p>
-
-  <hr style="margin: 2em 0;" />
-
-  <p style="margin-top: 2em; font-size: 14px; color: #666;">
-  Kyllä, tämä viesti on automatisoitu &ndash; mutta olen oikea ihminen ja luen jokaisen vastauksen.
-  </p>
-
-  <p style="margin-top: 1em;">
-  Terveisin,<br />
-  Juha Wilppu<br />
-  Siikli
-  </p>
-</div>
-          `,
-        },
-      },
-    },
-  })
-
-  await client.send(command)
-
-  await new Promise(resolve => setTimeout(resolve, 1500))
-
-  const command2 = new SendEmailCommand({
-    Source: 'Siikli Event <no-reply@siikli.fi>',
-    Destination: {
-      ToAddresses: ['juha.wilppu@gmail.com'],
-    },
-    Message: {
-      Subject: {
-        Data: 'New event: Welcome message',
-      },
-      Body: {
-        Html: {
-          Data: `A new welcome message was just sent to ${email}`,
-        },
-      },
-    },
-  })
-  await client.send(command2)
-
-  return user
 }
 
 function init() {
@@ -167,7 +66,7 @@ function init() {
           return cb(null, existingUser)
         }
         else {
-          const user = await createUserAndTenant(profile.emails[0].value, profile.id)
+          const { user } = await TenantService.createUserAndTenant(profile.emails[0].value, profile.id)
           console.log('done2')
           return cb(null, user)
         }
@@ -209,7 +108,8 @@ function init() {
           console.log('user', user)
 
           if (!user) {
-            user = await createUserAndTenant(email)
+            const { user: newUser } = await TenantService.createUserAndTenant(email)
+            user = newUser
           }
 
           await prisma.log.create({

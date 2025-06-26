@@ -1,8 +1,10 @@
 import type { PackageSize, PackageType, Tenant, User } from '@prisma/client'
 import type { CreateTenantDto } from '../../frontend/src/types/types'
+import { SendEmailCommand, SESClient } from '@aws-sdk/client-ses'
+import { Role } from '@prisma/client'
 import { addMonths } from 'date-fns'
 import prisma from '../prisma'
-import { sendEventEmail } from './email-service'
+import { sendEmail, sendEventEmail } from './email-service'
 
 interface CreateTenant {
   name: string
@@ -43,6 +45,7 @@ export interface UpdateTenant {
 const TRIAL_DURATION_MONTHS = 3
 
 export const TenantService = {
+  // TODO: Remove this. It's only used in the tests and should be a factory method.
   async createTenant(input: CreateTenant): Promise<Tenant> {
     const tenant = await prisma.$transaction(async (tx) => {
       const newTenant = await tx.tenant.create({
@@ -63,6 +66,111 @@ export const TenantService = {
     })
 
     return tenant
+  },
+
+  async createUserAndTenant(email: string, googleExternalId?: string): Promise<{ tenant: Tenant, user: User }> {
+    const { tenant, user } = await prisma.$transaction(async (tx) => {
+      const tenant = await tx.tenant.create({
+        data: {
+          name: '',
+          signupCompleted: false,
+          subscriptionType: 'PREMIUM',
+          subscriptionEndDate: null,
+          trialEndDate: addMonths(new Date(), 3).toISOString(),
+        },
+      })
+
+      await tx.log.create({
+        data: {
+          data: { email, tenantId: tenant.id },
+          event: 'tenant-created',
+        },
+      })
+
+      const user = await tx.user.create({
+        data: {
+          email,
+          tenantId: tenant.id,
+          googleExternalId,
+          role: Role.OWNER,
+          lastLoginAt: new Date(),
+        },
+      })
+
+      await tx.log.create({
+        data: {
+          data: { email, tenantId: tenant.id, googleExternalId },
+          event: 'user-created',
+        },
+      })
+
+      return { tenant, user }
+    })
+
+    await sendEmail(email, 'Tervetuloa Siikliin', `
+    <div style="font-family: Arial, sans-serif; font-size: 16px; color: #333;" >
+    <p>Hei, ja tervetuloa Siikliin!</p>
+  
+    <p>Olen Juha, Siiklin kehittäjä.</p>
+  
+    <p>Parhaiten pääset alkuun kirjautumalla sisään ja luomalla ensimmäisen tilauksen tai tuotteen. Jos tarvitset apua, voit laittaa viestiä suoraan minulle.</p>
+  
+    <p>➡️ <a href="https://siikli.fi" style="color: #1a73e8;">Kirjaudu Siikliin</a></p>
+  
+    <p>Kiitos että käytät Siikliä &ndash; se auttaa minua kehittämään palvelusta entistä paremman.</p>
+  
+    <hr style="margin: 2em 0;" />
+  
+    <p style="margin-top: 2em; font-size: 14px; color: #666;">
+    Kyllä, tämä viesti on automatisoitu &ndash; mutta olen oikea ihminen ja luen jokaisen vastauksen.
+    </p>
+  
+    <p style="margin-top: 1em;">
+    Terveisin,<br />
+    Juha Wilppu<br />
+    Siikli
+    </p>
+    </div>
+    `)
+
+    await sendEventEmail('New event: Welcome message', `A new welcome message was just sent to ${email}`)
+
+    return { tenant, user }
+  },
+  async completeOnboarding(tenantId: string, input: CreateTenantDto, adminUserId: string): Promise<Tenant> {
+    const result = await prisma.$transaction(async (tx) => {
+      const tenant = await tx.tenant.update({
+        data: {
+          name: input.name,
+          businessId: input.businessId,
+          signupCompleted: true,
+        },
+        where: {
+          id: tenantId,
+        },
+      })
+
+      await tx.user.update({
+        data: {
+          marketingConsent: input.user.marketingConsent,
+        },
+        where: {
+          id: adminUserId,
+        },
+      })
+
+      await tx.log.create({
+        data: {
+          userId: adminUserId,
+          tenantId,
+          event: 'create_tenant',
+        },
+      })
+
+      return tenant
+    })
+    await sendEventEmail('Tenant completed onboarding', `Tenant: ${tenantId}\nUser: ${adminUserId}`)
+    return result
   },
 
   async updateTenant(tenantId: string, input: UpdateTenant, userId: string): Promise<Tenant> {
@@ -376,41 +484,6 @@ export const TenantService = {
       await sendEventEmail('Subscription changed', `Tenant: ${tenantId}\nSubscription: ${subscription}`)
       return updatedTenant
     })
-    return result
-  },
-  async completeOnboarding(tenantId: string, input: CreateTenantDto, adminUserId: string): Promise<Tenant> {
-    const result = await prisma.$transaction(async (tx) => {
-      const tenant = await tx.tenant.update({
-        data: {
-          name: input.name,
-          businessId: input.businessId,
-          signupCompleted: true,
-        },
-        where: {
-          id: tenantId,
-        },
-      })
-
-      await tx.user.update({
-        data: {
-          marketingConsent: input.user.marketingConsent,
-        },
-        where: {
-          id: adminUserId,
-        },
-      })
-
-      await tx.log.create({
-        data: {
-          userId: adminUserId,
-          tenantId,
-          event: 'create_tenant',
-        },
-      })
-
-      return tenant
-    })
-    await sendEventEmail('Tenant completed onboarding', `Tenant: ${tenantId}\nUser: ${adminUserId}`)
     return result
   },
 }

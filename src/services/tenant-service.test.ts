@@ -5,9 +5,22 @@ import { TenantService } from './tenant-service'
 
 describe('tenantService', () => {
   it('can create a tenant', async () => {
-    const tenant = await TenantFactory.createTenant({ name: 'Test Tenant' })
-    expect(tenant).toBeDefined()
-    expect(tenant.name).toBe('Test Tenant')
+    const email = `${faker.internet.email()}`
+    const { tenant, user } = await TenantService.createUserAndTenant(email)
+    expect(user).toBeDefined()
+    expect(user.email).toBe(email)
+    expect(tenant.id).toBeDefined()
+  })
+  it('can complete the onboarding', async () => {
+    const { tenant, user } = await TenantService.createUserAndTenant(`${faker.internet.email()}`)
+    await TenantService.completeOnboarding(tenant.id, { name: 'Test Tenant', businessId: '1234567-8', user: { marketingConsent: true } }, user.id)
+    const tenantFromDb = await TenantService.getTenant(tenant.id)
+    expect(tenantFromDb).toBeDefined()
+    expect(tenantFromDb.signupCompleted).toBe(true)
+    const users = await TenantService.getUsers(tenant.id)
+    expect(users).toBeDefined()
+    expect(users.length).toBe(1)
+    expect(users[0].marketingConsent).toBe(true)
   })
   it('can fetch a tenant', async () => {
     const tenant = await TenantFactory.createTenant({ name: 'Test Tenant' })
@@ -121,17 +134,5 @@ describe('tenantService', () => {
     expect(tenantFromDb.trialEndDate).toBeNull()
     expect(tenantFromDb.subscriptionStartDate).toBeDefined()
     expect(tenantFromDb.subscriptionEndDate).toBeNull()
-  })
-  it('can complete the onboarding', async () => {
-    const tenant = await TenantFactory.createTenant({ name: 'Test Tenant' })
-    const user = await TenantFactory.createUser(tenant.id, { role: 'OWNER' })
-    await TenantService.completeOnboarding(tenant.id, { name: 'Test Tenant', businessId: '1234567-8', user: { marketingConsent: true } }, user.id)
-    const tenantFromDb = await TenantService.getTenant(tenant.id)
-    expect(tenantFromDb).toBeDefined()
-    expect(tenantFromDb.signupCompleted).toBe(true)
-    const users = await TenantService.getUsers(tenant.id)
-    expect(users).toBeDefined()
-    expect(users.length).toBe(1)
-    expect(users[0].marketingConsent).toBe(true)
   })
 })
