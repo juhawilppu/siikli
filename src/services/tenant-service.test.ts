@@ -1,3 +1,4 @@
+import { faker } from '@faker-js/faker'
 import { describe, expect, it } from 'vitest'
 import { TenantFactory } from '../test/factories/tenant-factory'
 import { TenantService } from './tenant-service'
@@ -80,5 +81,14 @@ describe('tenantService', () => {
     const users = await TenantService.getUsers(tenant.id)
     expect(users).toBeDefined()
     expect(users.length).toBe(1)
+  })
+  it('can create a user', async () => {
+    const tenant = await TenantFactory.createTenant({ name: 'Test Tenant' })
+    const user = await TenantFactory.createUser(tenant.id, { role: 'OWNER' })
+
+    await TenantService.createUser(tenant.id, `${faker.internet.email()}`, 'USER', user.id)
+    const users = await TenantService.getUsers(tenant.id)
+    expect(users).toBeDefined()
+    expect(users.length).toBe(2)
   })
 })
