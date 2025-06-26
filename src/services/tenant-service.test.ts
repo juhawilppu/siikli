@@ -100,7 +100,7 @@ describe('tenantService', () => {
     expect(users.length).toBe(1)
     expect(users[0].role).toBe('USER')
   })
-  it('can update the tenant subscription', async () => {
+  it('can downgrade tenant subscription', async () => {
     const tenant = await TenantFactory.createTenant({ name: 'Test Tenant' })
     const user = await TenantFactory.createUser(tenant.id, { role: 'OWNER' })
     await TenantService.updateSubscription(tenant.id, 'FREE', user.id)
@@ -108,6 +108,19 @@ describe('tenantService', () => {
     expect(tenantFromDb).toBeDefined()
     expect(tenantFromDb.subscriptionType).toBe('FREE')
     expect(tenantFromDb.subscriptionEndDate).toBeDefined()
+    expect(tenantFromDb.trialEndDate).toBeNull()
+  })
+  it('can upgrade tenant subscription', async () => {
+    const tenant = await TenantFactory.createTenant({ name: 'Test Tenant' })
+    const user = await TenantFactory.createUser(tenant.id, { role: 'OWNER' })
+    await TenantService.updateSubscription(tenant.id, 'FREE', user.id)
+    await TenantService.updateSubscription(tenant.id, 'PREMIUM', user.id)
+    const tenantFromDb = await TenantService.getTenant(tenant.id)
+    expect(tenantFromDb).toBeDefined()
+    expect(tenantFromDb.subscriptionType).toBe('PREMIUM')
+    expect(tenantFromDb.trialEndDate).toBeNull()
+    expect(tenantFromDb.subscriptionStartDate).toBeDefined()
+    expect(tenantFromDb.subscriptionEndDate).toBeNull()
   })
   it('can complete the onboarding', async () => {
     const tenant = await TenantFactory.createTenant({ name: 'Test Tenant' })
