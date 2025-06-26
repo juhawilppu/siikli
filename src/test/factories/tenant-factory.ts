@@ -1,8 +1,8 @@
+import type { User } from '@prisma/client'
 import type { CreateTenantDto } from '../../../frontend/src/types/types'
 import { faker } from '@faker-js/faker'
-import { TenantService } from '../../services/tenant-service'
 import prisma from '../../prisma'
-import { User } from '@prisma/client'
+import { TenantService } from '../../services/tenant-service'
 
 export const TenantFactory = {
   async createTenant(overrides: Partial<CreateTenantDto> = {}) {
