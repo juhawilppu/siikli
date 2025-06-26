@@ -91,4 +91,13 @@ describe('tenantService', () => {
     expect(users).toBeDefined()
     expect(users.length).toBe(2)
   })
+  it('can update a user', async () => {
+    const tenant = await TenantFactory.createTenant({ name: 'Test Tenant' })
+    const user = await TenantFactory.createUser(tenant.id, { role: 'OWNER' })
+    await TenantService.updateUser(tenant.id, user.id, 'USER', user.id)
+    const users = await TenantService.getUsers(tenant.id)
+    expect(users).toBeDefined()
+    expect(users.length).toBe(1)
+    expect(users[0].role).toBe('USER')
+  })
 })
