@@ -100,4 +100,13 @@ describe('tenantService', () => {
     expect(users.length).toBe(1)
     expect(users[0].role).toBe('USER')
   })
+  it('can update the tenant subscription', async () => {
+    const tenant = await TenantFactory.createTenant({ name: 'Test Tenant' })
+    const user = await TenantFactory.createUser(tenant.id, { role: 'OWNER' })
+    await TenantService.updateSubscription(tenant.id, 'FREE', user.id)
+    const tenantFromDb = await TenantService.getTenant(tenant.id)
+    expect(tenantFromDb).toBeDefined()
+    expect(tenantFromDb.subscriptionType).toBe('FREE')
+    expect(tenantFromDb.subscriptionEndDate).toBeDefined()
+  })
 })
