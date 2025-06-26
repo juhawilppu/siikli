@@ -80,12 +80,12 @@ async function main() {
 
   const packageSizes = [5, 10, 20, 30, 50, 100, 200, 300]
   for (const size of packageSizes) {
-    await TenantService.createPackageSize({ size, tenantId: tenant.id })
+    await TenantService.createPackageSize(tenant.id, size)
   }
 
   const packageTypes = ['Ltk', 'A', 'Pnt']
   for (const type of packageTypes) {
-    await TenantService.createPackageType({ name: type, tenantId: tenant.id })
+    await TenantService.createPackageType(tenant.id, type)
   }
 
   await ProductService.createProduct({

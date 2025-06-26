@@ -44,7 +44,6 @@ const TRIAL_DURATION_MONTHS = 3
 
 export const TenantService = {
   async createTenant(input: CreateTenant): Promise<Tenant> {
-
     const tenant = await prisma.$transaction(async (tx) => {
       const newTenant = await tx.tenant.create({
         data: {
@@ -118,11 +117,7 @@ export const TenantService = {
     return result
   },
 
-  async createPackageSize(input: { size: number, tenantId: string }): Promise<PackageSize> {
-    const {
-      size,
-      tenantId,
-    } = input
+  async createPackageSize(tenantId: string, size: number): Promise<PackageSize> {
     const packageSize = await prisma.$transaction(async (tx) => {
       const newPackageSize = await tx.packageSize.create({
         data: {
@@ -134,7 +129,7 @@ export const TenantService = {
       await tx.log.create({
         data: {
           tenantId,
-          event: 'PACKAGE_SIZE_CREATED',
+          event: 'create_package_size',
           data: {
             size,
           },
@@ -147,12 +142,7 @@ export const TenantService = {
     return packageSize
   },
 
-  async createPackageType(input: { name: string, tenantId: string }): Promise<PackageType> {
-    const {
-      name,
-      tenantId,
-    } = input
-
+  async createPackageType(tenantId: string, name: string): Promise<PackageType> {
     const packageType = await prisma.$transaction(async (tx) => {
       const newPackageType = await tx.packageType.create({
         data: {
@@ -164,7 +154,7 @@ export const TenantService = {
       await tx.log.create({
         data: {
           tenantId,
-          event: 'PACKAGE_TYPE_CREATED',
+          event: 'create_package_type',
           data: {
             name,
           },
