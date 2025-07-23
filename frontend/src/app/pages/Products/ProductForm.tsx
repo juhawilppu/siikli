@@ -128,9 +128,9 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
 
   const handleCreateType = () => {
     const newType = inputValueType.trim()
-    if (newType && !productTypes.some(p => p.name === newType)) {
+    if (newType && !productTypes.some(p => p.type === newType)) {
       // optionally: add to list or emit callback
-      productTypes.push({ id: 'TODO', name: newType, orderIndex: 0, subtypes: [] })
+      productTypes.push({ id: 'TODO', type: newType, orderIndex: 0, subtypes: [] })
       setProduct({ ...product, type: newType })
     }
     setOpenType(false)
@@ -141,9 +141,9 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
       return
     }
     const newType = inputValueSubtype.trim()
-    if (newType && !productTypes.find(p => p.name === product.type)?.subtypes.some(p => p.name === newType)) {
+    if (newType && !productTypes.find(p => p.type === product.type)?.subtypes.some(p => p.name === newType)) {
       // optionally: add to list or emit callback
-      productTypes.find(p => p.name === product.type)?.subtypes.push({ id: 'TODO', name: newType, orderIndex: 0 })
+      productTypes.find(p => p.type === product.type)?.subtypes.push({ id: 'TODO', name: newType, orderIndex: 0 })
       setProduct({ ...product, subtype: newType })
     }
     setOpenSubtype(false)
@@ -229,9 +229,9 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
                             </CommandEmpty>
                             <CommandGroup>
                               {productTypes.map(type => (
-                                <CommandItem key={type.name} value={type.name} onSelect={handleSelectType}>
-                                  <Check className={cn('mr-2 h-4 w-4', product.type !== null && product.type === type.name ? 'opacity-100' : 'opacity-0')} />
-                                  {type.name}
+                                <CommandItem key={type.type} value={type.type} onSelect={handleSelectType}>
+                                  <Check className={cn('mr-2 h-4 w-4', product.type !== null && product.type === type.type ? 'opacity-100' : 'opacity-0')} />
+                                  {type.type}
                                 </CommandItem>
                               ))}
                             </CommandGroup>
@@ -267,7 +267,7 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
                               </button>
                             </CommandEmpty>
                             <CommandGroup>
-                              {productTypes.find(p => p.name === product.type)?.subtypes.map(subtype => (
+                              {productTypes.find(p => p.type === product.type)?.subtypes.map(subtype => (
                                 <CommandItem key={subtype.name} value={subtype.name} onSelect={handleSelectSubtype}>
                                   <Check className={cn('mr-2 h-4 w-4', product.subtype === subtype.name ? 'opacity-100' : 'opacity-0')} />
                                   {subtype.name}

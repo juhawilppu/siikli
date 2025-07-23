@@ -1,5 +1,5 @@
 import type { Order } from '@prisma/client'
-import type { GetOrderDto, GetOrderList, PostOrderItemRequest, PostOrderItemRequestDto } from '../../frontend/src/types/types'
+import type { GetOrderDto, GetOrderList, PostOrderItemRequest } from '../../frontend/src/types/types'
 import { endOfDay, endOfMonth, parse, startOfDay, startOfMonth } from 'date-fns'
 import { Decimal } from 'decimal.js'
 import puppeteer from 'puppeteer'

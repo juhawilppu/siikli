@@ -62,7 +62,7 @@ export function PackagingListByCustomer({ report }: {
                     {order.packageType}
                   </td>
                   <td className="align-right" style={{ width: '15%' }}>
-                    {formatNumber(order.amount / order.packageSize)}
+                    {formatNumber(order.amount.div(order.packageSize))}
                   </td>
                   <td className="align-right" style={{ width: '25%' }}>{formatNumber(order.amount)}</td>
                   <td className="align-left pl-5" style={{ width: '25%' }}>{order.freetext}</td>

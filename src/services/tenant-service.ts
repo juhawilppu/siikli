@@ -1,6 +1,5 @@
 import type { PackageSize, PackageType, Tenant, User } from '@prisma/client'
 import type { CreateTenantDto } from '../../frontend/src/types/types'
-import { SendEmailCommand, SESClient } from '@aws-sdk/client-ses'
 import { Role } from '@prisma/client'
 import { addMonths } from 'date-fns'
 import prisma from '../prisma'

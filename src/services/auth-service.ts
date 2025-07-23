@@ -1,5 +1,4 @@
 import nodeCrypto from 'node:crypto'
-import { SendEmailCommand, SESClient } from '@aws-sdk/client-ses'
 import prisma from '../prisma'
 import { sendEmail, sendEventEmail } from './email-service'
 
@@ -40,8 +39,7 @@ export const AuthService = {
       },
     })
 
-    await sendEmail(email, 'Kirjautumiskoodi Siikli-palveluun',
-      `
+    await sendEmail(email, 'Kirjautumiskoodi Siikli-palveluun', `
         <div style="font-family: Arial, sans-serif; font-size: 16px; color: #333;">
           <p>Hei,</p>
           <p>Tässä on kirjautumiskoodisi Siikli-palveluun:</p>
@@ -59,8 +57,7 @@ export const AuthService = {
           <a href="mailto:juha.wilppu@siikli.fi">juha.wilppu@siikli.fi</a><br />
           <a href="https://siikli.fi">https://siikli.fi</a></p>
         </div>
-      `
-    )
+      `)
 
     await sendEventEmail('New event: PIN code', `Pin ${pin} sent to ${email} via AWS SES`)
 

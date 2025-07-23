@@ -6,8 +6,8 @@ command -v docker >/dev/null 2>&1 || { echo >&2 "❌ Docker is not installed. Ab
 command -v aws >/dev/null 2>&1 || { echo >&2 "❌ AWS CLI is not installed. Aborting."; exit 1; }
 
 echo "🔍 Running tests..."
-npm run test
-npm run test:coverage
+npm run test --no-watch
+npm run test:coverage --no-watch
 
 echo "🔍 Running linter..."
 npm run lint
@@ -22,7 +22,7 @@ echo "🏗️ Building frontend..."
 (
     cd frontend
     npm run build
-    cp not_ready.html ./dist/index.html
+    #cp not_ready.html ./dist/index.html
 )
 
 echo "🏗️ Building backend..."

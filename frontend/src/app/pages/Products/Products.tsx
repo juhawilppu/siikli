@@ -194,8 +194,8 @@ export default function Products() {
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     {productTypes.map(productType => (
-                      <DropdownMenuItem key={productType.name} onClick={() => setTypeFilter(productType.name)}>
-                        {productType.name}
+                      <DropdownMenuItem key={productType.type} onClick={() => setTypeFilter(productType.type)}>
+                        {productType.type}
                       </DropdownMenuItem>
                     ))}
                   </DropdownMenuContent>

@@ -63,7 +63,7 @@ export function PackagingListByProduct({ report }: {
                           {' '}
                           {order.packageType}
                         </td>
-                        <td className="align-right pl-5">{formatNumber(order.amount / order.packageSize)}</td>
+                        <td className="align-right pl-5">{formatNumber(order.amount.div(order.packageSize))}</td>
                         <td className="align-right pl-5">{formatNumber(order.amount)}</td>
                       </tr>
                     )

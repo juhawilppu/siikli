@@ -81,6 +81,7 @@ export default function CompanySettings() {
       phone: companyData.phone,
       email: companyData.email,
       website: companyData.website,
+      invoiceSwiftBic: '', // TODO this seems to be missing from the UI
     }
     await axios.post('/tenants', data)
     toast({
