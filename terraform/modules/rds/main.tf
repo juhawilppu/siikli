@@ -18,7 +18,7 @@ resource "aws_db_subnet_group" "main" {
 resource "aws_db_instance" "siikli" {
   identifier         = "siikli-db"
   engine             = "postgres"
-  engine_version     = "17.2"
+  engine_version     = "17.4"
   instance_class     = "db.t4g.micro"
   allocated_storage  = 20
   max_allocated_storage = 100

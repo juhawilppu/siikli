@@ -215,10 +215,7 @@ export const translations = {
     'landing.customerFeedback.description': 'Aromäen tila on käyttänyt Siikliä jo 7 vuotta — ja toimii edelleen.',
     'landing.customerFeedback.1.name': 'Juhana Männistö',
     'landing.customerFeedback.1.company': 'Aromäen tila',
-    'landing.customerFeedback.1.quote': 'Siikli on merkittävästi helpottanut tilaustemme hallintaa ja laskutusta.',
-    'landing.customerFeedback.2.name': 'Satu Valkas',
-    'landing.customerFeedback.2.company': 'Aromäen tila',
-    'landing.customerFeedback.2.quote': 'Siikli on yksinkertainen ja luotettava sovellus, joka sopii juuri meidän tarpeisiimme.',
+    'landing.customerFeedback.1.quote': 'Siikli on merkittävästi helpottanut tilaustemme hallintaa ja laskutusta. Siikli on yksinkertainen ja luotettava sovellus, joka sopii juuri meidän tarpeisiimme.',
   },
   en: {
     'landing.A.title': 'Siikli — The Simple ERP for Agriculture',
@@ -436,10 +433,7 @@ export const translations = {
     'landing.customerFeedback.description': 'Siikli has been a useful product for Aromäen tila.',
     'landing.customerFeedback.1.name': 'Juhana Männistö',
     'landing.customerFeedback.1.company': 'Aromäen tila',
-    'landing.customerFeedback.1.quote': 'Siikli has significantly simplified our order management and invoicing.',
-    'landing.customerFeedback.2.name': 'Satu Valkas',
-    'landing.customerFeedback.2.company': 'Aromäen tila',
-    'landing.customerFeedback.2.quote': 'Siikli is a simple and reliable application that suits our needs perfectly.',
+    'landing.customerFeedback.1.quote': 'Siikli has significantly simplified our order management and invoicing!',
   },
 }
 

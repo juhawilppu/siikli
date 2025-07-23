@@ -21,7 +21,8 @@ const AppContext = createContext<AppContextType | undefined>(undefined)
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [language, setLanguage] = useState<Language>(localStorage.getItem('language') as Language || DEFAULT_LANGUAGE)
   const [user, setUser] = useState<GetCurrentUserDto>()
-  const [variant, _] = useState<Variant>(localStorage.getItem('variant') as Variant)
+  // const [variant, _] = useState<Variant>('A' || localStorage.getItem('variant') as Variant)
+  const [variant, _] = useState<Variant>('A')
 
   const logout = async () => {
     await axios.post('/auth/logout')
@@ -53,9 +54,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   }, [language])
 
   useEffect(() => {
-    console.log('variant', variant)
     if (variant) {
-      console.log('setting variant', variant)
       localStorage.setItem('variant', variant)
     }
   }, [variant])

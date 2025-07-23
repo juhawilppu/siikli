@@ -8,9 +8,9 @@ export default function LanguageSwitcher({ inApp }: { inApp?: boolean }) {
   const [open, setOpen] = useState(false)
 
   // Hide language switcher for now, since all users are in Finland
-  const hide = true
-  if (hide)
-    return (<></>)
+  // const hide = true
+  // if (hide)
+  //  return (<></>)
 
   return (
     <div>

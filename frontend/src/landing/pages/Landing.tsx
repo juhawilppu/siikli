@@ -440,16 +440,6 @@ export default function LandingPage() {
                 quote:
                     t('landing.customerFeedback.1.quote'),
               },
-              {
-                name: t(
-                  'landing.customerFeedback.2.name',
-                ),
-                company: t(
-                  'landing.customerFeedback.2.company',
-                ),
-                quote:
-                    t('landing.customerFeedback.2.quote'),
-              },
             ].map((testimonial, i) => (
               <Card key={i} className="bg-gray-50 border-none">
                 <CardContent className="pt-6">
