@@ -78,14 +78,47 @@ resource "aws_route53_record" "dkim_records" {
   records = ["${element(aws_ses_domain_dkim.siikli.dkim_tokens, count.index)}.dkim.amazonses.com"]
 }
 
-resource "aws_route53_record" "dmarc" {
+resource "aws_route53_record" "dmarc_root" {
   zone_id = aws_route53_zone.siikli.id
 
   name    = "_dmarc.${var.domain_name}"
   type    = "TXT"
   ttl     = 300
   records = [
-    "v=DMARC1; p=none; rua=mailto:admin@siikli.fi"
+    "v=DMARC1; p=reject; sp=reject"
+  ]
+}
+
+resource "aws_route53_record" "dmarc" {
+  zone_id = aws_route53_zone.siikli.id
+
+  name    = "_dmarc.mail.${var.domain_name}"
+  type    = "TXT"
+  ttl     = 300
+  records = [
+    "v=DMARC1; p=quarantine; rua=mailto:admin@siikli.fi"
+  ]
+}
+
+resource "aws_route53_record" "spf_root" {
+  zone_id = aws_route53_zone.siikli.id
+
+  name    = "${var.domain_name}"
+  type    = "TXT"
+  ttl     = 300
+  records = [
+    "v=spf1 -all"
+  ]
+}
+
+resource "aws_route53_record" "spf" {
+  zone_id = aws_route53_zone.siikli.id
+
+  name    = "mail.${var.domain_name}"
+  type    = "TXT"
+  ttl     = 300
+  records = [
+    "v=spf1 include:_spf.google.com include:amazonses.com -all"
   ]
 }
 
