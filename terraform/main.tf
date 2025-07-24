@@ -75,3 +75,8 @@ module "redis" {
   valkey_subnet_group_name = module.vpc.valkey_subnet_group_name
   valkey_sg_id = module.vpc.valkey_sg_id
 }
+
+module "backups" {
+  source = "./modules/backups"
+  db_arn = module.rds.db_arn
+}
