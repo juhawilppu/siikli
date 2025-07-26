@@ -38,7 +38,9 @@ export default function LanguageSwitcher({ inApp }: { inApp?: boolean }) {
                 setOpen(false)
               }}
             >
-              🇫🇮 Suomi
+              🇫🇮
+              {' '}
+              <span className="text-base">Suomi</span>
             </Button>
             <Button
               variant="ghost"
@@ -48,7 +50,9 @@ export default function LanguageSwitcher({ inApp }: { inApp?: boolean }) {
                 setOpen(false)
               }}
             >
-              🇬🇧 English
+              🇬🇧
+              {' '}
+              <span className="text-base">English</span>
             </Button>
           </div>
         </PopoverContent>
