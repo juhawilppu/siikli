@@ -392,7 +392,7 @@ export default function LandingPage() {
                 <CardTitle>{t('landing.pricing.premium.title')}</CardTitle>
                 <CardDescription>{t('landing.pricing.premium.description')}</CardDescription>
                 <div className="mt-4">
-                  <span className="text-3xl font-bold">49 €</span>
+                  <span className="text-3xl font-bold">149 €</span>
                   <span className="text-muted-foreground">/kk</span>
                 </div>
               </CardHeader>
