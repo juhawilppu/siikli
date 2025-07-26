@@ -81,7 +81,6 @@ export default function AboutUsPage() {
                 <p>{t('aboutUs.whoIsJuha.hi')}</p>
                 <p>{t('aboutUs.whoIsJuha.myNameIs')}</p>
                 <p>{t('aboutUs.whoIsJuha.iBuildSoftware')}</p>
-                <p>{t('aboutUs.whoIsJuha.siikliIsAPlaceToDoThingsWell')}</p>
               </div>
             </div>
           </div>
@@ -191,60 +190,27 @@ export default function AboutUsPage() {
       )}
 
       {/* Our location - currently hidden */}
-      {false && (
-        <section className="w-full py-12 md:py-24 bg-white">
-          <div className="container px-4 md:px-6">
-            <div className="flex flex-col items-center text-center gap-4 mb-12">
-              <h2 className="text-3xl font-bold tracking-tight">Toimistomme</h2>
-              <p className="text-muted-foreground text-lg max-w-[800px]">
-                Tervetuloa vierailemaan toimistollamme Helsingin keskustassa.
-              </p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="h-[400px] bg-gray-100 rounded-lg overflow-hidden">
-                <img
-                  src="/placeholder.svg?height=400&width=600&text=Kartta"
-                  alt="Toimiston sijainti kartalla"
-                  className="object-cover w-full h-full"
-                />
-              </div>
-              <div className="flex flex-col justify-center gap-6">
-                <div className="flex items-start gap-4">
-                  <MapPin className="h-6 w-6 text-primary mt-1" />
-                  <div>
-                    <h3 className="text-xl font-bold">xxx</h3>
-                    <p className="text-muted-foreground">
-                      xxx
-                      <br />
-                      xxxxx xxxx
-                      <br />
-                      xxx
-                    </p>
-                  </div>
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold mb-2">Aukioloajat</h3>
-                  <div className="grid grid-cols-2 gap-2">
-                    <div className="text-muted-foreground">Maanantai - Perjantai</div>
-                    <div>xx:xx - xx:xx</div>
-                    <div className="text-muted-foreground">Lauantai - Sunnuntai</div>
-                    <div>Suljettu</div>
-                  </div>
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold mb-2">Yhteystiedot</h3>
-                  <div className="grid grid-cols-2 gap-2">
-                    <div className="text-muted-foreground">Puhelin</div>
-                    <div>xxx</div>
-                    <div className="text-muted-foreground">Sähköposti</div>
-                    <div>xxx</div>
-                  </div>
-                </div>
-              </div>
+      <section className="w-full py-12 md:py-24 bg-white">
+        <div className="container px-4 md:px-6">
+          <div className="flex flex-col gap-4 mb-8">
+            <h2 className="text-3xl font-bold tracking-tight">{t('aboutUs.companyDetails.title')}</h2>
+            <p className="text-muted-foreground text-lg max-w-[800px]">
+              {t('aboutUs.companyDetails.description')}
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-1 gap-8">
+            <div>
+              {t('aboutUs.companyDetails.company')}
+              <br />
+              {t('aboutUs.companyDetails.businessId')}
+              <br />
+              {t('aboutUs.companyDetails.country')}
+              <br />
+              {t('aboutUs.companyDetails.contact')}
             </div>
           </div>
-        </section>
-      )}
+        </div>
+      </section>
 
       {/* CTA */}
       <section className="w-full py-12 md:py-24 bg-primary text-primary-foreground">
