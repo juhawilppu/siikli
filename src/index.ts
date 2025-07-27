@@ -12,6 +12,7 @@ import passport from 'passport'
 import { authRoute } from './api/auth'
 import { customersRoute } from './api/customers'
 import dashboardRoute from './api/dashboard'
+import { healthRoute } from './api/health'
 import invoiceRoute from './api/invoices'
 import { ordersRoute } from './api/orders'
 import packagingListRoute from './api/packaging-list'
@@ -132,11 +133,7 @@ async function startServer() {
   app.use(invoiceRoute)
   app.use(packagingListRoute)
   app.use(dashboardRoute)
-
-  app.get('/api/health', (req, res) => {
-    // console.log('health check')
-    res.status(200).send({ message: 'OK' })
-  })
+  app.use(healthRoute)
 
   app.use((req, res, next) => {
     if (req.user) {
