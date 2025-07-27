@@ -29,7 +29,7 @@ echo "🏗️ Building backend..."
 (
     ECR_REPO=337909750746.dkr.ecr.eu-north-1.amazonaws.com/siikli-backend
     echo $version > terraform/version.txt
-    docker build --platform linux/amd64 -t siikli-backend:$version .
+    docker build --platform linux/amd64 -t siikli-backend:$version --build-arg VERSION=$version .
     docker tag siikli-backend:$version $ECR_REPO:$version
     aws ecr get-login-password --region eu-north-1 | docker login --username AWS --password-stdin $ECR_REPO
     docker push $ECR_REPO:$version

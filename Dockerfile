@@ -1,4 +1,7 @@
-FROM node:20-slim
+FROM node:22.17.1-slim
+
+ARG VERSION
+ENV VERSION=${VERSION}
 
 WORKDIR /app
 RUN apt-get update && apt-get install -y openssl libssl-dev
