@@ -5,6 +5,6 @@ export const healthRoute = express.Router()
 healthRoute.get(
   '/api/health',
   (req, res) => {
-    res.status(200).json({ message: 'OK', version: process.env.VERSION })
+    res.status(200).json({ message: 'OK', node: 22, version: process.env.VERSION })
   },
 )
