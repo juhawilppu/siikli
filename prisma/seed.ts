@@ -95,6 +95,12 @@ async function main() {
     price0: new Decimal(1.40).div(1.14),
     packageSize: 10,
     packageType: 'Ltk',
+    userId: juha.id,
+    type: 'Siikli',
+    variety: 'Siikli',
+    info: 'Siikli',
+    subtype: 'Siikli',
+    customerGroup: 'Siikli',
   })
 
   await ProductService.createProduct({
@@ -104,6 +110,12 @@ async function main() {
     price0: new Decimal(1.60).div(1.14),
     packageSize: 20,
     packageType: 'Ltk',
+    userId: juha.id,
+    type: 'Siikli',
+    variety: 'Siikli',
+    info: 'Siikli',
+    subtype: 'Siikli',
+    customerGroup: 'Siikli',
   })
 
   // Verify that product creation fails when price and price0 don't match
@@ -118,6 +130,12 @@ async function main() {
       price0: invalidPrice0,
       packageSize: 20,
       packageType: 'Ltk',
+      userId: juha.id,
+      type: 'Siikli',
+      variety: 'Siikli',
+      info: 'Siikli',
+      subtype: 'Siikli',
+      customerGroup: 'Siikli',
     }).catch(() => null) !== null) {
       throw new Error('ProductService.createProduct should reject mismatched prices')
     }
@@ -133,6 +151,12 @@ async function main() {
       price0,
       packageSize: packageSizes[Math.floor(Math.random() * packageSizes.length)],
       packageType: packageTypes[Math.floor(Math.random() * packageTypes.length)],
+      userId: juha.id,
+      type: 'Siikli',
+      variety: 'Siikli',
+      info: 'Siikli',
+      subtype: 'Siikli',
+      customerGroup: 'Siikli',
     })
   }
 
@@ -164,7 +188,17 @@ async function main() {
         hasNote,
         noteHeader: hasNote ? 'Toimitus' : null,
         noteBody: hasNote ? 'Toimitus ovelle H3. Nouto aamulla.' : null,
-        orderRows,
+        items: orderRows.map(row => ({
+          id: row.productId,
+          price: row.price,
+          price0: row.price0,
+          packageSize: row.packageSize,
+          packageType: row.packageType,
+          freetext: row.freetext || '',
+          productId: row.productId,
+          amount: row.amount,
+          packages: row.amount.div(row.packageSize).toNumber(),
+        })),
       })
     }
   }
@@ -189,7 +223,17 @@ async function main() {
       hasNote: false,
       noteHeader: null,
       noteBody: null,
-      orderRows,
+      items: orderRows.map(row => ({
+        id: row.productId,
+        price: row.price,
+        price0: row.price0,
+        packageSize: row.packageSize,
+        packageType: row.packageType,
+        freetext: row.freetext || '',
+        productId: row.productId,
+        amount: row.amount,
+        packages: row.amount.div(row.packageSize).toNumber(),
+      })),
     })
     throw new Error('Expected order creation with invalid IDs to fail')
   }
@@ -200,7 +244,7 @@ async function main() {
     }
   }
 
-  const orders = await OrderService.getOrders({ tenantId: tenant.id })
+  const orders = await OrderService.getOrders(tenant.id, new Date(), new Date())
   if (orders.length !== 12) {
     throw new Error(`Expected 12 orders, got ${orders.length}`)
   }
