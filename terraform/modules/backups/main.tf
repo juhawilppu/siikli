@@ -36,7 +36,7 @@ resource "aws_backup_plan" "daily_plan" {
     completion_window = 180
 
     lifecycle {
-      delete_after = 90 # days
+      delete_after = 7 # Short retention to reduce cost
     }
   }
 }
