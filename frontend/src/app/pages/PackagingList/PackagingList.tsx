@@ -1,6 +1,7 @@
 import type { PackagingListGroupedByCustomer, PackagingListGroupedByProduct } from '@/types/types'
 import axios from 'axios'
 import { fi } from 'date-fns/locale'
+import Decimal from 'decimal.js'
 import { Calendar, RefreshCw } from 'lucide-react'
 import { useState } from 'react'
 import SiikliPage from '@/app/components/SiikliPage'
@@ -32,7 +33,10 @@ export function PackagingList() {
       },
     })
     console.log('report', res.data)
-    setReport(res.data)
+    setReport({ ...res.data, rows: res.data.rows.map((item: any) => ({
+      ...item,
+      amount: new Decimal(item.amount),
+    })) })
     setIsLoading(false)
   }
 

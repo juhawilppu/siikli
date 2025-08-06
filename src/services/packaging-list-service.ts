@@ -1,4 +1,5 @@
 import type { PackagingListGroupedByCustomer, PackagingListGroupedByProduct } from '../../frontend/src/types/types'
+import { Decimal } from '@prisma/client/runtime/library'
 import prisma from '../prisma'
 
 export const PackagingListService = {
@@ -51,7 +52,7 @@ export const PackagingListService = {
           packageSize: r.package_size,
           packageType: r.package_type,
           freetext: r.freetext,
-          amount: r.amount,
+          amount: new Decimal(r.amount),
         }
       }),
     } satisfies PackagingListGroupedByCustomer
@@ -102,7 +103,7 @@ export const PackagingListService = {
           productVariety: r.product_variety,
           packageSize: r.package_size,
           packageType: r.package_type,
-          amount: r.amount,
+          amount: new Decimal(r.amount),
         }
       }),
     } satisfies PackagingListGroupedByProduct
