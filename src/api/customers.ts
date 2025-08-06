@@ -30,7 +30,7 @@ customersRoute.post(`/api/customers`, isAuthenticated, async (req, res) => {
   const result = await CustomerService.createCustomer(
     {
       ...body,
-      discount: new Decimal(body.discount),
+      discount: body.discount ? new Decimal(body.discount) : new Decimal(0),
     },
     tenantId,
     userId,

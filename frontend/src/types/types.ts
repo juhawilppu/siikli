@@ -232,7 +232,7 @@ export interface DeleteCustomerResponseDto {
 export interface PostCreateCustomerRequestDto {
   name: string
   companyLegalName: string | null
-  discount: number
+  discount: number | null
   invoiceReference: string | null
   streetAddress: string | null
   postalCode: string | null
