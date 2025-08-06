@@ -8,6 +8,7 @@ RUN apt-get update && apt-get install -y openssl libssl-dev
 COPY package.json ./
 RUN npm install -g pnpm
 RUN pnpm install
+RUN npx puppeteer browsers install chrome
 COPY prisma ./prisma
 RUN pnpm prisma generate
 COPY . .
