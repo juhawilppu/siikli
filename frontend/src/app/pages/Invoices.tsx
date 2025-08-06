@@ -89,31 +89,51 @@ export function Invoices() {
     setPrinting(true)
 
     console.log('printInvoice', customerId, startDate, endDate)
-    const response = await axios.get('/invoices', {
-      params: {
-        customerId,
-        startDate: startDate?.toISOString(),
-        endDate: endDate?.toISOString(),
-        preview: 'false',
-      },
-      responseType: 'blob',
-    })
+    try {
+      const response = await axios.get('/invoices', {
+        params: {
+          customerId,
+          startDate: startDate?.toISOString(),
+          endDate: endDate?.toISOString(),
+          preview: 'false',
+        },
+        responseType: 'blob',
+      })
 
-    // Create blob URL
-    const blob = new Blob([response.data], { type: 'application/pdf' })
-    const url = window.URL.createObjectURL(blob)
+      // Create blob URL
+      const blob = new Blob([response.data], { type: 'application/pdf' })
+      const url = window.URL.createObjectURL(blob)
 
-    // Create temporary link and trigger download
-    const link = document.createElement('a')
-    link.href = url
-    link.setAttribute('download', `lasku-${customers.find(c => c.id === customerId)?.name.toLowerCase().replace(' ', '-')}-${formatDate(new Date())}.pdf`)
-    document.body.appendChild(link)
-    link.click()
+      // Create temporary link and trigger download
+      const link = document.createElement('a')
+      link.href = url
+      link.setAttribute('download', `lasku-${customers.find(c => c.id === customerId)?.name.toLowerCase().replace(' ', '-')}-${formatDate(new Date())}.pdf`)
+      document.body.appendChild(link)
+      link.click()
 
-    // Cleanup
-    link.remove()
-    window.URL.revokeObjectURL(url)
-    setPrinting(false)
+      // Cleanup
+      link.remove()
+      window.URL.revokeObjectURL(url)
+      setPrinting(false)
+    }
+    catch (error: any) {
+      console.log('error', error)
+      if (error.response?.status === 404) {
+        toast({
+          title: 'Ei tilauksia',
+          description: 'Tällä asiakkaalla ei ole tilauksia tällä aikavälillä',
+        })
+      }
+      else {
+        toast({
+          title: 'Jokin meni pieleen',
+          description: 'Tarkista, että aloitus- ja lopetuspäivät ovat oikein',
+        })
+      }
+    }
+    finally {
+      setPrinting(false)
+    }
   }
 
   useEffect(() => {
