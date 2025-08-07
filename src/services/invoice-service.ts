@@ -89,9 +89,9 @@ export const InvoiceService = {
         tenantId,
       },
     })
-
-    if (!customer)
+    if (!customer) {
       throw new Error('Customer not found')
+    }
 
     const orders = await prisma.order.findMany({
       where: {
@@ -137,10 +137,6 @@ export const InvoiceService = {
       })
     },
     ).flat()
-
-    if (orders.length === 0 || items.length === 0) {
-      throw new Error('No items found')
-    }
 
     const notificationPeriod = 14
 

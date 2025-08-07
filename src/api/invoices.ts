@@ -69,11 +69,8 @@ invoiceRoute.get(`/api/invoices`, isAuthenticated, async (req, res) => {
     }
   }
   catch (e) {
-    if (e instanceof Error && e.message.includes('Customer not found')) {
+    if (e instanceof Error && e.message === 'Customer not found') {
       res.status(404).json({ message: 'Customer not found' })
-    }
-    else if (e instanceof Error && e.message.includes('No items found')) {
-      res.status(404).json({ message: 'No items found' })
     }
     else if (e instanceof Error) {
       console.error(e)

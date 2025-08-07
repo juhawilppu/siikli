@@ -208,6 +208,9 @@ export function createInvoiceHtml(invoice: InvoiceDto) {
             <td class="border-right ${i === LAST_ITEM_INDEX ? 'border-bottom' : ''}" style="text-align: right;">${formatNumber(invoice.customer.showPriceWithoutTax ? item.totalWithoutTax : item.totalWithTax)}</td>
           </tr>
         `).join('')}
+        ${invoice.items.length === 0
+          ? `<tr><td class="border-left border-bottom border-right" colspan="6" style="text-align: center;">Ei tuotteita</td></tr>`
+          : ''}
         <tr>
           <td class="border-left border-top-bottom" colspan="2"><strong>Yhteensä (${invoice.customer.showPriceWithoutTax ? 'ALV 0 %' : 'ALV 14 %'})</strong></td>
           <td class="border-top-bottom"></td>
