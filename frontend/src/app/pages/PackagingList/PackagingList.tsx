@@ -69,6 +69,7 @@ export function PackagingList() {
                     <CalendarComponent
                       mode="single"
                       selected={deliveryDate}
+                      defaultMonth={deliveryDate}
                       onSelect={(value: Date | undefined) => {
                         setDeliveryDate(value)
                         setReport(undefined)

@@ -524,6 +524,7 @@ export default function CreateOrder() {
                       <CalendarComponent
                         mode="single"
                         selected={deliveryDate}
+                        defaultMonth={deliveryDate}
                         onSelect={(date) => {
                           setDeliveryDate(date)
                           setOpen(false) // Close popover on date select

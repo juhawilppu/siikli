@@ -53,6 +53,7 @@ export function SalesReport() {
                   <CalendarComponent
                     mode="single"
                     selected={startDate}
+                    defaultMonth={startDate}
                     onSelect={(value) => {
                       setStartDate(value as Date)
                       setOpenStartDate(false)
@@ -78,6 +79,7 @@ export function SalesReport() {
                   <CalendarComponent
                     mode="single"
                     selected={endDate}
+                    defaultMonth={endDate}
                     onSelect={(value) => {
                       setEndDate(value as Date)
                       setOpenEndDate(false)
