@@ -107,7 +107,7 @@ export function Invoices() {
       // Create temporary link and trigger download
       const link = document.createElement('a')
       link.href = url
-      link.setAttribute('download', `lasku-${customers.find(c => c.id === customerId)?.name.toLowerCase().replace(' ', '-')}-${formatDate(new Date())}.pdf`)
+      link.setAttribute('download', `lasku-${customers.find(c => c.id === customerId)?.name.toLowerCase().replace(' ', '-')}-${dateToIso(new Date())}.pdf`)
       document.body.appendChild(link)
       link.click()
 
