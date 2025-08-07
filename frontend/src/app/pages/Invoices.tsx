@@ -205,6 +205,7 @@ export function Invoices() {
                   <CalendarComponent
                     mode="single"
                     selected={startDate}
+                    month={startDate}
                     onSelect={(date) => {
                       setStartDate(date)
                       setDirty(true)
@@ -232,6 +233,7 @@ export function Invoices() {
                   <CalendarComponent
                     mode="single"
                     selected={endDate}
+                    month={endDate}
                     onSelect={(date) => {
                       setEndDate(date)
                       setDirty(true)
