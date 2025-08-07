@@ -47,7 +47,7 @@ customersRoute.put(`/api/customers/:id`, isAuthenticated, async (req, res) => {
   const body = req.body as PutUpdateCustomerRequestDto
   const result = await CustomerService.updateCustomer(id, {
     ...body,
-    discount: new Decimal(body.discount),
+    discount: new Decimal(body.discount || 0),
   }, tenantId, userId)
 
   return res.json({
