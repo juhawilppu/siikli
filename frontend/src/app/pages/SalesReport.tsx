@@ -12,6 +12,7 @@ import { formatDate } from '@/utils/date'
 const now = new Date()
 
 export function SalesReport() {
+  const [loading, setLoading] = useState(false)
   const [startDate, setStartDate] = useState<Date | undefined>(
     startOfWeek(now, { weekStartsOn: 1 }),
   )
@@ -20,15 +21,22 @@ export function SalesReport() {
     endOfWeek(now, { weekStartsOn: 1 }),
   )
   const [openEndDate, setOpenEndDate] = useState(false)
+
   const getReport = async () => {
-    const res = await fetch('/api/sales-report')
-    const blob = await res.blob()
-    const url = window.URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = 'myyntiraportti.xlsx'
-    a.click()
-    window.URL.revokeObjectURL(url)
+    try {
+      setLoading(true)
+      const res = await fetch('/api/sales-report')
+      const blob = await res.blob()
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = 'myyntiraportti.xlsx'
+      a.click()
+      window.URL.revokeObjectURL(url)
+    }
+    finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -91,7 +99,7 @@ export function SalesReport() {
               </Popover>
             </div>
             <div className="flex justify-end items-end gap-2">
-              <Button onClick={getReport}>
+              <Button onClick={getReport} disabled={loading}>
                 <Download className="w-4 h-4 mr-2" />
                 {' '}
                 Lataa
