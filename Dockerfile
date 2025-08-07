@@ -4,7 +4,11 @@ ARG VERSION
 ENV VERSION=${VERSION}
 
 WORKDIR /app
-RUN apt-get update && apt-get install -y openssl libssl-dev
+RUN apt-get update && apt-get install -y openssl libssl-dev \
+  libglib2.0-0 libnss3 libx11-xcb1 libxcomposite1 libxdamage1 libxrandr2 \
+  libgtk-3-0 libasound2 libxshmfence1 libgbm1 libatk1.0-0 libatk-bridge2.0-0 \
+  --no-install-recommends && rm -rf /var/lib/apt/lists/*
+
 COPY package.json ./
 RUN npm install -g pnpm
 RUN pnpm install
