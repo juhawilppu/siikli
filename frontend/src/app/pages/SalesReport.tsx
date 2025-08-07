@@ -47,8 +47,8 @@ export function SalesReport() {
           <CardDescription>Suodata tilauksia päivämäärän mukaan</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-4 md:grid-cols-4">
-            <div className="space-y-2">
+          <div className="flex w-full gap-4">
+            <div className="space-y-2 flex-1">
               <label className="text-sm font-medium">Alkupäivä</label>
               <Popover open={openStartDate} onOpenChange={setOpenStartDate}>
                 <PopoverTrigger asChild>
@@ -74,7 +74,7 @@ export function SalesReport() {
               </Popover>
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-2 flex-1">
               <label className="text-sm font-medium">Loppupäivä</label>
               <Popover open={openEndDate} onOpenChange={setOpenEndDate}>
                 <PopoverTrigger asChild>

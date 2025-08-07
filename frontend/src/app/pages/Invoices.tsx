@@ -149,8 +149,6 @@ export function Invoices() {
   if (!customers)
     return <div>Ei Asiakkaita</div>
 
-  const selectedCustomer = customers.find(c => c.id === customerId)
-
   return (
     <SiikliPage title="Laskut" description="Tällä sivulla voit tulostaa laskut">
       <Card>
@@ -159,8 +157,8 @@ export function Invoices() {
           <CardDescription>Suodata tilauksia päivämäärän mukaan</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-4 md:grid-cols-4">
-            <div className="space-y-2">
+          <div className="flex w-full gap-4">
+            <div className="space-y-2 flex-1">
               <Label htmlFor="customer">Asiakas</Label>
               <Select
                 value={customerId}
@@ -170,7 +168,7 @@ export function Invoices() {
                   setInvoice(undefined)
                 }}
               >
-                <SelectTrigger id="customer">
+                <SelectTrigger id="customer" className="w-full truncate">
                   <SelectValue placeholder="Valitse asiakas" />
                 </SelectTrigger>
                 <SelectContent>
@@ -181,18 +179,8 @@ export function Invoices() {
                   ))}
                 </SelectContent>
               </Select>
-              {selectedCustomer && selectedCustomer.streetAddress && selectedCustomer.postalCode && selectedCustomer.city && (
-                <p className="text-xs text-muted-foreground mt-1">
-                  {selectedCustomer.streetAddress}
-                  ,
-                  {' '}
-                  {selectedCustomer.postalCode}
-                  {' '}
-                  {selectedCustomer.city}
-                </p>
-              )}
             </div>
-            <div className="space-y-2">
+            <div className="space-y-2 flex-1">
               <label className="text-sm font-medium">Alkupäivä</label>
               <Popover open={openStartDate} onOpenChange={setOpenStartDate}>
                 <PopoverTrigger asChild>
@@ -220,7 +208,7 @@ export function Invoices() {
               </Popover>
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-2 flex-1">
               <label className="text-sm font-medium">Loppupäivä</label>
               <Popover open={openEndDate} onOpenChange={setOpenEndDate}>
                 <PopoverTrigger asChild>
@@ -246,7 +234,8 @@ export function Invoices() {
                 </PopoverContent>
               </Popover>
             </div>
-            <div className="flex justify-end items-end gap-2">
+
+            <div className="space-y-2 flex justify-end items-end gap-2">
               <Button variant="outline" disabled={!dirty || !customerId || !startDate || !endDate} onClick={getData}>
                 <RefreshCw className="w-4 h-4 mr-2" />
                 {' '}
