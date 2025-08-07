@@ -361,21 +361,18 @@ export function NewCustomer({ closeDialog, customerToEdit, forwaredCustomerGroup
             <Input
               id="edit-discount"
               placeholder="0,00"
-              type="number"
-              step="0.01"
-              min="0"
-              max="100"
-              value={Number.parseFloat(customer.discount) === 0 ? '' : customer.discount}
+              value={customer.discount}
               onChange={e =>
                 setCustomer({
                   ...customer,
                   discount: e.target.value,
                 })}
-              onBlur={e =>
+              onBlur={(e) => {
                 setCustomer({
                   ...customer,
-                  discount: formatNumber(Number.parseFloat(e.target.value)),
-                })}
+                  discount: formatNumber(e.target.value),
+                })
+              }}
             />
           </div>
           <div className="space-y-2">
