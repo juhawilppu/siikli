@@ -13,7 +13,7 @@ export function createInvoiceHtml(invoice: InvoiceDto) {
     <meta charset="UTF-8">
     <style>
       body {
-        font-family: Arial, Helvetica, sans-serif;
+        font-family: 'Liberation Sans', sans-serif;
         font-size: 12pt;
         color: black;
       }
