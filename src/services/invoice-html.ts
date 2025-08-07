@@ -69,7 +69,7 @@ export function createInvoiceHtml(invoice: InvoiceDto) {
     <table class="borders">
       <tr>
         <td style="padding: 5mm; width: 50%;"><strong>Laskun saaja</strong><br>
-          ${invoice.customer.legalName}<br>
+          ${invoice.customer.legalName || invoice.customer.name}<br>
           ${invoice.customer.businessId ? `Y-tunnus ${invoice.customer.businessId}` : ''}<br>
           ${invoice.customer.streetAddress}<br>
           ${invoice.customer.postalCode} ${invoice.customer.city}
