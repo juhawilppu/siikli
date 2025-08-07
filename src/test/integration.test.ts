@@ -3,7 +3,7 @@ import { Role } from '@prisma/client'
 import { Decimal } from '@prisma/client/runtime/library'
 import { addDays, formatDate, subDays } from 'date-fns'
 import { describe, expect, it } from 'vitest'
-import { dateToString } from '../../frontend/src/utils/date'
+import { dateToIso } from '../../frontend/src/utils/date'
 import prisma from '../prisma'
 import { AuthService } from '../services/auth-service'
 import { CustomerService } from '../services/customer-service'
@@ -242,7 +242,7 @@ describe('integration test', () => {
       })
     }
 
-    const deliveryDate = subDays(new Date(), 0)
+    const deliveryDate = '2025-08-07'
 
     const orderId = await OrderService.createOrder({
       customerId: sello.id,
@@ -263,7 +263,7 @@ describe('integration test', () => {
     expect(order.id.length).toBe(36) // uuid
     expect(order.waybillNumber).toBe(1000)
     expect(order.customerId).toBe(customers.customers[0].id)
-    expect(order.deliveryDate).toBe(dateToString(deliveryDate))
+    expect(order.deliveryDate).toBe(deliveryDate)
     expect(order.hasNote).toBe(true)
     expect(order.noteHeader).toBe('Toimitus')
     expect(order.noteBody).toBe('Toimitus ovelle H3. Nouto aamulla.')
@@ -274,7 +274,7 @@ describe('integration test', () => {
       userId: juha.id,
       customerId: sello.id,
       id: orderId.id,
-      deliveryDate: dateToString(deliveryDate),
+      deliveryDate,
       hasNote: true,
       noteHeader: 'Toimitus',
       noteBody: 'Toimitus ovelle H3. Nouto aamulla.',
@@ -289,9 +289,9 @@ describe('integration test', () => {
     const orders = await OrderService.getOrders(tenant.id, subDays(new Date(), 1), addDays(new Date(), 1))
     expect(orders.length).toBe(1)
     expect(orders[0].customer.id).toBe(customers.customers[0].id)
-    expect(orders[0].deliveryDate).toBe(dateToString(deliveryDate))
+    expect(orders[0].deliveryDate).toBe(deliveryDate)
 
-    const waybills = await OrderService.getWaybillHtmls(tenant.id, dateToString(deliveryDate), dateToString(deliveryDate))
+    const waybills = await OrderService.getWaybillHtmls(tenant.id, deliveryDate, deliveryDate)
     expect(waybills).toBeDefined()
     expect(waybills.includes('Siikli')).toBe(true)
     expect(waybills).toContain('<h1>Kuormakirja</h1>')
@@ -303,11 +303,11 @@ describe('integration test', () => {
     expect(waybills.trim().startsWith('<html')).toBe(true)
     expect(waybills.trim().endsWith('</html>')).toBe(true)
 
-    const waybillPdf = await OrderService.getWaybillPdf(tenant.id, dateToString(deliveryDate), dateToString(deliveryDate))
+    const waybillPdf = await OrderService.getWaybillPdf(tenant.id, deliveryDate, deliveryDate)
     expect(waybillPdf).toBeInstanceOf(Uint8Array)
     expect(waybillPdf.length).toBeGreaterThan(100)
 
-    const packagingListByCustomer = await PackagingListService.getPackagingListGroupedByCustomer(tenant.id, dateToString(deliveryDate))
+    const packagingListByCustomer = await PackagingListService.getPackagingListGroupedByCustomer(tenant.id, deliveryDate)
     expect(packagingListByCustomer).toBeDefined()
     expect(packagingListByCustomer.groupedBy).toBe('customer')
     expect(packagingListByCustomer.rows.length).toBe(products.length)
@@ -315,7 +315,7 @@ describe('integration test', () => {
     expect(packagingListByCustomer.rows[0].productName).toBe(products[0].name)
     expect(packagingListByCustomer.rows[0].amount.equals(new Decimal(37))).toBe(true)
 
-    const packagingListByProduct = await PackagingListService.getPackagingListGroupedByProduct(tenant.id, dateToString(deliveryDate))
+    const packagingListByProduct = await PackagingListService.getPackagingListGroupedByProduct(tenant.id, deliveryDate)
     expect(packagingListByProduct).toBeDefined()
     expect(packagingListByProduct.groupedBy).toBe('product')
     expect(packagingListByProduct.rows.length).toBe(products.length)
@@ -355,7 +355,7 @@ describe('integration test', () => {
     expect(workbook.worksheets[0].name).toBe('Myyntiraportti')
     // expect(workbook.worksheets[0].rows.length).toBe(2)
     // expect(workbook.worksheets[0].rows[0].values).toEqual(['Päivämäärä', 'Tilaus', 'Asiakas', 'Tuote', 'Määrä', 'Hinta', 'Pakkauskoko', 'Pakkaustyyppi', 'Lisätieto'])
-    // expect(workbook.worksheets[0].rows[1].values).toEqual([dateToString(deliveryDate), order.id, customers.customers[0].name, products[0].name, 37, 51.80, 10, 'Ltk', 'Erikoistuote'])
+    // expect(workbook.worksheets[0].rows[1].values).toEqual([dateToIso(deliveryDate), order.id, customers.customers[0].name, products[0].name, 37, 51.80, 10, 'Ltk', 'Erikoistuote'])
 
     await OrderService.deleteOrder(order.id, tenant.id)
     await expect(OrderService.getOrder(order.id, tenant.id)).rejects.toThrow()

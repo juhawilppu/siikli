@@ -1,5 +1,5 @@
 import type { InvoiceDto } from './invoice-service'
-import { formatDate, stringToDate } from '../../frontend/src/utils/date'
+import { formatDate, parseIsoDate } from '../../frontend/src/utils/date'
 import { formatNumber } from '../utils/money'
 
 // The max amount of invoice items per page in the appendix is 29
@@ -75,10 +75,10 @@ export function createInvoiceHtml(invoice: InvoiceDto) {
           ${invoice.customer.postalCode} ${invoice.customer.city}
         </td>
         <td style="padding: 5mm; width: 50%;">
-          <strong style="width: 40mm; display: inline-block;">Päivämäärä:</strong> ${formatDate(stringToDate(invoice.date))}<br>
+          <strong style="width: 40mm; display: inline-block;">Päivämäärä:</strong> ${formatDate(parseIsoDate(invoice.date))}<br>
           <strong style="width: 40mm; display: inline-block;">Laskun numero:</strong> ${invoice.invoiceId}<br>
           <strong style="width: 40mm; display: inline-block;">Maksuehdot:</strong> ${invoice.paymentCondition}<br>
-          <strong style="width: 40mm; display: inline-block;">Eräpäivä:</strong> ${formatDate(stringToDate(invoice.dueDate))}<br>
+          <strong style="width: 40mm; display: inline-block;">Eräpäivä:</strong> ${formatDate(parseIsoDate(invoice.dueDate))}<br>
           <strong style="width: 40mm; display: inline-block;">Viivästyskorko:</strong> ${invoice.interestRate} %<br>
           <strong style="width: 40mm; display: inline-block;">Huomautusaika:</strong> ${invoice.notificationPeriod}
         </td>

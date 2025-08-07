@@ -6,7 +6,7 @@ import type {
 } from '../../frontend/src/types/types'
 import { Decimal } from 'decimal.js'
 import express from 'express'
-import { stringToDate } from '../../frontend/src/utils/date'
+import { parseIsoDate } from '../../frontend/src/utils/date'
 import { getUser, isAuthenticated } from '../middlewares/permissions'
 import { OrderService } from '../services/order-service'
 
@@ -29,8 +29,8 @@ ordersRoute.get(`/api/orders`, isAuthenticated, async (req, res) => {
     return res.status(400)
   }
 
-  const startDate = stringToDate(req.query.startDate as string)
-  const endDate = stringToDate(req.query.endDate as string)
+  const startDate = parseIsoDate(req.query.startDate as string)
+  const endDate = parseIsoDate(req.query.endDate as string)
   const { tenantId } = getUser(req)
 
   const orders = await OrderService.getOrders(tenantId, startDate, endDate)
@@ -91,7 +91,7 @@ ordersRoute.post(`/api/orders`, isAuthenticated, async (req, res) => {
   const result = await OrderService.createOrder({
     ...data,
     tenantId,
-    deliveryDate: stringToDate(data.deliveryDate),
+    deliveryDate: parseIsoDate(data.deliveryDate),
     items: data.items.map(item => ({
       ...item,
       price: new Decimal(item.price),

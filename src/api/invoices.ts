@@ -1,6 +1,7 @@
 import type { GetInvoiceResponseDto } from '../../frontend/src/types/types'
 import express from 'express'
 import puppeteer from 'puppeteer'
+import { parseIsoDate } from '../../frontend/src/utils/date'
 import { getUser, isAuthenticated } from '../middlewares/permissions'
 import { createInvoiceHtml } from '../services/invoice-html'
 import { InvoiceService } from '../services/invoice-service'
@@ -11,8 +12,8 @@ const invoiceRoute = express.Router()
 invoiceRoute.get(`/api/invoices`, isAuthenticated, async (req, res) => {
   const { tenantId } = getUser(req)
   const customerId = req.query.customerId as string
-  const startDate = new Date(req.query.startDate as string)
-  const endDate = new Date(req.query.endDate as string)
+  const startDate = parseIsoDate(req.query.startDate as string)
+  const endDate = parseIsoDate(req.query.endDate as string)
   const preview = req.query.preview === 'true'
 
   try {

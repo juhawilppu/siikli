@@ -13,7 +13,7 @@ import { Label } from '@/components/ui/label'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { toast } from '@/hooks/use-toast'
-import { formatDate } from '@/utils/date'
+import { dateToIso, formatDate } from '@/utils/date'
 
 export interface FlatOrderItem {
   deliveryDate: Date
@@ -58,8 +58,8 @@ export function Invoices() {
       const invoice = await axios.get<GetInvoiceResponseDto>('/invoices', {
         params: {
           customerId,
-          startDate: startDate.toISOString(),
-          endDate: endDate.toISOString(),
+          startDate: dateToIso(startDate),
+          endDate: dateToIso(endDate),
           preview: 'true',
         },
       })
@@ -93,8 +93,8 @@ export function Invoices() {
       const response = await axios.get('/invoices', {
         params: {
           customerId,
-          startDate: startDate?.toISOString(),
-          endDate: endDate?.toISOString(),
+          startDate: dateToIso(startDate),
+          endDate: dateToIso(endDate),
           preview: 'false',
         },
         responseType: 'blob',

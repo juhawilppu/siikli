@@ -33,7 +33,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { useToast } from '@/hooks/use-toast'
 import { cn } from '@/lib/utils'
-import { dateToString } from '@/utils/date'
+import { dateToIso } from '@/utils/date'
 import { formatNumber, parseDecimal, serializeNumber } from '@/utils/money'
 import ConfirmDialog from '../../components/ConfirmDialog'
 
@@ -309,7 +309,7 @@ export default function CreateOrder() {
 
     const data: PostOrderRequestDto = {
       customerId: selectedCustomer.id,
-      deliveryDate: dateToString(deliveryDate),
+      deliveryDate: dateToIso(deliveryDate),
       hasNote: hasWaybillNote,
       noteBody: hasWaybillNote ? waybillNote.content : null,
       noteHeader: hasWaybillNote ? waybillNote.title : null,

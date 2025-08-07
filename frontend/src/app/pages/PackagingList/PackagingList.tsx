@@ -11,7 +11,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Label } from '@/components/ui/label'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import { dateToString, formatDate } from '@/utils/date'
+import { dateToIso, formatDate } from '@/utils/date'
 import PackagingListByCustomer from './PackagingListByCustomer.js'
 import PackagingListByProduct from './PackagingListByProduct.js'
 
@@ -29,7 +29,7 @@ export function PackagingList() {
     setIsLoading(true)
     const res = await axios.get(`/packaging-list/grouped-by/${groupBy}`, {
       params: {
-        deliveryDate: dateToString(deliveryDate),
+        deliveryDate: dateToIso(deliveryDate),
       },
     })
     console.log('report', res.data)

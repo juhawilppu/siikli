@@ -1,6 +1,6 @@
 import { addDays } from 'date-fns'
 import Decimal from 'decimal.js'
-import { dateToString } from '../../frontend/src/utils/date'
+import { dateToIso } from '../../frontend/src/utils/date'
 import prisma from '../prisma'
 
 export type InvoiceRow = {
@@ -153,8 +153,8 @@ export const InvoiceService = {
 
     const invoice = {
       invoiceId: invoiceNumber,
-      date: dateToString(today),
-      dueDate: dateToString(addDays(today, notificationPeriod)),
+      date: dateToIso(today),
+      dueDate: dateToIso(addDays(today, notificationPeriod)),
       paymentCondition: `${notificationPeriod} päivää`,
       notificationPeriod: `${notificationPeriod} päivää`,
       interestRate: 7,

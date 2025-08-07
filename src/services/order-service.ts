@@ -3,7 +3,7 @@ import type { GetOrderDto, GetOrderList, PostOrderItemRequest } from '../../fron
 import { endOfDay, endOfMonth, parse, startOfDay, startOfMonth } from 'date-fns'
 import { Decimal } from 'decimal.js'
 import puppeteer from 'puppeteer'
-import { dateToString, stringToDate } from '../../frontend/src/utils/date'
+import { dateToIso, parseIsoDate } from '../../frontend/src/utils/date'
 import prisma from '../prisma'
 import { serializeNumber } from '../utils/money'
 import { TenantService } from './tenant-service'
@@ -21,7 +21,7 @@ export interface OrderRowDto {
 
 export const OrderService = {
 
-  async createOrder(input: { tenantId: string, customerId: string, deliveryDate: Date, hasNote: boolean, noteHeader: string | null, noteBody: string | null, items: PostOrderItemRequest[] }): Promise<Order> {
+  async createOrder(input: { tenantId: string, customerId: string, deliveryDate: string, hasNote: boolean, noteHeader: string | null, noteBody: string | null, items: PostOrderItemRequest[] }): Promise<Order> {
     const {
       tenantId,
       customerId,
@@ -50,7 +50,7 @@ export const OrderService = {
         data: {
           customerId,
           tenantId,
-          deliveryDate,
+          deliveryDate: parseIsoDate(deliveryDate),
           waybillNumber,
           hasNote,
           noteHeader,
@@ -88,7 +88,7 @@ export const OrderService = {
     }
     const result = await prisma.order.update({
       data: {
-        deliveryDate: stringToDate(data.deliveryDate),
+        deliveryDate: parseIsoDate(data.deliveryDate),
         hasNote: data.hasNote,
         noteHeader: data.hasNote ? data.noteHeader : undefined,
         noteBody: data.hasNote ? data.noteBody : undefined,
@@ -202,7 +202,7 @@ export const OrderService = {
       return {
         id: o.id,
         waybillNumber: o.waybillNumber,
-        deliveryDate: dateToString(o.deliveryDate),
+        deliveryDate: dateToIso(o.deliveryDate),
         total: o.orderRows.map(o => o.amount.mul(o.price)).reduce((a, b) => a.add(b), new Decimal(0)).toNumber(),
         customer: {
           id: o.customerId,
@@ -239,7 +239,7 @@ export const OrderService = {
     return {
       id: result.id,
       waybillNumber: result.waybillNumber,
-      deliveryDate: dateToString(result.deliveryDate),
+      deliveryDate: dateToIso(result.deliveryDate),
       customerId: result.customerId,
       hasNote: result.hasNote,
       noteBody: result.noteBody,

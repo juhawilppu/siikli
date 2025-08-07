@@ -1,14 +1,14 @@
 import { Decimal } from 'decimal.js'
 import { describe, expect, it } from 'vitest'
-import { dateToString } from '../../frontend/src/utils/date'
+import { dateToIso } from '../../frontend/src/utils/date'
 import { createInvoiceHtml } from './invoice-html'
 
 describe('createInvoiceHtml', () => {
   it('should create a valid html invoice', () => {
     const invoice = createInvoiceHtml({
       invoiceId: 1,
-      date: dateToString(new Date()),
-      dueDate: dateToString(new Date()),
+      date: dateToIso(new Date()),
+      dueDate: dateToIso(new Date()),
       customer: {
         streetAddress: 'Test Street',
         postalCode: '00100',

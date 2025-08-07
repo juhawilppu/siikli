@@ -17,7 +17,7 @@ import { Calendar as CalendarComponent } from '@/components/ui/calendar'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { dateToString, formatDate } from '@/utils/date'
+import { dateToIso, formatDate, parseIsoDate } from '@/utils/date'
 import { formatNumber } from '@/utils/money'
 
 export default function Orders() {
@@ -34,8 +34,8 @@ export default function Orders() {
     axios
       .get<GetOrderList[]>('/orders', {
         params: {
-          startDate: dateToString(startDate),
-          endDate: dateToString(endDate),
+          startDate: dateToIso(startDate),
+          endDate: dateToIso(endDate),
         },
       })
       .then(res => setOrders(res.data))
@@ -45,7 +45,7 @@ export default function Orders() {
     try {
       setIsPrinting(true)
       const response = await axios.get(
-        `/orders/waybills?startDate=${dateToString(startDate)}&endDate=${dateToString(endDate)}`,
+        `/orders/waybills?startDate=${dateToIso(startDate)}&endDate=${dateToIso(endDate)}`,
         { responseType: 'blob' },
       )
 
@@ -56,7 +56,7 @@ export default function Orders() {
       // Create temporary link and trigger download
       const link = document.createElement('a')
       link.href = url
-      link.setAttribute('download', `waybills-${dateToString(startDate)}-${dateToString(endDate)}.pdf`)
+      link.setAttribute('download', `waybills-${dateToIso(startDate)}-${dateToIso(endDate)}.pdf`)
       document.body.appendChild(link)
       link.click()
 
@@ -213,7 +213,7 @@ export default function Orders() {
                         orders.map(order => (
                           <TableRow key={order.id}>
                             <TableCell className="font-medium">{order.waybillNumber}</TableCell>
-                            <TableCell>{order.deliveryDate}</TableCell>
+                            <TableCell>{formatDate(parseIsoDate(order.deliveryDate))}</TableCell>
                             <TableCell>
                               {order.customer.name}
                             </TableCell>

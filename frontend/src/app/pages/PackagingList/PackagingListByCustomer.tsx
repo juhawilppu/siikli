@@ -1,5 +1,5 @@
 import type { PackagingListGroupedByCustomer } from '@/types/types'
-import { formatDate, stringToDate } from '@/utils/date'
+import { formatDate, parseIsoDate } from '@/utils/date'
 import { formatNumber } from '@/utils/money'
 
 export function PackagingListByCustomer({ report }: {
@@ -24,7 +24,7 @@ export function PackagingListByCustomer({ report }: {
       <p>
         <strong>Päivämäärä:</strong>
         {' '}
-        {formatDate(stringToDate(report.deliveryDate))}
+        {formatDate(parseIsoDate(report.deliveryDate))}
       </p>
 
       {!report.rows && <div>Ei tuotteita.</div>}
