@@ -25,7 +25,7 @@ export default function TermsOfService() {
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight">
               Käyttöehdot
             </h1>
-            <p className="text-muted-foreground text-lg md:text-xl max-w-[800px]">
+            <p className="text-gray-900 text-lg md:text-xl max-w-[800px]">
               Alta löydät Siikli-palvelun käyttöehdot. Käyttämällä palvelua hyväksyt nämä ehdot. Ehdot on kirjoitettu selkeästi, jotta tiedät, mihin sitoudut.
             </p>
           </div>
@@ -37,7 +37,7 @@ export default function TermsOfService() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <div className="flex flex-col gap-6">
               <h2 className="text-3xl font-bold tracking-tight">Käyttöehdot</h2>
-              <div className="space-y-4 text-muted-foreground">
+              <div className="space-y-4 text-gray-900">
 
                 <p>Viimeksi päivitetty: 3.5.2025</p>
 

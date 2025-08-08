@@ -83,31 +83,31 @@ export default function LandingPage() {
   }, [window.location.hash])
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col text-base text-gray-900 md:text-lg">
       <TopBar />
 
       <section className="w-full py-12 md:py-24 lg:py-32 bg-gradient-to-b from-white to-gray-50">
         <div className="container px-4 md:px-6 flex flex-col md:flex-row items-center md:items-start gap-12">
           <div className="flex flex-col gap-4 md:w-1/2">
             <img src={`/siikli-logo-${variant}.png`} alt="Siikli Logo" className="w-1/3" />
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight">
               {t(`landing.${variant}.title`)}
             </h1>
-            <p className="text-muted-foreground text-lg md:text-xl">
+            <p className="text-xl md:text-lg lg:text-xl">
               {t(`landing.${variant}.description`)}
             </p>
-            <p className="text-muted-foreground text-lg md:text-xl">
+            <p className="text-xl md:text-lg lg:text-xl">
               {t(`landing.${variant}.description2`)}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 mt-4">
-              <Button size="lg" className="rounded-full" asChild>
+              <Button size="lg" className="rounded-full text-lg" asChild>
                 <NavLink to="/kirjaudu">
                   {t(`landing.${variant}.startForFree`)}
                   {' '}
-                  <ArrowRight className="ml-2 h-4 w-4" />
+                  <ArrowRight className="ml-2 h-5 w-5" />
                 </NavLink>
               </Button>
-              <Button variant="outline" size="lg" className="rounded-full" asChild>
+              <Button variant="outline" size="lg" className="rounded-full text-lg" asChild>
                 <a href="#ominaisuudet">{t('landing.learnMore')}</a>
               </Button>
             </div>
@@ -117,13 +117,13 @@ export default function LandingPage() {
                   {[1, 2, 3, 4].map(i => (
                     <div
                       key={i}
-                      className="h-8 w-8 rounded-full border-2 border-white bg-gray-200 flex items-center justify-center text-xs font-medium"
+                      className="h-10 w-10 rounded-full border-2 border-white bg-gray-200 flex items-center justify-center text-base font-medium"
                     >
                       {String.fromCharCode(64 + i)}
                     </div>
                   ))}
                 </div>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-base text-muted-foreground">
                   Yli
                   {' '}
                   <span className="font-medium">500+</span>
@@ -143,8 +143,8 @@ export default function LandingPage() {
       <section className="w-full py-12 md:py-24 bg-white" id="ominaisuudet" ref={featuresRef}>
         <div className="container px-4 md:px-6">
           <div className="flex flex-col items-center justify-center gap-4 text-center mb-12">
-            <h2 className="text-3xl font-bold tracking-tight">{t('landing.features.title')}</h2>
-            <p className="text-muted-foreground text-lg max-w-[800px]">
+            <h2 className="text-4xl font-bold tracking-tight">{t('landing.features.title')}</h2>
+            <p className="text-gray-900 text-xl max-w-[800px]">
               {t('landing.features.description')}
             </p>
           </div>
@@ -154,18 +154,18 @@ export default function LandingPage() {
                 <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
                   <Package className="h-6 w-6 text-primary" />
                 </div>
-                <CardTitle>{t('landing.features.orders.title')}</CardTitle>
+                <CardTitle className="text-xl">{t('landing.features.orders.title')}</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground">
+                <p className="text-gray-900 text-lg">
                   {t('landing.features.orders.description')}
                 </p>
                 <ul className="mt-4 space-y-2">
                   {[t('landing.features.orders.feature1'), t('landing.features.orders.feature2'), t('landing.features.orders.feature3'), t('landing.features.orders.feature4')].map(
                     feature => (
                       <li key={feature} className="flex items-center gap-2">
-                        <Check className="h-4 w-4 text-primary" />
-                        <span className="text-sm">{feature}</span>
+                        <Check className="h-5 w-5 text-primary" />
+                        <span className="text-base">{feature}</span>
                       </li>
                     ),
                   )}
@@ -173,11 +173,11 @@ export default function LandingPage() {
               </CardContent>
               {false && (
                 <CardFooter>
-                  <Button variant="ghost" size="sm" className="gap-1" asChild>
+                  <Button variant="ghost" size="sm" className="gap-1 text-lg" asChild>
                     <a href="#tilaukset">
                       Lue lisää
                       {' '}
-                      <ChevronRight className="h-4 w-4" />
+                      <ChevronRight className="h-5 w-5" />
                     </a>
                   </Button>
                 </CardFooter>
@@ -188,28 +188,28 @@ export default function LandingPage() {
                 <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
                   <Users className="h-6 w-6 text-primary" />
                 </div>
-                <CardTitle>{t('landing.features.customers.title')}</CardTitle>
+                <CardTitle className="text-xl">{t('landing.features.customers.title')}</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground">
+                <p className="text-gray-900 text-lg">
                   {t('landing.features.customers.description')}
                 </p>
                 <ul className="mt-4 space-y-2">
                   {[t('landing.features.customers.feature1'), t('landing.features.customers.feature2'), t('landing.features.customers.feature3')].map(feature => (
                     <li key={feature} className="flex items-center gap-2">
-                      <Check className="h-4 w-4 text-primary" />
-                      <span className="text-sm">{feature}</span>
+                      <Check className="h-5 w-5 text-primary" />
+                      <span className="text-base">{feature}</span>
                     </li>
                   ))}
                 </ul>
               </CardContent>
               {false && (
                 <CardFooter>
-                  <Button variant="ghost" size="sm" className="gap-1" asChild>
+                  <Button variant="ghost" size="sm" className="gap-1 text-lg" asChild>
                     <a href="#asiakkaat">
                       Lue lisää
                       {' '}
-                      <ChevronRight className="h-4 w-4" />
+                      <ChevronRight className="h-5 w-5" />
                     </a>
                   </Button>
                 </CardFooter>
@@ -220,28 +220,28 @@ export default function LandingPage() {
                 <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
                   <Box className="h-6 w-6 text-primary" />
                 </div>
-                <CardTitle>{t('landing.features.products.title')}</CardTitle>
+                <CardTitle className="text-xl">{t('landing.features.products.title')}</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground">
+                <p className="text-gray-900 text-lg">
                   {t('landing.features.products.description')}
                 </p>
                 <ul className="mt-4 space-y-2">
                   {[t('landing.features.products.feature1'), t('landing.features.products.feature2'), t('landing.features.products.feature3')].map(feature => (
                     <li key={feature} className="flex items-center gap-2">
-                      <Check className="h-4 w-4 text-primary" />
-                      <span className="text-sm">{feature}</span>
+                      <Check className="h-5 w-5 text-primary" />
+                      <span className="text-base">{feature}</span>
                     </li>
                   ))}
                 </ul>
               </CardContent>
               {false && (
                 <CardFooter>
-                  <Button variant="ghost" size="sm" className="gap-1" asChild>
+                  <Button variant="ghost" size="sm" className="gap-1 text-lg" asChild>
                     <a href="#tuotteet">
                       Lue lisää
                       {' '}
-                      <ChevronRight className="h-4 w-4" />
+                      <ChevronRight className="h-5 w-5" />
                     </a>
                   </Button>
                 </CardFooter>
@@ -252,28 +252,28 @@ export default function LandingPage() {
                 <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
                   <FileText className="h-6 w-6 text-primary" />
                 </div>
-                <CardTitle>{t('landing.features.invoices.title')}</CardTitle>
+                <CardTitle className="text-xl">{t('landing.features.invoices.title')}</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground">
+                <p className="text-gray-900 text-lg">
                   {t('landing.features.invoices.description')}
                 </p>
                 <ul className="mt-4 space-y-2">
                   {[t('landing.features.invoices.feature1'), t('landing.features.invoices.feature2'), t('landing.features.invoices.feature3')].map(feature => (
                     <li key={feature} className="flex items-center gap-2">
-                      <Check className="h-4 w-4 text-primary" />
-                      <span className="text-sm">{feature}</span>
+                      <Check className="h-5 w-5 text-primary" />
+                      <span className="text-base">{feature}</span>
                     </li>
                   ))}
                 </ul>
               </CardContent>
               {false && (
                 <CardFooter>
-                  <Button variant="ghost" size="sm" className="gap-1" asChild>
+                  <Button variant="ghost" size="sm" className="gap-1 text-lg" asChild>
                     <a href="#laskutus">
                       Lue lisää
                       {' '}
-                      <ChevronRight className="h-4 w-4" />
+                      <ChevronRight className="h-5 w-5" />
                     </a>
                   </Button>
                 </CardFooter>
@@ -284,18 +284,18 @@ export default function LandingPage() {
                 <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
                   <Truck className="h-6 w-6 text-primary" />
                 </div>
-                <CardTitle>{t('landing.features.shipping.title')}</CardTitle>
+                <CardTitle className="text-xl">{t('landing.features.shipping.title')}</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground">
+                <p className="text-gray-900 text-lg">
                   {t('landing.features.shipping.description')}
                 </p>
                 <ul className="mt-4 space-y-2">
                   {[t('landing.features.shipping.feature1'), t('landing.features.shipping.feature2'), t('landing.features.shipping.feature3')].map(
                     feature => (
                       <li key={feature} className="flex items-center gap-2">
-                        <Check className="h-4 w-4 text-primary" />
-                        <span className="text-sm">{feature}</span>
+                        <Check className="h-5 w-5 text-primary" />
+                        <span className="text-base">{feature}</span>
                       </li>
                     ),
                   )}
@@ -303,11 +303,11 @@ export default function LandingPage() {
               </CardContent>
               {false && (
                 <CardFooter>
-                  <Button variant="ghost" size="sm" className="gap-1" asChild>
+                  <Button variant="ghost" size="sm" className="gap-1 text-lg" asChild>
                     <a href="#kuljetukset">
                       Lue lisää
                       {' '}
-                      <ChevronRight className="h-4 w-4" />
+                      <ChevronRight className="h-5 w-5" />
                     </a>
                   </Button>
                 </CardFooter>
@@ -318,28 +318,28 @@ export default function LandingPage() {
                 <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
                   <BarChart3 className="h-6 w-6 text-primary" />
                 </div>
-                <CardTitle>{t('landing.features.reports.title')}</CardTitle>
+                <CardTitle className="text-xl">{t('landing.features.reports.title')}</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground">
+                <p className="text-gray-900 text-lg">
                   {t('landing.features.reports.description')}
                 </p>
                 <ul className="mt-4 space-y-2">
                   {[t('landing.features.reports.feature1'), t('landing.features.reports.feature2'), t('landing.features.reports.feature3')].map(feature => (
                     <li key={feature} className="flex items-center gap-2">
-                      <Check className="h-4 w-4 text-primary" />
-                      <span className="text-sm">{feature}</span>
+                      <Check className="h-5 w-5 text-primary" />
+                      <span className="text-base">{feature}</span>
                     </li>
                   ))}
                 </ul>
               </CardContent>
               {false && (
                 <CardFooter>
-                  <Button variant="ghost" size="sm" className="gap-1" asChild>
+                  <Button variant="ghost" size="sm" className="gap-1 text-lg" asChild>
                     <a href="#raportit">
                       Lue lisää
                       {' '}
-                      <ChevronRight className="h-4 w-4" />
+                      <ChevronRight className="h-5 w-5" />
                     </a>
                   </Button>
                 </CardFooter>
@@ -352,19 +352,19 @@ export default function LandingPage() {
       <section className="w-full py-12 md:py-24 bg-gray-50" id="hinnoittelu" ref={pricingRef}>
         <div className="container px-4 md:px-6">
           <div className="flex flex-col items-center justify-center gap-4 text-center mb-12">
-            <h2 className="text-3xl font-bold tracking-tight">{t('landing.pricing.title')}</h2>
-            <p className="text-muted-foreground text-lg max-w-[800px]">
+            <h2 className="text-4xl font-bold tracking-tight">{t('landing.pricing.title')}</h2>
+            <p className="text-gray-900 text-xl max-w-[800px]">
               {t('landing.pricing.description')}
             </p>
           </div>
           <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
             <Card className="border-border flex flex-col">
               <CardHeader>
-                <CardTitle>{t('landing.pricing.free.title')}</CardTitle>
-                <CardDescription>{t('landing.pricing.free.description')}</CardDescription>
+                <CardTitle className="text-2xl">{t('landing.pricing.free.title')}</CardTitle>
+                <CardDescription className="text-lg text-gray-900">{t('landing.pricing.free.description')}</CardDescription>
                 <div className="mt-4">
-                  <span className="text-3xl font-bold">0 €</span>
-                  <span className="text-muted-foreground">/kk</span>
+                  <span className="text-4xl font-bold">0 €</span>
+                  <span className="text-gray-900 text-xl">/kk</span>
                 </div>
               </CardHeader>
               <CardContent className="flex-1">
@@ -372,28 +372,28 @@ export default function LandingPage() {
                   {[t('landing.pricing.free.feature1'), t('landing.pricing.free.feature2'), t('landing.pricing.free.feature3'), t('landing.pricing.free.feature4')].map(
                     feature => (
                       <li key={feature} className="flex items-center gap-2">
-                        <Check className="h-4 w-4 text-primary" />
-                        <span className="text-sm">{feature}</span>
+                        <Check className="h-5 w-5 text-primary" />
+                        <span className="text-base">{feature}</span>
                       </li>
                     ),
                   )}
                 </ul>
-                <p className="text-muted-foreground mt-4">{t('landing.pricing.free.cta')}</p>
+                <p className="text-muted-foreground mt-4 text-lg">{t('landing.pricing.free.cta')}</p>
               </CardContent>
               <CardFooter>
-                <Button className="w-full">{t('landing.pricing.free.ctaButton')}</Button>
+                <Button className="w-full text-lg">{t('landing.pricing.free.ctaButton')}</Button>
               </CardFooter>
             </Card>
             <Card className="border-primary relative border-border flex flex-col">
-              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-primary text-white text-xs font-medium px-3 py-1 rounded-full">
+              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-primary text-white text-base font-medium px-4 py-1 rounded-full">
                 {t('landing.pricing.premium.recommended')}
               </div>
               <CardHeader>
-                <CardTitle>{t('landing.pricing.premium.title')}</CardTitle>
-                <CardDescription>{t('landing.pricing.premium.description')}</CardDescription>
+                <CardTitle className="text-2xl">{t('landing.pricing.premium.title')}</CardTitle>
+                <CardDescription className="text-lg text-gray-900">{t('landing.pricing.premium.description')}</CardDescription>
                 <div className="mt-4">
-                  <span className="text-3xl font-bold">149 €</span>
-                  <span className="text-muted-foreground">/kk</span>
+                  <span className="text-4xl font-bold">149 €</span>
+                  <span className="text-muted-foreground text-xl">/kk</span>
                 </div>
               </CardHeader>
               <CardContent className="flex-1">
@@ -405,26 +405,26 @@ export default function LandingPage() {
                     t('landing.pricing.premium.feature4'),
                   ].map(feature => (
                     <li key={feature} className="flex items-center gap-2">
-                      <Check className="h-4 w-4 text-primary" />
-                      <span className="text-sm">{feature}</span>
+                      <Check className="h-5 w-5 text-primary" />
+                      <span className="text-base">{feature}</span>
                     </li>
                   ))}
                 </ul>
               </CardContent>
               <CardFooter>
-                <Button className="w-full">{t('landing.pricing.premium.ctaButton')}</Button>
+                <Button className="w-full text-lg">{t('landing.pricing.premium.ctaButton')}</Button>
               </CardFooter>
             </Card>
           </div>
-          <p className="text-sm text-muted-foreground mt-4 text-center">{t('landing.pricing.vat')}</p>
+          <p className="text-base text-muted-foreground mt-4 text-center">{t('landing.pricing.vat')}</p>
         </div>
       </section>
 
       <section className="w-full py-12 md:py-24 bg-white">
         <div className="container px-4 md:px-6">
           <div className="flex flex-col items-center justify-center gap-4 text-center mb-12">
-            <h2 className="text-3xl font-bold tracking-tight">{t('landing.customerFeedback.title')}</h2>
-            <p className="text-muted-foreground text-lg max-w-[800px]">
+            <h2 className="text-4xl font-bold tracking-tight">{t('landing.customerFeedback.title')}</h2>
+            <p className="text-gray-900 text-xl max-w-[800px]">
               {t('landing.customerFeedback.description')}
             </p>
           </div>
@@ -451,7 +451,7 @@ export default function LandingPage() {
                           xmlns="http://www.w3.org/2000/svg"
                           viewBox="0 0 24 24"
                           fill="currentColor"
-                          className="w-5 h-5 text-yellow-500"
+                          className="w-6 h-6 text-yellow-500"
                         >
                           <path
                             fillRule="evenodd"
@@ -461,18 +461,18 @@ export default function LandingPage() {
                         </svg>
                       ))}
                     </div>
-                    <p className="text-muted-foreground italic">
+                    <p className="text-gray-900 italic text-lg">
                       "
                       {testimonial.quote}
                       "
                     </p>
                     <div className="flex items-center gap-4 mt-4">
-                      <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-sm font-medium">
+                      <div className="h-12 w-12 rounded-full bg-gray-200 flex items-center justify-center text-base font-medium">
                         {testimonial.name.charAt(0)}
                       </div>
                       <div>
-                        <p className="font-medium">{testimonial.name}</p>
-                        <p className="text-sm text-muted-foreground">{testimonial.company}</p>
+                        <p className="font-medium text-lg">{testimonial.name}</p>
+                        <p className="text-base text-gray-900">{testimonial.company}</p>
                       </div>
                     </div>
                   </div>
@@ -487,22 +487,22 @@ export default function LandingPage() {
       <section className="w-full py-12 md:py-24 bg-primary text-primary-foreground">
         <div className="container px-4 md:px-6">
           <div className="flex flex-col items-center text-center gap-4 md:gap-8">
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight">{t('landing.cta.title')}</h2>
-            <p className="text-lg md:text-xl text-primary-foreground/80 max-w-[800px]">
+            <h2 className="text-4xl md:text-5xl font-bold tracking-tight">{t('landing.cta.title')}</h2>
+            <p className="text-xl md:text-2xl text-primary-foreground/80 max-w-[800px]">
               {t('landing.cta.description')}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 mt-4">
-              <Button size="lg" variant="secondary" asChild>
+              <Button size="lg" variant="secondary" className="text-lg" asChild>
                 <NavLink to="/kirjaudu">
                   {t('landing.cta.startForFree')}
                   {' '}
-                  <ArrowRight className="ml-2 h-4 w-4" />
+                  <ArrowRight className="ml-2 h-5 w-5" />
                 </NavLink>
               </Button>
               <Button
                 size="lg"
                 variant="outline"
-                className="bg-transparent border-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/10"
+                className="bg-transparent border-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/10 text-lg"
                 asChild
               >
                 <NavLink to="/yhteystiedot">{t('landing.cta.askForMore')}</NavLink>
@@ -517,8 +517,8 @@ export default function LandingPage() {
         <div className="container px-4 md:px-6">
           <div className="flex flex-col md:flex-row items-center gap-8">
             <div className="md:w-1/2 flex flex-col gap-4">
-              <h2 className="text-3xl font-bold tracking-tight">{t('landing.security.title')}</h2>
-              <p className="text-muted-foreground text-lg">
+              <h2 className="text-4xl font-bold tracking-tight">{t('landing.security.title')}</h2>
+              <p className="text-gray-900 text-xl">
                 {t('landing.security.description')}
               </p>
               <ul className="mt-4 space-y-2">
@@ -529,8 +529,8 @@ export default function LandingPage() {
                   t('landing.security.feature4'),
                 ].map(feature => (
                   <li key={feature} className="flex items-center gap-2">
-                    <Check className="h-4 w-4 text-primary" />
-                    <span>{feature}</span>
+                    <Check className="h-5 w-5 text-primary" />
+                    <span className="text-lg">{feature}</span>
                   </li>
                 ))}
               </ul>

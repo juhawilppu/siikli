@@ -27,7 +27,7 @@ export default function Cookies() {
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight">
               Evästeet
             </h1>
-            <p className="text-muted-foreground text-lg md:text-xl max-w-[800px]">
+            <p className="text-gray-900 text-lg md:text-xl max-w-[800px]">
               Tällä sivulla kerrotaan, mitä evästeitä Siikli käyttää ja miksi. Käytämme evästeitä vain silloin, kun niille on hyvä syy.
             </p>
           </div>
@@ -39,7 +39,7 @@ export default function Cookies() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <div className="flex flex-col gap-6">
               <h2 className="text-3xl font-bold tracking-tight">Evästeet</h2>
-              <div className="space-y-4 text-muted-foreground">
+              <div className="space-y-4 text-gray-900">
 
                 <p>Viimeksi päivitetty: 3.5.2025</p>
 
@@ -51,7 +51,7 @@ export default function Cookies() {
                 <p>Nämä evästeet ovat sivuston toiminnan kannalta pakollisia, eikä niitä voi poistaa käytöstä:</p>
 
                 <ul>
-                  <li><pre className="text-muted-foreground text-sm">siikli-session</pre></li>
+                  <li><pre className="text-gray-700 text-sm">siikli-session</pre></li>
                   <li>Käytetään kirjautuneen käyttäjän istunnon hallintaan. Eväste on välttämätön, jotta voit käyttää palvelua turvallisesti ja pysyä kirjautuneena.</li>
                 </ul>
 
@@ -59,13 +59,13 @@ export default function Cookies() {
                 <p>Käytämme PostHogia, jotta voimme seurata anonyymisti, miten palvelua käytetään. Tiedot auttavat meitä parantamaan käytettävyyttä ja tunnistamaan, mitkä ominaisuudet ovat hyödyllisiä.</p>
 
                 <ul>
-                  <li><pre className="text-muted-foreground text-sm">posthog_*</pre></li>
+                  <li><pre className="text-gray-700 text-sm">posthog_*</pre></li>
                   <li>Evästeet, joita PostHog käyttää käyttäjän liikkeiden seuraamiseen sivustolla. Nämä eivät sisällä henkilötietoja, mutta niitä käytetään istunnon yhdistämiseen analytiikkaraporteissa.</li>
                 </ul>
 
                 <p>
                   👉
-                  <a className="text-blue-500" href="https://posthog.com/docs/privacy" target="_blank" rel="noopener noreferrer">Lue lisää PostHogin tietosuojakäytännöistä</a>
+                  <a className="text-blue-600" href="https://posthog.com/docs/privacy" target="_blank" rel="noopener noreferrer">Lue lisää PostHogin tietosuojakäytännöistä</a>
                 </p>
 
                 <p>Analytiikkaevästeet auttavat meitä kehittämään palvelua — emme käytä tietoja mainontaan tai jaa niitä kolmansille osapuolille.</p>

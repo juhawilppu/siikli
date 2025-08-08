@@ -26,7 +26,7 @@ export default function ContactPage({ inApp = false }: { inApp?: boolean }) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <div className="flex flex-col gap-6">
               <h2 className="text-3xl font-bold tracking-tight">{t('support.title')}</h2>
-              <div className="space-y-4 text-muted-foreground">
+              <div className="space-y-4 text-gray-900">
                 <p>{t('support.description')}</p>
 
                 <p>{t('support.description2')}</p>
@@ -34,7 +34,7 @@ export default function ContactPage({ inApp = false }: { inApp?: boolean }) {
                 <p>
                   ✉️
                   {' '}
-                  <a className="text-blue-500" href="mailto:juha.wilppu@gmail.com">juha.wilppu@gmail.com</a>
+                  <a className="text-blue-600" href="mailto:juha.wilppu@gmail.com">juha.wilppu@gmail.com</a>
                 </p>
 
                 <p>{t('support.description3')}</p>

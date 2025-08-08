@@ -24,7 +24,7 @@ export default function LoginPage2() {
               <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight">
                 {t('login.title')}
               </h1>
-              <p className="text-muted-foreground text-lg md:text-xl max-w-[800px]">
+              <p className="text-gray-900 text-lg md:text-xl max-w-[800px]">
                 {t('login.description').replace('&ndash;', '—')}
               </p>
             </div>
@@ -34,16 +34,16 @@ export default function LoginPage2() {
               <Card className="w-full mx-auto">
                 <CardHeader>
                   <CardTitle>{t('login.form.title')}</CardTitle>
-                  <CardDescription>{t('login.form.description')}</CardDescription>
+                  <CardDescription className="text-gray-900">{t('login.form.description')}</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <LoginForm />
                 </CardContent>
                 <CardFooter className="flex flex-col items-start gap-2">
-                  <div className="text-sm text-muted-foreground">
+                  <div className="text-md text-gray-900">
                     {t('login.form.noAccountYetCreateHere')}
                   </div>
-                  <div className="text-xs text-muted-foreground">
+                  <div className="text-s text-gray-900">
                     {t('login.form.acceptTerms')}
                     {' '}
                     <Link href="#kayttoehdot" className="text-primary hover:underline">

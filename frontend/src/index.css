@@ -103,3 +103,24 @@
 body {
   @apply font-geist;
 }
+
+h1 {
+  font-family: "Inter", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 600;
+  font-size: 60px;
+  font-style: normal;
+  color: rgb(17, 24, 39);
+}
+
+body {
+  font-family: "Inter", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 500;
+  font-style: bold;
+  font-size: 18px;
+  font-feature-settings: normal;
+  text-decoration-style: solid;
+  color: rgb(55, 65, 81);
+  -webkit-font-smoothing: antialiased;
+}

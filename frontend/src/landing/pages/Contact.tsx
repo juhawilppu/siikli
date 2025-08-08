@@ -26,18 +26,18 @@ export default function ContactPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <div className="flex flex-col gap-6">
               <h2 className="text-3xl font-bold tracking-tight">{t('contact.title')}</h2>
-              <div className="space-y-4 text-muted-foreground">
+              <div className="space-y-4 text-gray-900">
                 <p>{t('contact.description')}</p>
 
                 <p>
                   ✉️
                   {' '}
-                  <a className="text-blue-500" href="mailto:juha.wilppu@gmail.com">juha.wilppu@gmail.com</a>
+                  <a className="text-blue-600" href="mailto:juha.wilppu@gmail.com">juha.wilppu@gmail.com</a>
                 </p>
                 <p>
                   🔗
                   {' '}
-                  <a className="text-blue-500" href="https://www.linkedin.com/in/juhawilppu" target="_blank">{t('contact.linkedin')}</a>
+                  <a className="text-blue-600" href="https://www.linkedin.com/in/juhawilppu" target="_blank">{t('contact.linkedin')}</a>
                 </p>
 
                 <p>

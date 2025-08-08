@@ -12,31 +12,30 @@ export default function TopBar({ showBackButton, hideLoginButton }: { showBackBu
         <NavLink to="/">
           <div className="flex items-center gap-2 pl-6">
             <span className="font-bold text-2xl text-primary">Siikli</span>
-            <span className="text-sm font-medium text-muted-foreground">ERP</span>
           </div>
         </NavLink>
         <nav className="hidden md:flex gap-6 items-center">
           <NavLink
             to="/#ominaisuudet"
-            className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+            className="text-md font-medium text-gray-900 hover:text-foreground transition-colors"
           >
             {t('landing.topbar.features')}
           </NavLink>
           <NavLink
             to="/#hinnoittelu"
-            className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+            className="text-md font-medium text-gray-900 hover:text-foreground transition-colors"
           >
             {t('landing.topbar.pricing')}
           </NavLink>
           <NavLink
             to="/tuki"
-            className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+            className="text-md font-medium text-gray-900 hover:text-foreground transition-colors"
           >
             {t('landing.topbar.support')}
           </NavLink>
           <NavLink
             to="/yhteystiedot"
-            className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+            className="text-md font-medium text-gray-900 hover:text-foreground transition-colors"
           >
             {t('landing.topbar.contact')}
           </NavLink>
@@ -52,8 +51,8 @@ export default function TopBar({ showBackButton, hideLoginButton }: { showBackBu
             </Button>
           )}
           {!hideLoginButton && (
-            <Button size="sm" className="rounded-full" asChild>
-              <NavLink to="/kirjaudu">{t('landing.topbar.login')}</NavLink>
+            <Button size="lg" className="rounded-full" asChild>
+              <NavLink to="/kirjaudu" className="text-lg">{t('landing.topbar.login')}</NavLink>
             </Button>
           )}
 
