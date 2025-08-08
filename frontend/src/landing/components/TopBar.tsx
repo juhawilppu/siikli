@@ -17,25 +17,25 @@ export default function TopBar({ showBackButton, hideLoginButton }: { showBackBu
         <nav className="hidden md:flex gap-6 items-center">
           <NavLink
             to="/#ominaisuudet"
-            className="text-md font-medium text-gray-900 hover:text-foreground transition-colors"
+            className="text-md font-medium text-muted-foreground hover:text-foreground transition-colors"
           >
             {t('landing.topbar.features')}
           </NavLink>
           <NavLink
             to="/#hinnoittelu"
-            className="text-md font-medium text-gray-900 hover:text-foreground transition-colors"
+            className="text-md font-medium text-muted-foreground hover:text-foreground transition-colors"
           >
             {t('landing.topbar.pricing')}
           </NavLink>
           <NavLink
             to="/tuki"
-            className="text-md font-medium text-gray-900 hover:text-foreground transition-colors"
+            className="text-md font-medium text-muted-foreground hover:text-foreground transition-colors"
           >
             {t('landing.topbar.support')}
           </NavLink>
           <NavLink
             to="/yhteystiedot"
-            className="text-md font-medium text-gray-900 hover:text-foreground transition-colors"
+            className="text-md font-medium text-muted-foreground hover:text-foreground transition-colors"
           >
             {t('landing.topbar.contact')}
           </NavLink>

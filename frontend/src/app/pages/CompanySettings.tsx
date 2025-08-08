@@ -194,7 +194,7 @@ export default function CompanySettings() {
               <Card>
                 <CardHeader>
                   <CardTitle>Yritys</CardTitle>
-                  <CardDescription>
+                  <CardDescription className="text-gray-700">
                     Päivitä yrityksesi tiedot. Tiedot näytetään kuormakirjoissa ja maksutilauksissa.
                   </CardDescription>
                 </CardHeader>
@@ -249,7 +249,7 @@ export default function CompanySettings() {
 
                     <Separator className="my-4" />
                     <h3 className="text-lg font-medium">Pankkitiedot</h3>
-                    <CardDescription>
+                    <CardDescription className="text-gray-700">
                       Pankkitietoja käytetään laskuissa.
                     </CardDescription>
                     <div className="space-y-2">
@@ -285,7 +285,7 @@ export default function CompanySettings() {
 
                     <Separator className="my-4" />
                     <h3 className="text-lg font-medium">Yhteystiedot</h3>
-                    <CardDescription>
+                    <CardDescription className="text-gray-700">
                       Yhteystiedot näytetään laskuissa.
                     </CardDescription>
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -331,7 +331,7 @@ export default function CompanySettings() {
             <Card>
               <CardHeader>
                 <CardTitle>Käyttäjät</CardTitle>
-                <CardDescription>Hallitse käyttäjiä ja oikeuksia</CardDescription>
+                <CardDescription className="text-gray-700">Hallitse käyttäjiä ja oikeuksia</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -365,7 +365,7 @@ export default function CompanySettings() {
                         {users.map(u => (
                           <tr key={u.id}>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm font-medium text-gray-900">{u.email}</div>
+                              <div className="text-sm font-medium text-muted-foreground">{u.email}</div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
@@ -414,7 +414,7 @@ export default function CompanySettings() {
             <Card>
               <CardHeader>
                 <CardTitle>Tilaustiedot</CardTitle>
-                <CardDescription>Hallitse Siikli ERP -tilaustasi ja näe tilauksesi tila.</CardDescription>
+                <CardDescription className="text-gray-700">Hallitse Siikli ERP -tilaustasi ja näe tilauksesi tila.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="space-y-4">
@@ -640,7 +640,7 @@ export default function CompanySettings() {
             <Card>
               <CardHeader>
                 <CardTitle>Muut</CardTitle>
-                <CardDescription>Voit halutessasi poistaa yrityksesi ja käyttäjätilisi.</CardDescription>
+                <CardDescription className="text-gray-700">Voit halutessasi poistaa yrityksesi ja käyttäjätilisi.</CardDescription>
               </CardHeader>
               <CardContent>
                 <Button variant="destructive" onClick={() => setShowDeleteCompanyModal(true)}>

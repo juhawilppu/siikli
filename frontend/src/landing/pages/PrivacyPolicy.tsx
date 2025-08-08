@@ -28,7 +28,7 @@ export default function PrivacyPolicy() {
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight">
               {t('landing.privacyPolicy.title')}
             </h1>
-            <p className="text-gray-900 text-lg md:text-xl max-w-[800px]">
+            <p className="text-muted-foreground text-lg md:text-xl max-w-[800px]">
               {t('landing.privacyPolicy.description')}
             </p>
           </div>
@@ -41,7 +41,7 @@ export default function PrivacyPolicy() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <div className="flex flex-col gap-6">
               <h2 className="text-3xl font-bold tracking-tight">{t('landing.privacyPolicy.content.title')}</h2>
-              <div className="space-y-4 text-gray-900">
+              <div className="space-y-4 text-muted-foreground">
                 <p>{t('landing.privacyPolicy.content.lastUpdated')}</p>
 
                 <h2 className="text-l font-bold tracking-tight mt-4">{t('landing.privacyPolicy.content.section1.title')}</h2>

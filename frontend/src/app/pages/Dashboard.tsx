@@ -72,7 +72,7 @@ export function Dashboard() {
           <Card>
             <CardHeader>
               <CardTitle>Pikatoiminnot</CardTitle>
-              <CardDescription>Usein käytetyt toiminnot</CardDescription>
+              <CardDescription className="text-gray-700">Usein käytetyt toiminnot</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
@@ -91,7 +91,7 @@ export function Dashboard() {
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
                 <CardTitle>Tilaukset</CardTitle>
-                <CardDescription>{data ? `Sinulla on ${data.orders.length} tilausta tänään` : '-'}</CardDescription>
+                <CardDescription className="text-gray-700">{data ? `Sinulla on ${data.orders.length} tilausta tänään` : '-'}</CardDescription>
               </div>
               <NavLink to="/orders/new">
                 <Button size="sm">

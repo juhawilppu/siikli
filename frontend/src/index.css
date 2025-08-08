@@ -124,3 +124,7 @@ body {
   color: rgb(55, 65, 81);
   -webkit-font-smoothing: antialiased;
 }
+
+:root {
+  --muted-foreground: var(--gray-900);
+}

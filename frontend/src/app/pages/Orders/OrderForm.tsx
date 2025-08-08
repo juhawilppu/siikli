@@ -473,7 +473,7 @@ export default function CreateOrder() {
           <Card>
             <CardHeader>
               <CardTitle>Tilauksen perustiedot</CardTitle>
-              <CardDescription>Valitse asiakas ja toimituspäivä</CardDescription>
+              <CardDescription className="text-gray-700">Valitse asiakas ja toimituspäivä</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -580,7 +580,7 @@ export default function CreateOrder() {
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
                 <CardTitle>Tuotteet</CardTitle>
-                <CardDescription>Täytä tilauksen tuotteet</CardDescription>
+                <CardDescription className="text-gray-700">Täytä tilauksen tuotteet</CardDescription>
               </div>
             </CardHeader>
             <CardContent>

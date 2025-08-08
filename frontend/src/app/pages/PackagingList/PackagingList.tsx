@@ -46,7 +46,7 @@ export function PackagingList() {
         <Card>
           <CardHeader className="border-b bg-gray-50">
             <CardTitle>Luo pakkauslista</CardTitle>
-            <CardDescription>Valitse toimituspäivä ja tyyppi</CardDescription>
+            <CardDescription className="text-gray-700">Valitse toimituspäivä ja tyyppi</CardDescription>
           </CardHeader>
           <CardContent className="pt-6">
             <div className="grid gap-6 md:grid-cols-2">

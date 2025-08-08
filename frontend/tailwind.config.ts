@@ -90,6 +90,17 @@ const config = {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
       },
+      fontSize: {
+        'xs': '0.9375rem', // 15px
+        'sm': '1rem', // 16px
+        'base': '1.125rem', // 18px
+        'lg': '1.25rem', // 20px
+        'xl': '1.5rem', // 24px
+        '2xl': '1.75rem',
+        '3xl': '2rem',
+        '4xl': '2.5rem',
+        '5xl': '3rem',
+      },
     },
   },
   plugins: [tailwindcssAnimate],

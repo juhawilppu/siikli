@@ -183,8 +183,8 @@ export function NewCustomer({ closeDialog, customerToEdit, forwaredCustomerGroup
     <Dialog open={true} onOpenChange={closeDialog}>
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
-          <DialogTitle>{customerToEdit ? 'Muokkaa asiakasta' : 'Uusi asiakas'}</DialogTitle>
-          <DialogDescription>
+          <DialogTitle className="text-muted-foreground">{customerToEdit ? 'Muokkaa asiakasta' : 'Uusi asiakas'}</DialogTitle>
+          <DialogDescription className="text-gray-700">
             {customerToEdit ? 'Muokkaa asiakkaan tietoja.' : 'Lisää uusi asiakas.'}
             {' '}
             Pakolliset kentät on merkitty tähdellä (*).

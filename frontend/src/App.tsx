@@ -238,7 +238,7 @@ function MobileSidebar({ setIsMobileNavOpen }: { setIsMobileNavOpen: (isOpen: bo
           {navItems.map(item => (
             <NavLink
               to={item.href}
-              className="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-900 transition-all hover:text-foreground"
+              className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-foreground"
               onClick={() => {
                 setIsMobileNavOpen(false)
               }}
@@ -263,7 +263,7 @@ function DesktopSidebar({ currentPath }: { currentPath: string }) {
             <NavLink
               to={item.href}
               key={item.href}
-              className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${currentPath === item.href ? 'text-primary font-bold text-lg' : 'text-gray-700 hover:text-gray-900'}`}
+              className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${currentPath === item.href ? 'text-primary font-bold text-lg' : 'text-gray-700 hover:text-muted-foreground'}`}
             >
               <item.icon className="h-4 w-4" />
               {item.title}

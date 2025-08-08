@@ -422,7 +422,7 @@ export default function TuoteryhmatJarjestely() {
       <main className="flex-1 overflow-auto p-6">
         <div className="space-y-6 max-w-4xl mx-auto">
           <div className="bg-white p-6 rounded-lg border shadow-sm">
-            <h1 className="text-2xl font-bold tracking-tight text-gray-900">Tuoteryhmien järjestely</h1>
+            <h1 className="text-2xl font-bold tracking-tight text-muted-foreground">Tuoteryhmien järjestely</h1>
             <p className="text-gray-600 mt-1">
               Järjestele tuoteryhmiä ja alituoteryhmiä vetämällä ja pudottamalla. Muutokset tallentuvat vasta kun
               painat Tallenna-painiketta.
@@ -484,7 +484,7 @@ export default function TuoteryhmatJarjestely() {
           <Card className="shadow-md">
             <CardHeader className="border-b bg-gray-50 py-4">
               <CardTitle>Tuoteryhmät ja alituoteryhmät</CardTitle>
-              <CardDescription>
+              <CardDescription className="text-gray-700">
                 {filteredTuoteryhmat.length}
                 {' '}
                 tuoteryhmää, yhteensä

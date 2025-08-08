@@ -154,7 +154,7 @@ export function Invoices() {
       <Card>
         <CardHeader>
           <CardTitle>Hakuehdot</CardTitle>
-          <CardDescription>Suodata tilauksia päivämäärän mukaan</CardDescription>
+          <CardDescription className="text-gray-700">Suodata tilauksia päivämäärän mukaan</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex w-full gap-4">

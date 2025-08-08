@@ -26,7 +26,7 @@ export default function ContactPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <div className="flex flex-col gap-6">
               <h2 className="text-3xl font-bold tracking-tight">{t('contact.title')}</h2>
-              <div className="space-y-4 text-gray-900">
+              <div className="space-y-4 text-muted-foreground">
                 <p>{t('contact.description')}</p>
 
                 <p>

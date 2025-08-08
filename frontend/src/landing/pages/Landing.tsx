@@ -83,7 +83,7 @@ export default function LandingPage() {
   }, [window.location.hash])
 
   return (
-    <div className="flex min-h-screen flex-col text-base text-gray-900 md:text-lg">
+    <div className="flex min-h-screen flex-col text-base text-muted-foreground md:text-lg">
       <TopBar />
 
       <section className="w-full py-12 md:py-24 lg:py-32 bg-gradient-to-b from-white to-gray-50">
@@ -93,10 +93,10 @@ export default function LandingPage() {
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight">
               {t(`landing.${variant}.title`)}
             </h1>
-            <p className="text-xl md:text-lg lg:text-xl">
+            <p className="text-lg md:text-lg lg:text-xl">
               {t(`landing.${variant}.description`)}
             </p>
-            <p className="text-xl md:text-lg lg:text-xl">
+            <p className="text-lg md:text-lg lg:text-xl">
               {t(`landing.${variant}.description2`)}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 mt-4">
@@ -144,7 +144,7 @@ export default function LandingPage() {
         <div className="container px-4 md:px-6">
           <div className="flex flex-col items-center justify-center gap-4 text-center mb-12">
             <h2 className="text-4xl font-bold tracking-tight">{t('landing.features.title')}</h2>
-            <p className="text-gray-900 text-xl max-w-[800px]">
+            <p className="text-muted-foreground text-xl max-w-[800px]">
               {t('landing.features.description')}
             </p>
           </div>
@@ -157,7 +157,7 @@ export default function LandingPage() {
                 <CardTitle className="text-xl">{t('landing.features.orders.title')}</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-900 text-lg">
+                <p className="text-muted-foreground text-lg">
                   {t('landing.features.orders.description')}
                 </p>
                 <ul className="mt-4 space-y-2">
@@ -191,7 +191,7 @@ export default function LandingPage() {
                 <CardTitle className="text-xl">{t('landing.features.customers.title')}</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-900 text-lg">
+                <p className="text-muted-foreground text-lg">
                   {t('landing.features.customers.description')}
                 </p>
                 <ul className="mt-4 space-y-2">
@@ -223,7 +223,7 @@ export default function LandingPage() {
                 <CardTitle className="text-xl">{t('landing.features.products.title')}</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-900 text-lg">
+                <p className="text-muted-foreground text-lg">
                   {t('landing.features.products.description')}
                 </p>
                 <ul className="mt-4 space-y-2">
@@ -255,7 +255,7 @@ export default function LandingPage() {
                 <CardTitle className="text-xl">{t('landing.features.invoices.title')}</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-900 text-lg">
+                <p className="text-muted-foreground text-lg">
                   {t('landing.features.invoices.description')}
                 </p>
                 <ul className="mt-4 space-y-2">
@@ -287,7 +287,7 @@ export default function LandingPage() {
                 <CardTitle className="text-xl">{t('landing.features.shipping.title')}</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-900 text-lg">
+                <p className="text-muted-foreground text-lg">
                   {t('landing.features.shipping.description')}
                 </p>
                 <ul className="mt-4 space-y-2">
@@ -321,7 +321,7 @@ export default function LandingPage() {
                 <CardTitle className="text-xl">{t('landing.features.reports.title')}</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-900 text-lg">
+                <p className="text-muted-foreground text-lg">
                   {t('landing.features.reports.description')}
                 </p>
                 <ul className="mt-4 space-y-2">
@@ -353,7 +353,7 @@ export default function LandingPage() {
         <div className="container px-4 md:px-6">
           <div className="flex flex-col items-center justify-center gap-4 text-center mb-12">
             <h2 className="text-4xl font-bold tracking-tight">{t('landing.pricing.title')}</h2>
-            <p className="text-gray-900 text-xl max-w-[800px]">
+            <p className="text-muted-foreground text-xl max-w-[800px]">
               {t('landing.pricing.description')}
             </p>
           </div>
@@ -361,10 +361,10 @@ export default function LandingPage() {
             <Card className="border-border flex flex-col">
               <CardHeader>
                 <CardTitle className="text-2xl">{t('landing.pricing.free.title')}</CardTitle>
-                <CardDescription className="text-lg text-gray-900">{t('landing.pricing.free.description')}</CardDescription>
+                <CardDescription className="text-lg text-muted-foreground">{t('landing.pricing.free.description')}</CardDescription>
                 <div className="mt-4">
                   <span className="text-4xl font-bold">0 €</span>
-                  <span className="text-gray-900 text-xl">/kk</span>
+                  <span className="text-muted-foreground text-xl">/kk</span>
                 </div>
               </CardHeader>
               <CardContent className="flex-1">
@@ -390,7 +390,7 @@ export default function LandingPage() {
               </div>
               <CardHeader>
                 <CardTitle className="text-2xl">{t('landing.pricing.premium.title')}</CardTitle>
-                <CardDescription className="text-lg text-gray-900">{t('landing.pricing.premium.description')}</CardDescription>
+                <CardDescription className="text-lg text-muted-foreground">{t('landing.pricing.premium.description')}</CardDescription>
                 <div className="mt-4">
                   <span className="text-4xl font-bold">149 €</span>
                   <span className="text-muted-foreground text-xl">/kk</span>
@@ -424,7 +424,7 @@ export default function LandingPage() {
         <div className="container px-4 md:px-6">
           <div className="flex flex-col items-center justify-center gap-4 text-center mb-12">
             <h2 className="text-4xl font-bold tracking-tight">{t('landing.customerFeedback.title')}</h2>
-            <p className="text-gray-900 text-xl max-w-[800px]">
+            <p className="text-muted-foreground text-xl max-w-[800px]">
               {t('landing.customerFeedback.description')}
             </p>
           </div>
@@ -461,7 +461,7 @@ export default function LandingPage() {
                         </svg>
                       ))}
                     </div>
-                    <p className="text-gray-900 italic text-lg">
+                    <p className="text-muted-foreground italic text-lg">
                       "
                       {testimonial.quote}
                       "
@@ -472,7 +472,7 @@ export default function LandingPage() {
                       </div>
                       <div>
                         <p className="font-medium text-lg">{testimonial.name}</p>
-                        <p className="text-base text-gray-900">{testimonial.company}</p>
+                        <p className="text-base text-muted-foreground">{testimonial.company}</p>
                       </div>
                     </div>
                   </div>
@@ -518,7 +518,7 @@ export default function LandingPage() {
           <div className="flex flex-col md:flex-row items-center gap-8">
             <div className="md:w-1/2 flex flex-col gap-4">
               <h2 className="text-4xl font-bold tracking-tight">{t('landing.security.title')}</h2>
-              <p className="text-gray-900 text-xl">
+              <p className="text-muted-foreground text-xl">
                 {t('landing.security.description')}
               </p>
               <ul className="mt-4 space-y-2">

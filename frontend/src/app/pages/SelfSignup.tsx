@@ -127,7 +127,7 @@ export default function SelfSignup() {
             <Card className="mb-8">
               <CardHeader>
                 <CardTitle>Perusta yritys</CardTitle>
-                <CardDescription>
+                <CardDescription className="text-gray-700">
                   Täytä tarvittavat tiedot yrityksesi perustamiseksi Siikli ERP -järjestelmään.
                 </CardDescription>
               </CardHeader>

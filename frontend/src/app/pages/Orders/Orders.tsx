@@ -90,7 +90,7 @@ export default function Orders() {
         <Card>
           <CardHeader>
             <CardTitle>Hakuehdot</CardTitle>
-            <CardDescription>Suodata tilauksia päivämäärän mukaan</CardDescription>
+            <CardDescription className="text-gray-700">Suodata tilauksia päivämäärän mukaan</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid gap-4 md:grid-cols-4">
@@ -227,8 +227,8 @@ export default function Orders() {
                             <TableCell className="text-right">
                               <Button
                                 variant="ghost"
-                                className="text-blue-500"
-                                size="sm"
+                                className="text-blue-500 font-bold"
+                                size="default"
                                 onClick={() => (window.location.href = `/orders/${order.id}`)}
                               >
                                 Avaa

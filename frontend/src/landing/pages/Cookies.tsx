@@ -27,7 +27,7 @@ export default function Cookies() {
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight">
               Evästeet
             </h1>
-            <p className="text-gray-900 text-lg md:text-xl max-w-[800px]">
+            <p className="text-muted-foreground text-lg md:text-xl max-w-[800px]">
               Tällä sivulla kerrotaan, mitä evästeitä Siikli käyttää ja miksi. Käytämme evästeitä vain silloin, kun niille on hyvä syy.
             </p>
           </div>
@@ -39,7 +39,7 @@ export default function Cookies() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <div className="flex flex-col gap-6">
               <h2 className="text-3xl font-bold tracking-tight">Evästeet</h2>
-              <div className="space-y-4 text-gray-900">
+              <div className="space-y-4 text-muted-foreground">
 
                 <p>Viimeksi päivitetty: 3.5.2025</p>
 
