@@ -175,7 +175,7 @@ export default function LoginForm() {
 
   return (
     <Tabs defaultValue="google" className="w-full">
-      <TabsList className="grid w-full grid-cols-2 mb-4">
+      <TabsList className="grid w-full grid-cols-1 sm:grid-cols-2 mb-4 h-auto min-h-[5rem] sm:min-h-[2.5rem]">
         <TabsTrigger value="google">
           {t('login.form.google')}
         </TabsTrigger>
