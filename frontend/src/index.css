@@ -100,8 +100,12 @@
   @apply bg-gray-50 text-gray-700 hover:bg-gray-50;
 }
 
-body {
-  @apply font-geist;
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/Inter-var.ttf') format('truetype');
+  font-weight: 500 600 700;
+  font-style: normal;
+  font-display: swap;
 }
 
 h1 {

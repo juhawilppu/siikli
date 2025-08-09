@@ -16,11 +16,7 @@ const config = {
     extend: {
       fontFamily: {
         sans: [
-          'Geist',
-          'sans-serif',
-        ],
-        geist: [
-          'Geist',
+          'Inter',
           'sans-serif',
         ],
       },
