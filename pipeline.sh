@@ -6,17 +6,16 @@ command -v docker >/dev/null 2>&1 || { echo >&2 "❌ Docker is not installed. Ab
 command -v aws >/dev/null 2>&1 || { echo >&2 "❌ AWS CLI is not installed. Aborting."; exit 1; }
 
 echo "🔍 Running tests..."
-#npm run test:backend --no-watch --yes || true
-#npm run test:coverage:backend --no-watch --yes || true
+npm run test:coverage:backend --no-watch --yes || true
 
 echo "🔍 Running linter..."
-#npm run lint:frontend
-#npm run lint:backend
+npm run lint:frontend
+npm run lint:backend
 
 echo "🔍 Formatting prisma schema..."
 (
     cd backend
-    #npx prisma format
+    npx prisma format
 )
 
 # Application version
@@ -25,7 +24,7 @@ version=$(date +%s)
 echo "🏗️ Building frontend..."
 (
     cd frontend
-    #npm run build
+    npm run build
 )
 
 echo "🏗️ Building backend..."
