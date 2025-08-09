@@ -127,6 +127,7 @@ body {
   text-decoration-style: solid;
   color: rgb(55, 65, 81);
   -webkit-font-smoothing: antialiased;
+  background-color: #F8F9FA;
 }
 
 :root {
