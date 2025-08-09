@@ -125,7 +125,7 @@ function App() {
               </SheetContent>
             </Sheet>
             <div className="flex items-center gap-2">
-              <span className="text-lg font-semibold text-white">Siikli ERP</span>
+              <span className="text-lg font-semibold text-white">Siikli</span>
             </div>
             <div className="ml-auto flex items-center gap-4">
               {false && (
@@ -230,7 +230,7 @@ function MobileSidebar({ setIsMobileNavOpen }: { setIsMobileNavOpen: (isOpen: bo
       <div className="flex h-14 items-center border-b px-4">
         <NavLink to="/" className="flex items-center gap-2 font-semibold">
           <img src={`/siikli-logo-${variant}.png`} className="h-6" />
-          <span>Siikli ERP</span>
+          <span>Siikli</span>
         </NavLink>
       </div>
       <div className="flex-1 overflow-auto py-2">

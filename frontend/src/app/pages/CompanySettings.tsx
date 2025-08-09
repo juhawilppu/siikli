@@ -414,7 +414,7 @@ export default function CompanySettings() {
             <Card>
               <CardHeader>
                 <CardTitle>Tilaustiedot</CardTitle>
-                <CardDescription className="text-gray-700">Hallitse Siikli ERP -tilaustasi ja näe tilauksesi tila.</CardDescription>
+                <CardDescription className="text-gray-700">Hallitse Siikli tilaustasi ja näe tilauksesi tila.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="space-y-4">

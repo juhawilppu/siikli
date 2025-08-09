@@ -33,21 +33,21 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   useEffect(() => {
     if (variant === 'A') {
       if (language === 'en') {
-        document.title = 'Siikli ERP | Down-to-earth software'
+        document.title = 'Siikli | Down-to-earth software'
         document.documentElement.lang = 'en'
       }
       else {
-        document.title = 'Siikli ERP | Tehty maalaisjärjellä'
+        document.title = 'Siikli | Tehty maalaisjärjellä'
         document.documentElement.lang = 'fi'
       }
     }
     else {
       if (language === 'en') {
-        document.title = 'Siikli ERP | Made for business'
+        document.title = 'Siikli | Made for business'
         document.documentElement.lang = 'en'
       }
       else {
-        document.title = 'Siikli ERP | Tehty tarpeeseen'
+        document.title = 'Siikli | Tehty tarpeeseen'
         document.documentElement.lang = 'fi'
       }
     }

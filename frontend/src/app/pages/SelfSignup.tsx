@@ -57,7 +57,7 @@ export default function SelfSignup() {
 
       toast({
         title: 'Yritys perustettu onnistuneesti!',
-        description: `${companyNamy} on nyt perustettu Siikli ERP -järjestelmään.`,
+        description: `${companyNamy} on nyt perustettu Siikli-järjestelmään.`,
       })
 
       window.location.href = '/'
@@ -86,7 +86,6 @@ export default function SelfSignup() {
         <div className="container flex h-16 items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="font-bold text-2xl text-primary">Siikli</span>
-            <span className="text-sm font-medium text-muted-foreground">ERP</span>
           </div>
           <div className="flex items-center gap-4">
             <AlertDialog>
@@ -128,7 +127,7 @@ export default function SelfSignup() {
               <CardHeader>
                 <CardTitle>Perusta yritys</CardTitle>
                 <CardDescription className="text-gray-700">
-                  Täytä tarvittavat tiedot yrityksesi perustamiseksi Siikli ERP -järjestelmään.
+                  Täytä tarvittavat tiedot yrityksesi perustamiseksi Siikli-järjestelmään.
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -179,7 +178,7 @@ export default function SelfSignup() {
                       onCheckedChange={checked => setMarketingConsent(checked as boolean)}
                     />
                     <Label htmlFor="markkinointilupa" className="text-sm">
-                      Haluan vastaanottaa tietoa Siikli ERP:n uusista ominaisuuksista ja päivityksistä
+                      Haluan vastaanottaa tietoa Siiklin uusista ominaisuuksista ja päivityksistä
                     </Label>
                   </div>
                 </div>
@@ -209,7 +208,7 @@ export default function SelfSignup() {
                 <CardHeader className="pb-3">
                   <div className="flex items-center gap-2">
                     <Building2 className="h-5 w-5 text-primary" />
-                    <CardTitle className="text-lg">Siikli ERP:n hyödyt</CardTitle>
+                    <CardTitle className="text-lg">Siiklin hyödyt</CardTitle>
                   </div>
                 </CardHeader>
                 <CardContent>

@@ -10,7 +10,6 @@ export default function Footer() {
           <div className="flex flex-col gap-4">
             <div className="flex items-center gap-2">
               <span className="font-bold text-2xl text-white">Siikli</span>
-              <span className="text-sm font-medium text-gray-400">ERP</span>
             </div>
             <p className="text-gray-400">{t('landing.footer.description')}</p>
             {false && (

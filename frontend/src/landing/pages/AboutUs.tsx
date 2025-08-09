@@ -92,7 +92,7 @@ export default function AboutUsPage() {
             <div className="flex flex-col items-center text-center gap-4 mb-12">
               <h2 className="text-3xl font-bold tracking-tight">Tekijä</h2>
               <p className="text-muted-foreground text-lg max-w-[800px]">
-                Tutustutaan ihmisiin Siikli ERP:n takana. Tiimimme koostuu intohimoisista ammattilaisista, jotka ovat
+                Tutustutaan ihmisiin Siiklin takana. Tiimimme koostuu intohimoisista ammattilaisista, jotka ovat
                 omistautuneet auttamaan asiakkaitamme menestymään.
               </p>
             </div>
