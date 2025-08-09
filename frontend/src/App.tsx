@@ -263,7 +263,7 @@ function DesktopSidebar({ currentPath }: { currentPath: string }) {
             <NavLink
               to={item.href}
               key={item.href}
-              className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${currentPath === item.href ? 'text-primary font-bold text-lg' : 'text-gray-700 hover:text-muted-foreground'}`}
+              className={`flex items-center gap-3 rounded-full px-3 py-2 transition-all ${currentPath === item.href ? 'bg-primary text-white font-semibold [&>svg]:text-white' : 'text-gray-700 hover:text-muted-foreground'}`}
             >
               <item.icon className="h-4 w-4" />
               {item.title}
