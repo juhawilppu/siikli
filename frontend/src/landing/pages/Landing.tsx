@@ -90,7 +90,7 @@ export default function LandingPage() {
         <div className="container px-4 md:px-6 flex flex-col md:flex-row items-center md:items-start gap-12">
           <div className="flex flex-col gap-4 md:w-1/2">
             <img src={`/siikli-logo-${variant}.png`} alt="Siikli Logo" className="w-1/3" />
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.1]">
               {t(`landing.${variant}.title`)}
             </h1>
             <p className="text-lg md:text-lg lg:text-xl">
