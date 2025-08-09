@@ -55,7 +55,7 @@ export default function CompanySettings() {
         return prev
       return {
         ...prev,
-        [name]: value 
+        [name]: value,
       }
     })
   }
