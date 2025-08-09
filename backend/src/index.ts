@@ -56,16 +56,16 @@ async function startServer() {
   app.use(cookieParser()) // For parsing cookies
   app.set('trust proxy', 1) // trust first proxy
 
+  // Handle uncaught exceptions without crashing
   process.on('uncaughtException', (err) => {
     console.error('Uncaught Exception:', err)
     Sentry.captureException(err)
-    process.exit(1)
   })
 
+  // Handle unhandled promise rejections without crashing
   process.on('unhandledRejection', (reason, _promise) => {
     console.error('Unhandled Rejection:', reason)
     Sentry.captureException(reason)
-    process.exit(1)
   })
 
   app.use((err: Error, req: Request, res: Response, _next: NextFunction) => {
@@ -176,6 +176,7 @@ async function startServer() {
     console.log(`🚀 Server ready at: http://localhost:3000`)
   })
 
+  // Graceful shutdown handlers
   process.on('SIGTERM', () => {
     server.close(() => {
       console.log('Server closed gracefully')
@@ -194,5 +195,6 @@ async function startServer() {
 
 startServer().catch((err) => {
   console.error('Failed to start server:', err)
+  Sentry.captureException(err)
   process.exit(1)
 })
