@@ -1,7 +1,0 @@
-frontend/node_modules
-frontend/dist
-terraform
-.git
-.env
-.vscode
-node_modules

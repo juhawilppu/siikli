@@ -1,5 +1,6 @@
 set -e
 
+cd backend
 npx prisma format
 npx prisma migrate reset -f
 # npx prisma migrate deploy

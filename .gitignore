@@ -9,4 +9,6 @@ node_modules
 
 # Terraform binary files
 **/.terraform/*
-coverage/*
+backend/coverage/*
+
+packages/shared/dist

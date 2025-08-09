@@ -46,13 +46,13 @@ export default function LoginPage2() {
                   <div className="text-s text-muted-foreground">
                     {t('login.form.acceptTerms')}
                     {' '}
-                    <Link href="#kayttoehdot" className="text-primary hover:underline">
+                    <Link to="#kayttoehdot" className="text-primary hover:underline">
                       {t('login.form.terms')}
                     </Link>
                     {' '}
                     {t('login.form.and')}
                     {' '}
-                    <Link href="#tietosuoja" className="text-primary hover:underline">
+                    <Link to="#tietosuoja" className="text-primary hover:underline">
                       {t('login.form.privacyPolicy')}
                     </Link>
                     .

@@ -16,7 +16,7 @@ export default function Footer() {
             {false && (
               <div className="flex gap-4 mt-2">
                 {['twitter', 'facebook', 'instagram', 'NavLinkedin'].map(social => (
-                  <NavLink key={social} href={`#${social}`} className="text-gray-400 hover:text-white">
+                  <NavLink key={social} to={`#${social}`} className="text-gray-400 hover:text-white">
                     <span className="sr-only">{social}</span>
                     <div className="h-6 w-6 rounded-full bg-gray-800 flex items-center justify-center">
                       {social.charAt(0).toUpperCase()}

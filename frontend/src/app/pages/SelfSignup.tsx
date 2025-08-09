@@ -263,16 +263,16 @@ export default function SelfSignup() {
         <div className="container px-4 md:px-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="text-sm text-muted-foreground">
-              <p>© 2025 Siikli Oy. Kaikki oikeudet pidätetään.</p>
+              <p>© 2025 Siikli. Kaikki oikeudet pidätetään.</p>
             </div>
             <div className="flex gap-6">
-              <NavLink href="#tuki" className="text-sm text-muted-foreground hover:text-foreground">
+              <NavLink to="#tuki" className="text-sm text-muted-foreground hover:text-foreground">
                 Tuki
               </NavLink>
-              <NavLink href="#tietosuoja" className="text-sm text-muted-foreground hover:text-foreground">
+              <NavLink to="#tietosuoja" className="text-sm text-muted-foreground hover:text-foreground">
                 Tietosuoja
               </NavLink>
-              <NavLink href="#kayttoehdot" className="text-sm text-muted-foreground hover:text-foreground">
+              <NavLink to="#kayttoehdot" className="text-sm text-muted-foreground hover:text-foreground">
                 Käyttöehdot
               </NavLink>
             </div>

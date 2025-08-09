@@ -228,7 +228,7 @@ function MobileSidebar({ setIsMobileNavOpen }: { setIsMobileNavOpen: (isOpen: bo
   return (
     <div className="flex h-full flex-col gap-2 overflow-auto">
       <div className="flex h-14 items-center border-b px-4">
-        <NavLink href="/" className="flex items-center gap-2 font-semibold">
+        <NavLink to="/" className="flex items-center gap-2 font-semibold">
           <img src={`/siikli-logo-${variant}.png`} className="h-6" />
           <span>Siikli ERP</span>
         </NavLink>
