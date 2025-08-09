@@ -49,13 +49,13 @@ export default function CompanySettings() {
   }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value }: { name: string, value: string } = e.target
+    const { name, value }: { name: string, value: string } = e.currentTarget
     setCompanyData((prev) => {
       if (!prev)
         return prev
       return {
         ...prev,
-        [name]: typeof prev[name as keyof GetCompanySettings] === 'string' ? value : Number(value),
+        [name]: value 
       }
     })
   }
