@@ -54,7 +54,7 @@ export function formatNumber(amount?: Decimal | number | string) {
 /**
  * Parse a Siikli internal formatted monetary string to a number for HTML input element.
  *
-* @param amount - The number to parse, like "2,55" or "2.55"
+ * @param amount - The number to parse, like "2,55" or "2.55"
  * @returns The parsed number, like 2.55
  */
 export function parseToNumber(amount?: string): string | number {

@@ -8,7 +8,7 @@ import Footer from '../components/Footer'
 import TopBar from '../components/TopBar'
 import LoginForm from './LoginForm'
 
-export default function LoginPage2() {
+export default function LoginPage() {
   const t = useTranslation()
 
   return (

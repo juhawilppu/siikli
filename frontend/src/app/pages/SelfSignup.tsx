@@ -5,6 +5,7 @@ import { Building2, Check, Info, Loader2, Rocket, Users } from 'lucide-react'
 
 import { useState } from 'react'
 import { NavLink } from 'react-router-dom'
+import { useToast } from '@/app/hooks/use-toast'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,7 +23,6 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import { useToast } from '@/hooks/use-toast'
 
 export default function SelfSignup() {
   const [companyNamy, setCompanyName] = useState('')

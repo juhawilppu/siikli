@@ -2,12 +2,14 @@
 
 import type React from 'react'
 
-import type { GetCompanySettings, GetUsersResponseDto, PostCompanySettings, PostSubscriptionChangeRequest } from '@/types/types'
+import type { GetCompanySettings, GetUsersResponseDto, PostCompanySettings, PostSubscriptionChangeRequest } from '@/app/types/types'
 import axios from 'axios'
 
 import { Pencil, Save, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import SiikliPage from '@/app/components/SiikliPage'
+import { useToast } from '@/app/hooks/use-toast'
+import { formatDate } from '@/app/utils/date'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -16,13 +18,11 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { useApp } from '@/context/AppContext'
-import { useToast } from '@/hooks/use-toast'
-import { formatDate } from '@/utils/date'
 import ConfirmDialog from '../components/ConfirmDialog'
+import { useAuth } from '../context/AuthContext'
 
 export default function CompanySettings() {
-  const { user } = useApp()
+  const { user } = useAuth()
   const [companyData, setCompanyData] = useState<GetCompanySettings>()
   const [users, setUsers] = useState<GetUsersResponseDto[]>()
   const [showDeleteCompanyModal, setShowDeleteCompanyModal] = useState(false)

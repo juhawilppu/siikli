@@ -1,4 +1,4 @@
-import type { GetCustomerRequestDto, GetCustomersResponseDto } from '@/types/types'
+import type { GetCustomerRequestDto, GetCustomersResponseDto } from '@/app/types/types'
 import axios from 'axios'
 import {
   Edit,
@@ -7,6 +7,7 @@ import {
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import SiikliPage from '@/app/components/SiikliPage'
+import { useToast } from '@/app/hooks/use-toast'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -29,7 +30,6 @@ import {
 import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import { useToast } from '@/hooks/use-toast'
 import { NewCustomer } from './CustomerForm'
 
 function SortableTableRow({ customer, onEdit, onDelete }: {

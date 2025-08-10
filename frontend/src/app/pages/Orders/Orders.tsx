@@ -1,4 +1,4 @@
-import type { GetOrderList } from '@/types/types'
+import type { GetOrderList } from '@/app/types/types'
 import axios from 'axios'
 import { endOfWeek, startOfWeek } from 'date-fns'
 
@@ -11,14 +11,14 @@ import {
 import { useEffect, useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import SiikliPage from '@/app/components/SiikliPage'
+import { dateToIso, formatDate, parseIsoDate } from '@/app/utils/date'
+import { formatNumber } from '@/app/utils/money'
+
 import { Button } from '@/components/ui/button'
 import { Calendar as CalendarComponent } from '@/components/ui/calendar'
-
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { dateToIso, formatDate, parseIsoDate } from '@/utils/date'
-import { formatNumber } from '@/utils/money'
 
 export default function Orders() {
   const now = new Date()

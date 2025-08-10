@@ -26,10 +26,10 @@ import {
 } from 'lucide-react'
 import { useState } from 'react'
 
+import { useToast } from '@/app/hooks/use-toast'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
-import { useToast } from '@/hooks/use-toast'
 
 // Tuoteryhmät ja alituoteryhmät
 interface Alituoteryhma {

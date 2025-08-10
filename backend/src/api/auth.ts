@@ -20,7 +20,7 @@ authRoute.get(
   (req, res, next) => {
     try {
       console.log('callback here')
-      res.redirect('/')
+      res.redirect('/app')
     }
     catch (error) {
       console.log('login error', error)
@@ -53,7 +53,7 @@ authRoute.post('/api/auth/email/create-pin', rateLimit(5, 15), async (req, res, 
 authRoute.post('/api/auth/email/check-pin', rateLimit(10, 1), passport.authenticate('local'), (req, res, next) => {
   try {
     console.log('callback here')
-    res.redirect('/')
+    res.redirect('/app')
   }
   catch (error) {
     console.log('login error', error)

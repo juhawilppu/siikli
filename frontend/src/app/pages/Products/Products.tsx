@@ -1,6 +1,6 @@
 'use client'
 
-import type { GetPackageSettings, GetProductResponseDto, ProductTypeResponse } from '@/types/types'
+import type { GetPackageSettings, GetProductResponseDto, ProductTypeResponse } from '@/app/types/types'
 import * as Sentry from '@sentry/react'
 
 import axios from 'axios'
@@ -15,6 +15,8 @@ import {
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import SiikliPage from '@/app/components/SiikliPage'
+import { useToast } from '@/app/hooks/use-toast'
+import { formatNumber } from '@/app/utils/money'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -32,8 +34,6 @@ import {
 import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import { useToast } from '@/hooks/use-toast'
-import { formatNumber } from '@/utils/money'
 import NewProduct from './ProductForm'
 
 export default function Products() {

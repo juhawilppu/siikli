@@ -8,8 +8,14 @@ export default function SiikliCookieConsent({ onAccept, onDecline }: { onAccept:
       buttonText="Hyväksy kaikki"
       declineButtonText="Vain välttämättömät"
       enableDeclineButton
-      onAccept={onAccept}
-      onDecline={onDecline}
+      onAccept={() => {
+        onAccept()
+        localStorage.setItem('cookie-consent', 'accepted')
+      }}
+      onDecline={() => {
+        onDecline()
+        localStorage.setItem('cookie-consent', 'declined')
+      }}
       style={{
         background: '#f9fafb', // tailwind: gray-50
         color: '#1f2937', // tailwind: gray-800

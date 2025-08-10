@@ -1,6 +1,6 @@
 'use client'
 
-import type { GetProductResponseDto, PostProductCreateRequestDto, ProductTypeResponse } from '@/types/types'
+import type { GetProductResponseDto, PostProductCreateRequestDto, ProductTypeResponse } from '@/app/types/types.js'
 
 import { Popover } from '@radix-ui/react-popover'
 import axios from 'axios'
@@ -11,6 +11,8 @@ import {
   Save,
 } from 'lucide-react'
 import { useState } from 'react'
+import { toast } from '@/app/hooks/use-toast.js'
+import { formatNumber } from '@/app/utils/money.js'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { Button } from '@/components/ui/button'
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from '@/components/ui/command'
@@ -25,9 +27,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Separator } from '@/components/ui/separator'
-import { toast } from '@/hooks/use-toast'
 import { cn } from '@/lib/utils'
-import { formatNumber } from '@/utils/money.js'
 import { calculatePricesFromVat0, calculatePricesFromVat14 } from '../../lib/price-utils.js'
 
 export default function NewProduct({ productToEdit, hide, onSave, productTypes, refPackageTypes, refPackageSizes }: { productToEdit?: GetProductResponseDto, hide: () => void, onSave: (product: GetProductResponseDto) => void, productTypes: ProductTypeResponse[], refPackageTypes: string[], refPackageSizes: number[] }) {

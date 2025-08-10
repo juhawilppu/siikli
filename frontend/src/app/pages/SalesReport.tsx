@@ -3,11 +3,11 @@ import { fi } from 'date-fns/locale'
 import { Calendar, Download } from 'lucide-react'
 import { useState } from 'react'
 import SiikliPage from '@/app/components/SiikliPage'
+import { formatDate } from '@/app/utils/date'
 import { Button } from '@/components/ui/button'
 import { Calendar as CalendarComponent } from '@/components/ui/calendar'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { formatDate } from '@/utils/date'
 
 const now = new Date()
 

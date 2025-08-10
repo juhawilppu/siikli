@@ -5,10 +5,10 @@ import { ArrowRight, Loader2 } from 'lucide-react'
 
 import posthog from 'posthog-js'
 import { useState } from 'react'
+import { useToast } from '@/app/hooks/use-toast'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { useToast } from '@/hooks/use-toast'
 import { useTranslation } from '../../lib/translations'
 
 export default function LoginForm() {

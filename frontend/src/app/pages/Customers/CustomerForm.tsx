@@ -1,7 +1,9 @@
-import type { GetCustomerRequestDto, PostCreateCustomerRequestDto } from '@/types/types'
+import type { GetCustomerRequestDto, PostCreateCustomerRequestDto } from '@/app/types/types'
 import axios from 'axios'
 import { Check, ChevronsUpDown, HelpCircle, Plus, Save } from 'lucide-react'
 import { useState } from 'react'
+import { toast } from '@/app/hooks/use-toast'
+import { formatNumber } from '@/app/utils/money'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -9,9 +11,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import { toast } from '@/hooks/use-toast'
 import { cn } from '@/lib/utils'
-import { formatNumber } from '@/utils/money'
 
 function instructionTooltip(text: string) {
   return (

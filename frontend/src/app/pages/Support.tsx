@@ -1,9 +1,7 @@
 import { useEffect } from 'react'
 import { useTranslation } from '../../lib/translations'
-import Footer from '../components/Footer'
-import TopBar from '../components/TopBar'
 
-export default function ContactPage() {
+export default function Support() {
   const t = useTranslation()
 
   const scrollToTop = () => {
@@ -19,7 +17,6 @@ export default function ContactPage() {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <TopBar />
 
       <section className="w-full py-12 md:py-24 bg-white">
         <div className="container px-4 md:px-6">
@@ -48,8 +45,6 @@ export default function ContactPage() {
           </div>
         </div>
       </section>
-
-      <Footer />
     </div>
   )
 }

@@ -1,14 +1,14 @@
-import type { DashboardDataDto } from '@/types/types'
+import type { DashboardDataDto } from '@/app/types/types'
 import axios from 'axios'
 import { FileText, Package, Plus, Truck, Users } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import SiikliPage from '@/app/components/SiikliPage'
+import { formatDate } from '@/app/utils/date'
+import { formatNumber } from '@/app/utils/money'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { formatDate } from '@/utils/date'
-import { formatNumber } from '@/utils/money'
 
 function formatMetric(value: number, unit: 'money' | 'count') {
   if (unit === 'money') {

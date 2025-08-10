@@ -1,6 +1,6 @@
-import type { PackagingListGroupedByCustomer } from '@/types/types'
-import { formatDate, parseIsoDate } from '@/utils/date'
-import { formatNumber } from '@/utils/money'
+import type { PackagingListGroupedByCustomer } from '@/app/types/types'
+import { formatDate, parseIsoDate } from '@/app/utils/date'
+import { formatNumber } from '@/app/utils/money'
 
 export function PackagingListByCustomer({ report }: {
   report: PackagingListGroupedByCustomer

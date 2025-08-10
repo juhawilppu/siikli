@@ -1,7 +1,3 @@
-// src/context/AppContext.tsx
-import type { GetCurrentUserDto } from '@/types/types'
-import * as Sentry from '@sentry/react'
-import axios from 'axios'
 import React, { createContext, useContext, useEffect, useState } from 'react'
 
 const DEFAULT_LANGUAGE = 'fi'
@@ -12,23 +8,16 @@ interface AppContextType {
   language: Language
   variant: 'A' | 'B'
   setLanguage: (lang: Language) => void
-  user: GetCurrentUserDto | undefined
-  logout: () => Promise<void>
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined)
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [language, setLanguage] = useState<Language>(localStorage.getItem('language') as Language || DEFAULT_LANGUAGE)
-  const [user, setUser] = useState<GetCurrentUserDto>()
+
+  // Disable A/B testing for now.
   // const [variant, _] = useState<Variant>('A' || localStorage.getItem('variant') as Variant)
   const [variant, _] = useState<Variant>('A')
-
-  const logout = async () => {
-    await axios.post('/auth/logout')
-    setUser({ authenticated: false })
-    Sentry.setUser(null)
-  }
 
   useEffect(() => {
     if (variant === 'A') {
@@ -59,33 +48,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   }, [variant])
 
-  useEffect(() => {
-    axios
-      .get<GetCurrentUserDto>('/auth/current-user')
-      .then((response) => {
-        const userData = response.data
-        if (userData.authenticated) {
-          setUser(userData)
-          // Update Sentry user context
-          Sentry.setUser({
-            id: userData.userId,
-            initials: userData.initials,
-            tenantId: userData.tenantId,
-          })
-        }
-        else {
-          setUser({ authenticated: false })
-        }
-      })
-  }, [])
-
   const updateLanguage = (lang: Language) => {
     setLanguage(lang)
     localStorage.setItem('language', lang)
   }
 
   return (
-    <AppContext.Provider value={{ language, setLanguage: updateLanguage, variant, user, logout }}>
+    <AppContext.Provider value={{ language, setLanguage: updateLanguage, variant }}>
       {children}
     </AppContext.Provider>
   )

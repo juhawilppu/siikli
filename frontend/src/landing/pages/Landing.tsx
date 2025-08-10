@@ -4,7 +4,6 @@ import { useEffect, useRef } from 'react'
 import { NavLink } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { useApp } from '../../context/AppContext'
 import { useTranslation } from '../../lib/translations'
 import Footer from '../components/Footer'
 import ImageCarousel from '../components/ImageCarousel'
@@ -12,7 +11,6 @@ import TopBar from '../components/TopBar'
 
 export default function LandingPage() {
   const t = useTranslation()
-  const { variant } = useApp()
 
   const pricingRef = useRef<HTMLDivElement>(null)
   const featuresRef = useRef<HTMLDivElement>(null)
@@ -89,20 +87,20 @@ export default function LandingPage() {
       <section className="w-full py-12 md:py-24 lg:py-32 bg-gradient-to-b from-white to-gray-50">
         <div className="container px-4 md:px-6 flex flex-col md:flex-row items-center md:items-start gap-12">
           <div className="flex flex-col gap-4 md:w-1/2">
-            <img src={`/siikli-logo-${variant}.png`} alt="Siikli Logo" className="w-1/3" />
+            <img src="/siikli-logo-A.png" alt="Siikli Logo" className="w-1/3" />
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.1]">
-              {t(`landing.${variant}.title`)}
+              {t(`landing.A.title`)}
             </h1>
             <p className="text-lg md:text-lg lg:text-xl">
-              {t(`landing.${variant}.description`)}
+              {t(`landing.A.description`)}
             </p>
             <p className="text-lg md:text-lg lg:text-xl">
-              {t(`landing.${variant}.description2`)}
+              {t(`landing.A.description2`)}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 mt-4">
               <Button size="lg" className="rounded-full text-lg" asChild>
                 <NavLink to="/kirjaudu">
-                  {t(`landing.${variant}.startForFree`)}
+                  {t(`landing.A.startForFree`)}
                   {' '}
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </NavLink>

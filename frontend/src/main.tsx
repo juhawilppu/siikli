@@ -2,10 +2,10 @@ import * as Sentry from '@sentry/react'
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
-import App from './App.js'
+import App from './App'
 
-import { AppProvider } from './context/AppContext.js'
-import './index.css'
+import { AppProvider } from './context/AppContext'
+import './globals.css'
 
 if (localStorage.getItem('variant') === null) {
   localStorage.setItem('variant', Math.random() < 0.5 ? 'A' : 'B')

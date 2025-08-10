@@ -1,6 +1,6 @@
 import type React from 'react'
 
-import type { GetCustomerRequestDto, GetCustomersResponseDto, GetOrderDto, GetPackageSettings, GetProductResponseDto, OrderRow, PostOrderRequestDto, PostOrderResponseDto } from '@/types/types'
+import type { GetCustomerRequestDto, GetCustomersResponseDto, GetOrderDto, GetPackageSettings, GetProductResponseDto, OrderRow, PostOrderRequestDto, PostOrderResponseDto } from '@/app/types/types'
 
 import { captureException } from '@sentry/react'
 import axios from 'axios'
@@ -18,6 +18,10 @@ import {
 import { useEffect, useState } from 'react'
 import { NavLink, useNavigate, useParams } from 'react-router-dom'
 import SiikliPage from '@/app/components/SiikliPage'
+import { useIsMobile } from '@/app/hooks/use-mobile'
+import { useToast } from '@/app/hooks/use-toast'
+import { dateToIso } from '@/app/utils/date'
+import { formatNumber, parseDecimal, parseToNumber, serializeNumber } from '@/app/utils/money'
 import { Button } from '@/components/ui/button'
 import { Calendar as CalendarComponent } from '@/components/ui/calendar'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
@@ -30,11 +34,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
 import { Textarea } from '@/components/ui/textarea'
-import { useIsMobile } from '@/hooks/use-mobile'
-import { useToast } from '@/hooks/use-toast'
 import { cn } from '@/lib/utils'
-import { dateToIso } from '@/utils/date'
-import { formatNumber, parseDecimal, parseToNumber, serializeNumber } from '@/utils/money'
 import ConfirmDialog from '../../components/ConfirmDialog'
 
 export default function CreateOrder() {
