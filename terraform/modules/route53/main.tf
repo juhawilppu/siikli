@@ -85,41 +85,16 @@ resource "aws_route53_record" "dmarc_root" {
   type    = "TXT"
   ttl     = 300
   records = [
-    "v=DMARC1; p=reject; sp=reject"
-  ]
-}
-
-resource "aws_route53_record" "dmarc" {
-  zone_id = aws_route53_zone.siikli.id
-
-  name    = "_dmarc.mail.${var.domain_name}"
-  type    = "TXT"
-  ttl     = 300
-  records = [
-    "v=DMARC1; p=quarantine; rua=mailto:admin@siikli.fi"
-  ]
-}
-
-resource "aws_route53_record" "spf_root" {
-  zone_id = aws_route53_zone.siikli.id
-
-  name    = "${var.domain_name}"
-  type    = "TXT"
-  ttl     = 300
-  records = [
-    "v=spf1 -all"
+    "v=DMARC1; p=reject; sp=reject; rua=mailto:juha.wilppu@siikli.fi"
   ]
 }
 
 resource "aws_route53_record" "spf" {
   zone_id = aws_route53_zone.siikli.id
-
   name    = "mail.${var.domain_name}"
   type    = "TXT"
   ttl     = 300
-  records = [
-    "v=spf1 include:_spf.google.com include:amazonses.com -all"
-  ]
+  records = ["v=spf1 include:amazonses.com -all"]
 }
 
 resource "aws_route53_record" "aromaentila" {
@@ -149,4 +124,25 @@ resource "aws_route53_record" "mail_mx" {
   type    = "MX"
   ttl     = 300
   records = ["10 feedback-smtp.eu-north-1.amazonses.com"]
+}
+
+resource "aws_route53_record" "mx_root" {
+  zone_id = aws_route53_zone.siikli.id
+  name    = var.domain_name
+  type    = "MX"
+  ttl     = 300
+  records = [
+    "10 mx1.privateemail.com.",
+    "10 mx2.privateemail.com.",
+  ]
+}
+
+resource "aws_route53_record" "spf_root" {
+  zone_id = aws_route53_zone.siikli.id
+  name    = var.domain_name
+  type    = "TXT"
+  ttl     = 300
+  records = [
+    "v=spf1 include:spf.privateemail.com include:amazonses.com ~all"
+  ]
 }
