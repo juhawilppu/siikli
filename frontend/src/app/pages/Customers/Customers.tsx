@@ -39,7 +39,16 @@ function SortableTableRow({ customer, onEdit, onDelete }: {
 }) {
   return (
     <TableRow>
-      <TableCell className="font-medium">{customer.name}</TableCell>
+      <TableCell className="font-medium">
+        <Button
+          variant="ghost"
+          className="text-blue-500 font-bold"
+          size="default"
+          onClick={() => onEdit(customer)}
+        >
+          {customer.name}
+        </Button>
+      </TableCell>
       <TableCell>{customer.city}</TableCell>
       <TableCell>{customer.customerGroup}</TableCell>
       <TableCell>

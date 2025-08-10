@@ -331,7 +331,16 @@ export default function Products() {
                           </div>
                         </TableCell>
                         */}
-                            <TableCell className="font-medium">{product.name}</TableCell>
+                            <TableCell className="font-medium">
+                              <Button
+                                variant="ghost"
+                                className="text-blue-500 font-bold"
+                                size="default"
+                                onClick={() => setEditProductId(product.id)}
+                              >
+                                {product.name}
+                              </Button>
+                            </TableCell>
                             { /*
                         <TableCell>{product.variety}</TableCell>
                         <TableCell>{product.type}</TableCell>

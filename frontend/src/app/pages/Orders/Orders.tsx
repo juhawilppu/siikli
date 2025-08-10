@@ -214,7 +214,16 @@ export default function Orders() {
                     : (
                         orders.map(order => (
                           <TableRow key={order.id}>
-                            <TableCell className="font-medium">{order.waybillNumber}</TableCell>
+                            <TableCell className="font-medium">
+                              <Button
+                                variant="ghost"
+                                className="text-blue-500 font-bold"
+                                size="default"
+                                onClick={() => navigate(`/app/orders/${order.id}`)}
+                              >
+                                {order.waybillNumber}
+                              </Button>
+                            </TableCell>
                             <TableCell>{formatDate(parseIsoDate(order.deliveryDate))}</TableCell>
                             <TableCell>
                               {order.customer.name}
