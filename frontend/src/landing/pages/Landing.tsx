@@ -86,7 +86,7 @@ export default function LandingPage() {
       <section className="w-full py-12 md:py-24 lg:py-32 bg-gradient-to-b from-white to-gray-50">
         <div className="container px-4 md:px-6 flex flex-col md:flex-row items-end md:items-end gap-12">
           <div className="flex flex-col gap-4 md:w-1/2">
-            <img src="/siikli-logo.png" alt="Siikli Logo" className="w-1/3" />
+            <img src="/siikli-logo.webp" alt="Siikli Logo" className="w-1/3" />
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.1]">
               {t(`landing.title`)}
             </h1>
@@ -133,7 +133,7 @@ export default function LandingPage() {
           <div className="w-full md:w-1/2 flex items-center justify-center">
             <div className="relative w-full max-w-[480px] rounded-lg shadow-2xl border border-gray-200 bg-white overflow-hidden">
               <img
-                src="/invoice.png"
+                src="/invoice.webp"
                 alt="Laskutus - esimerkkikuva Siiklistä"
                 className="w-full h-auto object-cover transition-transform rounded-lg duration-300 hover:scale-[1.29] hover:-translate-x-[65px] hover:translate-y-[5px] bg-gray-50"
                 style={{ boxShadow: '0 8px 32px 0 rgba(60, 72, 88, 0.12)' }}
