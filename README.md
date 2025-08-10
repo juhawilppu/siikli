@@ -1,15 +1,22 @@
 # 🌾 Siikli
 
-Siikli is a simple, modern ERP system tailored for the Finnish agriculture industry. It’s built to streamline operations, manage data efficiently, and support end-to-end workflows for agricultural businesses.
+Siikli is a modern ERP built for the realities of Finnish agriculture. It’s used in production to manage millions of euros in orders and invoices — simply, reliably, and without unnecessary complexity.
 
-## 🚀 Features
+![Siikli order view screenshot](docs/screenshots/order-view.png)
 
-- Order and invoicing system
-- Inventory and warehouse management
-- Customer and supplier management
-- Reporting and analytics
+Whether it’s keeping track of inventory, sending invoices, or managing customers, Siikli streamlines the essential operations of agricultural businesses.
 
-## 🧰 Tech Stack
+> “Everything you need. Nothing you don’t.”
+
+🚀 Features
+
+- 📦 Order & invoicing — from quote to paid invoice
+- 👥 Customer & supplier management
+- 📋 Product & price list management (incl. VAT & no-VAT pricing)
+- 📊 Simple, exportable reports for bookkeeping
+- 🔍 Full history tracking for every change
+
+## 🧰 Tech stack
 
 ![React](https://img.shields.io/badge/Frontend-React-blue)
 ![Node.js](https://img.shields.io/badge/Backend-Node.js-green)
@@ -18,110 +25,64 @@ Siikli is a simple, modern ERP system tailored for the Finnish agriculture indus
 ![Terraform](https://img.shields.io/badge/IaC-Terraform-purple)
 ![AWS](https://img.shields.io/badge/Cloud-AWS-orange)
 
-## 🛠️ Getting Started
+## 🛠️ Getting started
 
-Follow these steps to get your local development environment up and running.
-
-### 1. Configure Environment Variables
-
-Copy the example environment file and update values as needed:
-
-```bash
-cp .env.example .env
 ```
+# 1. Configure environment variables
+cp .env.example .env
 
-### 2. Start the app
-
-The frontend and backend are run concurrently with `npm run dev` shorthand.
-
-```bash
+# 2. Install dependencies & start
 cd siikli
 npm install
 npm run dev
 ```
 
-## 📁 Project Structure
+The frontend and backend run concurrently via `npm run dev`.
 
-```
+## 📁 Project structure
+
+```bash
 siikli/
 ├── frontend/      # React frontend
-├── src/           # Backend source code
-├── prisma/        # Prisma schema and migrations
+├── backend/       # Backend source code
+├── packages/      # Code shared between frontend and backend (REST types, utils)
 ├── terraform/     # Terraform files for AWS infra and deployment
 ├── .env           # Environment variables
 └── ...
 ```
 
-## 🧱 Core architectural decisions
+## 🧱 Architecture
 
-### 🧩 Layered structure
+### Layered structure
 
-Siikli follows a **Service–Controller–Model** architecture, inspired by Spring Boot. The goal is clarity, testability, and separation of concerns:
+Follows a **Service–Controller–Model** pattern for clarity, testability, and separation of concerns:
 
-- **Controller**
-  - Handles HTTP input/output
-  - Deserializes request data (e.g. `"10.00"` ➝ `Decimal`)
-  - Checks user permissions
-    - Verifies the request is made within the correct tenant (tenant ID from JWT)
-    - Enforces access control (e.g. owner-only endpoints)
+- **Controller** -- Handles HTTP, request validation, and permissions.
+- **Services** -- Business logic.
+- **Model** -- Database access via prisma.
 
-- **Service**
-  - Contains business logic and orchestration
-  - Performs calculations, database mutations, and multi-step workflows
-  - Independent of HTTP — can be reused by schedulers or CLI tools
+### Type safety
 
-- **Model**
-  - Maps to the database via Prisma
-  - No business logic — just queries, inserts, and schema definitions
+- No complex TypeScript generics (Omit, Partial, etc.).
+- Each endpoint has dedicated request/response DTOs for explicit, predictable types.
 
-> This structure keeps code modular, readable, and easy to evolve. It’s designed to scale naturally as the product grows.
+### ORM-first
 
-### Strict type-safety
+- Prisma is the default for DB access.
+- Raw SQL used for performance-critical special cases.
+- Database: `snake_case`; TypeScript: `camelCase`.
 
-Siikli avoids complex TypeScript abstractions like `Omit`, `Partial`, or `extends` — on purpose. In my experience, types work best when they’re simple, explicit, and boring. Even if it means violating DRY.
+### Tenant isolation
 
-Every REST endpoint defines its own dedicated DTO types:
-- Request: `PostCreateCustomerRequestDto`
-- Response: `PostCreateCustomerResponseDto`
-
-This approach may feel repetitive, but it pays off:
-- ✅ Zero surprises in serialization
-- ✅ Easier refactoring
-- ✅ Fewer bugs at runtime
-
-### Prefer ORM
-
-Prisma is the primary method for database access, providing type-safety, composability, and security by default.
-
-Raw SQL is used only in performance-critical scenarios — and always isolated and reviewed.
-
-Naming convention:
-- Database: `snake_case`
-- TypeScript: `camelCase`
-
-### 🏢 Tenant isolation
-
-Siikli is a multi-tenant system. Each company has its own data, and strict isolation is enforced at the application layer.
-
-- ✅ All relevant database tables include a `company_id` column
-- ✅ Prisma middleware automatically validates that a `WHERE company_id = ...` clause is used when accessing tenant-specific tables
-- ✅ Role-based access control (RBAC) is scoped to tenant context
-- ✅ Tenant ID is included in the JWT payload
-- ✅ No shared mutable data between tenants
+- Every tenant has isolated data (`company_id` in all relevant tables).
+- Prisma middleware enforces tenant scoping in queries.
+- RBAC is tenant-aware.
+- Tenant ID in JWT payload.
 
 ### History tables
 
-Every database table (e.g. `order`, `customer`) has a corresponding `_history` table (e.g. `order_history`, `customer_history`). All `INSERT`, `UPDATE`, and `DELETE` operations are automatically mirrored via triggers.
-
-This provides:
-
-- ✅ Easy debugging and traceability
-- ✅ Emergency restore without full DB rollback
-- ✅ Continuous change history alongside regular backups
-
-> This design is based on experience — I once lost two weeks of customer data.
-> Since then, I've been almost paranoid in building systems that can recover from human mistakes, not just hardware failures.
-> Credit goes to Xuan, my former boss and current friend, who introduced me to this history table pattern in 2015 — I'm still using it.
+- Every table has a `_history` table updated via triggers on `INSERT`, `UPDATE`, `DELETE`.
+- Enables debugging, partial restores, and full change tracking.
 
 To ensure schema consistency, run:
 
@@ -129,96 +90,54 @@ To ensure schema consistency, run:
 npx tsx ./src/dev/verify-history-tables.ts
 ```
 
-This script checks that all history tables exist, verifies column types, and prints the expected trigger definition if changes are needed.
+Validates that history tables are in sync with schema.
 
 ### Handling monetary values
 
-Siikli enforces strict precision and a smooth user experience for all monetary inputs.
+Finnish currency uses a comma and two decimals (`2,50`), but users may type `2.5` or `2,5`.
 
-- **💾 Database:** Stored as `@db.Decimal(10, 2)` for exact precision.
-- **🔄 API:** REST requests and responses use strings in international format, e.g. `"10.00"`.
-- **🧑‍💻 UI input:** – Users can type values in various ways (`"10"`, `"10,0"`, `"10.0"`, etc.).
-  - On blur, inputs are reformatted to Finnish style: `"10,00"`.
-  - Keeping UI values as strings allows partial inputs (e.g., `"10,"`) and preserves what the user typed.
-  - On mobile, numeric keyboards are used for better UX.
-  - ➕ Calculations – Performed with `decimal.js` to ensure safety and accuracy.
+Solution: Keep monetary values as **strings** in the UI until calculations are needed.
+- **Database:** `@db.Decimal(10, 2)` for exact precision.
+- **API:** Uses strings (`"10.00"`) for serialization.
+- **UI:** Accepts multiple formats (`"10"`, `"10,0"`, `"10.0"`, etc.), formats to `"10,00"` on blur.
+- **Mobile:** Numeric keyboard for better UX.
+- **Calcultions:** Uses `decimal.js` for precision.
 
-**Why strings?**
+Stores both:
+- `price` (incl. VAT)
+- `price0` (excl. VAT)
 
-Numbers in JavaScript lose formatting and can introduce floating-point errors. By storing inputs as strings until needed, Siikli preserves user intent, avoids locale bugs, and ensures exact precision in all calculations.
+Avoids rounding errors and matches how users think about money.
 
-Additionally, since customers can agree prices with or without VAT, the system stores both:
-- `price` (including 14 % VAT)
-- `price0` (without VAT)
+## Deployment
 
-Note: due to rounding differences, `price / 1.14` is not guaranteed to exactly match `price0`.
+- ECS + Fargate for containers.
+- RDS for database.
+- Terraform for provisioning.
+- Currently runs in `eu-north-1` (Sweden).
 
-> This approach avoids rounding bugs, preserves financial accuracy, and matches how real users think about money.
+## Security
 
-### Deployment: ECS + Fargate
+Security-first approach:
 
-Siikli runs in containers using Amazon ECS and Fargate, with RDS as the database layer. Infrastructure is provisioned with Terraform. Currently all resources run in eu-north-1 (Sweden).
+- ✅ Security headers & CSP
+- ✅ SQL injection & XSS prevention via framework
+- ✅ Role-based access control
+- ✅ Tenant isolation via Prisma middleware
+- ✅ UUID-based identifiers
+- ✅ Rate-limiting
+- ✅ Passwordless login
+- ✅ Secure cookies (HttpOnly)
+- ✅ IDOR prevention
+- ✅ ALTCHA bot protection
 
-### Secure-first
+## Simplicity
 
-Security has been a core principle from day one.
+- No unnecessary abstractions.
+- Readable > clever.
+- “Boring” tech that works.
 
-✅ Security headers
-✅ CSP
-✅ SQL injection prevented by framework
-✅ XSS prevented by framework
-✅ Role-based access
-✅ Tenant isolation verified by prisma middleware
-✅ UUID to prevent easily enumerable endpoints
-✅ Rate-limiting
-✅ Passwordless login
-✅ Cookie flags (HttpOnly authentication cookie)
-✅ IDOR prevention (my favorite topic)
-✅ Challenge-response system (ALTCHA) for bot protection
+## 🤖 AI-assisted, human-led
 
-Note: High availability is not currently enabled to reduce cost — the app runs on a single instance.
-
-### Simplicity
-
-- No unnecessary abstractions
-- Readable code favored over clever tricks
-- Prefer boring technology that works
-
-## 🤖 AI-assisted but driven by human
-
-Siikli was built with the help of AI tools — always under full human supervision.
-
-- 🧠 Architecture, business logic, and design decisions are made by hand — no part of the core app was generated
-- 💬 ChatGPT was used to reflect on architectural decisions, help prioritize tickets, and pressure-test ideas
-- ✍️ Cursor AI provided autocompletion and small code snippets — especially for utility functions or boilerplate
-- 🎨 v0.dev was used to explore UI mockups. Most of the initial layouts were copied and modified to fit the real needs and made more consistent across all pages
-
-> All code is reviewed, verified, and adapted — AI helps speed up flow, but never replaces intent or ownership.
-
-### Explicit nulls in DTOs
-
-I've decided to use
-```
-  companyLegalName: string | null
-```
-instead of
-```
-  companyLegalName?: string
-```
-
-## 📄 License
-
-This is a private project.
-
-All rights reserved.
-
-## Testing
-
-Coverage
-- 2025-06-22 - 2.25 %
-- 2025-06-23 - 12.21 %
-- 2025-06-24 - 14.35 %
-- 2025-06-25 - 17.53 %
-- 2025-06-26 - 17.11 %
-
-Do not distribute, copy, or reuse any part of the code or design without explicit permission.
+- AI used for prototyping UI design ([v0.dev](https://v0.dev/)), brainstorming ([ChatGPT](https://chatgpt.com/)) and code autocompletion ([Cursor](https://cursor.com/)).
+- All code is reviewed and adapted before use.
