@@ -2,11 +2,9 @@ import React, { createContext, useContext, useEffect, useState } from 'react'
 
 const DEFAULT_LANGUAGE = 'fi'
 type Language = 'fi' | 'en'
-type Variant = 'A' | 'B'
 
 interface AppContextType {
   language: Language
-  variant: 'A' | 'B'
   setLanguage: (lang: Language) => void
 }
 
@@ -15,38 +13,16 @@ const AppContext = createContext<AppContextType | undefined>(undefined)
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [language, setLanguage] = useState<Language>(localStorage.getItem('language') as Language || DEFAULT_LANGUAGE)
 
-  // Disable A/B testing for now.
-  // const [variant, _] = useState<Variant>('A' || localStorage.getItem('variant') as Variant)
-  const [variant, _] = useState<Variant>('A')
-
   useEffect(() => {
-    if (variant === 'A') {
-      if (language === 'en') {
-        document.title = 'Siikli | Down-to-earth software'
-        document.documentElement.lang = 'en'
-      }
-      else {
-        document.title = 'Siikli | Tehty maalaisjärjellä'
-        document.documentElement.lang = 'fi'
-      }
+    if (language === 'en') {
+      document.title = 'Siikli | Made with common sense'
+      document.documentElement.lang = 'en'
     }
     else {
-      if (language === 'en') {
-        document.title = 'Siikli | Made for business'
-        document.documentElement.lang = 'en'
-      }
-      else {
-        document.title = 'Siikli | Tehty tarpeeseen'
-        document.documentElement.lang = 'fi'
-      }
+      document.title = 'Siikli | Tehty maalaisjärjellä'
+      document.documentElement.lang = 'fi'
     }
   }, [language])
-
-  useEffect(() => {
-    if (variant) {
-      localStorage.setItem('variant', variant)
-    }
-  }, [variant])
 
   const updateLanguage = (lang: Language) => {
     setLanguage(lang)
@@ -54,7 +30,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   }
 
   return (
-    <AppContext.Provider value={{ language, setLanguage: updateLanguage, variant }}>
+    <AppContext.Provider value={{ language, setLanguage: updateLanguage }}>
       {children}
     </AppContext.Provider>
   )
