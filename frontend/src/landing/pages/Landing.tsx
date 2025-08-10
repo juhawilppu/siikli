@@ -149,7 +149,7 @@ export default function LandingPage() {
       <section className="w-full py-12 md:py-24 bg-white" id="ominaisuudet" ref={featuresRef}>
         <div className="container px-4 md:px-6">
           <div className="flex flex-col items-center justify-center gap-4 text-center mb-12">
-            <h2 className="text-gray-900 text-4xl font-bold tracking-tight">{t('landing.features.title')}</h2>
+            <h2 className="text-gray-900 text-4xl font-bold tracking-tight leading-[1.1]">{t('landing.features.title')}</h2>
             <p className="text-muted-foreground text-lg max-w-[800px]">
               {t('landing.features.description')}
             </p>
@@ -358,7 +358,7 @@ export default function LandingPage() {
       <section className="w-full py-12 md:py-24 bg-gray-50" id="hinnoittelu" ref={pricingRef}>
         <div className="container px-4 md:px-6">
           <div className="flex flex-col items-center justify-center gap-4 text-center mb-12">
-            <h2 className="text-gray-900 text-4xl font-bold tracking-tight">{t('landing.pricing.title')}</h2>
+            <h2 className="text-gray-900 text-4xl font-bold tracking-tight leading-[1.1]">{t('landing.pricing.title')}</h2>
             <p className="text-muted-foreground text-lg max-w-[800px]">
               {t('landing.pricing.description')}
             </p>
@@ -391,14 +391,14 @@ export default function LandingPage() {
               </CardFooter>
             </Card>
             <Card className="border-primary relative border-border flex flex-col">
-              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-blue-400 text-white text-base font-medium px-4 py-1 rounded-full text-center">
+              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-blue-200 text-gray-800 text-xs sm:text-base font-medium px-2 sm:px-4 py-1 rounded-full text-center min-w-[120px] sm:min-w-[0]">
                 {t('landing.pricing.premium.recommended')}
               </div>
               <CardHeader>
                 <CardTitle className="text-2xl">{t('landing.pricing.premium.title')}</CardTitle>
                 <CardDescription className="text-lg text-muted-foreground">{t('landing.pricing.premium.description')}</CardDescription>
                 <div className="mt-4">
-                  <span className="text-4xl font-bold">149 €</span>
+                  <span className="text-4xl font-bold">49 €</span>
                   <span className="text-muted-foreground text-lg">/kk</span>
                 </div>
               </CardHeader>
@@ -429,7 +429,7 @@ export default function LandingPage() {
       <section className="w-full py-12 md:py-24 bg-white">
         <div className="container px-4 md:px-6">
           <div className="flex flex-col items-center justify-center gap-4 text-center mb-12">
-            <h2 className="text-gray-900 text-4xl font-bold tracking-tight">{t('landing.customerFeedback.title')}</h2>
+            <h2 className="text-gray-900 text-4xl font-bold tracking-tight leading-[1.1]">{t('landing.customerFeedback.title')}</h2>
             <p className="text-muted-foreground text-lg max-w-[800px]">
               {t('landing.customerFeedback.description')}
             </p>
@@ -493,7 +493,7 @@ export default function LandingPage() {
       <section className="w-full py-12 md:py-24 bg-primary text-primary-foreground">
         <div className="container px-4 md:px-6">
           <div className="flex flex-col items-center text-center gap-4 md:gap-8">
-            <h2 className="text-4xl md:text-5xl font-bold tracking-tight">{t('landing.cta.title')}</h2>
+            <h2 className="text-4xl md:text-5xl font-bold tracking-tight leading-[1.1]">{t('landing.cta.title')}</h2>
             <p className="text-lg md:text-2xl text-primary-foreground/90 max-w-[800px]">
               {t('landing.cta.description')}
             </p>
@@ -523,7 +523,7 @@ export default function LandingPage() {
         <div className="container px-4 md:px-6">
           <div className="flex flex-col md:flex-row items-center gap-8">
             <div className="md:w-1/2 flex flex-col gap-4">
-              <h2 className="text-gray-900 text-4xl font-bold tracking-tight">{t('landing.security.title')}</h2>
+              <h2 className="text-gray-900 text-4xl font-bold tracking-tight leading-[1.1]">{t('landing.security.title')}</h2>
               <p className="text-muted-foreground text-lg">
                 {t('landing.security.description')}
               </p>

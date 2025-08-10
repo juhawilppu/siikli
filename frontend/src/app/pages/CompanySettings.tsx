@@ -536,7 +536,7 @@ export default function CompanySettings() {
                       </div>
                       <h3 className="text-xl font-semibold mb-4">Premium</h3>
                       <p className="text-2xl font-bold mb-6">
-                        149,00 €
+                        49,00 €
                         <span className="text-sm font-normal text-gray-500">/kk</span>
                       </p>
                       <ul className="space-y-3 mb-6">

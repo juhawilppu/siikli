@@ -199,7 +199,7 @@ function MobileSidebar({ setIsMobileNavOpen }: { setIsMobileNavOpen: (isOpen: bo
   return (
     <div className="flex h-full flex-col gap-2 overflow-auto">
       <div className="flex h-14 items-center border-b px-4">
-        <img src="/siikli-logo.png" className="h-6" />
+        <img src="/siikli-logo.webp" className="h-6" />
         <span>Siikli</span>
       </div>
       <div className="flex-1 overflow-auto py-2">

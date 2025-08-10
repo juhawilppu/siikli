@@ -18,13 +18,13 @@ export default function LoginPage() {
 
       {/* Main content */}
       <main className="flex-1">
-        <section className="w-full py-12 md:py-24 lg:py-32 bg-gradient-to-b from-white to-gray-50">
+        <section className="w-full py-6 md:py-24 lg:py-32 bg-gradient-to-b from-white to-gray-50">
           <div className="container px-4 md:px-6">
-            <div className="flex flex-col items-center text-center space-y-4 mb-12">
+            <div className="flex flex-col items-center text-center space-y-4 mb-6">
               <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight">
                 {t('login.title')}
               </h1>
-              <p className="text-muted-foreground text-lg md:text-xl max-w-[800px]">
+              <p className="text-muted-foreground text-md max-w-[800px] leading-[1.1]">
                 {t('login.description').replace('&ndash;', '—')}
               </p>
             </div>
@@ -34,7 +34,7 @@ export default function LoginPage() {
               <Card className="w-full mx-auto">
                 <CardHeader>
                   <CardTitle>{t('login.form.title')}</CardTitle>
-                  <CardDescription className="text-muted-foreground">{t('login.form.description')}</CardDescription>
+                  <CardDescription className="text-muted-foreground leading-[1.1]">{t('login.form.description')}</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <LoginForm />

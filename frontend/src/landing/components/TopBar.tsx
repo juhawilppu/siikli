@@ -1,16 +1,18 @@
 import { ArrowLeft } from 'lucide-react'
 import { NavLink } from 'react-router-dom'
+import { useIsMobile } from '@/app/hooks/use-mobile'
 import LanguageSwitcher from '../../components/LanguageSwitcher'
 import { Button } from '../../components/ui/button'
 import { useTranslation } from '../../lib/translations'
 
 export default function TopBar({ showBackButton, hideLoginButton }: { showBackButton?: boolean, hideLoginButton?: boolean }) {
   const t = useTranslation()
+  const isMobile = useIsMobile()
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white">
-      <div className="container flex h-16 items-center justify-between">
+      <div className="container flex h-16 items-center w-full justify-between items-start px-[10px] md:px-0">
         <NavLink to="/">
-          <div className="flex items-center gap-2 pl-6">
+          <div className="flex items-center gap-2 md:pl-6">
             <span className="font-bold text-2xl text-primary">Siikli</span>
           </div>
         </NavLink>
@@ -40,7 +42,7 @@ export default function TopBar({ showBackButton, hideLoginButton }: { showBackBu
             {t('landing.topbar.contact')}
           </NavLink>
         </nav>
-        <div className="flex items-center justify-end w-[200px] gap-4">
+        <div className="flex items-center justify-end w-[200px] lg:gap-4">
           <LanguageSwitcher />
           {showBackButton && (
             <Button variant="outline" size="sm" asChild>
@@ -51,8 +53,8 @@ export default function TopBar({ showBackButton, hideLoginButton }: { showBackBu
             </Button>
           )}
           {!hideLoginButton && (
-            <Button size="lg" className="rounded-full" asChild>
-              <NavLink to="/kirjaudu" className="text-lg">{t('landing.topbar.login')}</NavLink>
+            <Button size={isMobile ? 'sm' : 'lg'} className="rounded-full" asChild>
+              <NavLink to="/kirjaudu" className={isMobile ? 'text-sm' : 'text-lg'}>{t('landing.topbar.login')}</NavLink>
             </Button>
           )}
 
