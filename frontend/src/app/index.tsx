@@ -87,8 +87,12 @@ function App() {
           <header className="sticky top-0 z-30 flex h-16 items-center gap-4 bg-gradient-to-b from-blue-600 via-blue-600 to-blue-700 text-white px-4 md:px-6 shadow-lg">
             <Sheet open={isMobileNavOpen} onOpenChange={setIsMobileNavOpen}>
               <SheetTrigger asChild>
-                <Button variant="outline" size="icon" className="md:hidden">
-                  <Menu className="h-5 w-5 text-black" />
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="md:hidden bg-transparent text-white hover:bg-white/10 border border-gray-300"
+                >
+                  <Menu className="h-5 w-5 text-white" />
                   <span className="sr-only">Toggle Menu</span>
                 </Button>
               </SheetTrigger>
