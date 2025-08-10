@@ -144,32 +144,34 @@ export function PackagingList() {
           </CardFooter>
         </Card>
         {report && (
-          <Card className="p-5">
-            {report.rows.length === 0 && (
-              <div className="flex justify-center items-center h-full">
-                <p className="text-sm text-muted-foreground">Ei tilauksia kyseisellä päivällä</p>
-              </div>
-            )}
-            {report.rows.length > 0 && report.groupedBy === 'customer' && (
-              <>
-                <div className="flex justify-end">
-                  <Button variant="outline" onClick={() => window.print()}>Tulosta</Button>
+          <Card className="p-5 overflow-x-auto">
+            <div className="min-w-[320px]">
+              {report.rows.length === 0 && (
+                <div className="flex justify-center items-center h-full">
+                  <p className="text-sm text-muted-foreground">Ei tilauksia kyseisellä päivällä</p>
                 </div>
-                <PackagingListByCustomer
-                  report={report}
-                />
-              </>
-            )}
-            {report.rows.length > 0 && report.groupedBy === 'product' && (
-              <>
-                <div className="flex justify-end">
-                  <Button variant="outline" onClick={() => window.print()}>Tulosta</Button>
-                </div>
-                <PackagingListByProduct
-                  report={report}
-                />
-              </>
-            )}
+              )}
+              {report.rows.length > 0 && report.groupedBy === 'customer' && (
+                <>
+                  <div className="flex justify-end">
+                    <Button variant="outline" onClick={() => window.print()}>Tulosta</Button>
+                  </div>
+                  <PackagingListByCustomer
+                    report={report}
+                  />
+                </>
+              )}
+              {report.rows.length > 0 && report.groupedBy === 'product' && (
+                <>
+                  <div className="flex justify-end">
+                    <Button variant="outline" onClick={() => window.print()}>Tulosta</Button>
+                  </div>
+                  <PackagingListByProduct
+                    report={report}
+                  />
+                </>
+              )}
+            </div>
           </Card>
         )}
       </SiikliPage>

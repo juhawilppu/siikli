@@ -3,7 +3,7 @@ import axios from 'axios'
 import { endOfMonth, startOfMonth } from 'date-fns'
 import { fi } from 'date-fns/locale'
 
-import { Calendar, RefreshCw } from 'lucide-react'
+import { Calendar, Eye, Printer, RefreshCw } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import SiikliPage from '@/app/components/SiikliPage'
 import { toast } from '@/app/hooks/use-toast'
@@ -157,7 +157,7 @@ export function Invoices() {
           <CardDescription className="text-gray-700">Suodata tilauksia päivämäärän mukaan</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex w-full gap-4">
+          <div className="flex flex-col gap-4 w-full md:flex-row">
             <div className="space-y-2 flex-1">
               <Label htmlFor="customer">Asiakas</Label>
               <Select
@@ -235,14 +235,14 @@ export function Invoices() {
               </Popover>
             </div>
 
-            <div className="space-y-2 flex justify-end items-end gap-2">
+            <div className="space-y-2 flex flex-col justify-end items-end gap-2 md:flex-row md:justify-end md:items-end md:space-y-0">
               <Button variant="outline" disabled={!dirty || !customerId || !startDate || !endDate} onClick={getData}>
-                <RefreshCw className="w-4 h-4 mr-2" />
+                <Eye className="w-4 h-4 mr-2" />
                 {' '}
                 Esikatselu
               </Button>
               <Button disabled={!customerId || !startDate || !endDate || printing} onClick={printInvoice}>
-                <RefreshCw className="w-4 h-4 mr-2" />
+                <Printer className="w-4 h-4 mr-2" />
                 {' '}
                 Tulosta
               </Button>

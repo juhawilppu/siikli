@@ -645,7 +645,7 @@ export default function CompanySettings() {
               <CardContent>
                 <Button variant="destructive" onClick={() => setShowDeleteCompanyModal(true)}>
                   <Trash2 className="mr-2 h-4 w-4" />
-                  Poista yrityksen kaikki tiedot
+                  Poista kaikki tiedot
                 </Button>
               </CardContent>
             </Card>
