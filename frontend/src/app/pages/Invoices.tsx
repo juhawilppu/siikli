@@ -3,7 +3,7 @@ import axios from 'axios'
 import { endOfMonth, startOfMonth } from 'date-fns'
 import { fi } from 'date-fns/locale'
 
-import { Calendar, Eye, Printer, RefreshCw } from 'lucide-react'
+import { Calendar, Eye, Printer } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import SiikliPage from '@/app/components/SiikliPage'
 import { toast } from '@/app/hooks/use-toast'
