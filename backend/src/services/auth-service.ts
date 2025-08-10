@@ -39,7 +39,7 @@ export const AuthService = {
       },
     })
 
-    await sendEmail(email, 'Kirjautumiskoodi Siikli-palveluun', `
+    await sendEmail(email, 'Siikli <no-reply@siikli.fi>', 'Kirjautumiskoodi Siikli-palveluun', `
         <div style="font-family: Arial, sans-serif; font-size: 16px; color: #333;">
           <p>Hei,</p>
           <p>Tässä on kirjautumiskoodisi Siikli-palveluun:</p>

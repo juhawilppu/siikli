@@ -106,7 +106,7 @@ export const TenantService = {
       return { tenant, user }
     })
 
-    await sendEmail(email, 'Tervetuloa Siikliin', `
+    await sendEmail(email, 'Juha Wilppu <juha.wilppu@siikli.fi>', 'Tervetuloa Siikliin', `
     <div style="font-family: Arial, sans-serif; font-size: 16px; color: #333;" >
     <p>Hei, ja tervetuloa Siikliin!</p>
   
