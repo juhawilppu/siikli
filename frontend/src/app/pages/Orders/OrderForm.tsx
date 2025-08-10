@@ -350,7 +350,7 @@ export default function CreateOrder() {
           description: `Tilaus asiakkaalle ${customer.name} luotiin onnistuneesti.`,
           variant: 'success',
         })
-        navigate(`/orders/${res.data.id}`, { replace: false })
+        navigate(`/app/orders/${res.data.id}`, { replace: false })
       }
     }
     catch (err) {
