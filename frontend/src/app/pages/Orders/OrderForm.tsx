@@ -34,7 +34,7 @@ import { useIsMobile } from '@/hooks/use-mobile'
 import { useToast } from '@/hooks/use-toast'
 import { cn } from '@/lib/utils'
 import { dateToIso } from '@/utils/date'
-import { formatNumber, parseDecimal, serializeNumber } from '@/utils/money'
+import { formatNumber, parseDecimal, parseToNumber, serializeNumber } from '@/utils/money'
 import ConfirmDialog from '../../components/ConfirmDialog'
 
 export default function CreateOrder() {
@@ -626,8 +626,11 @@ export default function CreateOrder() {
                           </Label>
                           <Input
                             id={`amount-${item.id}`}
-                            value={item.amount || ''}
+                            value={isMobile ? parseToNumber(item.amount) : item.amount}
+                            inputMode="decimal"
                             type={isMobile ? 'number' : 'text'}
+                            min={isMobile ? 0 : undefined}
+                            step={isMobile ? 0.01 : undefined}
                             onChange={e =>
                               handleItemChange(item.id, 'amount', e.target.value)}
                             onBlur={() => {
@@ -646,8 +649,11 @@ export default function CreateOrder() {
                             </Label>
                             <Input
                               id={`price-${item.id}`}
-                              value={item.price || ''}
+                              value={isMobile ? parseToNumber(item.price) : item.price}
+                              inputMode="decimal"
                               type={isMobile ? 'number' : 'text'}
+                              min={isMobile ? 0 : undefined}
+                              step={isMobile ? 0.01 : undefined}
                               onChange={e =>
                                 handleItemChange(item.id, 'price', e.target.value)}
                               onBlur={(e) => {
@@ -667,8 +673,11 @@ export default function CreateOrder() {
                             </Label>
                             <Input
                               id={`price-${item.id}`}
-                              value={item.price0 || ''}
+                              value={isMobile ? parseToNumber(item.price0) : item.price0}
+                              inputMode="decimal"
                               type={isMobile ? 'number' : 'text'}
+                              min={isMobile ? 0 : undefined}
+                              step={isMobile ? 0.01 : undefined}
                               onChange={e =>
                                 handleItemChange(item.id, 'price0', e.target.value)}
                               onBlur={(e) => {

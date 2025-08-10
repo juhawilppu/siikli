@@ -131,17 +131,23 @@ npx tsx ./src/dev/verify-history-tables.ts
 
 This script checks that all history tables exist, verifies column types, and prints the expected trigger definition if changes are needed.
 
-### Handling numbers
+### Handling monetary values
 
-Siikli handles monetary values with strict precision — floats are not used anywhere in the stack.
+Siikli enforces strict precision and a smooth user experience for all monetary inputs.
 
-- 💾 Database: Values are stored using `@db.Decimal(10, 2)` for exact precision
-- 🔄 API: REST requests and responses use strings with international format, e.g. `"10.00"`
-- 🧑‍💻 UI (input): Users can enter loosely formatted strings like `"10"`, `"10,0"`, `"10.0"` etc.
-  - On blur, values are formatted to `"10,00"` using Finnish-style decimals
-- ➕ Calculations: All math uses `decimal.js` for safety and accuracy
+- **💾 Database:** Stored as `@db.Decimal(10, 2)` for exact precision.
+- **🔄 API:** REST requests and responses use strings in international format, e.g. `"10.00"`.
+- **🧑‍💻 UI input:** – Users can type values in various ways (`"10"`, `"10,0"`, `"10.0"`, etc.).
+  - On blur, inputs are reformatted to Finnish style: `"10,00"`.
+  - Keeping UI values as strings allows partial inputs (e.g., `"10,"`) and preserves what the user typed.
+  - On mobile, numeric keyboards are used for better UX.
+  - ➕ Calculations – Performed with `decimal.js` to ensure safety and accuracy.
 
-Additionally, since customers can negotiate prices with or without VAT, the system stores both:
+**Why strings?**
+
+Numbers in JavaScript lose formatting and can introduce floating-point errors. By storing inputs as strings until needed, Siikli preserves user intent, avoids locale bugs, and ensures exact precision in all calculations.
+
+Additionally, since customers can agree prices with or without VAT, the system stores both:
 - `price` (including 14 % VAT)
 - `price0` (without VAT)
 
