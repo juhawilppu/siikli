@@ -42,7 +42,7 @@ export default function LoginForm() {
 
     try {
       setPin(Array.from({ length: 6 }).fill('') as string[])
-      await axios.post('/auth/email/create-pin', {
+      await axios.post('/api/auth/email/create-pin', {
         email,
       })
       posthog.capture('send_pin', {
@@ -134,11 +134,11 @@ export default function LoginForm() {
 
     setIsLoading(true)
     try {
-      await axios.post('/auth/email/check-pin', {
+      await axios.post('/api/auth/email/check-pin', {
         email,
         pinCode,
       })
-      window.location.href = '/'
+      window.location.href = '/app'
     }
     catch (error) {
       console.log('error.status', (error as any).status)
@@ -249,6 +249,7 @@ export default function LoginForm() {
                   </label>
                   <p className="text-xs text-muted-foreground">
                     {t('login.form.email.pinSentTo')}
+                    {' '}
                     {email}
                   </p>
                   <div className="flex gap-2 justify-between mt-2">
