@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { useTranslation } from '../../lib/translations'
 import Footer from '../components/Footer'
-import ImageCarousel from '../components/ImageCarousel'
 import TopBar from '../components/TopBar'
 
 export default function LandingPage() {
@@ -85,9 +84,9 @@ export default function LandingPage() {
       <TopBar />
 
       <section className="w-full py-12 md:py-24 lg:py-32 bg-gradient-to-b from-white to-gray-50">
-        <div className="container px-4 md:px-6 flex flex-col md:flex-row items-center md:items-start gap-12">
+        <div className="container px-4 md:px-6 flex flex-col md:flex-row items-end md:items-end gap-12">
           <div className="flex flex-col gap-4 md:w-1/2">
-            <img src="/siikli-logo-A.png" alt="Siikli Logo" className="w-1/3" />
+            <img src="/siikli-logo.png" alt="Siikli Logo" className="w-1/3" />
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.1]">
               {t(`landing.title`)}
             </h1>
@@ -131,8 +130,17 @@ export default function LandingPage() {
               </div>
             )}
           </div>
-          <div className="w-full md:w-1/2">
-            <ImageCarousel />
+          <div className="w-full md:w-1/2 flex items-center justify-center">
+            <div className="relative w-full max-w-[480px] rounded-lg shadow-2xl border border-gray-200 bg-white overflow-hidden">
+              <img
+                src="/invoice.png"
+                alt="Laskutus - esimerkkikuva Siiklistä"
+                className="w-full h-auto object-cover transition-transform rounded-lg duration-300 hover:scale-[1.29] hover:-translate-x-[65px] hover:translate-y-[5px] bg-gray-50"
+                style={{ boxShadow: '0 8px 32px 0 rgba(60, 72, 88, 0.12)' }}
+                loading="eager"
+              />
+              <div className="absolute inset-0 pointer-events-none rounded-lg ring-2 ring-primary/10" />
+            </div>
           </div>
 
         </div>

@@ -20,7 +20,6 @@ import { Input } from '@/components/ui/input.js'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { Toaster } from '@/components/ui/toaster.js'
 
-import { useApp } from '@/context/AppContext'
 import { initPosthog } from '@/lib/posthog'
 import { useAuth } from './context/AuthContext'
 import Support from './pages/Support'
@@ -197,11 +196,10 @@ function App() {
 export default App
 
 function MobileSidebar({ setIsMobileNavOpen }: { setIsMobileNavOpen: (isOpen: boolean) => void }) {
-  const { variant } = useApp()
   return (
     <div className="flex h-full flex-col gap-2 overflow-auto">
       <div className="flex h-14 items-center border-b px-4">
-        <img src={`/siikli-logo-${variant}.png`} className="h-6" />
+        <img src="/siikli-logo.png" className="h-6" />
         <span>Siikli</span>
       </div>
       <div className="flex-1 overflow-auto py-2">
@@ -234,7 +232,11 @@ function DesktopSidebar({ currentPath }: { currentPath: string }) {
             <NavLink
               to={item.href}
               key={item.href}
-              className={`flex items-center gap-3 rounded-full px-3 py-2 transition-all ${currentPath === item.href ? 'bg-primary text-white font-semibold [&>svg]:text-white' : 'text-gray-700 hover:text-muted-foreground'}`}
+              className={`flex items-center gap-3 rounded-full px-3 py-2 transition-all ${
+                currentPath === item.href
+                  ? 'bg-gray-300 text-black font-semibold [&>svg]:text-black'
+                  : 'text-gray-700 hover:text-muted-foreground hover:bg-gray-100'
+              }`}
             >
               <item.icon className="h-4 w-4" />
               {item.title}

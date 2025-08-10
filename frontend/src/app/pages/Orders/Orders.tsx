@@ -9,7 +9,7 @@ import {
   Printer,
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
 import SiikliPage from '@/app/components/SiikliPage'
 import { dateToIso, formatDate, parseIsoDate } from '@/app/utils/date'
 import { formatNumber } from '@/app/utils/money'
@@ -22,7 +22,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 
 export default function Orders() {
   const now = new Date()
-
+  const navigate = useNavigate()
   const [startDate, setStartDate] = useState<Date>(startOfWeek(now, { weekStartsOn: 1 }))
   const [openStartDate, setOpenStartDate] = useState(false)
   const [endDate, setEndDate] = useState<Date>(endOfWeek(now, { weekStartsOn: 1 }))
@@ -195,7 +195,7 @@ export default function Orders() {
                     <TableHead>Tilausnumero</TableHead>
                     <TableHead>Päivämäärä</TableHead>
                     <TableHead>Asiakas</TableHead>
-                    <TableHead>Summa sis. ALV 14 %</TableHead>
+                    <TableHead className="text-right">Summa sis. ALV 14 %</TableHead>
                     <TableHead className="text-right"></TableHead>
                   </TableRow>
                 </TableHeader>
@@ -206,7 +206,7 @@ export default function Orders() {
                           <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
                             Sinulla ei ole tilauksia tällä aikavälillä. 👉
                             {' '}
-                            <NavLink to="/orders/new" className="text-blue-500">Luo uusi tilaus</NavLink>
+                            <NavLink to="/app/orders/new" className="text-blue-500">Luo uusi tilaus</NavLink>
                             .
                           </TableCell>
                         </TableRow>
@@ -219,7 +219,7 @@ export default function Orders() {
                             <TableCell>
                               {order.customer.name}
                             </TableCell>
-                            <TableCell>
+                            <TableCell className="text-right">
                               {formatNumber(order.total)}
                               {' '}
                               €
@@ -229,7 +229,7 @@ export default function Orders() {
                                 variant="ghost"
                                 className="text-blue-500 font-bold"
                                 size="default"
-                                onClick={() => (window.location.href = `/orders/${order.id}`)}
+                                onClick={() => navigate(`/app/orders/${order.id}`)}
                               >
                                 Avaa
                               </Button>
