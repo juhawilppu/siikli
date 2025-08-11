@@ -1,7 +1,7 @@
 import { ArrowRight, BarChart3, Box, Check, ChevronRight, FileText, Package, Truck, Users } from 'lucide-react'
 
 import { useEffect, useRef } from 'react'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { useTranslation } from '../../lib/translations'
@@ -10,6 +10,7 @@ import TopBar from '../components/TopBar'
 
 export default function LandingPage() {
   const t = useTranslation()
+  const navigate = useNavigate()
 
   const pricingRef = useRef<HTMLDivElement>(null)
   const featuresRef = useRef<HTMLDivElement>(null)
@@ -382,7 +383,14 @@ export default function LandingPage() {
                 <p className="text-muted-foreground mt-4 text-lg">{t('landing.pricing.free.cta')}</p>
               </CardContent>
               <CardFooter>
-                <Button className="w-full text-lg">{t('landing.pricing.free.ctaButton')}</Button>
+                <Button
+                  className="w-full text-lg"
+                  onClick={() => {
+                    navigate('/kirjaudu')
+                  }}
+                >
+                  {t('landing.pricing.free.ctaButton')}
+                </Button>
               </CardFooter>
             </Card>
             <Card className="border-primary relative border-border flex flex-col">
@@ -413,7 +421,14 @@ export default function LandingPage() {
                 </ul>
               </CardContent>
               <CardFooter>
-                <Button className="w-full text-lg">{t('landing.pricing.premium.ctaButton')}</Button>
+                <Button
+                  className="w-full text-lg"
+                  onClick={() => {
+                    navigate('/kirjaudu')
+                  }}
+                >
+                  {t('landing.pricing.premium.ctaButton')}
+                </Button>
               </CardFooter>
             </Card>
           </div>
