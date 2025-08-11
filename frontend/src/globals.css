@@ -132,3 +132,25 @@ body {
 :root {
   --muted-foreground: var(--gray-900);
 }
+
+/**
+Override default styles for placeholder text
+*/
+@layer utilities {
+  button[role="combobox"][data-placeholder] {
+    @apply text-gray-400;
+    font-weight: 400;
+  }
+  button.placeholder {
+    @apply text-gray-400;
+    font-weight: 400;
+  }
+  input::placeholder {
+    @apply text-gray-400 !important;
+    font-weight: 400;
+  }
+  button[role="combobox"][data-state="closed"] {
+    @apply text-gray-400;
+    font-weight: 400;
+  }
+}

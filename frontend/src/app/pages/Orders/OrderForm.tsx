@@ -512,7 +512,7 @@ export default function CreateOrder() {
                     <PopoverTrigger asChild>
                       <Button
                         variant="outline"
-                        className="w-full justify-start text-left font-normal"
+                        className={`w-full justify-start text-left font-normal ${deliveryDate ? '' : 'placeholder'}`}
                         id="delivery-date"
                       >
                         <Calendar className="mr-2 h-4 w-4" />
