@@ -4,7 +4,7 @@ import axios from 'axios'
 import { Building2, Check, Info, Loader2, Rocket, Users } from 'lucide-react'
 
 import { useState } from 'react'
-import { NavLink, useNavigate } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 import { useToast } from '@/app/hooks/use-toast'
 import {
   AlertDialog,
