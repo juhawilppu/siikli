@@ -79,7 +79,7 @@ export default function Orders() {
         title="Tilaukset"
         description="Hallitse tilauksia tällä sivulla"
         mainAction={(
-          <Button onClick={() => (window.location.href = '/orders/new')}>
+          <Button onClick={() => navigate('/app/orders/new')}>
             <Package className="mr-2 h-4 w-4" />
             Uusi tilaus
           </Button>
