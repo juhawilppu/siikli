@@ -206,7 +206,7 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
                       </Label>
                       <Popover open={openType} onOpenChange={setOpenType}>
                         <PopoverTrigger asChild>
-                          <Button variant="outline" role="combobox" className="w-full justify-between">
+                          <Button variant="outline" role="combobox" className={`w-full justify-between ${product.type ? '' : 'placeholder'}`}>
                             {product.type || 'Valitse tuoteryhmä'}
                             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                           </Button>
@@ -245,7 +245,7 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
                       </Label>
                       <Popover open={openSubtype} onOpenChange={setOpenSubtype}>
                         <PopoverTrigger asChild>
-                          <Button variant="outline" role="combobox" className="w-full justify-between">
+                          <Button variant="outline" role="combobox" className={`w-full justify-between ${product.subtype ? '' : 'placeholder'}`}>
                             {product.subtype || 'Valitse aliryhmä'}
                             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                           </Button>
@@ -346,7 +346,7 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
                           variant="outline"
                           role="combobox"
                           aria-expanded={openPackageSize}
-                          className="w-full justify-between"
+                          className={`w-full justify-between ${product.packageSize ? '' : 'placeholder'}`}
                         >
                           {product.packageSize || 'Valitse pakkauskoko'}
                           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -457,7 +457,7 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
                           variant="outline"
                           role="combobox"
                           aria-expanded={openPackageType}
-                          className="w-full justify-between"
+                          className={`w-full justify-between ${product.packageType ? '' : 'placeholder'}`}
                         >
                           {product.packageType || 'Valitse pakkaustyyppi'}
                           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />

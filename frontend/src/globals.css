@@ -149,8 +149,5 @@ Override default styles for placeholder text
     @apply text-gray-400 !important;
     font-weight: 400;
   }
-  button[role="combobox"][data-state="closed"] {
-    @apply text-gray-400;
-    font-weight: 400;
-  }
+
 }

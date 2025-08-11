@@ -696,7 +696,7 @@ export default function CreateOrder() {
                               <Button
                                 variant="outline"
                                 role="combobox"
-                                className="w-full justify-between"
+                                className={`w-full justify-between ${item.packageSize ? '' : 'placeholder'}`}
                               >
                                 {item.packageSize || 'Valitse pakkauskoko'}
                                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -803,7 +803,7 @@ export default function CreateOrder() {
                               <Button
                                 variant="outline"
                                 role="combobox"
-                                className="w-full justify-between"
+                                className={`w-full justify-between ${item.packageType ? '' : 'placeholder'}`}
                               >
                                 {item.packageType || 'Valitse pakkaustyyppi'}
                                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />

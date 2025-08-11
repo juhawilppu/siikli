@@ -211,7 +211,7 @@ export function NewCustomer({ closeDialog, customerToEdit, forwaredCustomerGroup
               </Label>
               <Popover open={isCustomerGroupPopoverOpen} onOpenChange={setIsCustomerGroupPopoverOpen}>
                 <PopoverTrigger asChild>
-                  <Button variant="outline" role="combobox" className="w-full justify-between">
+                  <Button variant="outline" role="combobox" className={`w-full justify-between ${customer.customerGroup ? '' : 'placeholder'}`}>
                     {customer.customerGroup || 'Valitse asiakasryhmä'}
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                   </Button>
