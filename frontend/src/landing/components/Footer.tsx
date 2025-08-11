@@ -37,12 +37,15 @@ export default function Footer() {
                 { name: t('landing.footer.links.reports'), href: '/#raportit' },
               ].map(item => (
                 <li key={item.name}>
-                  <NavLink
-                    to={item.href}
+                  <a
                     className="text-gray-400 hover:text-white"
+                    onClick={(e) => {
+                      e.preventDefault()
+                      window.location.href = item.href // Forces full reload since the user might already be on the page
+                    }}
                   >
                     {item.name}
-                  </NavLink>
+                  </a>
                 </li>
               ))}
             </ul>

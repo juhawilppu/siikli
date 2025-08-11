@@ -53,31 +53,26 @@ export default function LandingPage() {
   }
 
   useEffect(() => {
-    if (window.location.hash === '#hinnoittelu') {
-      scrollToPricing()
+    const handleHash = () => {
+      const actions = {
+        '#hinnoittelu': scrollToPricing,
+        '#ominaisuudet': scrollToFeatures,
+        '#tilaukset': scrollToOrders,
+        '#asiakashallinta': scrollToCustomers,
+        '#tuotehallinta': scrollToProducts,
+        '#laskutus': scrollToInvoices,
+        '#kuljetukset': scrollToShipping,
+        '#raportit': scrollToReports,
+      }
+      const fn = actions[window.location.hash as keyof typeof actions]
+      if (fn)
+        fn()
     }
-    else if (window.location.hash === '#ominaisuudet') {
-      scrollToFeatures()
-    }
-    else if (window.location.hash === '#tilaukset') {
-      scrollToOrders()
-    }
-    else if (window.location.hash === '#asiakashallinta') {
-      scrollToCustomers()
-    }
-    else if (window.location.hash === '#tuotehallinta') {
-      scrollToProducts()
-    }
-    else if (window.location.hash === '#laskutus') {
-      scrollToInvoices()
-    }
-    else if (window.location.hash === '#kuljetukset') {
-      scrollToShipping()
-    }
-    else if (window.location.hash === '#raportit') {
-      scrollToReports()
-    }
-  }, [window.location.hash])
+
+    handleHash() // run on initial load
+    window.addEventListener('hashchange', handleHash)
+    return () => window.removeEventListener('hashchange', handleHash)
+  }, [])
 
   return (
     <div className="flex min-h-screen flex-col text-base text-muted-foreground md:text-lg">
