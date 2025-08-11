@@ -97,6 +97,10 @@ export const CustomerService = {
       customerGroup,
     } = input
 
+    if (discount.gt(100)) {
+      throw new Error('Discount cannot be greater than 100%')
+    }
+
     const customer = await prisma.$transaction(async (tx) => {
       const customer = await tx.customer.create({
         data: {
@@ -134,6 +138,10 @@ export const CustomerService = {
     return customer
   },
   async updateCustomer(id: string, body: CustomerCreateInput, tenantId: string, userId: string): Promise<Customer> {
+    if (body.discount.gt(100)) {
+      throw new Error('Discount cannot be greater than 100%')
+    }
+
     const result = await prisma.$transaction(async (tx) => {
       const customer = await tx.customer.update({
         where: {

@@ -96,6 +96,11 @@ export function NewCustomer({ closeDialog, customerToEdit, forwaredCustomerGroup
       .put(`/customers/${customer.id}`, updateCustomer)
       .then(() => {
         onSave()
+        toast({
+          title: 'Asiakkaan päivitys onnistui',
+          description: `Asiakas ${customer.name} on päivitetty onnistuneesti.`,
+          variant: 'success',
+        })
       })
       .catch((error) => {
         console.error(error)
@@ -121,6 +126,7 @@ export function NewCustomer({ closeDialog, customerToEdit, forwaredCustomerGroup
         toast({
           title: 'Asiakas lisätty',
           description: `Asiakas ${newCustomer.name} on lisätty onnistuneesti.`,
+          variant: 'success',
         })
       })
       .catch((error) => {
@@ -169,6 +175,14 @@ export function NewCustomer({ closeDialog, customerToEdit, forwaredCustomerGroup
         })
         return
       }
+    }
+
+    if (customer.discount && Number.parseFloat(customer.discount) > 100) {
+      toast({
+        title: 'Virhe',
+        description: 'Alennus ei voi olla suurempi kuin 100%.',
+        variant: 'destructive',
+      })
     }
 
     if (customerToEdit) {
