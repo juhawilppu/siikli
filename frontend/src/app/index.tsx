@@ -238,8 +238,8 @@ function DesktopSidebar({ currentPath }: { currentPath: string }) {
               key={item.href}
               className={`flex items-center gap-3 rounded-full px-3 py-2 transition-all ${
                 currentPath === item.href
-                  ? 'bg-gray-300 text-black font-semibold [&>svg]:text-black'
-                  : 'text-gray-700 hover:text-muted-foreground hover:bg-gray-100'
+                  ? 'bg-blue-200 text-black font-semibold [&>svg]:text-black'
+                  : 'text-gray-700 hover:text-muted-foreground hover:bg-blue-100'
               }`}
             >
               <item.icon className="h-4 w-4" />
