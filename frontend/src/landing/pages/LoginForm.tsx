@@ -43,7 +43,7 @@ export default function LoginForm() {
 
     try {
       setPin(Array.from({ length: 6 }).fill('') as string[])
-      await axios.post('/api/auth/email/create-pin', {
+      await axios.post('/auth/email/create-pin', {
         email,
       })
       posthog.capture('send_pin', {
@@ -135,7 +135,7 @@ export default function LoginForm() {
 
     setIsLoading(true)
     try {
-      await axios.post('/api/auth/email/check-pin', {
+      await axios.post('/auth/email/check-pin', {
         email,
         pinCode,
       })

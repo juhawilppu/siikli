@@ -1,4 +1,3 @@
-import axios from 'axios'
 import { Building2, ClipboardList, FileText, HelpCircle, LineChart, PlusCircle, Receipt, Search, ShoppingBasket, Users } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Navigate, NavLink, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
@@ -23,8 +22,6 @@ import { Toaster } from '@/components/ui/toaster.js'
 import { initPosthog } from '@/lib/posthog'
 import { useAuth } from './context/AuthContext'
 import Support from './pages/Support'
-
-axios.defaults.baseURL = '/api'
 
 const navItems = [
   // { title: "Etusivu", href: '/', icon: Home },
