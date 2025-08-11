@@ -46,7 +46,7 @@ export default function TermsOfService() {
                 <h2 className="text-l font-bold tracking-tight mt-4">1. Palvelun tarjoaja</h2>
                 <p>Siikli</p>
                 <p>Y-tunnus: 2840288-8</p>
-                <p>Sähköposti: juha.wilppu@gmail.com</p>
+                <p>Sähköposti: juha.wilppu@siikli.fi</p>
 
                 <h2 className="text-l font-bold tracking-tight mt-4">2. Palvelun sisältö</h2>
                 <p>Siikli on selainpohjainen järjestelmä, jonka avulla pienyritykset voivat hallita toimintaansa, kuten laskutusta ja asiakastietoja. Palvelua kehitetään jatkuvasti, ja sisältö saattaa muuttua ilman erillistä ilmoitusta.</p>

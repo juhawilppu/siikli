@@ -32,7 +32,7 @@ export default function ContactPage() {
                 <p>
                   ✉️
                   {' '}
-                  <a className="text-blue-600" href="mailto:juha.wilppu@gmail.com">juha.wilppu@gmail.com</a>
+                  <a className="text-blue-600" href="mailto:juha.wilppu@siikli.fi">juha.wilppu@siikli.fi</a>
                 </p>
                 <p>
                   🔗

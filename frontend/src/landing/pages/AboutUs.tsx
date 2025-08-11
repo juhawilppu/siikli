@@ -101,7 +101,7 @@ export default function AboutUsPage() {
                 {
                   name: 'Juha Wilppu',
                   title: 'Ohjelmistokehittäjä & perustaja',
-                  email: 'juha.wilppu@gmail.com',
+                  email: 'juha.wilppu@siikli.fi',
                   bio: 'Juhalla on 13 vuoden kokemus ohjelmistojen suunnittelusta, rakentamisesta ja pyörittämisestä.',
                   image: '/juha4.png',
                 },
@@ -227,7 +227,7 @@ export default function AboutUsPage() {
             <p>
               ✉️
               {' '}
-              <a className="text-white-500" href="mailto:juha.wilppu@gmail.com">juha.wilppu@gmail.com</a>
+              <a className="text-white-500" href="mailto:juha.wilppu@siikli.fi">juha.wilppu@siikli.fi</a>
             </p>
           </div>
         </div>
