@@ -1,14 +1,15 @@
-import type { OrderRowDto } from '../backend/src/services/order-service'
+import type { OrderRowDto } from '../src/services/order-service'
 import { exit } from 'node:process'
 import { Role } from '@prisma/client'
+import { dateToIso } from '@siikli/shared'
 import { subDays } from 'date-fns'
 import { Decimal } from 'decimal.js'
-import prisma from '../backend/src/prisma'
-import { CustomerService } from '../backend/src/services/customer-service'
-import { OrderService } from '../backend/src/services/order-service'
-import { ProductService } from '../backend/src/services/product-service'
-import { TenantService } from '../backend/src/services/tenant-service'
-import { UserService } from '../backend/src/services/user-service'
+import prisma from '../src/prisma'
+import { CustomerService } from '../src/services/customer-service'
+import { OrderService } from '../src/services/order-service'
+import { ProductService } from '../src/services/product-service'
+import { TenantService } from '../src/services/tenant-service'
+import { UserService } from '../src/services/user-service'
 
 async function main() {
   console.log('Running seed 🌱')
@@ -184,7 +185,7 @@ async function main() {
       await OrderService.createOrder({
         customerId: customer.id,
         tenantId: tenant.id,
-        deliveryDate: subDays(new Date(), Math.floor(37 - orderIndex * 7 * Math.random())),
+        deliveryDate: dateToIso(subDays(new Date(), Math.floor(37 - orderIndex * 7 * Math.random()))),
         hasNote,
         noteHeader: hasNote ? 'Toimitus' : null,
         noteBody: hasNote ? 'Toimitus ovelle H3. Nouto aamulla.' : null,
@@ -219,7 +220,7 @@ async function main() {
     await OrderService.createOrder({
       tenantId: tenant.id,
       customerId: sello.id,
-      deliveryDate: new Date(),
+      deliveryDate: dateToIso(new Date()),
       hasNote: false,
       noteHeader: null,
       noteBody: null,
@@ -240,11 +241,11 @@ async function main() {
   catch (error) {
     // Expected error
     if (!(error instanceof Error) || !error.message.includes('Price and price0 do not match')) {
-      throw new Error('Expected error to be instance of Error and to include "Price and price0 do not match"')
+      throw new Error('Expected error to be instance of Error and to include "Price and price0 do not match"')
     }
   }
 
-  const orders = await OrderService.getOrders(tenant.id, new Date(), new Date())
+  const orders = await OrderService.getOrders(tenant.id, subDays(new Date(), 40), new Date())
   if (orders.length !== 12) {
     throw new Error(`Expected 12 orders, got ${orders.length}`)
   }

@@ -166,21 +166,21 @@ export function createInvoiceHtml(invoice: InvoiceDto) {
     <table style="margin-top: 20mm;">
         <tr>
           <td class="border-left border-top-bottom" style="width: 25%;"><strong>Osoite</strong><br />
-          ${invoice.company.name}<br />
-          ${invoice.company.streetAddress}<br />
-          ${invoice.company.postalCode} ${invoice.company.city}
+          ${invoice.company.name || ''}<br />
+          ${invoice.company.streetAddress || ''}<br />
+          ${invoice.company.postalCode || ''} ${invoice.company.city || ''}
           </td>
           <td class="border-top-bottom" style="width: 25%;">
             <strong>Puhelin</strong><br />
-            ${invoice.company.phone}<br /><br /><br />
+            ${invoice.company.phone || ''}<br /><br /><br />
           </td>
           <td class="border-top-bottom" style="width: 25%;">
             <strong>Sähköposti / WWW</strong><br />
-            ${invoice.company.email}<br />
-            ${invoice.company.website}<br /><br />
+            ${invoice.company.email || ''}<br />
+            ${invoice.company.website || ''}<br /><br />
           </td>
           <td class="border-right border-top-bottom" style="width: 25%;"><strong>Y-tunnus</strong><br />
-            ${invoice.company.businessId}<br /><br /><br />
+            ${invoice.company.businessId || ''}<br /><br /><br />
           </td>
         </tr>
     </table>
