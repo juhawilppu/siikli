@@ -5,6 +5,7 @@ import { BrowserRouter } from 'react-router-dom'
 import App from './App'
 
 import { AppProvider } from './context/AppContext'
+import ScrollToTop from './lib/ScrollToTop'
 import './globals.css'
 
 if (localStorage.getItem('variant') === null) {
@@ -20,6 +21,7 @@ if (import.meta.env.PROD) {
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <BrowserRouter>
+      <ScrollToTop />
       <AppProvider>
         <App />
       </AppProvider>
