@@ -33,7 +33,6 @@ export default function LoginPage() {
               {/* Login form */}
               <Card className="w-full mx-auto">
                 <CardHeader>
-                  <CardTitle>{t('login.form.title')}</CardTitle>
                   <CardDescription className="text-muted-foreground leading-[1.1]">{t('login.form.description')}</CardDescription>
                 </CardHeader>
                 <CardContent>

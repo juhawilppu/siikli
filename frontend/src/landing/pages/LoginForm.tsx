@@ -183,9 +183,10 @@ export default function LoginForm() {
           {t('login.form.email')}
         </TabsTrigger>
       </TabsList>
-      <TabsContent value="google" className="space-y-4">
+      <TabsContent value="google" className="space-y-4 mt-6">
         <Button
           className="w-full max-w-md mx-auto flex items-center justify-center gap-2"
+          size="lg"
           onClick={handleGoogleLogin}
           disabled={isLoading}
         >

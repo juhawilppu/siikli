@@ -83,7 +83,7 @@ export default function LandingPage() {
     <div className="flex min-h-screen flex-col text-base text-muted-foreground md:text-lg">
       <TopBar />
 
-      <section className="w-full py-12 md:py-24 lg:py-32 bg-gradient-to-b from-white to-gray-50">
+      <section className="w-full py-6 md:py-24 lg:py-32 bg-gradient-to-b from-white to-gray-50">
         <div className="container px-4 md:px-6 flex flex-col md:flex-row items-end md:items-end gap-12">
           <div className="flex flex-col gap-4 md:w-1/2">
             <img src="/siikli-logo.webp" alt="Siikli Logo" className="w-1/3" />
