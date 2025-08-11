@@ -388,7 +388,7 @@ export default function CreateOrder() {
                 {' '}
                 👉
                 {' '}
-                <NavLink to="/customers" className="underline text-primary">
+                <NavLink to="/app/customers" className="underline text-primary">
                   Lisää ensimmäinen asiakas
                 </NavLink>
                 .
@@ -400,7 +400,7 @@ export default function CreateOrder() {
                 {' '}
                 👉
                 {' '}
-                <NavLink to="/products" className="underline text-primary">
+                <NavLink to="/app/products" className="underline text-primary">
                   Lisää ensimmäinen tuote
                 </NavLink>
                 .

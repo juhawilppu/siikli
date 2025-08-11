@@ -5,6 +5,7 @@ import { ArrowRight, Loader2 } from 'lucide-react'
 
 import posthog from 'posthog-js'
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useToast } from '@/app/hooks/use-toast'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -18,13 +19,13 @@ export default function LoginForm() {
   const [isLoading, setIsLoading] = useState(false)
   const [pinSent, setPinSent] = useState(false)
   const { toast } = useToast()
+  const navigate = useNavigate()
 
   const handleGoogleLogin = () => {
-    setIsLoading(true)
-    window.location.href = '/api/auth/google'
     posthog.capture('google_login', {
       variant: localStorage.getItem('variant'),
     })
+    window.location.href = '/api/auth/google'
   }
 
   const handleSendPin = async (e: React.FormEvent) => {
@@ -138,7 +139,7 @@ export default function LoginForm() {
         email,
         pinCode,
       })
-      window.location.href = '/app'
+      navigate('/app')
     }
     catch (error) {
       console.log('error.status', (error as any).status)
