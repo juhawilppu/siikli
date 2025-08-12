@@ -233,6 +233,15 @@ export default function CreateOrder() {
         setIsSubmitting(false)
         return
       }
+      if (hasWaybillNote && (!waybillNote.title || !waybillNote.content)) {
+        toast({
+          title: 'Huomautus ei voi olla tyhjä',
+          description: 'Poista huomautus tai täytä kumpikin kenttä',
+          variant: 'destructive',
+        })
+        setIsSubmitting(false)
+        return
+      }
       const customer = customers.find(c => c.id === customerId)
       if (!customer) {
         return
