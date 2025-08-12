@@ -32,6 +32,7 @@ export default function CompanySettings() {
   const [showEditUserModal, setShowEditUserModal] = useState<GetUsersResponseDto | null>(null)
   const [email, setEmail] = useState('')
   const [role, setRole] = useState('USER')
+  const [isSaving, setIsSaving] = useState(false)
   const { toast } = useToast()
 
   const handleDeleteCompany = async () => {
@@ -131,14 +132,19 @@ export default function CompanySettings() {
   const addUser = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     try {
+      setIsSaving(true)
       await axios.post('/tenants/users', { email, role })
+      const usersResponse = await axios.get<GetUsersResponseDto[]>(`/tenants/users`)
+      setUsers(usersResponse.data)
       setShowAddUserModal(false)
+      setEmail('')
+      setRole('USER')
       toast({
         title: 'Käyttäjä lisätty',
         description: 'Käyttäjä on lisätty onnistuneesti.',
+        variant: 'success',
       })
     }
-
     catch (error) {
       console.error(error)
       toast({
@@ -146,6 +152,9 @@ export default function CompanySettings() {
         description: 'Käyttäjän lisääminen epäonnistui. Tarkista sähköposti ja rooli.',
         variant: 'destructive',
       })
+    }
+    finally {
+      setIsSaving(false)
     }
   }
 
@@ -719,7 +728,7 @@ export default function CompanySettings() {
                   </div>
                   <DialogFooter>
                     <Button variant="outline" onClick={() => setShowAddUserModal(false)}>Peruuta</Button>
-                    <Button type="submit">Lisää käyttäjä</Button>
+                    <Button type="submit" disabled={isSaving}>Lisää käyttäjä</Button>
                   </DialogFooter>
                 </form>
               </DialogDescription>
