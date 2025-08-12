@@ -99,6 +99,8 @@ const defaultStyle = `
         
         .order-section {
           display: block;
+          position: relative;
+          height: calc(210mm - 12mm);
         }
 
         .company-name {
@@ -173,7 +175,7 @@ export default async function createWaybill(
     : ''
 
   const html = `
-        <div class="order-section ${first ? '' : 'page-break'}" style="position: relative; min-height: 100%;">
+        <div class="order-section ${first ? '' : 'page-break'}">
             <div style="height: 3em;">
                 <div style="float: left;">
                     <div class="company-name">${company.name}</div>

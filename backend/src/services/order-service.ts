@@ -347,7 +347,7 @@ export const OrderService = {
         left: '5mm',
       },
       displayHeaderFooter: true,
-      footerTemplate: '<div style="height: 22mm;">moi</div>',
+      footerTemplate: '',
       printBackground: true,
     })
 
