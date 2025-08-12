@@ -13,6 +13,7 @@ import {
   ChevronsUpDown,
   Plus,
   Save,
+  Trash2,
   X,
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
@@ -472,6 +473,18 @@ export default function CreateOrder() {
         <></>
       }
     >
+      {orderId && (
+        <Button
+          variant="ghost"
+          size="icon"
+          disabled={isSubmitting}
+          type="button"
+          onClick={() => setConfirmDialog(true)}
+          className="absolute z-10 top-32 right-9 h-8 w-8 text-red-600 hover:text-red-800 hover:bg-red-50"
+        >
+          <Trash2 className="h-4 w-4" />
+        </Button>
+      )}
       {!orderId && orderLimit !== null && orderLimit < 5 && orderLimit > 0 && (
         <div className="text-sm bg-yellow-100 rounded-md px-4 py-2 mb-4">
           Voit luoda vielä
@@ -995,11 +1008,6 @@ export default function CreateOrder() {
 
         <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 static bg-transparent border-0 p-0">
           <div className="flex justify-end gap-4">
-            {orderId && (
-              <Button variant="destructive" disabled={isSubmitting} type="button" onClick={() => setConfirmDialog(true)}>
-                Poista
-              </Button>
-            )}
             <Button type="submit" disabled={isSubmitting}>
               {isSubmitting
                 ? (
