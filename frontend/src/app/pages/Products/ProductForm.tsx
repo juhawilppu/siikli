@@ -154,7 +154,7 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
   }
 
   return (
-    <DialogContent className="sm:max-w-[500px]">
+    <DialogContent className="sm:max-w-[500px] w-full h-full sm:h-auto overflow-y-auto">
       <form onSubmit={handleSubmit}>
         <DialogHeader>
           <DialogTitle>{mode === 'create' ? 'Lisää uusi tuote' : 'Muokkaa tuotetta'}</DialogTitle>
@@ -335,7 +335,7 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
                 <p className="text-sm text-muted-foreground">
                   Voit määrittää tuotteelle oletuspakkaustiedot, eli uusille tilausriveille tulee suoraan tämä pakkauskoko ja pakkaustyyppi. Voit kuitenkin muuttaa nämä tilausta tehdessä.
                 </p>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="packageSize" className="text-base font-medium">
                       Pakkauskoko (kg)
@@ -545,7 +545,7 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
           </Accordion>
         </div>
         <DialogFooter className="gap-2 sm:gap-0">
-          <Button variant="outline" onClick={hide}>
+          <Button variant="outline" onClick={hide} className="hidden sm:inline-flex">
             Peruuta
           </Button>
           <Button type="submit">
