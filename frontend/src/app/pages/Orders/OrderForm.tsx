@@ -209,123 +209,124 @@ export default function CreateOrder() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setIsSubmitting(true)
-
-    if (!customers) {
-      return
-    }
-    if (!selectedCustomer) {
-      toast({
-        title: 'Valitse asiakas',
-        description: 'Asiakas ei voi olla tyhjä',
-        variant: 'destructive',
-      })
-      setIsSubmitting(false)
-      return
-    }
-    if (!deliveryDate) {
-      toast({
-        title: 'Toimituspäivä ei voi olla tyhjä',
-        description: 'Valitse toimituspäivä',
-        variant: 'destructive',
-      })
-      setIsSubmitting(false)
-      return
-    }
-    const customer = customers.find(c => c.id === customerId)
-    if (!customer) {
-      return
-    }
-
-    const productIds = new Set()
-    for (const item of orderItems) {
-      if (productIds.has(item.productId)) {
-        toast({
-          title: 'Sama tuote useamman kerran',
-          description: `Tuote ${products?.find(p => p.id === item.productId)?.name} on jo lisätty tilaukseen`,
-          variant: 'destructive',
-        })
-        setIsSubmitting(false)
-        return
-      }
-      productIds.add(item.productId)
-    }
-
-    for (const item of orderItems) {
-      if (!item.productId) {
-        toast({
-          title: 'Tuote ei voi olla tyhjä',
-          description: 'Valitse tuote tai poista rivi',
-          variant: 'destructive',
-        })
-        setIsSubmitting(false)
-        return
-      }
-      if (item.amount === '0,00' || item.amount === '') {
-        toast({
-          title: 'Määrä ei voi olla tyhjä',
-          description: `Valitse määrä tuotteelle ${products?.find(p => p.id === item.productId)?.name} tai poista rivi`,
-          variant: 'destructive',
-        })
-        setIsSubmitting(false)
-        return
-      }
-      if (!item.price) {
-        toast({
-          title: 'Hinta ei voi olla tyhjä',
-          description: 'Valitse hinta tai poista rivi',
-          variant: 'destructive',
-        })
-        setIsSubmitting(false)
-        return
-      }
-      if (!item.price0) {
-        toast({
-          title: 'Hinta ei voi olla tyhjä',
-          description: 'Valitse hinta tai poista rivi',
-          variant: 'destructive',
-        })
-        setIsSubmitting(false)
-        return
-      }
-      if (!item.packageSize) {
-        toast({
-          title: 'Pakkauskoko ei voi olla tyhjä',
-          description: 'Valitse pakkauskoko tai poista rivi',
-          variant: 'destructive',
-        })
-        setIsSubmitting(false)
-        return
-      }
-      if (!item.packageType) {
-        toast({
-          title: 'Pakkaustyyppi ei voi olla tyhjä',
-          description: 'Valitse pakkaustyyppi tai poista rivi',
-          variant: 'destructive',
-        })
-        setIsSubmitting(false)
-        return
-      }
-    }
-
-    const data: PostOrderRequestDto = {
-      customerId: selectedCustomer.id,
-      deliveryDate: dateToIso(deliveryDate),
-      hasNote: hasWaybillNote,
-      noteBody: hasWaybillNote ? waybillNote.content : null,
-      noteHeader: hasWaybillNote ? waybillNote.title : null,
-      items: orderItems.map(item => ({
-        ...item,
-        id: item.unsaved ? undefined : item.id,
-        price: serializeNumber(item.price),
-        price0: serializeNumber(item.price0),
-        amount: serializeNumber(item.amount),
-        packageSize: item.packageSize || 0,
-        packageType: item.packageType || '',
-      })),
-    }
-    console.log('Saving order:', data)
     try {
+      setIsSubmitting(true)
+
+      if (!customers) {
+        return
+      }
+      if (!selectedCustomer) {
+        toast({
+          title: 'Valitse asiakas',
+          description: 'Asiakas ei voi olla tyhjä',
+          variant: 'destructive',
+        })
+        setIsSubmitting(false)
+        return
+      }
+      if (!deliveryDate) {
+        toast({
+          title: 'Toimituspäivä ei voi olla tyhjä',
+          description: 'Valitse toimituspäivä',
+          variant: 'destructive',
+        })
+        setIsSubmitting(false)
+        return
+      }
+      const customer = customers.find(c => c.id === customerId)
+      if (!customer) {
+        return
+      }
+
+      const productIds = new Set()
+      for (const item of orderItems) {
+        if (productIds.has(item.productId)) {
+          toast({
+            title: 'Sama tuote useamman kerran',
+            description: `Tuote ${products?.find(p => p.id === item.productId)?.name} on jo lisätty tilaukseen`,
+            variant: 'destructive',
+          })
+          setIsSubmitting(false)
+          return
+        }
+        productIds.add(item.productId)
+      }
+
+      for (const item of orderItems) {
+        if (!item.productId) {
+          toast({
+            title: 'Tuote ei voi olla tyhjä',
+            description: 'Valitse tuote tai poista rivi',
+            variant: 'destructive',
+          })
+          setIsSubmitting(false)
+          return
+        }
+        if (item.amount === '0,00' || item.amount === '') {
+          toast({
+            title: 'Määrä ei voi olla tyhjä',
+            description: `Valitse määrä tuotteelle ${products?.find(p => p.id === item.productId)?.name} tai poista rivi`,
+            variant: 'destructive',
+          })
+          setIsSubmitting(false)
+          return
+        }
+        if (!item.price) {
+          toast({
+            title: 'Hinta ei voi olla tyhjä',
+            description: 'Valitse hinta tai poista rivi',
+            variant: 'destructive',
+          })
+          setIsSubmitting(false)
+          return
+        }
+        if (!item.price0) {
+          toast({
+            title: 'Hinta ei voi olla tyhjä',
+            description: 'Valitse hinta tai poista rivi',
+            variant: 'destructive',
+          })
+          setIsSubmitting(false)
+          return
+        }
+        if (!item.packageSize) {
+          toast({
+            title: 'Pakkauskoko ei voi olla tyhjä',
+            description: 'Valitse pakkauskoko tai poista rivi',
+            variant: 'destructive',
+          })
+          setIsSubmitting(false)
+          return
+        }
+        if (!item.packageType) {
+          toast({
+            title: 'Pakkaustyyppi ei voi olla tyhjä',
+            description: 'Valitse pakkaustyyppi tai poista rivi',
+            variant: 'destructive',
+          })
+          setIsSubmitting(false)
+          return
+        }
+      }
+
+      const data: PostOrderRequestDto = {
+        customerId: selectedCustomer.id,
+        deliveryDate: dateToIso(deliveryDate),
+        hasNote: hasWaybillNote,
+        noteBody: hasWaybillNote ? waybillNote.content : null,
+        noteHeader: hasWaybillNote ? waybillNote.title : null,
+        items: orderItems.map(item => ({
+          ...item,
+          id: item.unsaved ? undefined : item.id,
+          price: serializeNumber(item.price),
+          price0: serializeNumber(item.price0),
+          amount: serializeNumber(item.amount),
+          packageSize: item.packageSize || 0,
+          packageType: item.packageType || '',
+        })),
+      }
+      console.log('Saving order:', data)
+
       if (orderId) {
         // Update order
         await axios.post(`/orders/${orderId}`, data)
@@ -363,9 +364,9 @@ export default function CreateOrder() {
         variant: 'destructive',
       })
     }
-    setIsSubmitting(false)
-
-    // Show success message or handle errors
+    finally {
+      setIsSubmitting(false)
+    }
   }
 
   if (isLoading || !customers || !products || !packageTypes || !packageSizes) {
@@ -827,7 +828,8 @@ export default function CreateOrder() {
                               <Command>
                                 <CommandInput
                                   placeholder="Syötä pakkaustyyppi..."
-                                  onValueChange={value => setInputValuePackageType(value)}
+                                  maxLength={16}
+                                  onValueChange={setInputValuePackageType}
                                 />
                                 <CommandEmpty>
                                   {inputValuePackageType.length > 0 && (
@@ -985,7 +987,7 @@ export default function CreateOrder() {
         <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 static bg-transparent border-0 p-0">
           <div className="flex justify-end gap-4">
             {orderId && (
-              <Button variant="destructive" type="button" onClick={() => setConfirmDialog(true)}>
+              <Button variant="destructive" disabled={isSubmitting} type="button" onClick={() => setConfirmDialog(true)}>
                 Poista
               </Button>
             )}

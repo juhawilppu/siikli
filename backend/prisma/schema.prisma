@@ -191,7 +191,7 @@ model OrderRow {
   price0      Decimal  @map("price0") @db.Decimal(10, 2)
   packageSize Int      @map("package_size") @db.Integer
   freetext    String?  @map("freetext") @db.VarChar(500)
-  packageType String?  @map("package_type") @db.VarChar(3)
+  packageType String?  @map("package_type") @db.VarChar(16)
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
   product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
@@ -260,7 +260,7 @@ model Product {
   type          String?    @map("type") @db.VarChar(32)
   subtype       String?    @map("subtype") @db.VarChar(255)
   packageSize   Int?       @map("package_size") @db.Integer
-  packageType   String?    @map("package_type") @db.VarChar(255)
+  packageType   String?    @map("package_type") @db.VarChar(16)
   price0        Decimal?   @map("price0") @db.Decimal(10, 2)
   customerGroup String?    @map("customer_group") @db.VarChar(256)
   active        Boolean?   @default(true) @map("active")
@@ -284,7 +284,7 @@ model ProductHistory {
   type          String?  @map("type") @db.VarChar(32)
   subtype       String?  @map("subtype") @db.VarChar(255)
   packageSize   Int?     @map("package_size") @db.Integer
-  packageType   String?  @map("package_type") @db.VarChar(255)
+  packageType   String?  @map("package_type") @db.VarChar(16)
   price0        Decimal? @map("price0") @db.Decimal(10, 2)
   customerGroup String?  @map("customer_group") @db.VarChar(256)
   active        Boolean? @map("active")
@@ -442,7 +442,7 @@ model Log {
 
 model PackageType {
   id        String   @id @default(uuid()) @map("id") @db.Uuid
-  name      String   @map("name") @db.VarChar(255)
+  name      String   @map("name") @db.VarChar(16)
   tenantId  String   @map("tenant_id") @db.Uuid
   tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now()) @map("created_at")
@@ -456,7 +456,7 @@ model PackageTypeHistory {
   operation String @map("operation")
 
   id        String   @map("id") @db.Uuid
-  name      String   @map("name") @db.VarChar(255)
+  name      String   @map("name") @db.VarChar(16)
   tenantId  String   @map("tenant_id") @db.Uuid
   createdAt DateTime @map("created_at")
   updatedAt DateTime @map("updated_at")

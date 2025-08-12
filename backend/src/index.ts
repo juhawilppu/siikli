@@ -68,24 +68,6 @@ async function startServer() {
     Sentry.captureException(reason)
   })
 
-  app.use((err: Error, req: Request, res: Response, _next: NextFunction) => {
-    console.error('General error handler caught:', {
-      message: err.message,
-      name: err.name,
-      stack: err.stack,
-      path: req.path,
-      method: req.method,
-    })
-
-    // Ensure we always send a response
-    if (!res.headersSent) {
-      res.status(500).json({
-        error: 'Internal server error',
-        message: err.message,
-      })
-    }
-  })
-
   const sessionSecret = process.env.SESSION_SECRET
   if (!sessionSecret || sessionSecret.length < 32) {
     throw new Error('SESSION_SECRET is missing or too short. It must be at least 32 characters.')
@@ -190,6 +172,26 @@ async function startServer() {
       Sentry.captureMessage('Server closed via SIGINT')
       process.exit(0)
     })
+  })
+
+  app.use((err: Error, req: Request, res: Response, _next: NextFunction) => {
+    console.error('General error handler caught:', {
+      message: err.message,
+      name: err.name,
+      stack: err.stack,
+      path: req.path,
+      method: req.method,
+    })
+
+    Sentry.captureException(err)
+
+    // Ensure we always send a response
+    if (!res.headersSent) {
+      res.status(500).json({
+        error: 'Internal server error',
+        message: err.message,
+      })
+    }
   })
 }
 

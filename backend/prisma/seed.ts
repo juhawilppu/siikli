@@ -124,7 +124,7 @@ async function main() {
     const price = new Decimal(1.60)
     const invalidPrice0 = price.div(1.14).mul(1.1) // Intentionally wrong price0
 
-    if (await ProductService.createProduct({
+    if ((await ProductService.createProduct({
       name: 'Rosamunda wrong price',
       tenantId: tenant.id,
       price,
@@ -137,7 +137,7 @@ async function main() {
       info: 'Siikli',
       subtype: 'Siikli',
       customerGroup: 'Siikli',
-    }).catch(() => null) !== null) {
+    }).catch(() => null)) !== null) {
       throw new Error('ProductService.createProduct should reject mismatched prices')
     }
   }

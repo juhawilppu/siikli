@@ -467,7 +467,8 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
                         <Command>
                           <CommandInput
                             placeholder="Syötä pakkaustyyppi..."
-                            onValueChange={value => setInputValuePackageType(value)}
+                            maxLength={16}
+                            onValueChange={setInputValuePackageType}
                           />
                           <CommandGroup>
                             {packageTypes
