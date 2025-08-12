@@ -200,8 +200,6 @@ export function NewCustomer({ closeDialog, customerToEdit, forwaredCustomerGroup
           <DialogTitle className="text-muted-foreground">{customerToEdit ? 'Muokkaa asiakasta' : 'Uusi asiakas'}</DialogTitle>
           <DialogDescription className="text-gray-700">
             {customerToEdit ? 'Muokkaa asiakkaan tietoja.' : 'Lisää uusi asiakas.'}
-            {' '}
-            Pakolliset kentät on merkitty tähdellä (*).
           </DialogDescription>
         </DialogHeader>
         <div className="flex-1 overflow-y-auto px-1">
@@ -219,7 +217,7 @@ export function NewCustomer({ closeDialog, customerToEdit, forwaredCustomerGroup
                 maxLength={50}
               />
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="gap-4">
               <div className="space-y-2">
                 <Label htmlFor="edit-customer_group" className="font-medium">
                   Asiakasryhmä
@@ -274,6 +272,8 @@ export function NewCustomer({ closeDialog, customerToEdit, forwaredCustomerGroup
                 </Popover>
               </div>
             </div>
+
+            <div className="border-t pt-6 mt-6" />
 
             <h2 className="text-lg font-medium">Yhteystiedot</h2>
             <div className="space-y-2">
@@ -338,7 +338,24 @@ export function NewCustomer({ closeDialog, customerToEdit, forwaredCustomerGroup
                 />
               </div>
             </div>
-            <h2 className="text-lg font-medium">Laskutuksen asetukset</h2>
+
+            <div className="border-t pt-6 mt-6" />
+
+            <h2 className="text-lg font-medium">Laskutus</h2>
+            <div className="flex items-center space-x-2 pt-2">
+              <span className="flex">
+                <Label htmlFor="edit-show_price_without_tax" className="font-medium">
+                  Näytä hinnat ilman veroa
+                </Label>
+                {instructionTooltip('Jos olet sopinut asiakkaan kanssa ALV 0 % hinnat, valitse tämä. Tämän jälkeen laskuissa näytetään ALV 0 % hinnat. Tämä asetus on tehty, jotta vältytään pyöristysvirheiltä.')}
+              </span>
+              <Checkbox
+                id="edit-show_price_without_tax"
+                checked={customer.showPriceWithoutTax}
+                onCheckedChange={checked =>
+                  setCustomer({ ...customer, showPriceWithoutTax: checked as boolean })}
+              />
+            </div>
             <div className="space-y-2">
               <Label htmlFor="edit-business_id" className="font-medium">
                 Y-tunnus
@@ -402,20 +419,6 @@ export function NewCustomer({ closeDialog, customerToEdit, forwaredCustomerGroup
                 value={customer.invoiceReference || ''}
                 onChange={e => setCustomer({ ...customer, invoiceReference: e.target.value })}
                 maxLength={255}
-              />
-            </div>
-            <div className="flex items-center space-x-2 pt-2">
-              <span className="flex">
-                <Label htmlFor="edit-show_price_without_tax" className="font-medium">
-                  Näytä hinnat ilman veroa
-                </Label>
-                {instructionTooltip('Jos olet sopinut asiakkaan kanssa ALV 0 % hinnat, valitse tämä. Tämän jälkeen laskuissa näytetään ALV 0 % hinnat. Tämä asetus on tehty, jotta vältytään pyöristysvirheiltä.')}
-              </span>
-              <Checkbox
-                id="edit-show_price_without_tax"
-                checked={customer.showPriceWithoutTax}
-                onCheckedChange={checked =>
-                  setCustomer({ ...customer, showPriceWithoutTax: checked as boolean })}
               />
             </div>
           </div>
