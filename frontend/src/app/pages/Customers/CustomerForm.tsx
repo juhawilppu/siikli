@@ -288,7 +288,7 @@ export function NewCustomer({ closeDialog, customerToEdit, forwaredCustomerGroup
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="edit-postal_code" className="font-medium">
                   Postinumero
@@ -313,7 +313,7 @@ export function NewCustomer({ closeDialog, customerToEdit, forwaredCustomerGroup
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="edit-email" className="font-medium">
                   Sähköposti
