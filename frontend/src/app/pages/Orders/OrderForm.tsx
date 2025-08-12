@@ -463,13 +463,13 @@ export default function CreateOrder() {
       {confirmDialog && (
         <ConfirmDialog
           title="Poista tilaus"
-          description="Haluatko varmasti poistaa koko tilauksen? Tämä toiminto poistaa tilauksen lopullisesti."
+          description="Tämä toiminto poistaa tilauksen lopullisesti. Haluatko varmasti poistaa tilauksen?"
           onConfirm={handleConfirmDelete}
           onCancel={() => setConfirmDialog(false)}
         />
       )}
       <form onSubmit={handleSubmit}>
-        <div className="space-y-6">
+        <div className="space-y-6 pb-20">
           {/* Customer and Delivery Information */}
           <Card>
             <CardHeader>
@@ -966,10 +966,15 @@ export default function CreateOrder() {
             </CardFooter>
           </Card>
 
+        </div>
+
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 static bg-transparent border-0 p-0">
           <div className="flex justify-end gap-4">
-            <Button variant="destructive" type="button" onClick={() => setConfirmDialog(true)}>
-              Poista
-            </Button>
+            {orderId && (
+              <Button variant="destructive" type="button" onClick={() => setConfirmDialog(true)}>
+                Poista
+              </Button>
+            )}
             <Button type="submit" disabled={isSubmitting}>
               {isSubmitting
                 ? (
