@@ -162,13 +162,28 @@ export default function CompanySettings() {
     e.preventDefault()
     if (!showEditUserModal)
       return
-    await axios.put(`/tenants/users/${showEditUserModal.id}`, { role: showEditUserModal.role })
-    toast({
-      title: 'Käyttäjän rooli muutettu',
-      description: 'Käyttäjän rooli muutettu onnistuneesti.',
-    })
-    setUsers(prev => prev?.map(user => user.id === showEditUserModal.id ? { ...user, role: showEditUserModal.role } : user))
-    setShowEditUserModal(null)
+    try {
+      setIsSaving(true)
+      await axios.put(`/tenants/users/${showEditUserModal.id}`, { role: showEditUserModal.role })
+      toast({
+        title: 'Käyttäjän rooli muutettu',
+        description: 'Käyttäjän rooli muutettu onnistuneesti.',
+        variant: 'success',
+      })
+      setUsers(prev => prev?.map(user => user.id === showEditUserModal.id ? { ...user, role: showEditUserModal.role } : user))
+      setShowEditUserModal(null)
+    }
+    catch (error) {
+      console.error(error)
+      toast({
+        title: 'Muokkaus epäonnistui',
+        description: 'Muokkaus epäonnistui. Tarkista käyttäjän rooli.',
+        variant: 'destructive',
+      })
+    }
+    finally {
+      setIsSaving(false)
+    }
   }
 
   useEffect(() => {
@@ -751,6 +766,7 @@ export default function CompanySettings() {
                       <Input
                         name="name"
                         readOnly
+                        disabled
                         value={showEditUserModal.email}
                       />
                     </div>
@@ -773,7 +789,7 @@ export default function CompanySettings() {
                   </div>
                   <DialogFooter>
                     <Button variant="outline" onClick={() => setShowEditUserModal(null)}>Peruuta</Button>
-                    <Button type="submit">Tallenna</Button>
+                    <Button type="submit" disabled={isSaving}>Tallenna</Button>
                   </DialogFooter>
                 </form>
               </DialogDescription>
