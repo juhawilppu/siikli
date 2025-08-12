@@ -733,7 +733,7 @@ export default function CompanySettings() {
         <ConfirmDialog
           isSaving={isSaving}
           title="Poista käyttäjä"
-          description="Oletko varma, että haluat poistaa käyttäjän? Tämä toiminto on peruuttamaton."
+          description={`Oletko varma, että haluat poistaa käyttäjän ${users?.find(u => u.id === showDeleteUserModal)?.email}?`}
           onConfirm={() => deleteUser(showDeleteUserModal)}
           onCancel={() => setShowDeleteUserModal(null)}
         />
@@ -741,7 +741,7 @@ export default function CompanySettings() {
 
       {showAddUserModal && (
         <Dialog open={showAddUserModal} onOpenChange={setShowAddUserModal}>
-          <DialogContent>
+          <DialogContent className="sm:max-w-md w-full h-full sm:h-auto">
             <DialogHeader>
               <DialogTitle>Lisää käyttäjä</DialogTitle>
               <DialogDescription>
@@ -775,7 +775,7 @@ export default function CompanySettings() {
                     </div>
                   </div>
                   <DialogFooter>
-                    <Button variant="outline" onClick={() => setShowAddUserModal(false)}>Peruuta</Button>
+                    <Button variant="outline" onClick={() => setShowAddUserModal(false)} className="hidden sm:block">Peruuta</Button>
                     <Button type="submit" disabled={isSaving}>Lisää käyttäjä</Button>
                   </DialogFooter>
                 </form>
@@ -787,7 +787,7 @@ export default function CompanySettings() {
 
       {showEditUserModal && (
         <Dialog open={!!showEditUserModal} onOpenChange={() => setShowEditUserModal(null)}>
-          <DialogContent>
+          <DialogContent className="sm:max-w-md w-full h-full sm:h-auto">
             <DialogHeader>
               <DialogTitle>Muuta käyttäjän roolia</DialogTitle>
               <DialogDescription>
@@ -821,7 +821,7 @@ export default function CompanySettings() {
                     </div>
                   </div>
                   <DialogFooter>
-                    <Button variant="outline" onClick={() => setShowEditUserModal(null)}>Peruuta</Button>
+                    <Button variant="outline" onClick={() => setShowEditUserModal(null)} className="hidden sm:block">Peruuta</Button>
                     <Button type="submit" disabled={isSaving}>Tallenna</Button>
                   </DialogFooter>
                 </form>

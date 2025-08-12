@@ -3,14 +3,14 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 
 export default function ConfirmDialog({ title, description, onConfirm, confirmText = 'Poista', onCancel, isSaving }: { title: string, description: string, confirmText?: string, onConfirm: () => void, onCancel: () => void, isSaving: boolean }) {
   return (
-    <Dialog open={true}>
+    <Dialog open={true} onOpenChange={onCancel}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
         <DialogFooter>
-          <Button variant="outline" onClick={onCancel}>Peruuta</Button>
+          <Button variant="outline" onClick={onCancel} className="hidden sm:block">Peruuta</Button>
           <Button variant="destructive" onClick={onConfirm} disabled={isSaving}>{confirmText}</Button>
         </DialogFooter>
       </DialogContent>
