@@ -23,7 +23,7 @@ export function PackagingListByProduct({ report }: {
 
   return (
     <div className="pdf">
-      <h1 style={{ fontSize: '1.5em' }}>Tuotekohtainen pakkauslista</h1>
+      <h1>Tuotekohtainen pakkauslista</h1>
       <br />
       <b>Päivämäärä:</b>
       {' '}
@@ -41,7 +41,7 @@ export function PackagingListByProduct({ report }: {
                 <thead>
                   <tr className="title border-top border-bottom">
                     <td className="align-left" style={{ width: '35%' }}>Tuote</td>
-                    <td className="align-right" style={{ width: '15%' }}>Pakkaus</td>
+                    <td className="align-center" style={{ width: '15%' }} colSpan={2}>Pakkaus</td>
                     <td className="align-right pl-5" style={{ width: '20%' }}>Kappaletta</td>
                     <td className="align-right pl-5" style={{ width: '30%' }}>Kokonaismäärä (kg)</td>
                   </tr>
@@ -58,9 +58,10 @@ export function PackagingListByProduct({ report }: {
                     return (
                       <tr key={index} className={addBorder ? 'border-bottom' : ''}>
                         <td className="align-left">{order.productName}</td>
-                        <td className="align-right">
+                        <td className="align-right" style={{ width: '7.5%' }}>
                           {order.packageSize}
-                          {' '}
+                        </td>
+                        <td className="align-left" style={{ width: '7.5%' }}>
                           {order.packageType}
                         </td>
                         <td className="align-right pl-5">{formatNumber(order.amount.div(order.packageSize))}</td>

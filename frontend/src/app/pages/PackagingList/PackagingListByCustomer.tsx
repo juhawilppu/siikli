@@ -1,6 +1,7 @@
 import type { PackagingListGroupedByCustomer } from '@/app/types/types'
 import { formatDate, parseIsoDate } from '@/app/utils/date'
 import { formatNumber } from '@/app/utils/money'
+import '../../pdf.css'
 
 export function PackagingListByCustomer({ report }: {
   report: PackagingListGroupedByCustomer
@@ -19,7 +20,7 @@ export function PackagingListByCustomer({ report }: {
 
   return (
     <div className="pdf">
-      <h1 style={{ fontSize: '1.5em' }}>Kauppakohtainen pakkauslista</h1>
+      <h2>Asiakaskohtainen pakkauslista</h2>
       <br />
       <p>
         <strong>Päivämäärä:</strong>
@@ -38,7 +39,7 @@ export function PackagingListByCustomer({ report }: {
                 <td className="align-left" style={{ width: '20%' }}>
                   Tuote
                 </td>
-                <td className="align-right" style={{ width: '15%' }}>
+                <td className="align-center" colSpan={2} style={{ width: '15%' }}>
                   Pakkaus
                 </td>
                 <td className="align-right" style={{ width: '15%' }}>
@@ -47,7 +48,7 @@ export function PackagingListByCustomer({ report }: {
                 <td className="align-right" style={{ width: '25%' }}>
                   Kokonais&shy;määrä (kg)
                 </td>
-                <td className="align-left pl-5" style={{ width: '25%' }}>
+                <td className="align-left pl-20" style={{ width: '25%' }}>
                   Lisä&shy;tietoa
                 </td>
               </tr>
@@ -56,16 +57,17 @@ export function PackagingListByCustomer({ report }: {
               {rows.map((order, idx) => (
                 <tr key={idx}>
                   <td className="align-left" style={{ width: '20%' }}>{order.productName}</td>
-                  <td className="align-right" style={{ width: '15%' }}>
+                  <td className="align-right" style={{ width: '7.5%' }}>
                     {order.packageSize}
-                    {' '}
+                  </td>
+                  <td className="align-left" style={{ width: '7.5%' }}>
                     {order.packageType}
                   </td>
                   <td className="align-right" style={{ width: '15%' }}>
                     {formatNumber(order.amount.div(order.packageSize))}
                   </td>
                   <td className="align-right" style={{ width: '25%' }}>{formatNumber(order.amount)}</td>
-                  <td className="align-left pl-5" style={{ width: '25%' }}>{order.freetext}</td>
+                  <td className="align-left pl-20" style={{ width: '25%' }}>{order.freetext}</td>
                 </tr>
               ))}
             </tbody>

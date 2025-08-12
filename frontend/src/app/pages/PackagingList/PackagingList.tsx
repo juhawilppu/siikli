@@ -42,7 +42,7 @@ export function PackagingList() {
 
   return (
     <>
-      <SiikliPage title="Pakkauslista" description="Voit tulostaa pakkauslistan täältä">
+      <SiikliPage title="Pakkauslista" description="Voit tulostaa pakkauslistan täältä. Pakkauslista helpottaa tilausten keräilyä lähettämistä varten.">
         <Card>
           <CardHeader className="border-b bg-gray-50">
             <CardTitle>Luo pakkauslista</CardTitle>
@@ -62,7 +62,7 @@ export function PackagingList() {
                       id="delivery-date"
                     >
                       <Calendar className="mr-2 h-4 w-4" />
-                      {deliveryDate ? formatDate(deliveryDate) : <span>Select date</span>}
+                      {deliveryDate ? formatDate(deliveryDate) : <span>Valitse päivämäärä</span>}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0">
