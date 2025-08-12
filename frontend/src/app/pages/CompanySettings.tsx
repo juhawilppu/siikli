@@ -36,17 +36,31 @@ export default function CompanySettings() {
   const { toast } = useToast()
 
   const handleDeleteCompany = async () => {
-    await axios.delete('/tenants')
-    await axios.post('/auth/logout')
-    toast({
-      title: 'Yritys poistettu',
-      description: 'Yritys on poistettu onnistuneesti. Sinut ohjataan etusivulle.',
-      variant: 'success',
-    })
-    setShowDeleteCompanyModal(false)
-    setTimeout(() => {
-      window.location.href = '/'
-    }, 2000)
+    try {
+      setIsSaving(true)
+      await axios.delete('/tenants')
+      await axios.post('/auth/logout')
+      toast({
+        title: 'Yritys poistettu',
+        description: 'Yritys on poistettu onnistuneesti. Sinut ohjataan etusivulle.',
+        variant: 'success',
+      })
+      setShowDeleteCompanyModal(false)
+      setTimeout(() => {
+        window.location.href = '/'
+      }, 2000)
+    }
+    catch (error) {
+      console.error(error)
+      toast({
+        title: 'Yrityksen poistaminen epäonnistui',
+        description: 'Yrityksen poistaminen epäonnistui.',
+        variant: 'destructive',
+      })
+    }
+    finally {
+      setIsSaving(false)
+    }
   }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -97,36 +111,63 @@ export default function CompanySettings() {
   }
 
   const switchSubscription = async (subscription: 'FREE' | 'PREMIUM') => {
-    setShowSwitchSubscriptionModal(null)
-    const result = await axios.post<PostSubscriptionChangeRequest>('/tenants/subscription', {
-      subscription,
-    })
-    toast({
-      title: 'Tilausvaihto',
-      description: 'Tilausvaihto onnistui',
-      variant: 'success',
-    })
-    setCompanyData((prev) => {
-      if (!prev)
-        return prev
-      return {
-        ...prev,
-        subscriptionType: result.data.subscriptionType,
-        trialEndDate: result.data.trialEndDate,
-        subscriptionStartDate: result.data.subscriptionStartDate,
-        subscriptionEndDate: result.data.subscriptionEndDate,
-      }
-    })
+    try {
+      setShowSwitchSubscriptionModal(null)
+      const result = await axios.post<PostSubscriptionChangeRequest>('/tenants/subscription', {
+        subscription,
+      })
+      toast({
+        title: 'Tilausvaihto',
+        description: 'Tilausvaihto onnistui',
+        variant: 'success',
+      })
+      setCompanyData((prev) => {
+        if (!prev)
+          return prev
+        return {
+          ...prev,
+          subscriptionType: result.data.subscriptionType,
+          trialEndDate: result.data.trialEndDate,
+          subscriptionStartDate: result.data.subscriptionStartDate,
+          subscriptionEndDate: result.data.subscriptionEndDate,
+        }
+      })
+    }
+    catch (error) {
+      console.error(error)
+      toast({
+        title: 'Tilausvaihto epäonnistui',
+        description: 'Tilausvaihto epäonnistui.',
+        variant: 'destructive',
+      })
+    }
+    finally {
+      setIsSaving(false)
+    }
   }
 
   const deleteUser = async (userId: string) => {
-    setShowDeleteUserModal(null)
-    await axios.delete(`/tenants/users/${userId}`)
-    toast({
-      title: 'Käyttäjä poistettu',
-      description: 'Käyttäjä on poistettu onnistuneesti.',
-    })
-    setUsers(prev => prev?.filter(user => user.id !== userId))
+    try {
+      setIsSaving(true)
+      setShowDeleteUserModal(null)
+      await axios.delete(`/tenants/users/${userId}`)
+      toast({
+        title: 'Käyttäjä poistettu',
+        description: 'Käyttäjä on poistettu onnistuneesti.',
+      })
+      setUsers(prev => prev?.filter(user => user.id !== userId))
+    }
+    catch (error) {
+      console.error(error)
+      toast({
+        title: 'Käyttäjän poistaminen epäonnistui',
+        description: 'Käyttäjän poistaminen epäonnistui.',
+        variant: 'destructive',
+      })
+    }
+    finally {
+      setIsSaving(false)
+    }
   }
 
   const addUser = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -407,6 +448,7 @@ export default function CompanySettings() {
                                 <Button
                                   variant="outline"
                                   size="sm"
+                                  disabled={u.id === user.userId}
                                   onClick={() => {
                                     setShowEditUserModal(u)
                                   }}
@@ -416,6 +458,7 @@ export default function CompanySettings() {
                                 <Button
                                   variant="destructive"
                                   size="sm"
+                                  disabled={u.id === user.userId}
                                   onClick={() => {
                                     setShowDeleteUserModal(u.id)
                                   }}
@@ -684,11 +727,13 @@ export default function CompanySettings() {
           description="Oletko varma, että haluat poistaa yrityksen? Kaikki tiedot poistetaan, eikä niitä voi palauttaa."
           onConfirm={handleDeleteCompany}
           onCancel={() => setShowDeleteCompanyModal(false)}
+          isSaving={isSaving}
         />
       )}
 
       {showSwitchSubscriptionModal && (
         <ConfirmDialog
+          isSaving={isSaving}
           title="Vaihda tilaus"
           description={`Oletko varma, että haluat vaihtaa tilaukseen ${showSwitchSubscriptionModal === 'FREE' ? 'Free' : 'Premium'}?`}
           confirmText="Vaihda tilaustaso"
@@ -699,6 +744,7 @@ export default function CompanySettings() {
 
       {showDeleteUserModal && (
         <ConfirmDialog
+          isSaving={isSaving}
           title="Poista käyttäjä"
           description="Oletko varma, että haluat poistaa käyttäjän? Tämä toiminto on peruuttamaton."
           onConfirm={() => deleteUser(showDeleteUserModal)}

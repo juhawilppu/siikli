@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 
-export default function ConfirmDialog({ title, description, onConfirm, confirmText = 'Poista', onCancel }: { title: string, description: string, confirmText?: string, onConfirm: () => void, onCancel: () => void }) {
+export default function ConfirmDialog({ title, description, onConfirm, confirmText = 'Poista', onCancel, isSaving }: { title: string, description: string, confirmText?: string, onConfirm: () => void, onCancel: () => void, isSaving: boolean }) {
   return (
     <Dialog open={true}>
       <DialogContent>
@@ -11,7 +11,7 @@ export default function ConfirmDialog({ title, description, onConfirm, confirmTe
         </DialogHeader>
         <DialogFooter>
           <Button variant="outline" onClick={onCancel}>Peruuta</Button>
-          <Button variant="destructive" onClick={onConfirm}>{confirmText}</Button>
+          <Button variant="destructive" onClick={onConfirm} disabled={isSaving}>{confirmText}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

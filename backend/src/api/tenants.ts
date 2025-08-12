@@ -67,7 +67,10 @@ companiesRoute.delete(`/api/tenants`, isAuthenticated, isOwner, async (req, res)
 
 companiesRoute.delete(`/api/tenants/users/:userId`, isAuthenticated, isOwner, async (req, res) => {
   const { userId, tenantId } = getUser(req)
-
+  if (req.params.userId === userId) {
+    res.status(400).json({ message: 'You cannot delete yourself' })
+    return
+  }
   await TenantService.deleteUser(tenantId, req.params.userId, userId)
   res.status(200).end()
 })
@@ -81,6 +84,10 @@ companiesRoute.post(`/api/tenants/users`, isAuthenticated, isOwner, async (req, 
 
 companiesRoute.put(`/api/tenants/users/:userId`, isAuthenticated, isOwner, async (req, res) => {
   const { tenantId, userId } = getUser(req)
+  if (req.params.userId === userId) {
+    res.status(400).json({ message: 'You cannot edit yourself' })
+    return
+  }
 
   await TenantService.updateUser(tenantId, req.params.userId, req.body.role, userId)
   res.status(200).json({ message: 'OK' })
