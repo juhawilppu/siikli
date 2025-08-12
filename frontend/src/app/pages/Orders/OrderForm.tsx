@@ -385,9 +385,8 @@ export default function CreateOrder() {
             {customers.length === 0 && (
               <div className="text-sm bg-muted rounded-md px-4 py-2">
                 👤 Sinulla ei ole vielä asiakkaita.
-                {' '}
+                <br />
                 👉
-                {' '}
                 <NavLink to="/app/customers" className="underline text-primary">
                   Lisää ensimmäinen asiakas
                 </NavLink>
@@ -397,9 +396,8 @@ export default function CreateOrder() {
             {products.length === 0 && (
               <div className="text-sm bg-muted rounded-md px-4 py-2">
                 🥔 Sinulla ei ole vielä tuotteita.
-                {' '}
+                <br />
                 👉
-                {' '}
                 <NavLink to="/app/products" className="underline text-primary">
                   Lisää ensimmäinen tuote
                 </NavLink>
@@ -412,14 +410,29 @@ export default function CreateOrder() {
     )
   }
 
-  const handleConfirmDelete = () => {
-    axios.delete(`/orders/${orderId}`)
-    toast({
-      title: 'Tilaus poistettu',
-      description: 'Tilaus poistettu onnistuneesti',
-      variant: 'success',
-    })
-    navigate('/orders')
+  const handleConfirmDelete = async () => {
+    try {
+      setIsSubmitting(true)
+      await axios.delete(`/orders/${orderId}`)
+      toast({
+        title: 'Tilaus poistettu',
+        description: 'Tilaus poistettu onnistuneesti',
+        variant: 'success',
+      })
+      navigate('/orders')
+    }
+    catch (err) {
+      console.error(err)
+      captureException(err)
+      toast({
+        title: 'Tilauksen poistaminen epäonnistui',
+        description: 'Tilauksen poistaminen epäonnistui.',
+        variant: 'destructive',
+      })
+    }
+    finally {
+      setIsSubmitting(false)
+    }
   }
 
   if (!orderId && orderLimit !== null && orderLimit === 0) {
@@ -462,6 +475,7 @@ export default function CreateOrder() {
       )}
       {confirmDialog && (
         <ConfirmDialog
+          isSaving={isSubmitting}
           title="Poista tilaus"
           description="Tämä toiminto poistaa tilauksen lopullisesti. Haluatko varmasti poistaa tilauksen?"
           onConfirm={handleConfirmDelete}
