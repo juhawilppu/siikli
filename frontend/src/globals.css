@@ -149,5 +149,9 @@ Override default styles for placeholder text
     @apply text-gray-400 !important;
     font-weight: 400;
   }
+  textarea::placeholder {
+    @apply text-gray-400 !important;
+    font-weight: 400;
+  }
 
 }
