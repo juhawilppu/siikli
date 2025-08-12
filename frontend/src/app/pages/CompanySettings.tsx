@@ -406,71 +406,58 @@ export default function CompanySettings() {
                       {companyData.subscriptionType === 'FREE' ? ' (Premium-ominaisuus)' : ''}
                     </Button>
                   )}
-                  <div className="rounded-md border">
-                    <table className="min-w-full divide-y divide-gray-200">
-                      <thead className="bg-gray-50">
-                        <tr>
-                          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500">
-                            Sähköposti
-                          </th>
-                          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500">
-                            Rooli
-                          </th>
-                          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500">
-                            Viimeisin kirjautuminen
-                          </th>
-                          {user.authenticated && user.role === 'OWNER' && companyData.subscriptionType === 'PREMIUM' && (
-                            <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500">
-                              Toiminnot
-                            </th>
-                          )}
-                        </tr>
-                      </thead>
-                      <tbody className="bg-white divide-y divide-gray-200">
-                        {users.map(u => (
-                          <tr key={u.id}>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm font-medium text-muted-foreground">{u.email}</div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="space-y-4">
+                    {users.map(u => (
+                      <div key={u.id} className="border rounded-lg p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                        <div className="flex flex-col sm:flex-row sm:items-center space-y-4 sm:space-y-0 sm:space-x-8 flex-1">
+                          <div className="w-full sm:w-auto">
+                            <label className="text-xs font-medium text-gray-500">Sähköposti</label>
+                            <div className="text-sm font-medium text-muted-foreground break-words">{u.email}</div>
+                          </div>
+                          <div className="text-left sm:text-center w-full sm:w-1/2">
+                            <label className="text-xs font-medium text-gray-500">Rooli</label>
+                            <div>
                               <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                                 u.role === 'OWNER' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'
                               }`}
                               >
                                 {u.role === 'OWNER' ? 'Omistaja' : 'Käyttäjä'}
                               </span>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            </div>
+                          </div>
+                          <div className="w-full sm:w-1/3">
+                            <label className="text-xs font-medium text-gray-500">Viimeisin kirjautuminen</label>
+                            <div className="text-sm text-gray-500">
                               {u.lastLoginAt ? formatDate(new Date(u.lastLoginAt)) : 'Ei ole kirjautunut sisään'}
-                            </td>
-                            {user.authenticated && user.role === 'OWNER' && companyData.subscriptionType === 'PREMIUM' && (
-                              <td className="px-6 space-x-2 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  disabled={u.id === user.userId}
-                                  onClick={() => {
-                                    setShowEditUserModal(u)
-                                  }}
-                                >
-                                  <Pencil className="h-4 w-4" />
-                                </Button>
-                                <Button
-                                  variant="destructive"
-                                  size="sm"
-                                  disabled={u.id === user.userId}
-                                  onClick={() => {
-                                    setShowDeleteUserModal(u.id)
-                                  }}
-                                >
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
-                              </td>
-                            )}
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                            </div>
+                          </div>
+                        </div>
+                        {user.authenticated && user.role === 'OWNER' && companyData.subscriptionType === 'PREMIUM' && (
+                          <div className="flex space-x-1 self-start sm:self-center">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              disabled={u.id === user.userId}
+                              onClick={() => {
+                                setShowEditUserModal(u)
+                              }}
+                            >
+                              <Pencil className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              disabled={u.id === user.userId}
+                              onClick={() => {
+                                setShowDeleteUserModal(u.id)
+                              }}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    ))}
                   </div>
                 </div>
               </CardContent>
