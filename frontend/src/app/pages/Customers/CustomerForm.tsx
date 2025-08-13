@@ -184,14 +184,14 @@ export function NewCustomer({ closeDialog, customerToEdit, onSave }: {
 
   return (
     <Dialog open={true} onOpenChange={closeDialog}>
-      <DialogContent className="sm:max-w-[500px] w-full h-full sm:h-auto overflow-y-auto">
+      <DialogContent className="sm:max-w-[500px] w-full sm:h-full h-[90vh] h-auto overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{customerToEdit ? 'Muokkaa asiakasta' : 'Uusi asiakas'}</DialogTitle>
           <DialogDescription>
             {customerToEdit ? 'Muokkaa asiakkaan tietoja.' : 'Lisää uusi asiakas.'}
           </DialogDescription>
         </DialogHeader>
-        <div className="py-4 space-y-4">
+        <div className="py-4 space-y-4 overflow-y-auto">
           <h2 className="text-lg font-medium">Perustiedot</h2>
           <div className="space-y-2">
             <Label htmlFor="edit-name" className="font-medium">

@@ -117,6 +117,7 @@ export default function Products() {
       toast({
         title: 'Muutokset tallennettu',
         description: `Tuote "${product.name}" on tallennettu onnistuneesti.`,
+        variant: 'success',
       })
     }
 
