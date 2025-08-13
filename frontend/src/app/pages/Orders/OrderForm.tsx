@@ -648,7 +648,6 @@ export default function CreateOrder() {
                         size="icon"
                         className="absolute right-2 top-2"
                         onClick={() => handleRemoveItem(item.id)}
-                        disabled={orderItems.length === 1}
                       >
                         <X className="h-4 w-4" />
                         <span className="sr-only">Poista</span>
