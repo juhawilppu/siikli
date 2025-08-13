@@ -6,6 +6,7 @@ export type GetCurrentUserDto = {
   authenticated: true
   userId: string
   tenantId: string
+  email: string
   initials: string
   role: 'USER' | 'OWNER'
   signupCompleted: boolean
