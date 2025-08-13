@@ -11,6 +11,8 @@ import {
   Calendar,
   Check,
   ChevronsUpDown,
+  Mail,
+  Phone,
   Plus,
   Save,
   Trash2,
@@ -546,13 +548,17 @@ export default function CreateOrder() {
                       {selectedCustomer.phone && (
                         <>
                           <br />
-                          {`☎️ ${selectedCustomer.phone}`}
+                          <Phone className="inline-block w-4 h-4 mr-1" />
+                          {' '}
+                          {selectedCustomer.phone}
                         </>
                       )}
                       {selectedCustomer.email && (
                         <>
                           <br />
-                          {`✉️ ${selectedCustomer.email}`}
+                          <Mail className="inline-block w-4 h-4 mr-1" />
+                          {' '}
+                          {selectedCustomer.email}
                         </>
                       )}
                     </p>
