@@ -173,8 +173,8 @@ export default function CreateOrder() {
           if (field === 'productId') {
             const product = products.find(p => p.id === value)
             if (product) {
-              updatedItem.price = product.price ? product.price : ''
-              updatedItem.price0 = product.price0 ? product.price0 : ''
+              updatedItem.price = product.price ? formatNumber(product.price) : ''
+              updatedItem.price0 = product.price0 ? formatNumber(product.price0) : ''
               updatedItem.packageSize = product.packageSize || undefined
               updatedItem.packageType = product.packageType || ''
             }
