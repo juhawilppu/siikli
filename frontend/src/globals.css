@@ -155,3 +155,11 @@ Override default styles for placeholder text
   }
 
 }
+
+@layer base {
+  input:focus {
+    outline: none !important;
+    @apply border-blue-500;
+    border-width: 2px !important;
+  }
+}
