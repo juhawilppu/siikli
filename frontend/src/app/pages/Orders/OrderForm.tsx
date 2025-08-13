@@ -249,7 +249,7 @@ export default function CreateOrder() {
       }
 
       const productIds = new Set()
-      for (const item of orderItems) {
+      for (const item of orderItems.filter(item => !item.deleted)) {
         if (productIds.has(item.productId)) {
           toast({
             title: 'Sama tuote useamman kerran',
@@ -262,7 +262,7 @@ export default function CreateOrder() {
         productIds.add(item.productId)
       }
 
-      for (const item of orderItems) {
+      for (const item of orderItems.filter(item => !item.deleted)) {
         if (!item.productId) {
           toast({
             title: 'Tuote ei voi olla tyhjä',
@@ -325,7 +325,7 @@ export default function CreateOrder() {
         hasNote: hasWaybillNote,
         noteBody: hasWaybillNote ? waybillNote.content : null,
         noteHeader: hasWaybillNote ? waybillNote.title : null,
-        items: orderItems.map(item => ({
+        items: orderItems.filter(item => !(item.unsaved && item.deleted)).map(item => ({
           ...item,
           id: item.unsaved ? undefined : item.id,
           price: serializeNumber(item.price),
