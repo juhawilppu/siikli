@@ -1,6 +1,6 @@
 import type { GetCustomerRequestDto, PostCreateCustomerRequestDto } from '@/app/types/types'
 import axios from 'axios'
-import { Check, ChevronsUpDown, HelpCircle, Plus, Save } from 'lucide-react'
+import { HelpCircle, Save } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from '@/app/hooks/use-toast'
 import { formatNumber } from '@/app/utils/money'
@@ -9,9 +9,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import { cn } from '@/lib/utils'
 
 function instructionTooltip(text: string) {
   const [isOpen, setIsOpen] = useState(false)
@@ -35,10 +33,9 @@ function instructionTooltip(text: string) {
   )
 }
 
-export function NewCustomer({ closeDialog, customerToEdit, forwaredCustomerGroups, onSave }: {
+export function NewCustomer({ closeDialog, customerToEdit, onSave }: {
   closeDialog: () => void
   customerToEdit?: GetCustomerRequestDto
-  forwaredCustomerGroups: string[]
   onSave: () => void
 }) {
   const [customer, setCustomer] = useState<
@@ -74,19 +71,6 @@ export function NewCustomer({ closeDialog, customerToEdit, forwaredCustomerGroup
         phone: '',
         showPriceWithoutTax: false,
       })
-  const [customerGroups, setCustomerGroups] = useState<string[]>(forwaredCustomerGroups)
-  const [inputValueCustomerGroup, setInputValueCustomerGroup] = useState('')
-  const [isCustomerGroupPopoverOpen, setIsCustomerGroupPopoverOpen] = useState(false)
-
-  const handleCreateCustomerGroup = () => {
-    if (inputValueCustomerGroup && !customerGroups.includes(inputValueCustomerGroup)) {
-      console.log('Create customer group', inputValueCustomerGroup)
-      setCustomerGroups([...customerGroups, inputValueCustomerGroup])
-    }
-    setCustomer({ ...customer, customerGroup: inputValueCustomerGroup })
-    setInputValueCustomerGroup('')
-    setIsCustomerGroupPopoverOpen(false)
-  }
 
   const saveCustomerToEdit = () => {
     if (!customer || !customer.id)
@@ -236,56 +220,56 @@ export function NewCustomer({ closeDialog, customerToEdit, forwaredCustomerGroup
             />
           </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="edit-postal_code" className="font-medium">
-              Postinumero
-            </Label>
-            <Input
-              id="edit-postal_code"
-              value={customer.postalCode || ''}
-              onChange={e => setCustomer({ ...customer, postalCode: e.target.value })}
-              maxLength={5}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="edit-city" className="font-medium">
-              Kaupunki
-            </Label>
-            <Input
-              id="edit-city"
-              value={customer.city || ''}
-              onChange={e => setCustomer({ ...customer, city: e.target.value })}
-              maxLength={255}
-            />
-          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="edit-postal_code" className="font-medium">
+                Postinumero
+              </Label>
+              <Input
+                id="edit-postal_code"
+                value={customer.postalCode || ''}
+                onChange={e => setCustomer({ ...customer, postalCode: e.target.value })}
+                maxLength={5}
+              />
             </div>
+            <div className="space-y-2">
+              <Label htmlFor="edit-city" className="font-medium">
+                Kaupunki
+              </Label>
+              <Input
+                id="edit-city"
+                value={customer.city || ''}
+                onChange={e => setCustomer({ ...customer, city: e.target.value })}
+                maxLength={255}
+              />
+            </div>
+          </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="edit-email" className="font-medium">
-              Sähköposti
-            </Label>
-            <Input
-              id="edit-email"
-              type="email"
-              value={customer.email || ''}
-              onChange={e => setCustomer({ ...customer, email: e.target.value })}
-              maxLength={255}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="edit-phone" className="font-medium">
-              Puhelin
-            </Label>
-            <Input
-              id="edit-phone"
-              value={customer.phone || ''}
-              onChange={e => setCustomer({ ...customer, phone: e.target.value })}
-              maxLength={255}
-            />
-          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="edit-email" className="font-medium">
+                Sähköposti
+              </Label>
+              <Input
+                id="edit-email"
+                type="email"
+                value={customer.email || ''}
+                onChange={e => setCustomer({ ...customer, email: e.target.value })}
+                maxLength={255}
+              />
             </div>
+            <div className="space-y-2">
+              <Label htmlFor="edit-phone" className="font-medium">
+                Puhelin
+              </Label>
+              <Input
+                id="edit-phone"
+                value={customer.phone || ''}
+                onChange={e => setCustomer({ ...customer, phone: e.target.value })}
+                maxLength={255}
+              />
+            </div>
+          </div>
 
           <div className="border-t pt-6 mt-6" />
 

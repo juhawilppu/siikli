@@ -113,14 +113,12 @@ function SortableTableRow({ customer, onEdit, onDelete }: {
 
 export function Customers() {
   const [customers, setCustomers] = useState<GetCustomerRequestDto[]>([])
-  const [customerGroups, setCustomerGroups] = useState<string[]>([])
 
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [customerToEdit, setCustomerToEdit] = useState<GetCustomerRequestDto>()
   const [showCreateDialog, setShowCreateDialog] = useState(false)
   const [customerIdToDelete, setCustomerIdToDelete] = useState<string | null>(null)
-  const [customerGroupFilter, setCustomerGroupFilter] = useState<string>('all')
   const { toast } = useToast()
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -132,7 +130,6 @@ export function Customers() {
       .get<GetCustomersResponseDto>('/customers')
       .then((response) => {
         setCustomers(response.data.customers)
-        setCustomerGroups(response.data.customerGroups)
       })
       .finally(() => setLoading(false))
   }
@@ -153,10 +150,7 @@ export function Customers() {
           || customer.email?.toLowerCase().includes(searchQuery.toLowerCase())
           || customer.phone?.toLowerCase().includes(searchQuery.toLowerCase())
 
-      // Customer group filter
-      const matchesGroup = customerGroupFilter === 'all' || customer.customerGroup === customerGroupFilter
-
-      return matchesSearch && matchesGroup
+      return matchesSearch
     })
 
   // Customer edit
@@ -217,27 +211,6 @@ export function Customers() {
               onChange={handleSearch}
               className="w-full sm:w-auto"
             />
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="gap-1">
-                  <Filter className="h-4 w-4 mr-1" />
-                  Asiakasryhmä:
-                  {' '}
-                  {customerGroupFilter === 'all' ? 'Kaikki' : customerGroupFilter}
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem onClick={() => setCustomerGroupFilter('all')}>
-                  Kaikki asiakasryhmät
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                {customerGroups.map(customerGroup => (
-                  <DropdownMenuItem key={customerGroup} onClick={() => setCustomerGroupFilter(customerGroup)}>
-                    {customerGroup}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
           </div>
           <Button onClick={() => setShowCreateDialog(true)}>Lisää asiakas</Button>
         </div>
@@ -299,7 +272,6 @@ export function Customers() {
             }
           }
           customerToEdit={customerToEdit}
-          forwaredCustomerGroups={customerGroups}
           onSave={() => {
             refreshCustomers()
             setShowCreateDialog(false)
