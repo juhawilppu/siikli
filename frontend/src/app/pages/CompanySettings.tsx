@@ -242,6 +242,12 @@ export default function CompanySettings() {
   if (!companyData || !users || !user)
     return <SiikliPage title="Oma yritys" description="Voit hallinnoida yrityksesi asetuksia täällä" />
 
+  const free = companyData.subscriptionType === 'FREE'
+  const trial = companyData.subscriptionType === 'PREMIUM' && companyData.trialEndDate && new Date(companyData.trialEndDate) > new Date()
+  const premium = companyData.subscriptionType === 'PREMIUM' && !trial && (!companyData.subscriptionEndDate || new Date(companyData.subscriptionEndDate) > new Date())
+
+  const subscriptionType = trial ? 'Free (3 kk koejakso)' : premium ? 'Premium' : free ? 'Free' : 'Ei tilaus'
+
   return (
     <>
       <SiikliPage title="Oma yritys" description="Voit hallinnoida yrityksesi asetuksia täällä">
@@ -476,8 +482,7 @@ export default function CompanySettings() {
                     <h3 className="text-lg font-medium text-blue-800 mb-2">
                       Nykyinen tilaus:
                       {' '}
-                      {companyData.subscriptionStartDate || (companyData.subscriptionEndDate && new Date(companyData.subscriptionEndDate).getTime() > new Date().getTime()) || (companyData.trialEndDate && new Date(companyData.trialEndDate).getTime() > new Date().getTime()) ? 'Premium' : 'Free'}
-                      {companyData.trialEndDate && new Date(companyData.trialEndDate).getTime() > new Date().getTime() ? ' (Kokeilujakso)' : ''}
+                      {subscriptionType}
                     </h3>
                     {companyData.trialEndDate && (
                       <>
@@ -578,8 +583,8 @@ export default function CompanySettings() {
                           <span>Rajoitettu määrä tilauksia (20/kk)</span>
                         </li>
                       </ul>
-                      <Button onClick={() => askSwitchSubscription('FREE')} variant="outline" className="w-full" disabled={companyData.subscriptionType === 'FREE'}>
-                        {companyData.subscriptionType === 'FREE' ? 'Nykyinen taso' : 'Vaihda tilaukseen'}
+                      <Button onClick={() => askSwitchSubscription('FREE')} variant="outline" className="w-full" disabled={subscriptionType === 'Free' || subscriptionType === 'Free (3 kk koejakso)'}>
+                        {subscriptionType === 'Free' || subscriptionType === 'Free (3 kk koejakso)' ? 'Nykyinen taso' : 'Vaihda taso'}
                       </Button>
                     </div>
 
@@ -649,8 +654,8 @@ export default function CompanySettings() {
                           <span>Rajoittamaton määrä tilauksia</span>
                         </li>
                       </ul>
-                      <Button onClick={() => askSwitchSubscription('PREMIUM')} className="w-full bg-blue-600 hover:bg-blue-700" disabled={companyData.subscriptionType === 'PREMIUM'}>
-                        {companyData.subscriptionType === 'PREMIUM' ? 'Nykyinen taso' : 'Vaihda tilaukseen'}
+                      <Button onClick={() => askSwitchSubscription('PREMIUM')} className="w-full bg-blue-600 hover:bg-blue-700" disabled={subscriptionType === 'Premium'}>
+                        {subscriptionType === 'Premium' ? 'Nykyinen taso' : 'Vaihda taso'}
                       </Button>
                     </div>
                   </div>
