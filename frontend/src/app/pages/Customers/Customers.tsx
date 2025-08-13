@@ -2,7 +2,6 @@ import type { GetCustomerRequestDto, GetCustomersResponseDto } from '@/app/types
 import axios from 'axios'
 import {
   Edit,
-  Filter,
   Trash2,
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
@@ -20,13 +19,6 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'

@@ -136,7 +136,7 @@ export default function Orders() {
                       defaultMonth={endDate}
                       onSelect={(value) => {
                         setEndDate(value as Date)
-                          setOpenEndDate(false)
+                        setOpenEndDate(false)
                       }}
                       required
                       locale={fi}
