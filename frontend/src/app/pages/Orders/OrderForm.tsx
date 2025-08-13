@@ -204,7 +204,7 @@ export default function CreateOrder() {
   const selectedCustomer = customers?.find(c => c.id === customerId)
 
   const calculateTotal = () => {
-    const total = orderItems.reduce((sum, item) => sum.plus((parseDecimal(item.amount || '0')).mul(parseDecimal(item.price || '0'))), new Decimal(0))
+    const total = orderItems.filter(item => !item.deleted).reduce((sum, item) => sum.plus((parseDecimal(item.amount || '0')).mul(parseDecimal(item.price || '0'))), new Decimal(0))
     return total.toDecimalPlaces(2)
   }
 
