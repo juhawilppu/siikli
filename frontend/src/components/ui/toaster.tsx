@@ -15,7 +15,7 @@ export function Toaster() {
     <ToastProvider>
       {toasts.map(({ id, title, description, action, ...props }) => {
         return (
-          <Toast key={id} {...props}>
+          <Toast key={id} {...props} onClick={() => props.onOpenChange?.(false)}>
             <div className="grid gap-1">
               {title && <ToastTitle>{title}</ToastTitle>}
               {description && (
