@@ -14,11 +14,16 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { cn } from '@/lib/utils'
 
 function instructionTooltip(text: string) {
+  const [isOpen, setIsOpen] = useState(false)
+
   return (
     <TooltipProvider>
-      <Tooltip delayDuration={0}>
+      <Tooltip delayDuration={0} open={isOpen} onOpenChange={setIsOpen}>
         <TooltipTrigger asChild>
-          <div className="inline-flex items-center cursor-pointer hover:opacity-80">
+          <div
+            className="inline-flex items-center cursor-pointer hover:opacity-80"
+            onClick={() => setIsOpen(!isOpen)}
+          >
             <HelpCircle className="h-4 w-4 text-muted-foreground ml-1" />
           </div>
         </TooltipTrigger>
