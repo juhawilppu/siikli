@@ -532,13 +532,29 @@ export default function CreateOrder() {
                     </Select>
                   </div>
                   {selectedCustomer && (
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {selectedCustomer.streetAddress}
-                      ,
-                      {' '}
-                      {selectedCustomer.postalCode}
-                      {' '}
-                      {selectedCustomer.city}
+                    <p className="text-xs text-gray-500 mt-1">
+                      {[
+                        selectedCustomer.streetAddress,
+                        selectedCustomer.postalCode,
+                      ].filter(Boolean).join(', ')}
+                      {selectedCustomer.city && (
+                        <>
+                          <br />
+                          {selectedCustomer.city}
+                        </>
+                      )}
+                      {selectedCustomer.phone && (
+                        <>
+                          <br />
+                          {`☎️ ${selectedCustomer.phone}`}
+                        </>
+                      )}
+                      {selectedCustomer.email && (
+                        <>
+                          <br />
+                          {`✉️ ${selectedCustomer.email}`}
+                        </>
+                      )}
                     </p>
                   )}
                 </div>
