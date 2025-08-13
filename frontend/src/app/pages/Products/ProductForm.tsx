@@ -12,7 +12,6 @@ import {
 } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from '@/app/hooks/use-toast.js'
-import { formatNumber } from '@/app/utils/money.js'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { Button } from '@/components/ui/button'
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from '@/components/ui/command'
@@ -46,8 +45,8 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
   }>>(mode === 'edit'
     ? {
         ...productToEdit,
-        price: productToEdit?.price ? formatNumber(productToEdit.price) : '',
-        price0: productToEdit?.price0 ? formatNumber(productToEdit.price0) : '',
+        price: productToEdit?.price ? productToEdit.price : '',
+        price0: productToEdit?.price0 ? productToEdit.price0 : '',
         type: productToEdit?.type || '',
         subtype: productToEdit?.subtype || '',
         packageSize: productToEdit?.packageSize || undefined,
@@ -106,7 +105,7 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
     }
 
     if (mode === 'edit') {
-      await axios.post(`/products/${product.id}`, data)
+      await axios.put(`/products/${product.id}`, data)
       onSave({ ...product, price: product.price ? Number.parseFloat(product.price) : undefined, price0: product.price0 ? Number.parseFloat(product.price0) : undefined } as GetProductResponseDto)
     }
     else {
@@ -179,7 +178,7 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
             />
           </div>
           <Separator />
-          <Accordion type="single" collapsible className="w-full overflow-x-visible">
+          <Accordion type="single" collapsible defaultValue="pricing" className="w-full overflow-x-visible">
             {false && (
               <AccordionItem value="grouping">
                 <AccordionTrigger className="py-3 text-base font-medium">Ryhmittelytiedot</AccordionTrigger>

@@ -3,7 +3,7 @@ import { Decimal } from '@prisma/client/runtime/library'
 import express from 'express'
 import { getUser, isAuthenticated } from '../middlewares/permissions'
 import { ProductService } from '../services/product-service'
-import { formatNumber } from '../utils/money'
+import { serializeNumber } from '../utils/money'
 
 const productsRoute = express.Router()
 
@@ -15,8 +15,8 @@ productsRoute.get(`/api/products`, isAuthenticated, async (req, res) => {
     return {
       id: p.id,
       name: p.name,
-      price: formatNumber(p.price),
-      price0: formatNumber(p.price0),
+      price: p.price ? serializeNumber(p.price) : undefined,
+      price0: p.price0 ? serializeNumber(p.price0) : undefined,
       packageSize: p.packageSize,
       packageType: p.packageType,
       customerGroup: p.customerGroup,
