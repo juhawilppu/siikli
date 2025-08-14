@@ -17,7 +17,7 @@ invoiceRoute.get(`/api/invoices`, isAuthenticated, async (req, res) => {
   const preview = req.query.preview === 'true'
 
   try {
-    const invoice = await InvoiceService.getInvoice(customerId, tenantId, startDate, endDate)
+    const invoice = await InvoiceService.getInvoice(customerId, tenantId, startDate, endDate, preview)
 
     if (preview) {
       const invoiceSummary = {

@@ -1,6 +1,6 @@
 import type React from 'react'
 
-import type { GetCustomerRequestDto, GetCustomersResponseDto, GetOrderDto, GetPackageSettings, GetProductResponseDto, OrderRow, PostOrderRequestDto, PostOrderResponseDto } from '@/app/types/types'
+import type { GetCustomerRequestDto, GetCustomersResponseDto, GetOrderDto, GetPackageSettings, GetProductResponseDto, OrderRow, OrderStatus, PostOrderRequestDto, PostOrderResponseDto } from '@/app/types/types'
 
 import { captureException } from '@sentry/react'
 import axios from 'axios'
@@ -20,6 +20,7 @@ import {
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { NavLink, useNavigate, useParams } from 'react-router-dom'
+import { OrderStatusBadge } from '@/app/components/OrderStatusBadge'
 import SiikliPage from '@/app/components/SiikliPage'
 import { useIsMobile } from '@/app/hooks/use-mobile'
 import { useToast } from '@/app/hooks/use-toast'
@@ -44,6 +45,8 @@ export default function CreateOrder() {
   const [customers, setCustomers] = useState<GetCustomerRequestDto[]>()
   const [products, setProducts] = useState<GetProductResponseDto[]>()
   const [isLoading, setIsLoading] = useState(true)
+  const [openOrderStatus, setOpenOrderStatus] = useState(false)
+  const [status, setStatus] = useState<OrderStatus>('WAITING_FOR_DELIVERY')
   const [deliveryDate, setDeliveryDate] = useState<Date>()
   const [customerId, setCustomerId] = useState<string>('')
   const [hasWaybillNote, setHasWaybillNote] = useState<boolean>(false)
@@ -140,6 +143,7 @@ export default function CreateOrder() {
         setCustomerId(res.data.customerId)
         console.log(`settins customerId to ${res.data.customerId}`)
         setDeliveryDate(new Date(res.data.deliveryDate))
+        setStatus(res.data.status)
         setHasWaybillNote(res.data.hasNote)
         if (res.data.hasNote) {
           setWaybillNote({ title: res.data.noteHeader || '', content: res.data.noteBody || '' })
@@ -325,6 +329,7 @@ export default function CreateOrder() {
         customerId: selectedCustomer.id,
         deliveryDate: dateToIso(deliveryDate),
         hasNote: hasWaybillNote,
+        status,
         noteBody: hasWaybillNote ? waybillNote.content : null,
         noteHeader: hasWaybillNote ? waybillNote.title : null,
         items: orderItems.filter(item => !(item.unsaved && item.deleted)).map(item => ({
@@ -479,7 +484,7 @@ export default function CreateOrder() {
         <Button
           variant="ghost"
           size="icon"
-          disabled={isSubmitting}
+          disabled={isSubmitting || status !== 'WAITING_FOR_DELIVERY'}
           type="button"
           onClick={() => setConfirmDialog(true)}
           className="absolute z-10 top-32 right-9 h-8 w-8 text-red-600 hover:text-red-800 hover:bg-red-50"
@@ -516,11 +521,11 @@ export default function CreateOrder() {
               <CardDescription className="text-gray-700">Valitse asiakas ja toimituspäivä</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                 <div className="space-y-2">
                   <Label htmlFor="customer">Asiakas</Label>
                   <div className="flex gap-2">
-                    <Select value={customerId} onValueChange={setCustomerId}>
+                    <Select value={customerId} disabled={status !== 'WAITING_FOR_DELIVERY'} onValueChange={setCustomerId}>
                       <SelectTrigger id="customer">
                         <SelectValue placeholder="Valitse asiakas" />
                       </SelectTrigger>
@@ -571,6 +576,7 @@ export default function CreateOrder() {
                     <PopoverTrigger asChild>
                       <Button
                         variant="outline"
+                        disabled={status !== 'WAITING_FOR_DELIVERY'}
                         className={`w-full justify-start text-left font-normal ${deliveryDate ? '' : 'placeholder'}`}
                         id="delivery-date"
                       >
@@ -595,6 +601,50 @@ export default function CreateOrder() {
                     </PopoverContent>
                   </Popover>
                 </div>
+                <div className="space-y-2">
+                  <Label htmlFor="order-status">Tilauksen tila</Label>
+                  <div className="flex items-center gap-4">
+                    <OrderStatusBadge status={status} />
+                    <Popover open={openOrderStatus} onOpenChange={setOpenOrderStatus}>
+                      <PopoverTrigger asChild>
+                        <Button variant="outline">
+                          <ChevronsUpDown className="mr-2 h-4 w-4" />
+                          Muuta tilaa
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-[200px] p-0">
+                        <Command>
+                          <CommandGroup>
+                            <CommandItem onSelect={() => {
+                              setStatus('WAITING_FOR_DELIVERY')
+                              setOpenOrderStatus(false)
+                            }}
+                            >
+                              Odottaa toimitusta
+                            </CommandItem>
+                            <CommandItem onSelect={() => {
+                              setStatus('DELIVERED')
+                              setOpenOrderStatus(false)
+                            }}
+                            >
+                              Toimitettu
+                            </CommandItem>
+                            <CommandItem onSelect={() => {
+                              setStatus('INVOICED')
+                              setOpenOrderStatus(false)
+                            }}
+                            >
+                              Laskutettu
+                            </CommandItem>
+                          </CommandGroup>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+                  <p className="text-sm text-gray-500">
+                    Tila päivittyy automaattisesti toimitusten ja laskutuksen mukaan
+                  </p>
+                </div>
               </div>
 
               <Separator className="my-4" />
@@ -602,6 +652,7 @@ export default function CreateOrder() {
                 <Checkbox
                   id="include-waybill"
                   checked={hasWaybillNote}
+                  disabled={status !== 'WAITING_FOR_DELIVERY'}
                   onCheckedChange={checked => setHasWaybillNote(checked as boolean)}
                 />
                 <Label htmlFor="include-waybill" className="font-medium">
@@ -652,6 +703,7 @@ export default function CreateOrder() {
                         type="button"
                         variant="ghost"
                         size="icon"
+                        disabled={status !== 'WAITING_FOR_DELIVERY'}
                         className="absolute right-2 top-2"
                         onClick={() => handleRemoveItem(item.id)}
                       >
@@ -664,6 +716,7 @@ export default function CreateOrder() {
                           <Label htmlFor={`product-${item.productId}`}>Tuote</Label>
                           <Select
                             value={item.productId}
+                            disabled={status !== 'WAITING_FOR_DELIVERY'}
                             onValueChange={value => handleItemChange(item.id, 'productId', value)}
                           >
                             <SelectTrigger id={`product-${item.id}`}>
@@ -690,6 +743,7 @@ export default function CreateOrder() {
                             type={isMobile ? 'number' : 'text'}
                             min={isMobile ? 0 : undefined}
                             step={isMobile ? 0.01 : undefined}
+                            disabled={status !== 'WAITING_FOR_DELIVERY'}
                             onChange={e =>
                               handleItemChange(item.id, 'amount', e.target.value)}
                             onBlur={() => {
@@ -713,6 +767,7 @@ export default function CreateOrder() {
                               type={isMobile ? 'number' : 'text'}
                               min={isMobile ? 0 : undefined}
                               step={isMobile ? 0.01 : undefined}
+                              disabled={status !== 'WAITING_FOR_DELIVERY'}
                               onChange={e =>
                                 handleItemChange(item.id, 'price', e.target.value)}
                               onBlur={(e) => {
@@ -737,6 +792,7 @@ export default function CreateOrder() {
                               type={isMobile ? 'number' : 'text'}
                               min={isMobile ? 0 : undefined}
                               step={isMobile ? 0.01 : undefined}
+                              disabled={status !== 'WAITING_FOR_DELIVERY'}
                               onChange={e =>
                                 handleItemChange(item.id, 'price0', e.target.value)}
                               onBlur={(e) => {
@@ -755,6 +811,7 @@ export default function CreateOrder() {
                                 variant="outline"
                                 role="combobox"
                                 className={`w-full justify-between ${item.packageSize ? '' : 'placeholder'}`}
+                                disabled={status !== 'WAITING_FOR_DELIVERY'}
                               >
                                 {item.packageSize || 'Valitse pakkauskoko'}
                                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -862,6 +919,7 @@ export default function CreateOrder() {
                                 variant="outline"
                                 role="combobox"
                                 className={`w-full justify-between ${item.packageType ? '' : 'placeholder'}`}
+                                disabled={status !== 'WAITING_FOR_DELIVERY'}
                               >
                                 {item.packageType || 'Valitse pakkaustyyppi'}
                                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -966,6 +1024,7 @@ export default function CreateOrder() {
                           <Input
                             id={`notes-${item.id}`}
                             value={item.freetext}
+                            disabled={status !== 'WAITING_FOR_DELIVERY'}
                             onChange={e => handleItemChange(item.id, 'freetext', e.target.value)}
                             placeholder="Lisätietoa tästä tuotteesta"
                           />
@@ -997,7 +1056,7 @@ export default function CreateOrder() {
                 </div>
               </ScrollArea>
               <div className="mt-4 text-right">
-                <Button variant="outline" type="button" onClick={handleAddItem} size="sm">
+                <Button variant="outline" type="button" onClick={handleAddItem} size="sm" disabled={status !== 'WAITING_FOR_DELIVERY'}>
                   <Plus className="mr-2 h-4 w-4" />
                   Lisää tuote
                 </Button>

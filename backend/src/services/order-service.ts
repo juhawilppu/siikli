@@ -1,4 +1,4 @@
-import type { Order } from '@prisma/client'
+import type { Order, OrderStatus } from '@prisma/client'
 import type { GetOrderDto, GetOrderList, PostOrderItemRequest } from '@siikli/shared'
 import { dateToIso, parseIsoDate } from '@siikli/shared'
 import { endOfDay, endOfMonth, parse, startOfDay, startOfMonth } from 'date-fns'
@@ -21,10 +21,11 @@ export interface OrderRowDto {
 
 export const OrderService = {
 
-  async createOrder(input: { tenantId: string, customerId: string, deliveryDate: string, hasNote: boolean, noteHeader: string | null, noteBody: string | null, items: PostOrderItemRequest[] }): Promise<Order> {
+  async createOrder(input: { tenantId: string, customerId: string, status: OrderStatus, deliveryDate: string, hasNote: boolean, noteHeader: string | null, noteBody: string | null, items: PostOrderItemRequest[] }): Promise<Order> {
     const {
       tenantId,
       customerId,
+      status,
       deliveryDate,
       hasNote,
       noteHeader,
@@ -50,6 +51,7 @@ export const OrderService = {
         data: {
           customerId,
           tenantId,
+          status,
           deliveryDate: parseIsoDate(deliveryDate),
           waybillNumber,
           hasNote,
@@ -82,7 +84,7 @@ export const OrderService = {
     })
   },
 
-  async updateOrder(data: { tenantId: string, userId: string, customerId: string, id: string, deliveryDate: string, hasNote: boolean, noteHeader: string | null, noteBody: string | null, items: PostOrderItemRequest[] }): Promise<void> {
+  async updateOrder(data: { tenantId: string, userId: string, customerId: string, id: string, status: OrderStatus, deliveryDate: string, hasNote: boolean, noteHeader: string | null, noteBody: string | null, items: PostOrderItemRequest[] }): Promise<void> {
     for (const item of data.items) {
       await TenantService.verifyPackageSizeAndType(item.packageType, item.packageSize, data.tenantId)
     }
@@ -90,6 +92,7 @@ export const OrderService = {
       data: {
         deliveryDate: parseIsoDate(data.deliveryDate),
         hasNote: data.hasNote,
+        status: data.status,
         noteHeader: data.hasNote ? data.noteHeader : undefined,
         noteBody: data.hasNote ? data.noteBody : undefined,
         showPriceWithoutTax: false,
@@ -174,7 +177,7 @@ export const OrderService = {
     })
   },
 
-  async getOrders(tenantId: string, startDate: Date, endDate: Date): Promise<GetOrderList[]> {
+  async getOrders(tenantId: string, startDate: Date, endDate: Date, status: OrderStatus | undefined): Promise<GetOrderList[]> {
     const result = await prisma.order.findMany({
       include: {
         customer: true,
@@ -196,6 +199,7 @@ export const OrderService = {
           lte: endOfDay(endDate),
         },
         tenantId,
+        status,
       },
     })
     const mapped = result.map((o) => {
@@ -203,6 +207,7 @@ export const OrderService = {
         id: o.id,
         waybillNumber: o.waybillNumber,
         deliveryDate: dateToIso(o.deliveryDate),
+        status: o.status,
         total: o.orderRows.map(o => o.amount.mul(o.price)).reduce((a, b) => a.add(b), new Decimal(0)).toNumber(),
         customer: {
           id: o.customerId,
@@ -239,6 +244,7 @@ export const OrderService = {
     return {
       id: result.id,
       waybillNumber: result.waybillNumber,
+      status: result.status,
       deliveryDate: dateToIso(result.deliveryDate),
       customerId: result.customerId,
       hasNote: result.hasNote,
@@ -285,7 +291,7 @@ export const OrderService = {
     return Math.max(0, 20 - orders)
   },
 
-  async getWaybillHtmls(tenantId: string, startDate: string, endDate: string): Promise<string> {
+  async getWaybillHtmls(tenantId: string, startDate: string, endDate: string, changeStatus: boolean): Promise<string> {
     const orders = await prisma.order.findMany({
       include: {
         customer: true,
@@ -315,6 +321,21 @@ export const OrderService = {
       },
     })
 
+    if (changeStatus) {
+      await prisma.order.updateMany({
+        where: {
+          id: {
+            in: orders.map(o => o.id),
+          },
+          tenantId,
+          status: 'WAITING_FOR_DELIVERY',
+        },
+        data: {
+          status: 'DELIVERED',
+        },
+      })
+    }
+
     const company = await prisma.tenant.findFirstOrThrow({
       where: {
         id: tenantId,
@@ -326,8 +347,8 @@ export const OrderService = {
     return document
   },
 
-  async getWaybillPdf(tenantId: string, startDate: string, endDate: string): Promise<Uint8Array> {
-    const document = await this.getWaybillHtmls(tenantId, startDate, endDate)
+  async getWaybillPdf(tenantId: string, startDate: string, endDate: string, changeStatus: boolean): Promise<Uint8Array> {
+    const document = await this.getWaybillHtmls(tenantId, startDate, endDate, changeStatus)
 
     console.log('creating pdf')
     console.log(document)

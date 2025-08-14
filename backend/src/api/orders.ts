@@ -1,3 +1,4 @@
+import type { OrderStatus } from '@prisma/client'
 import type {
   GetOrderDto,
   GetOrderList,
@@ -31,9 +32,10 @@ ordersRoute.get(`/api/orders`, isAuthenticated, async (req, res) => {
 
   const startDate = parseIsoDate(req.query.startDate as string)
   const endDate = parseIsoDate(req.query.endDate as string)
+  const status = req.query.status as OrderStatus | undefined
   const { tenantId } = getUser(req)
 
-  const orders = await OrderService.getOrders(tenantId, startDate, endDate)
+  const orders = await OrderService.getOrders(tenantId, startDate, endDate, status)
 
   res.json(orders satisfies GetOrderList[])
 })
@@ -45,9 +47,11 @@ ordersRoute.get(`/api/orders/waybills`, isAuthenticated, async (req, res) => {
     return res.status(400)
   }
 
+  const changeStatus = req.query.changeStatus === 'true'
+
   const { tenantId } = getUser(req)
 
-  const pdfBuffer = await OrderService.getWaybillPdf(tenantId, req.query.startDate as string, req.query.endDate as string)
+  const pdfBuffer = await OrderService.getWaybillPdf(tenantId, req.query.startDate as string, req.query.endDate as string, changeStatus)
 
   console.log('pdfBuffer', pdfBuffer)
 
@@ -112,6 +116,7 @@ ordersRoute.post(`/api/orders/:id`, isAuthenticated, async (req, res) => {
   await OrderService.updateOrder({
     ...data,
     tenantId,
+    status: data.status,
     userId,
     id: req.params.id,
     deliveryDate: data.deliveryDate,

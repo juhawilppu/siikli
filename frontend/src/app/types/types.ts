@@ -52,6 +52,7 @@ export interface PostOrderItemRequest {
 }
 
 export interface PostOrderRequestDto {
+  status: OrderStatus
   deliveryDate: string
   customerId: string
   hasNote: boolean
@@ -73,12 +74,14 @@ export interface GetOrderDto {
   noteBody: string | null
   noteHeader: string | null
   items: GetOrderRowDto[]
+  status: OrderStatus
 }
 
 export interface GetOrderList {
   id: string
   deliveryDate: string
   waybillNumber: number
+  status: 'WAITING_FOR_DELIVERY' | 'DELIVERED' | 'INVOICED'
   customer: {
     id: string
     name: string
@@ -125,6 +128,8 @@ export interface OrderRow {
   packageType: string | null
   freetext: string | null
 }
+
+export type OrderStatus = 'WAITING_FOR_DELIVERY' | 'DELIVERED' | 'INVOICED'
 
 export interface PackagingListGroupedByCustomer {
   deliveryDate: string

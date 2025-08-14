@@ -82,7 +82,7 @@ export interface InvoiceDto {
 }
 
 export const InvoiceService = {
-  async getInvoice(customerId: string, tenantId: string, startDate: Date, endDate: Date) {
+  async getInvoice(customerId: string, tenantId: string, startDate: Date, endDate: Date, preview: boolean) {
     const customer = await prisma.customer.findUnique({
       where: {
         id: customerId,
@@ -96,6 +96,7 @@ export const InvoiceService = {
     const orders = await prisma.order.findMany({
       where: {
         customerId: customer.id,
+        status: 'DELIVERED',
         tenantId,
         deliveryDate: {
           gte: startDate,
@@ -113,6 +114,21 @@ export const InvoiceService = {
         },
       },
     })
+
+    if (!preview) {
+      await prisma.order.updateMany({
+        data: {
+          status: 'INVOICED',
+        },
+        where: {
+          id: {
+            in: orders.map(o => o.id),
+          },
+          status: 'DELIVERED',
+          tenantId,
+        },
+      })
+    }
 
     const company = await prisma.tenant.findFirstOrThrow({
       where: {
