@@ -8,3 +8,10 @@ healthRoute.get(
     res.status(200).json({ message: 'OK', node: 22, version: process.env.VERSION })
   },
 )
+
+healthRoute.get(
+  '/api/exception',
+  () => {
+    throw new Error('test')
+  },
+)

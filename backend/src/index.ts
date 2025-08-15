@@ -32,7 +32,7 @@ async function startServer() {
   app.disable('x-powered-by')
 
   if (process.env.NODE_ENV !== 'production') {
-    app.use(cors())
+  app.use(cors())
   }
 
   app.use('/api/', (req, res, next) => {
@@ -79,7 +79,8 @@ async function startServer() {
     session({
       store: new RedisStore({ client: redisClient }),
       secret: sessionSecret,
-      name: 'siikli-session',
+      name: `__Host-siikli-session`,
+      proxy: true,
       resave: false,
       saveUninitialized: false,
       cookie: {

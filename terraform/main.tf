@@ -50,6 +50,8 @@ module "alb" {
   alb_sg_id = module.vpc.alb_sg_id
   public_subnet_ids = module.vpc.public_subnets
   vpc_id = module.vpc.vpc_id
+  acm_certificate_arn = module.route53.certificate_arn
+  route53_zone_id = module.route53.zone_id
 }
 
 module "ecs" {
@@ -67,7 +69,6 @@ module "cdn" {
   domain_name         = var.domain_name
   acm_certificate_arn = module.route53.certificate_arn
   route53_zone_id     = module.route53.zone_id
-  alb_dns_name        = module.alb.alb_dns_name
 }
 
 module "redis" {

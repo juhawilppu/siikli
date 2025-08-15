@@ -9,7 +9,7 @@ export default function ErrorPage() {
       <div className="text-center">
         <h1 className="text-4xl font-bold text-red-500 mb-4">Kirjautuminen epäonnistui</h1>
         <p className="text-gray-600 mb-8">
-          Uuden käyttäjän rekisteröinti ei ole vielä käytettävissä.
+          Ota yhteyttä ylläpitoon: juha.wilppu@siikli.fi.
         </p>
         <Button
           onClick={() => navigate('/')}

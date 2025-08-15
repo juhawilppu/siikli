@@ -92,11 +92,11 @@ resource "aws_cloudfront_distribution" "cdn" {
   }
 
   origin {
-    domain_name = var.alb_dns_name
+    domain_name = "api.siikli.fi"
     origin_id   = "alb-siikli-backend"
 
     custom_origin_config {
-      origin_protocol_policy = "http-only"
+      origin_protocol_policy = "https-only"
       http_port              = 80
       https_port             = 443
       origin_ssl_protocols   = ["TLSv1.2"]
@@ -147,16 +147,20 @@ resource "aws_cloudfront_distribution" "cdn" {
 
 
     allowed_methods  = ["HEAD", "GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"]
-    cached_methods   = ["GET", "HEAD", "OPTIONS"]
+    cached_methods   = ["GET", "HEAD"]
 
-    forwarded_values {
-      query_string = true
-      headers      = ["Authorization", "Content-Type"]
-      cookies {
-        forward = "all"
-      }
+    min_ttl                      = 0
+    default_ttl                  = 0
+    max_ttl                      = 0
+
+  forwarded_values {
+    query_string = true
+    headers      = ["*"]
+    cookies {
+      forward = "all"
     }
   }
+}
 
   viewer_certificate {
     acm_certificate_arn      = var.acm_certificate_arn
