@@ -45,8 +45,9 @@ export default function CreateOrder() {
   const [customers, setCustomers] = useState<GetCustomerRequestDto[]>()
   const [products, setProducts] = useState<GetProductResponseDto[]>()
   const [isLoading, setIsLoading] = useState(true)
-  const [openOrderStatus, setOpenOrderStatus] = useState(false)
+  // const [openOrderStatus, setOpenOrderStatus] = useState(false)
   const [status, setStatus] = useState<OrderStatus>('WAITING_FOR_DELIVERY')
+  const [invoiceId, setInvoiceId] = useState<string | null>(null)
   const [deliveryDate, setDeliveryDate] = useState<Date>()
   const [customerId, setCustomerId] = useState<string>('')
   const [hasWaybillNote, setHasWaybillNote] = useState<boolean>(false)
@@ -141,6 +142,7 @@ export default function CreateOrder() {
           createdAt: new Date(item.createdAt),
         })))
         setCustomerId(res.data.customerId)
+        setInvoiceId(res.data.invoiceId)
         console.log(`settins customerId to ${res.data.customerId}`)
         setDeliveryDate(new Date(res.data.deliveryDate))
         setStatus(res.data.status)
@@ -605,6 +607,14 @@ export default function CreateOrder() {
                   <Label htmlFor="order-status">Tilauksen tila</Label>
                   <div className="flex items-center gap-4">
                     <OrderStatusBadge status={status} />
+                    {status === 'INVOICED' && (
+                      <div className="text-xs text-gray-500">
+                        Laskun numero:
+                        {' '}
+                        {invoiceId}
+                      </div>
+                    )}
+                    {/*
                     <Popover open={openOrderStatus} onOpenChange={setOpenOrderStatus}>
                       <PopoverTrigger asChild>
                         <Button variant="outline">
@@ -640,10 +650,13 @@ export default function CreateOrder() {
                         </Command>
                       </PopoverContent>
                     </Popover>
+                    */}
                   </div>
+                  {/*
                   <p className="text-sm text-gray-500">
                     Tila päivittyy automaattisesti toimitusten ja laskutuksen mukaan
                   </p>
+                  */}
                 </div>
               </div>
 

@@ -36,7 +36,7 @@ export default function Orders() {
   const [endDate, setEndDate] = useState<Date>(endOfMonth(now))
   const [openStartDate, setOpenStartDate] = useState(false)
   const [viewMode, setViewMode] = useState<'free' | 'waybills' | 'invoices'>('free')
-  const [status, setStatus] = useState<OrderStatus | 'ALL'>('WAITING_FOR_DELIVERY')
+  const [status, setStatus] = useState<OrderStatus | 'ALL'>('ALL')
   const [changeStatusOnPrint, setChangeStatusOnPrint] = useState(true)
   const [openEndDate, setOpenEndDate] = useState(false)
   const [isPrinting, setIsPrinting] = useState(false)

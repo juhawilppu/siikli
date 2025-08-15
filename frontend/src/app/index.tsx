@@ -163,7 +163,7 @@ function App() {
           </header>
           <div className="flex flex-1">
             {/* Desktop Sidebar */}
-            <aside className="hidden w-64 shrink-0 border-r border-slate-300 bg-gradient-to-b from-slate-100 to-slate-200 md:block">
+            <aside className="hidden w-64 shrink-0 border-r border-slate-300 bg-gradient-to-b from-slate-100 to-slate-200 md:block" style={{ zIndex: 20 }}>
               <DesktopSidebar currentPath={location.pathname} />
             </aside>
 

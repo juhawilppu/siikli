@@ -309,6 +309,7 @@ model Invoice {
   filename      String        @map("filename") @db.VarChar(255)
   total         Decimal       @map("total") @db.Decimal(10, 2)
   status        InvoiceStatus @default(PENDING) @map("status")
+  orders        Order[]
   createdAt     DateTime      @default(now()) @map("created_at")
   updatedAt     DateTime      @default(now()) @updatedAt @map("updated_at")
 
@@ -341,6 +342,8 @@ enum OrderStatus {
 model Order {
   id                  String      @id @default(uuid()) @map("id") @db.Uuid
   waybillNumber       Int         @map("waybill_number") @db.Integer
+  invoiceId           String?     @map("invoice_id") @db.Uuid
+  invoice             Invoice?    @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
   customerId          String      @map("customer_id") @db.Uuid
   deliveryDate        DateTime    @map("delivery_date") @db.Date
   hasNote             Boolean     @map("has_note")
@@ -368,6 +371,7 @@ model OrderHistory {
 
   id                  String      @map("id") @db.Uuid
   waybillNumber       Int         @map("waybill_number") @db.Integer
+  invoiceId           String?     @map("invoice_id") @db.Uuid
   customerId          String      @map("customer_id") @db.Uuid
   deliveryDate        DateTime    @map("delivery_date") @db.Date
   hasNote             Boolean     @map("has_note")

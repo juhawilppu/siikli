@@ -97,6 +97,7 @@ ordersRoute.post(`/api/orders`, isAuthenticated, async (req, res) => {
   const result = await OrderService.createOrder({
     ...data,
     tenantId,
+    status: 'WAITING_FOR_DELIVERY',
     deliveryDate: data.deliveryDate,
     items: data.items.map(item => ({
       ...item,

@@ -225,6 +225,7 @@ export const OrderService = {
       include: {
         customer: true,
         orderRows: true,
+        invoice: true,
       },
       orderBy: [
         {
@@ -245,6 +246,7 @@ export const OrderService = {
     return {
       id: result.id,
       waybillNumber: result.waybillNumber,
+      invoiceId: result.invoice?.invoiceNumber ?? null,
       status: result.status,
       deliveryDate: dateToIso(result.deliveryDate),
       customerId: result.customerId,
@@ -319,6 +321,9 @@ export const OrderService = {
           lte: endOfDay(parse(endDate as string, 'yyyy-MM-dd', new Date())),
         },
         tenantId,
+        status: {
+          in: ['WAITING_FOR_DELIVERY'],
+        },
       },
     })
 

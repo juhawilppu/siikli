@@ -191,27 +191,30 @@ export const InvoiceService = {
     const filename = `${invoiceId}-${customerId}-${dateToIso(new Date())}.pdf`
     const { key } = await uploadPdfToS3({
       bucket: 'siikli-prod-files',
-      key: `tenant/${tenantId}/invoices/${filename}`,
+      key: `${process.env.NODE_ENV === 'production' ? 'prod' : 'dev'}/tenant/${tenantId}/invoices/${filename}`,
       pdfBuffer, // Uint8Array
       metadata: { tenantId, invoiceId: invoiceId.toString(), issuedAt: new Date().toISOString() },
       retentionUntil: addYears(new Date(), 7),
     })
-    await prisma.invoice.create({
-      data: {
-        invoiceNumber: invoiceId,
-        customerId,
-        tenantId,
-        filename: key,
-        total,
-      },
-    })
-    await prisma.order.updateMany({
-      where: {
-        id: { in: ordersIds },
-        tenantId,
-        status: 'DELIVERED',
-      },
-      data: { status: 'INVOICED' },
+    await prisma.$transaction(async (tx) => {
+      const invoice = await tx.invoice.create({
+        data: {
+          invoiceNumber: invoiceId,
+          status: 'PENDING',
+          customerId,
+          tenantId,
+          filename: key,
+          total,
+        },
+      })
+      await tx.order.updateMany({
+        where: {
+          id: { in: ordersIds },
+          tenantId,
+          status: 'DELIVERED',
+        },
+        data: { invoiceId: invoice.id, status: 'INVOICED' },
+      })
     })
   },
   async getInvoices(customerId: string, tenantId: string, startDate: Date, endDate: Date) {

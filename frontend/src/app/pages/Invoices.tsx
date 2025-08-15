@@ -177,16 +177,17 @@ export function Invoices() {
                       EUR
                     </td>
                     <td className="p-4">{formatDate(invoice.createdAt)}</td>
-                    <td className="p-4">
+                    <td className="p-4 flex items-center gap-2">
                       <Button
+                        variant="outline"
+                        size="icon"
                         onClick={async () => {
                           const res = await axios.get(`/invoices/${invoice.id}/url`)
                           const { url } = res.data
                           window.open(url, '_blank') // open PDF in new tab
                         }}
                       >
-                        <Eye className="w-4 h-4 mr-2" />
-                        Tarkastele
+                        <Eye className="w-4 h-4" />
                       </Button>
                       <Button
                         variant="outline"
