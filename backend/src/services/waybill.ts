@@ -160,7 +160,7 @@ export default async function createWaybill(
             <tr>
                 <td class="align-left width-25">${item.product.name} ${item.price.lessThan(0) ? '(Hyvitys)' : ''
                 }</td>
-                <td class="align-right width-25">${item.amount}</td>
+                <td class="align-right width-25">${formatNumber(item.amount)}</td>
                 <td class="align-right width-25">${formatNumber(item.price)} €</td>
                 <td class="align-right width-25">${formatNumber(item.amount.mul(item.price))} €</td>
             </tr>`
