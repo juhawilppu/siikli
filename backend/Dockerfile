@@ -32,5 +32,6 @@ EXPOSE 3000
 
 ARG VERSION
 ENV VERSION=${VERSION}
+ENV NODE_ENV=production
 
 CMD ["/docker-entrypoint.sh"]
