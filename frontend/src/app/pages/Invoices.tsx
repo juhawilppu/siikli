@@ -1,19 +1,20 @@
-import type { GetCustomerRequestDto, GetCustomersResponseDto, GetInvoiceResponseDto } from '@/app/types/types'
+import type { GetCustomerRequestDto, GetCustomersResponseDto } from '@/app/types/types'
 import axios from 'axios'
-import { endOfMonth, startOfMonth } from 'date-fns'
 import { fi } from 'date-fns/locale'
 
-import { Calendar, Eye, Printer } from 'lucide-react'
+import { Calendar, Check, Eye } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import SiikliPage from '@/app/components/SiikliPage'
-import { toast } from '@/app/hooks/use-toast'
-import { dateToIso, formatDate } from '@/app/utils/date'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Calendar as CalendarComponent } from '@/components/ui/calendar'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { cn } from '@/lib/utils'
+import { toast } from '../hooks/use-toast'
+import { dateToIso, formatDate } from '../utils/date'
 
 export interface FlatOrderItem {
   deliveryDate: Date
@@ -22,135 +23,51 @@ export interface FlatOrderItem {
   productName: string
 }
 
+function renderInvoiceStatus(status: 'PENDING' | 'PAID') {
+  return <Badge className={cn(status === 'PAID' ? 'bg-green-500' : 'bg-gray-500')}>{status === 'PAID' ? 'Maksettu' : 'Odottaa maksua'}</Badge>
+}
+
 export function Invoices() {
   const [customers, setCustomers] = useState<GetCustomerRequestDto[]>()
-  const [invoice, setInvoice] = useState<GetInvoiceResponseDto>()
+  const [invoices, setInvoices] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
-  const [printing, setPrinting] = useState(false)
-  const [startDate, setStartDate] = useState<Date | undefined>(
-    startOfMonth(new Date(new Date().setMonth(new Date().getMonth() - 1))),
+  const [startDate, setStartDate] = useState<Date>(
+    new Date(new Date().getFullYear(), 0, 1), // January 1st of current year
   )
-  const [endDate, setEndDate] = useState<Date | undefined>(
-    endOfMonth(new Date(new Date().setMonth(new Date().getMonth() - 1))),
+  const [endDate, setEndDate] = useState<Date>(
+    new Date(new Date().getFullYear(), 11, 31), // December 31st of current year
   )
 
   const [customerId, setCustomerId] = useState<string>()
   const [openStartDate, setOpenStartDate] = useState(false)
   const [openEndDate, setOpenEndDate] = useState(false)
-  const [dirty, setDirty] = useState(true)
-
-  const getData = async () => {
-    setDirty(false)
-    setInvoice(undefined)
-
-    if (!customerId) {
-      toast({
-        title: 'Valitse asiakas',
-        description: 'Valitse asiakas, jonka laskut haluat tulostaa',
-        variant: 'destructive',
-      })
-      return
-    }
-    if (!startDate || !endDate) {
-      return
-    }
-    try {
-      const invoice = await axios.get<GetInvoiceResponseDto>('/invoices', {
-        params: {
-          customerId,
-          startDate: dateToIso(startDate),
-          endDate: dateToIso(endDate),
-          preview: 'true',
-        },
-      })
-      console.log('invoice', invoice.data)
-      setInvoice(invoice.data)
-    }
-    catch (error: any) {
-      if (error.response?.data?.error === 'No items found') {
-        toast({
-          title: 'Ei tilauksia',
-          description: 'Tällä asiakkaalla ei ole tilauksia tällä aikavälillä',
-        })
-      }
-      else {
-        toast({
-          title: 'Jokin meni pieleen',
-          description: 'Tarkista, että aloitus- ja lopetuspäivät ovat oikein',
-        })
-      }
-    }
-  }
-
-  const printInvoice = async () => {
-    if (!startDate || !endDate || !customers) {
-      return
-    }
-    setPrinting(true)
-
-    console.log('printInvoice', customerId, startDate, endDate)
-    try {
-      const response = await axios.get('/invoices', {
-        params: {
-          customerId,
-          startDate: dateToIso(startDate),
-          endDate: dateToIso(endDate),
-          preview: 'false',
-        },
-        responseType: 'blob',
-      })
-
-      // Create blob URL
-      const blob = new Blob([response.data], { type: 'application/pdf' })
-      const url = window.URL.createObjectURL(blob)
-
-      // Create temporary link and trigger download
-      const link = document.createElement('a')
-      link.href = url
-      link.setAttribute('download', `lasku-${customers.find(c => c.id === customerId)?.name.toLowerCase().replace(' ', '-')}-${dateToIso(new Date())}.pdf`)
-      document.body.appendChild(link)
-      link.click()
-
-      // Cleanup
-      link.remove()
-      window.URL.revokeObjectURL(url)
-      setPrinting(false)
-    }
-    catch (error: any) {
-      console.log('error', error)
-      if (error.response?.status === 404) {
-        toast({
-          title: 'Ei tilauksia',
-          description: 'Tällä asiakkaalla ei ole tilauksia tällä aikavälillä',
-        })
-      }
-      else {
-        toast({
-          title: 'Jokin meni pieleen',
-          description: 'Tarkista, että aloitus- ja lopetuspäivät ovat oikein',
-        })
-      }
-    }
-    finally {
-      setPrinting(false)
-    }
-  }
 
   useEffect(() => {
     axios
       .get<GetCustomersResponseDto>('/customers')
       .then(response => setCustomers(response.data.customers))
       .finally(() => setLoading(false))
+
+    axios
+      .get<any[]>('/invoices/list', {
+        params: {
+          customerId,
+          startDate: dateToIso(startDate),
+          endDate: dateToIso(endDate),
+        },
+      })
+      .then(response => setInvoices(response.data))
+      .finally(() => setLoading(false))
   }, [])
 
   if (loading)
-    return <SiikliPage title="Laskut" description="Tällä sivulla voit tulostaa laskut" />
+    return <SiikliPage title="Laskut" description="Tällä sivulla voit tarkastella laskuja" />
 
   if (!customers)
     return <div>Ei Asiakkaita</div>
 
   return (
-    <SiikliPage title="Laskut" description="Tällä sivulla voit tulostaa laskut">
+    <SiikliPage title="Laskut" description="Tällä sivulla voit tarkastella laskuja">
       <Card>
         <CardHeader>
           <CardTitle>Hakuehdot</CardTitle>
@@ -164,8 +81,6 @@ export function Invoices() {
                 value={customerId}
                 onValueChange={(value) => {
                   setCustomerId(value)
-                  setDirty(true)
-                  setInvoice(undefined)
                 }}
               >
                 <SelectTrigger id="customer" className="w-full truncate">
@@ -186,7 +101,7 @@ export function Invoices() {
                 <PopoverTrigger asChild>
                   <Button variant="outline" className="w-full justify-start text-left font-normal">
                     <Calendar className="mr-2 h-4 w-4" />
-                    {startDate ? formatDate(startDate) : <span>Select date</span>}
+                    {startDate ? formatDate(startDate) : <span>Valitse päivä</span>}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0">
@@ -195,9 +110,7 @@ export function Invoices() {
                     selected={startDate}
                     defaultMonth={startDate}
                     onSelect={(date) => {
-                      setStartDate(date)
-                      setDirty(true)
-                      setInvoice(undefined)
+                      setStartDate(date ?? new Date())
                       setOpenStartDate(false)
                     }}
                     required
@@ -223,9 +136,7 @@ export function Invoices() {
                     selected={endDate}
                     defaultMonth={endDate}
                     onSelect={(date) => {
-                      setEndDate(date)
-                      setDirty(true)
-                      setInvoice(undefined)
+                      setEndDate(date ?? new Date())
                       setOpenEndDate(false)
                     }}
                     required
@@ -234,36 +145,73 @@ export function Invoices() {
                 </PopoverContent>
               </Popover>
             </div>
-
-            <div className="space-y-2 flex flex-col justify-end items-end gap-2 md:flex-row md:justify-end md:items-end md:space-y-0">
-              <Button variant="outline" disabled={!dirty || !customerId || !startDate || !endDate} onClick={getData}>
-                <Eye className="w-4 h-4 mr-2" />
-                {' '}
-                Esikatselu
-              </Button>
-              <Button disabled={!customerId || !startDate || !endDate || printing} onClick={printInvoice}>
-                <Printer className="w-4 h-4 mr-2" />
-                {' '}
-                Tulosta
-              </Button>
-            </div>
           </div>
         </CardContent>
       </Card>
-      {invoice && (
-        <Card className="p-5">
-          <div>
-            <strong>Esikatselu</strong>
-            <p>
-              Yhteensä:
-              {' '}
-              {invoice.total}
-              {' '}
-              €
-            </p>
+      <Card>
+        <CardHeader>
+          <CardTitle>Laskut</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="relative w-full overflow-auto">
+            <table className="w-full caption-bottom text-sm">
+              <thead>
+                <tr className="border-b">
+                  <th className="h-12 px-4 text-left align-middle">Laskun numero</th>
+                  <th className="h-12 px-4 text-left align-middle">Asiakas</th>
+                  <th className="h-12 px-4 text-left align-middle">Tila</th>
+                  <th className="h-12 px-4 text-left align-middle">Summa</th>
+                  <th className="h-12 px-4 text-left align-middle">Päivämäärä</th>
+                  <th className="h-12 px-4 text-left align-middle">Toiminnot</th>
+                </tr>
+              </thead>
+              <tbody>
+                {invoices.map(invoice => (
+                  <tr key={invoice.invoiceId} className="border-b">
+                    <td className="p-4">{invoice.invoiceId}</td>
+                    <td className="p-4">{invoice.customerName}</td>
+                    <td className="p-4">{renderInvoiceStatus(invoice.status)}</td>
+                    <td className="p-4">
+                      {invoice.total}
+                      {' '}
+                      EUR
+                    </td>
+                    <td className="p-4">{formatDate(invoice.createdAt)}</td>
+                    <td className="p-4">
+                      <Button
+                        onClick={async () => {
+                          const res = await axios.get(`/invoices/${invoice.id}/url`)
+                          const { url } = res.data
+                          window.open(url, '_blank') // open PDF in new tab
+                        }}
+                      >
+                        <Eye className="w-4 h-4 mr-2" />
+                        Tarkastele
+                      </Button>
+                      <Button
+                        variant="outline"
+                        disabled={invoice.status === 'PAID'}
+                        onClick={() => {
+                          axios.post(`/invoices/${invoice.id}/mark-paid`)
+                          setInvoices(invoices.map(i => i.id === invoice.id ? { ...i, status: 'PAID' } : i))
+                          toast({
+                            title: 'Lasku merkitty maksetuksi',
+                            description: 'Lasku merkitty maksetuksi',
+                            variant: 'success',
+                          })
+                        }}
+                      >
+                        <Check className="w-4 h-4 mr-2" />
+                        Merkitse maksetuksi
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-        </Card>
-      )}
+        </CardContent>
+      </Card>
     </SiikliPage>
   )
 }

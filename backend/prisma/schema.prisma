@@ -294,16 +294,23 @@ model ProductHistory {
   @@map("product_history")
 }
 
+enum InvoiceStatus {
+  PENDING
+  PAID
+}
+
 model Invoice {
-  id            String   @id @default(uuid()) @map("id") @db.Uuid
-  invoiceNumber Int      @map("invoice_number") @db.Integer
-  customerId    String   @map("customer_id") @db.Uuid
-  tenantId      String   @map("tenant_id") @db.Uuid
-  tenant        Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  customer      Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  content       Json     @map("content") @db.JsonB
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @default(now()) @updatedAt @map("updated_at")
+  id            String        @id @default(uuid()) @map("id") @db.Uuid
+  invoiceNumber Int           @map("invoice_number") @db.Integer
+  customerId    String        @map("customer_id") @db.Uuid
+  tenantId      String        @map("tenant_id") @db.Uuid
+  tenant        Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  customer      Customer      @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  filename      String        @map("filename") @db.VarChar(255)
+  total         Decimal       @map("total") @db.Decimal(10, 2)
+  status        InvoiceStatus @default(PENDING) @map("status")
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @default(now()) @updatedAt @map("updated_at")
 
   @@map("invoice")
 }
@@ -312,13 +319,15 @@ model InvoiceHistory {
   revision  Int    @id @default(autoincrement()) @map("revision")
   operation String @map("operation")
 
-  id            String   @default(uuid()) @map("id") @db.Uuid
-  invoiceNumber Int      @map("invoice_number") @db.Integer
-  customerId    String   @map("customer_id") @db.Uuid
-  tenantId      String   @map("tenant_id") @db.Uuid
-  content       Json     @map("content") @db.JsonB
-  createdAt     DateTime @map("created_at")
-  updatedAt     DateTime @map("updated_at")
+  id            String        @map("id") @db.Uuid
+  invoiceNumber Int           @map("invoice_number") @db.Integer
+  customerId    String        @map("customer_id") @db.Uuid
+  tenantId      String        @map("tenant_id") @db.Uuid
+  filename      String        @map("filename") @db.VarChar(255)
+  total         Decimal       @map("total") @db.Decimal(10, 2)
+  status        InvoiceStatus @map("status")
+  createdAt     DateTime      @map("created_at")
+  updatedAt     DateTime      @map("updated_at")
 
   @@map("invoice_history")
 }
@@ -330,23 +339,23 @@ enum OrderStatus {
 }
 
 model Order {
-  id                  String     @id @default(uuid()) @map("id") @db.Uuid
-  waybillNumber       Int        @map("waybill_number") @db.Integer
-  customerId          String     @map("customer_id") @db.Uuid
-  deliveryDate        DateTime   @map("delivery_date") @db.Date
-  hasNote             Boolean    @map("has_note")
-  noteBody            String?    @map("note_body") @db.VarChar(1000)
-  noteHeader          String?    @map("note_header") @db.VarChar(255)
-  showPriceWithoutTax Boolean?   @default(false) @map("show_price_without_tax")
-  customerGroup       String?    @map("customer_group") @db.VarChar(256)
-  customer            Customer   @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  id                  String      @id @default(uuid()) @map("id") @db.Uuid
+  waybillNumber       Int         @map("waybill_number") @db.Integer
+  customerId          String      @map("customer_id") @db.Uuid
+  deliveryDate        DateTime    @map("delivery_date") @db.Date
+  hasNote             Boolean     @map("has_note")
+  noteBody            String?     @map("note_body") @db.VarChar(1000)
+  noteHeader          String?     @map("note_header") @db.VarChar(255)
+  showPriceWithoutTax Boolean?    @default(false) @map("show_price_without_tax")
+  customerGroup       String?     @map("customer_group") @db.VarChar(256)
+  customer            Customer    @relation(fields: [customerId], references: [id], onDelete: Cascade)
   orderRows           OrderRow[]
-  tenantId            String     @map("tenant_id") @db.Uuid
-  tenant              Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenantId            String      @map("tenant_id") @db.Uuid
+  tenant              Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   status              OrderStatus @default(WAITING_FOR_DELIVERY) @map("status")
-  createdAt           DateTime   @default(now()) @map("created_at")
-  updatedAt           DateTime   @default(now()) @updatedAt @map("updated_at")
-  deletedAt           DateTime?  @map("deleted_at") @db.Date
+  createdAt           DateTime    @default(now()) @map("created_at")
+  updatedAt           DateTime    @default(now()) @updatedAt @map("updated_at")
+  deletedAt           DateTime?   @map("deleted_at") @db.Date
 
   @@unique([waybillNumber, tenantId], map: "waybill_number_uniq")
   @@index([customerId], map: "customer_id")
@@ -357,20 +366,20 @@ model OrderHistory {
   revision  Int    @id @default(autoincrement()) @map("revision")
   operation String @map("operation")
 
-  id                  String    @map("id") @db.Uuid
-  waybillNumber       Int       @map("waybill_number") @db.Integer
-  customerId          String    @map("customer_id") @db.Uuid
-  deliveryDate        DateTime  @map("delivery_date") @db.Date
-  hasNote             Boolean   @map("has_note")
-  noteBody            String?   @map("note_body") @db.VarChar(1000)
-  noteHeader          String?   @map("note_header") @db.VarChar(255)
-  showPriceWithoutTax Boolean?  @map("show_price_without_tax")
-  customerGroup       String?   @map("customer_group") @db.VarChar(256)
-  tenantId            String    @map("tenant_id") @db.Uuid
+  id                  String      @map("id") @db.Uuid
+  waybillNumber       Int         @map("waybill_number") @db.Integer
+  customerId          String      @map("customer_id") @db.Uuid
+  deliveryDate        DateTime    @map("delivery_date") @db.Date
+  hasNote             Boolean     @map("has_note")
+  noteBody            String?     @map("note_body") @db.VarChar(1000)
+  noteHeader          String?     @map("note_header") @db.VarChar(255)
+  showPriceWithoutTax Boolean?    @map("show_price_without_tax")
+  customerGroup       String?     @map("customer_group") @db.VarChar(256)
+  tenantId            String      @map("tenant_id") @db.Uuid
   status              OrderStatus @default(WAITING_FOR_DELIVERY) @map("status")
-  createdAt           DateTime  @map("created_at")
-  updatedAt           DateTime  @map("updated_at")
-  deletedAt           DateTime? @map("deleted_at") @db.Date
+  createdAt           DateTime    @map("created_at")
+  updatedAt           DateTime    @map("updated_at")
+  deletedAt           DateTime?   @map("deleted_at") @db.Date
 
   @@map("order_history")
 }

@@ -173,7 +173,7 @@ async function main() {
         const product = products[productIdIndex]
         orderRows.push({
           productId: product.id,
-          amount: new Decimal(Math.floor(Math.random() * 10) * (product.packageSize || 1) + (Math.random() > 0.99 ? 0.5 : 0)),
+          amount: new Decimal(1 + Math.floor(Math.random() * 10) * (product.packageSize || 1) + (Math.random() > 0.99 ? 0.5 : 0)),
           price: product.price || new Decimal(0.99).toDecimalPlaces(2),
           price0: product.price0 || new Decimal(0.99).div(1.14).toDecimalPlaces(2),
           packageSize: product.packageSize || 1,
@@ -185,6 +185,7 @@ async function main() {
       await OrderService.createOrder({
         customerId: customer.id,
         tenantId: tenant.id,
+        status: 'DELIVERED',
         deliveryDate: dateToIso(subDays(new Date(), Math.floor(37 - orderIndex * 7 * Math.random()))),
         hasNote,
         noteHeader: hasNote ? 'Toimitus' : null,
@@ -220,6 +221,7 @@ async function main() {
     await OrderService.createOrder({
       tenantId: tenant.id,
       customerId: sello.id,
+      status: 'DELIVERED',
       deliveryDate: dateToIso(new Date()),
       hasNote: false,
       noteHeader: null,
@@ -245,7 +247,7 @@ async function main() {
     }
   }
 
-  const orders = await OrderService.getOrders(tenant.id, subDays(new Date(), 40), new Date())
+  const orders = await OrderService.getOrders(tenant.id, subDays(new Date(), 90), new Date(), 'DELIVERED', sello.id)
   if (orders.length !== 12) {
     throw new Error(`Expected 12 orders, got ${orders.length}`)
   }

@@ -1,7 +1,9 @@
 {
   "author": "",
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.864.0",
     "@aws-sdk/client-ses": "^3.797.0",
+    "@aws-sdk/s3-request-presigner": "^3.864.0",
     "@prisma/client": "5.6.0",
     "@sentry/node": "^9.14.0",
     "@siikli/shared": "file:../packages/shared",

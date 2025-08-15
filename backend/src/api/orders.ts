@@ -33,9 +33,11 @@ ordersRoute.get(`/api/orders`, isAuthenticated, async (req, res) => {
   const startDate = parseIsoDate(req.query.startDate as string)
   const endDate = parseIsoDate(req.query.endDate as string)
   const status = req.query.status as OrderStatus | undefined
+  const customerId = req.query.customerId as string | undefined
+
   const { tenantId } = getUser(req)
 
-  const orders = await OrderService.getOrders(tenantId, startDate, endDate, status)
+  const orders = await OrderService.getOrders(tenantId, startDate, endDate, status, customerId)
 
   res.json(orders satisfies GetOrderList[])
 })

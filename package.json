@@ -15,7 +15,8 @@
         "lint:frontend": "npm --workspace frontend run lint",
         "lint:backend": "npm --workspace backend run lint",
         "lint:fix:frontend": "npm --workspace frontend run lint:fix",
-        "lint:fix:backend": "npm --workspace backend run lint:fix"
+        "lint:fix:backend": "npm --workspace backend run lint:fix",
+        "build:packages": "npm --workspace packages run build"
     },
     "devDependencies": {
         "@antfu/eslint-config": "^5.2.0",

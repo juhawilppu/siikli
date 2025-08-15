@@ -177,7 +177,7 @@ export const OrderService = {
     })
   },
 
-  async getOrders(tenantId: string, startDate: Date, endDate: Date, status: OrderStatus | undefined): Promise<GetOrderList[]> {
+  async getOrders(tenantId: string, startDate: Date, endDate: Date, status: OrderStatus | undefined, customerId: string | undefined): Promise<GetOrderList[]> {
     const result = await prisma.order.findMany({
       include: {
         customer: true,
@@ -200,6 +200,7 @@ export const OrderService = {
         },
         tenantId,
         status,
+        customerId,
       },
     })
     const mapped = result.map((o) => {

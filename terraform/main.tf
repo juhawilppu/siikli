@@ -80,3 +80,7 @@ module "backups" {
   source = "./modules/backups"
   db_arn = module.rds.db_arn
 }
+
+module "s3" {
+  source = "./modules/s3"
+}

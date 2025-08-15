@@ -1,7 +1,8 @@
 import { dateToIso } from '@siikli/shared'
-import { addDays } from 'date-fns'
+import { addDays, addYears } from 'date-fns'
 import Decimal from 'decimal.js'
 import prisma from '../prisma'
+import { uploadPdfToS3 } from '../utils/upload-to-s3'
 
 export type InvoiceRow = {
   usePrice0: true
@@ -82,7 +83,7 @@ export interface InvoiceDto {
 }
 
 export const InvoiceService = {
-  async getInvoice(customerId: string, tenantId: string, startDate: Date, endDate: Date, preview: boolean) {
+  async getInvoice(customerId: string, tenantId: string, startDate: Date, endDate: Date) {
     const customer = await prisma.customer.findUnique({
       where: {
         id: customerId,
@@ -114,21 +115,6 @@ export const InvoiceService = {
         },
       },
     })
-
-    if (!preview) {
-      await prisma.order.updateMany({
-        data: {
-          status: 'INVOICED',
-        },
-        where: {
-          id: {
-            in: orders.map(o => o.id),
-          },
-          status: 'DELIVERED',
-          tenantId,
-        },
-      })
-    }
 
     const company = await prisma.tenant.findFirstOrThrow({
       where: {
@@ -199,16 +185,50 @@ export const InvoiceService = {
       ...calculateTotals(items, customer.discount, customer.showPriceWithoutTax),
     } satisfies InvoiceDto
 
+    return { invoice, orders }
+  },
+  async storeInvoice(invoiceId: number, tenantId: string, customerId: string, ordersIds: string[], total: Decimal, pdfBuffer: Uint8Array) {
+    const filename = `${invoiceId}-${customerId}-${dateToIso(new Date())}.pdf`
+    const { key } = await uploadPdfToS3({
+      bucket: 'siikli-prod-files',
+      key: `tenant/${tenantId}/invoices/${filename}`,
+      pdfBuffer, // Uint8Array
+      metadata: { tenantId, invoiceId: invoiceId.toString(), issuedAt: new Date().toISOString() },
+      retentionUntil: addYears(new Date(), 7),
+    })
     await prisma.invoice.create({
       data: {
-        invoiceNumber,
-        customerId: customer.id,
+        invoiceNumber: invoiceId,
+        customerId,
         tenantId,
-        content: JSON.stringify(invoice),
+        filename: key,
+        total,
       },
     })
-
-    return invoice
+    await prisma.order.updateMany({
+      where: {
+        id: { in: ordersIds },
+        tenantId,
+        status: 'DELIVERED',
+      },
+      data: { status: 'INVOICED' },
+    })
+  },
+  async getInvoices(customerId: string, tenantId: string, startDate: Date, endDate: Date) {
+    const invoices = await prisma.invoice.findMany({
+      where: {
+        customerId,
+        tenantId,
+        createdAt: {
+          gte: startDate,
+          lte: endDate,
+        },
+      },
+      include: {
+        customer: true,
+      },
+    })
+    return invoices
   },
 }
 

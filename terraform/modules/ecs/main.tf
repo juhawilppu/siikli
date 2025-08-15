@@ -159,9 +159,17 @@ resource "aws_iam_role_policy" "ecs_task_role_policy" {
           "ssmmessages:OpenDataChannel",
           "secretsmanager:GetSecretValue",
           "ses:SendEmail",
-          "ses:SendRawEmail"
+          "ses:SendRawEmail",
+          "s3:PutObject",
+          "s3:GetObject",
+          "s3:DeleteObject",
+          "s3:ListBucket"
         ]
-        Resource = "*"
+        Resource = [
+          "arn:aws:s3:::siikli-prod-files",
+          "arn:aws:s3:::siikli-prod-files/*",
+          "*"
+        ]
       }
     ]
   })
