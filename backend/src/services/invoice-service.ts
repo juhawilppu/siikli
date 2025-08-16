@@ -1,5 +1,5 @@
 import { dateToIso } from '@siikli/shared'
-import { addDays, addYears } from 'date-fns'
+import { addDays } from 'date-fns'
 import Decimal from 'decimal.js'
 import prisma from '../prisma'
 import { uploadPdfToS3 } from '../utils/upload-to-s3'
@@ -194,7 +194,6 @@ export const InvoiceService = {
       key: `${process.env.NODE_ENV === 'production' ? 'prod' : 'dev'}/tenant/${tenantId}/invoices/${filename}`,
       pdfBuffer, // Uint8Array
       metadata: { tenantId, invoiceId: invoiceId.toString(), issuedAt: new Date().toISOString() },
-      retentionUntil: addYears(new Date(), 7),
     })
     await prisma.$transaction(async (tx) => {
       const invoice = await tx.invoice.create({
