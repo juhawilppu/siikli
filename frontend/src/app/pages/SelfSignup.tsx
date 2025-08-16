@@ -1,7 +1,7 @@
 'use client'
 
 import axios from 'axios'
-import { Building2, Check, Info, Loader2, Rocket, Users } from 'lucide-react'
+import { Building2, Check, Loader2, Rocket, Users } from 'lucide-react'
 
 import { useState } from 'react'
 import { NavLink } from 'react-router-dom'
@@ -18,15 +18,13 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
 export default function SelfSignup() {
   const [companyNamy, setCompanyName] = useState('')
-  const [businessId, setBusinessId] = useState('')
   const [marketingConsent, setMarketingConsent] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
 
@@ -47,7 +45,6 @@ export default function SelfSignup() {
     try {
       const data = {
         name: companyNamy,
-        businessId,
         user: {
           marketingConsent,
         },
@@ -55,23 +52,16 @@ export default function SelfSignup() {
 
       await axios.post('/tenants/create', data)
 
-      toast({
-        title: 'Yritys perustettu onnistuneesti!',
-        description: `${companyNamy} on nyt perustettu Siikli-järjestelmään.`,
-      })
-
       window.location.href = '/app'
     }
     catch (e) {
       console.error('error', e)
+      setIsLoading(false)
       toast({
-        title: 'Virhe yrityksen perustamisessa',
+        title: 'Virhe käyttöönottossa',
         description: 'Yritä uudelleen myöhemmin.',
         variant: 'destructive',
       })
-    }
-    finally {
-      setIsLoading(false)
     }
   }
 
@@ -98,13 +88,13 @@ export default function SelfSignup() {
                 <AlertDialogHeader>
                   <AlertDialogTitle>Haluatko varmasti peruuttaa?</AlertDialogTitle>
                   <AlertDialogDescription>
-                    Jos peruutat nyt, yrityksen perustamistiedot eivät tallennu. Sinut kirjataan ulos järjestelmästä.
+                    Sinut kirjataan ulos järjestelmästä.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel>Jatka perustamista</AlertDialogCancel>
+                  <AlertDialogCancel>Jatka</AlertDialogCancel>
                   <AlertDialogAction onClick={() => logout()}>
-                    Peruuta ja kirjaudu ulos
+                    Kirjaudu ulos
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
@@ -119,19 +109,13 @@ export default function SelfSignup() {
             <div className="mb-8 text-center">
               <h1 className="text-3xl font-bold tracking-tight mb-2">Tervetuloa Siikliin!</h1>
               <p className="text-muted-foreground">
-                Huomasimme, että sinua ei ole vielä liitetty mihinkään yritykseen. Perustetaan yrityksesi nyt.
+                Lisätään yrityksesi tiedot.
               </p>
             </div>
 
             <Card className="mb-8">
-              <CardHeader>
-                <CardTitle>Perusta yritys</CardTitle>
-                <CardDescription className="text-gray-700">
-                  Täytä tarvittavat tiedot yrityksesi perustamiseksi Siikli-järjestelmään.
-                </CardDescription>
-              </CardHeader>
               <CardContent>
-                <div className="space-y-4">
+                <div className="space-y-4 mt-4">
                   <div className="space-y-2">
                     <Label htmlFor="yrityksen-nimi" className="font-medium">
                       Yrityksen nimi
@@ -147,30 +131,6 @@ export default function SelfSignup() {
                     />
                   </div>
 
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <Label htmlFor="ytunnus" className="font-medium">
-                        Y-tunnus
-                      </Label>
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Info className="h-4 w-4 text-muted-foreground" />
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>Voit lisätä Y-tunnuksen myöhemmin, jos se ei ole vielä tiedossa.</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    </div>
-                    <Input
-                      id="ytunnus"
-                      placeholder="Esim. 1234567-8"
-                      value={businessId}
-                      onChange={e => setBusinessId(e.target.value)}
-                    />
-                  </div>
-
                   <div className="flex items-center space-x-2 pt-4">
                     <Checkbox
                       id="markkinointilupa"
@@ -182,19 +142,20 @@ export default function SelfSignup() {
                     </Label>
                   </div>
                 </div>
-                <div className="flex justify-end">
+                <div className="flex justify-end mt-4">
                   <Button onClick={handleSave} disabled={isLoading || !companyNamy.trim()}>
                     {isLoading
                       ? (
                           <>
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Perustetaan...
+                            Ladataan...
+                            {' '}
                           </>
                         )
                       : (
                           <>
                             <Rocket className="mr-2 h-4 w-4" />
-                            Perusta yritys
+                            Jatka
                           </>
                         )}
                   </Button>
