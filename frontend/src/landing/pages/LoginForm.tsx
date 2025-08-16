@@ -254,7 +254,7 @@ export default function LoginForm() {
                     {' '}
                     {email}
                   </p>
-                  <div className="flex gap-2 justify-between mt-2">
+                  <div className="flex gap-2 justify-center mt-2 w-full max-w-xs mx-auto">
                     {pin.map((digit, index) => (
                       <Input
                         key={index}
@@ -263,7 +263,7 @@ export default function LoginForm() {
                         inputMode="numeric"
                         pattern="[0-9]*"
                         maxLength={1}
-                        className="w-10 h-12 text-center text-lg"
+                        className="w-10 h-12 text-center text-lg flex-shrink-0"
                         value={digit}
                         onChange={e => handlePinChange(index, e.target.value)}
                         onKeyDown={e => handleKeyDown(index, e)}

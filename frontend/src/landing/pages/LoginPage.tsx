@@ -24,7 +24,7 @@ export default function LoginPage() {
               <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight">
                 {t('login.title')}
               </h1>
-              <p className="text-muted-foreground text-md max-w-[800px] leading-[1.1]">
+              <p className="hidden md:block text-muted-foreground text-md max-w-[800px] leading-[1.1]">
                 {t('login.description').replace('&ndash;', '—')}
               </p>
             </div>

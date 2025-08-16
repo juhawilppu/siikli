@@ -5,7 +5,7 @@ import { endOfMonth, endOfWeek, startOfMonth, startOfWeek, subMonths } from 'dat
 import { fi } from 'date-fns/locale'
 import {
   Calendar,
-  Package,
+  Plus,
   Printer,
   Receipt,
   SearchIcon,
@@ -148,13 +148,13 @@ export default function Orders() {
         description="Selaa, luo ja hallitse tilauksia. Voit tulostaa rahtikirjoja ja laskuja sekä seurata tilausten tilaa."
         mainAction={(
           <Button onClick={() => navigate('/app/orders/new')}>
-            <Package className="mr-2 h-4 w-4" />
+            <Plus className="mr-2 h-4 w-4" />
             Uusi tilaus
           </Button>
         )}
       >
         <div className="mb-8">
-          <div className="flex gap-4">
+          <div className="flex flex-col gap-2 sm:flex-row sm:gap-4">
             <Button
               onClick={() => {
                 setViewMode('free')
@@ -162,9 +162,13 @@ export default function Orders() {
                 setEndDate(endOfMonth(now))
                 setStatus('ALL')
               }}
-              variant={viewMode === 'free' ? 'default' : 'outline'}
+              variant="ghost"
               size="sm"
-              className="gap-2"
+              className={`gap-2 border-2 ${
+                viewMode === 'free'
+                  ? 'border-blue-600 text-blue-700 bg-blue-50 hover:bg-blue-100'
+                  : 'border-transparent'
+              }`}
             >
               <SearchIcon className="h-4 w-4" />
               Selaa tilauksia
@@ -177,9 +181,13 @@ export default function Orders() {
                 setEndDate(endOfWeek(now, { weekStartsOn: 1 }))
                 setStatus('WAITING_FOR_DELIVERY')
               }}
-              variant={viewMode === 'waybills' ? 'default' : 'outline'}
+              variant="ghost"
               size="sm"
-              className="gap-2"
+              className={`gap-2 border-2 ${
+                viewMode === 'waybills'
+                  ? 'border-blue-600 text-blue-700 bg-blue-50 hover:bg-blue-100'
+                  : 'border-transparent'
+              }`}
               disabled={isPrinting}
             >
               <Printer className="h-4 w-4" />
@@ -193,9 +201,14 @@ export default function Orders() {
                 setEndDate(endOfMonth(subMonths(now, 1)))
                 setStatus('DELIVERED')
               }}
-              variant={viewMode === 'invoices' ? 'default' : 'outline'}
+              variant="ghost"
               size="sm"
-              className="gap-2"
+              className={`gap-2 border-2 ${
+                viewMode === 'invoices'
+                  ? 'border-blue-600 text-blue-700 bg-blue-50 hover:bg-blue-100'
+                  : 'border-transparent'
+              }`}
+              disabled={isPrinting}
             >
               <Receipt className="h-4 w-4" />
               Laskut
@@ -311,22 +324,13 @@ export default function Orders() {
               <Card>
                 <CardHeader className="flex flex-col items-end justify-end gap-1">
                   {viewMode === 'waybills' && (
-                    <div className="flex items-center gap-4">
-                      <div className="flex items-center space-x-2 text-muted-foreground p-2 rounded-md">
-                        <Checkbox
-                          id="changeStatus"
-                          checked={changeStatusOnPrint}
-                          onCheckedChange={value => setChangeStatusOnPrint(value === 'indeterminate' ? true : value)}
-                          disabled={isPrinting || status !== 'WAITING_FOR_DELIVERY'}
-                        />
-                        <label
-                          htmlFor="changeStatus"
-                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                        >
-                          Merkitse tilaukset toimitetuksi
-                        </label>
-                      </div>
-                      <Button variant="outline" onClick={handlePrintWaybills} disabled={isPrinting || status !== 'WAITING_FOR_DELIVERY' || orders.length === 0}>
+                    <div className="flex flex-col w-full gap-2 sm:gap-4 sm:flex-row-reverse sm:items-center">
+                      <Button
+                        variant="outline"
+                        onClick={handlePrintWaybills}
+                        disabled={isPrinting || status !== 'WAITING_FOR_DELIVERY' || orders.length === 0}
+                        className="w-full sm:w-auto"
+                      >
                         {isPrinting
                           ? (
                               <>
@@ -362,26 +366,50 @@ export default function Orders() {
                               </>
                             )}
                       </Button>
+                      {/* Checkbox: below button on mobile, left of button on desktop */}
+                      <div className="flex items-start space-x-2 text-muted-foreground p-2 rounded-md sm:space-x-2 sm:p-0">
+                        <Checkbox
+                          id="changeStatus"
+                          checked={changeStatusOnPrint}
+                          onCheckedChange={value => setChangeStatusOnPrint(value === 'indeterminate' ? true : value)}
+                          disabled={isPrinting || status !== 'WAITING_FOR_DELIVERY'}
+                          className="mt-1"
+                        />
+                        <label
+                          htmlFor="changeStatus"
+                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
+                          Merkitse tilaukset toimitetuksi
+                        </label>
+                      </div>
                     </div>
                   )}
                   {viewMode === 'invoices' && (
-                    <div className="flex items-center gap-4">
-                      <Checkbox
-                        id="changeStatus"
-                        checked={changeStatusOnPrint}
-                        onCheckedChange={value => setChangeStatusOnPrint(value === 'indeterminate' ? true : value)}
-                        disabled={isPrinting || status !== 'DELIVERED'}
-                      />
-                      <label
-                        htmlFor="changeStatus"
-                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    <div className="flex flex-col w-full gap-2 sm:gap-4 sm:flex-row-reverse sm:items-center">
+                      <Button
+                        variant="outline"
+                        onClick={handlePrintInvoices}
+                        disabled={isPrinting || status !== 'DELIVERED' || orders.length === 0}
+                        className="w-full sm:w-auto"
                       >
-                        Merkitse tilaukset laskutetuksi
-                      </label>
-                      <Button variant="outline" onClick={handlePrintInvoices} disabled={isPrinting || status !== 'DELIVERED' || orders.length === 0}>
                         <Receipt className="mr-2 h-4 w-4" />
                         Tulosta lasku
                       </Button>
+                      <div className="flex items-start gap-2 w-full sm:w-auto sm:order-1">
+                        <Checkbox
+                          id="changeStatus"
+                          checked={changeStatusOnPrint}
+                          onCheckedChange={value => setChangeStatusOnPrint(value === 'indeterminate' ? true : value)}
+                          disabled={isPrinting || status !== 'DELIVERED'}
+                          className="mt-1"
+                        />
+                        <label
+                          htmlFor="changeStatus"
+                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
+                          Merkitse tilaukset laskutetuksi
+                        </label>
+                      </div>
                     </div>
                   )}
                 </CardHeader>
