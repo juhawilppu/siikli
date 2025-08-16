@@ -14,7 +14,21 @@ import { SalesReportService } from '../services/sales-report-service'
 import { TenantService } from '../services/tenant-service'
 import { UserService } from '../services/user-service'
 
-describe('integration test', () => {
+/**
+ * End-to-end "happy path" test for the core business flow.
+ *
+ * Scenario:
+ *  1. Create a tenant
+ *  2. Add customers and products
+ *  3. Create orders, waybills, and invoices
+ *  4. Verify all entities are persisted correctly
+ *  5. Delete everything and confirm cleanup
+ *
+ * Purpose:
+ *  - Ensures the entire system works together (DB + services + API)
+ *  - Acts as a smoke test for core ERP functionality
+ */
+describe('full business flow e2e test', () => {
   it('should handle data changes', async () => {
     const tenantName = crypto.randomUUID()
     const tenantResponse = await TenantService.createTenant({
@@ -246,6 +260,7 @@ describe('integration test', () => {
     const orderId = await OrderService.createOrder({
       customerId: sello.id,
       tenantId: tenant.id,
+      status: 'WAITING_FOR_DELIVERY',
       deliveryDate,
       hasNote: true,
       noteHeader: 'Toimitus',
@@ -273,6 +288,7 @@ describe('integration test', () => {
       userId: juha.id,
       customerId: sello.id,
       id: orderId.id,
+      status: 'WAITING_FOR_DELIVERY',
       deliveryDate,
       hasNote: true,
       noteHeader: 'Toimitus',
@@ -285,24 +301,24 @@ describe('integration test', () => {
       })),
     })
 
-    const orders = await OrderService.getOrders(tenant.id, subDays(new Date(), 10), addDays(new Date(), 10))
+    const orders = await OrderService.getOrders(tenant.id, subDays(new Date(), 10), addDays(new Date(), 10), 'WAITING_FOR_DELIVERY', undefined)
     expect(orders.length).toBe(1)
     expect(orders[0].customer.id).toBe(customers.customers[0].id)
     expect(orders[0].deliveryDate).toBe(deliveryDate)
 
-    const waybills = await OrderService.getWaybillHtmls(tenant.id, deliveryDate, deliveryDate)
-    expect(waybills).toBeDefined()
-    expect(waybills.includes('Siikli')).toBe(true)
-    expect(waybills).toContain('<h1>Kuormakirja</h1>')
-    expect(waybills).toContain('Alepa Sello 2')
-    expect(waybills).toContain(formatDate(deliveryDate, 'd.M.yyyy'))
-    expect(waybills).toContain('Siikli')
-    expect(waybills).toContain('37')
-    expect(waybills).toContain('51,80 €')
-    expect(waybills.trim().startsWith('<html')).toBe(true)
-    expect(waybills.trim().endsWith('</html>')).toBe(true)
+    const { document, orders: _orders } = await OrderService.getWaybillHtmls(tenant.id, deliveryDate, deliveryDate, true)
+    expect(document).toBeDefined()
+    expect(document.includes('Siikli')).toBe(true)
+    expect(document).toContain('<h1>Kuormakirja</h1>')
+    expect(document).toContain('Alepa Sello 2')
+    expect(document).toContain(formatDate(deliveryDate, 'd.M.yyyy'))
+    expect(document).toContain('Siikli')
+    expect(document).toContain('37')
+    expect(document).toContain('51,80 €')
+    expect(document.trim().startsWith('<html')).toBe(true)
+    expect(document.trim().endsWith('</html>')).toBe(true)
 
-    const waybillPdf = await OrderService.getWaybillPdf(tenant.id, deliveryDate, deliveryDate)
+    const waybillPdf = await OrderService.getWaybillPdf(tenant.id, deliveryDate, deliveryDate, true)
     expect(waybillPdf).toBeInstanceOf(Uint8Array)
     expect(waybillPdf.length).toBeGreaterThan(100)
 
@@ -321,7 +337,7 @@ describe('integration test', () => {
     expect(packagingListByProduct.rows[0].productId).toBe(products[0].id)
     expect(packagingListByProduct.rows[0].amount.equals(new Decimal(37))).toBe(true)
 
-    const invoice = await InvoiceService.getInvoice(sello.id, tenant.id, subDays(new Date(), 30), new Date())
+    const { invoice, orders: _orders2 } = await InvoiceService.getInvoice(sello.id, tenant.id, subDays(new Date(), 30), new Date())
     expect(invoice).toBeDefined()
     expect(invoice.items.length).toBe(products.length)
     expect(invoice.totals.totalSumWithTax.equals(new Decimal(51.88))).toBe(true)
@@ -364,7 +380,7 @@ describe('integration test', () => {
     const deletedCustomer = await CustomerService.getCustomer(sello.id, tenant.id)
     expect(deletedCustomer).toBeNull()
 
-    const deletedOrders = await OrderService.getOrders(tenant.id, subDays(new Date(), 1), addDays(new Date(), 1))
+    const deletedOrders = await OrderService.getOrders(tenant.id, subDays(new Date(), 1), addDays(new Date(), 1), 'WAITING_FOR_DELIVERY', undefined)
     expect(deletedOrders.length).toBe(0)
 
     await TenantService.deleteUser(tenant.id, juha.id, juha.id)
