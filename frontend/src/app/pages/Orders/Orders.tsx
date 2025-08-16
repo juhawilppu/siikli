@@ -138,7 +138,7 @@ export default function Orders() {
   }
 
   if (!customers) {
-    return <div>Ladataan asiakkaita...</div>
+    return <div></div>
   }
 
   return (
@@ -421,7 +421,7 @@ export default function Orders() {
                                     size="default"
                                     onClick={() => navigate(`/app/orders/${order.id}`)}
                                   >
-                                    {order.waybillNumber}
+                                    {order.orderNumber}
                                   </Button>
                                 </TableCell>
                                 <TableCell>{formatDate(parseIsoDate(order.deliveryDate))}</TableCell>

@@ -11,6 +11,7 @@ import {
   Calendar,
   Check,
   ChevronsUpDown,
+  Eye,
   Mail,
   Phone,
   Plus,
@@ -47,6 +48,7 @@ export default function CreateOrder() {
   const [isLoading, setIsLoading] = useState(true)
   // const [openOrderStatus, setOpenOrderStatus] = useState(false)
   const [status, setStatus] = useState<OrderStatus>('WAITING_FOR_DELIVERY')
+  const [invoiceNumber, setInvoiceNumber] = useState<number | null>(null)
   const [invoiceId, setInvoiceId] = useState<string | null>(null)
   const [deliveryDate, setDeliveryDate] = useState<Date>()
   const [customerId, setCustomerId] = useState<string>('')
@@ -92,7 +94,7 @@ export default function CreateOrder() {
   ])
 
   const [orderLimit, setOrderLimit] = useState<number | null>(null)
-
+  const [orderNumber, setOrderNumber] = useState<number | null>(null)
   const { orderId } = useParams()
   const navigate = useNavigate()
   const { toast } = useToast()
@@ -142,6 +144,7 @@ export default function CreateOrder() {
           createdAt: new Date(item.createdAt),
         })))
         setCustomerId(res.data.customerId)
+        setInvoiceNumber(res.data.invoiceNumber)
         setInvoiceId(res.data.invoiceId)
         console.log(`settins customerId to ${res.data.customerId}`)
         setDeliveryDate(new Date(res.data.deliveryDate))
@@ -150,6 +153,7 @@ export default function CreateOrder() {
         if (res.data.hasNote) {
           setWaybillNote({ title: res.data.noteHeader || '', content: res.data.noteBody || '' })
         }
+        setOrderNumber(res.data.orderNumber)
       }
       setIsLoading(false)
     }
@@ -605,59 +609,79 @@ export default function CreateOrder() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="order-status">Tilauksen tila</Label>
-                  <div className="flex items-center gap-4">
+                  <div className="flex flex-col gap-2">
                     <OrderStatusBadge status={status} />
-                    {status === 'INVOICED' && (
-                      <div className="text-xs text-gray-500">
-                        Laskun numero:
-                        {' '}
-                        {invoiceId}
+                    {status !== 'WAITING_FOR_DELIVERY' && (
+                      <div className="text-xs text-gray-500 flex items-center gap-2">
+                        <span>
+                          Tilausnumero:
+                          {' '}
+                          {orderNumber}
+                        </span>
+                        <Button
+                          variant="outline"
+                          type="button"
+                          className="w-fit ml-2"
+                          onClick={async () => {
+                            try {
+                              const res = await axios.get(`/orders/${orderId}/waybill`)
+                              const { url } = res.data
+                              window.open(url, '_blank') // open PDF in new tab
+                            }
+                            catch (err) {
+                              console.error(err)
+                              toast({
+                                title: 'Kuormakirjan näyttäminen epäonnistui',
+                                description: 'Kuormakirjan näyttäminen epäonnistui. Yritä myöhemmin uudelleen.',
+                                variant: 'destructive',
+                              })
+                            }
+                          }}
+                        >
+                          <Eye className="w-4 h-4" />
+                          <span className="ml-1">Kuormakirja</span>
+                        </Button>
                       </div>
                     )}
-                    {/*
-                    <Popover open={openOrderStatus} onOpenChange={setOpenOrderStatus}>
-                      <PopoverTrigger asChild>
-                        <Button variant="outline">
-                          <ChevronsUpDown className="mr-2 h-4 w-4" />
-                          Muuta tilaa
+                    {status === 'INVOICED' && (
+                      <div className="text-xs text-gray-500 flex flex-col gap-1">
+                        <span>
+                          Laskun numero:
+                          {' '}
+                          {invoiceNumber}
+                        </span>
+                        <Button
+                          variant="outline"
+                          type="button"
+                          className="w-fit ml-2"
+                          onClick={async () => {
+                            try {
+                              const res = await axios.get(`/invoices/${invoiceId}/url`)
+                              const { url } = res.data
+                              window.open(url, '_blank') // open PDF in new tab
+                            }
+                            catch (err) {
+                              console.error(err)
+                              toast({
+                                title: 'Laskun näyttäminen epäonnistui',
+                                description: 'Laskun näyttäminen epäonnistui. Yritä myöhemmin uudelleen.',
+                                variant: 'destructive',
+                              })
+                            }
+                          }}
+                        >
+                          <Eye className="w-4 h-4" />
+                          <span className="ml-1">Lasku</span>
                         </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-[200px] p-0">
-                        <Command>
-                          <CommandGroup>
-                            <CommandItem onSelect={() => {
-                              setStatus('WAITING_FOR_DELIVERY')
-                              setOpenOrderStatus(false)
-                            }}
-                            >
-                              Odottaa toimitusta
-                            </CommandItem>
-                            <CommandItem onSelect={() => {
-                              setStatus('DELIVERED')
-                              setOpenOrderStatus(false)
-                            }}
-                            >
-                              Toimitettu
-                            </CommandItem>
-                            <CommandItem onSelect={() => {
-                              setStatus('INVOICED')
-                              setOpenOrderStatus(false)
-                            }}
-                            >
-                              Laskutettu
-                            </CommandItem>
-                          </CommandGroup>
-                        </Command>
-                      </PopoverContent>
-                    </Popover>
-                    */}
+                      </div>
+                    )}
                   </div>
-                  {/*
+                </div>
+                {/*
                   <p className="text-sm text-gray-500">
                     Tila päivittyy automaattisesti toimitusten ja laskutuksen mukaan
                   </p>
                   */}
-                </div>
               </div>
 
               <Separator className="my-4" />

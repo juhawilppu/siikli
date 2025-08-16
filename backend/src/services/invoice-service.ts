@@ -129,7 +129,7 @@ export const InvoiceService = {
         return {
           id: p.id,
           orderId: o.id,
-          orderNumber: o.waybillNumber,
+          orderNumber: o.orderNumber,
           amount: p.amount,
           deliveryDate: o.deliveryDate,
           productName: p.product.name,

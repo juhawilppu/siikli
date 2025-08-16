@@ -260,7 +260,7 @@ describe('integration test', () => {
 
     const order = await OrderService.getOrder(orderId.id, tenant.id)
     expect(order.id.length).toBe(36) // uuid
-    expect(order.waybillNumber).toBe(1000)
+    expect(order.orderNumber).toBe(1000)
     expect(order.customerId).toBe(customers.customers[0].id)
     expect(order.deliveryDate).toBe(deliveryDate)
     expect(order.hasNote).toBe(true)
@@ -339,7 +339,7 @@ describe('integration test', () => {
     expect(salesReport).toBeDefined()
     expect(salesReport.length).toBe(1)
     expect(salesReport[0].date).toBe(formatDate(deliveryDate, 'd.M.yyyy'))
-    expect(salesReport[0].waybillNumber).toBe(order.waybillNumber)
+    expect(salesReport[0].orderNumber).toBe(order.orderNumber)
     expect(salesReport[0].customerName).toBe('Alepa Sello 2')
     expect(salesReport[0].productName).toBe(products[0].name)
     expect(salesReport[0].amount).toBe(37)

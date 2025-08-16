@@ -65,7 +65,7 @@ export interface PostOrderResponseDto {
 
 export interface GetOrderDto {
   id: string
-  waybillNumber: number
+  orderNumber: number
   deliveryDate: string
   customerId: string
   hasNote: boolean
@@ -77,7 +77,7 @@ export interface GetOrderDto {
 export interface GetOrderList {
   id: string
   deliveryDate: string
-  waybillNumber: number
+  orderNumber: number
   customer: {
     id: string
     name: string

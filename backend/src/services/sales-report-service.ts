@@ -4,7 +4,7 @@ import prisma from '../prisma'
 
 export interface SalesReportData {
   date: string
-  waybillNumber: number
+  orderNumber: number
   customerName: string
   productName: string
   amount: number
@@ -49,7 +49,7 @@ export const SalesReportService = {
 
     return data.map(item => ({
       date: formatDate(item.order.deliveryDate),
-      waybillNumber: item.order.waybillNumber,
+      orderNumber: item.order.orderNumber,
       customerName: item.order.customer.name,
       productName: item.product.name,
       amount: item.amount.toNumber(),
@@ -66,7 +66,7 @@ export const SalesReportService = {
     // Define headers
     sheet.columns = [
       { header: 'Päivämäärä', key: 'date', style: { font: { bold: true } }, width: 11 },
-      { header: 'Tilaus', key: 'waybillNumber', style: { font: { bold: true }, alignment: { horizontal: 'right' } }, width: 11 },
+      { header: 'Tilaus', key: 'orderNumber', style: { font: { bold: true }, alignment: { horizontal: 'right' } }, width: 11 },
       { header: 'Asiakas', key: 'customerName', style: { font: { bold: true } }, width: 15 },
       { header: 'Tuote', key: 'productName', style: { font: { bold: true } }, width: 15 },
       { header: 'Määrä', key: 'amount', style: { font: { bold: true }, alignment: { horizontal: 'right' } }, width: 10 },
@@ -80,7 +80,7 @@ export const SalesReportService = {
     data.forEach((item) => {
       const row = sheet.addRow({
         date: item.date,
-        waybillNumber: item.waybillNumber,
+        orderNumber: item.orderNumber,
         customerName: item.customerName,
         productName: item.productName,
         amount: item.amount,

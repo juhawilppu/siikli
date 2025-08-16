@@ -5,13 +5,17 @@ import type {
   PostOrderRequestDto,
   PostOrderResponseDto,
 } from '@siikli/shared'
+import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3'
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 import { parseIsoDate } from '@siikli/shared'
 import { Decimal } from 'decimal.js'
 import express from 'express'
 import { getUser, isAuthenticated } from '../middlewares/permissions'
+import prisma from '../prisma'
 import { OrderService } from '../services/order-service'
 
 export const ordersRoute = express.Router()
+const s3 = new S3Client({ region: process.env.AWS_REGION })
 
 export interface GetOrderLimitResponseDto {
   remaining: number
@@ -64,6 +68,23 @@ ordersRoute.get(`/api/orders/waybills`, isAuthenticated, async (req, res) => {
   res.setHeader('Cache-Control', 'no-cache')
   res.status(200)
   res.end(pdfBuffer, 'binary')
+})
+
+ordersRoute.get(`/api/orders/:id/waybill`, isAuthenticated, async (req, res) => {
+  const { tenantId } = getUser(req)
+  const orderId = req.params.id
+  // Look up invoice metadata in DB
+  const order = await prisma.order.findUnique({ where: { id: orderId, tenantId } })
+  if (!order?.waybillS3Key)
+    return res.status(404).send('Not found')
+
+  const cmd = new GetObjectCommand({
+    Bucket: 'siikli-prod-files',
+    Key: order.waybillS3Key,
+  })
+
+  const url = await getSignedUrl(s3, cmd, { expiresIn: 5 * 60 }) // 5 minutes
+  res.json({ url })
 })
 
 ordersRoute.get(`/api/orders/:id`, isAuthenticated, async (req, res) => {

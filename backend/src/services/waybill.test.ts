@@ -33,7 +33,7 @@ describe('createWaybill', () => {
 
     const order = {
       id: '1',
-      waybillNumber: 1,
+      orderNumber: 1,
       customerId: '1',
       deliveryDate: new Date('2024-01-15'),
       noteHeader: 'Test Note Header',

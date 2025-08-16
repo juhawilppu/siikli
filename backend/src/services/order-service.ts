@@ -6,6 +6,7 @@ import { Decimal } from 'decimal.js'
 import puppeteer from 'puppeteer'
 import prisma from '../prisma'
 import { serializeNumber } from '../utils/money'
+import { uploadPdfToS3 } from '../utils/upload-to-s3'
 import { TenantService } from './tenant-service'
 import { createWaybills } from './waybill'
 
@@ -34,18 +35,18 @@ export const OrderService = {
     } = input
 
     return await prisma.$transaction(async (tx) => {
-      const waybillNumberResult = await tx.order.findFirst({
+      const orderNumberResult = await tx.order.findFirst({
         where: {
           tenantId,
         },
         orderBy: {
-          waybillNumber: 'desc',
+          orderNumber: 'desc',
         },
         select: {
-          waybillNumber: true,
+          orderNumber: true,
         },
       })
-      const waybillNumber = waybillNumberResult && waybillNumberResult.waybillNumber ? waybillNumberResult.waybillNumber + 1 : 1000
+      const orderNumber = orderNumberResult && orderNumberResult.orderNumber ? orderNumberResult.orderNumber + 1 : 1000
 
       const order = await tx.order.create({
         data: {
@@ -53,7 +54,7 @@ export const OrderService = {
           tenantId,
           status,
           deliveryDate: parseIsoDate(deliveryDate),
-          waybillNumber,
+          orderNumber,
           hasNote,
           noteHeader,
           noteBody,
@@ -206,7 +207,7 @@ export const OrderService = {
     const mapped = result.map((o) => {
       return {
         id: o.id,
-        waybillNumber: o.waybillNumber,
+        orderNumber: o.orderNumber,
         deliveryDate: dateToIso(o.deliveryDate),
         status: o.status,
         total: o.orderRows.map(o => o.amount.mul(o.price)).reduce((a, b) => a.add(b), new Decimal(0)).toNumber(),
@@ -245,8 +246,9 @@ export const OrderService = {
 
     return {
       id: result.id,
-      waybillNumber: result.waybillNumber,
-      invoiceId: result.invoice?.invoiceNumber ?? null,
+      orderNumber: result.orderNumber,
+      invoiceId: result.invoice?.id ?? null,
+      invoiceNumber: result.invoice?.invoiceNumber ?? null,
       status: result.status,
       deliveryDate: dateToIso(result.deliveryDate),
       customerId: result.customerId,
@@ -294,7 +296,7 @@ export const OrderService = {
     return Math.max(0, 20 - orders)
   },
 
-  async getWaybillHtmls(tenantId: string, startDate: string, endDate: string, changeStatus: boolean): Promise<string> {
+  async getWaybillHtmls(tenantId: string, startDate: string, endDate: string, changeStatus: boolean): Promise<{ document: string, orders: Order[] }> {
     const orders = await prisma.order.findMany({
       include: {
         customer: true,
@@ -350,11 +352,11 @@ export const OrderService = {
 
     const document = await createWaybills(company, orders)
 
-    return document
+    return { document, orders }
   },
 
   async getWaybillPdf(tenantId: string, startDate: string, endDate: string, changeStatus: boolean): Promise<Uint8Array> {
-    const document = await this.getWaybillHtmls(tenantId, startDate, endDate, changeStatus)
+    const { document, orders } = await this.getWaybillHtmls(tenantId, startDate, endDate, changeStatus)
 
     console.log('creating pdf')
     console.log(document)
@@ -379,6 +381,25 @@ export const OrderService = {
     })
 
     await browser.close()
+
+    const s3Key = `${process.env.NODE_ENV === 'production' ? 'prod' : 'dev'}/waybills/${tenantId}/${startDate}-${endDate}.pdf`
+    await uploadPdfToS3({
+      bucket: 'siikli-prod-files',
+      key: s3Key,
+      pdfBuffer,
+    })
+
+    await prisma.order.updateMany({
+      where: {
+        id: {
+          in: orders.map(o => o.id),
+        },
+        tenantId,
+      },
+      data: {
+        waybillS3Key: s3Key,
+      },
+    })
 
     return pdfBuffer
   },

@@ -190,7 +190,7 @@ export default async function createWaybill(
             <div style="margin-bottom: 10pt;">
                 <div><b>Asiakas:</b> <span>${order.customer.name}</span></div>
                 <div><b>Toimituspäivä:</b> <span>${formatDate(order.deliveryDate)}</span></div>
-                <div><b>Tilausnumero:</b> <span>${order.waybillNumber}</span></div>
+                <div><b>Tilausnumero:</b> <span>${order.orderNumber}</span></div>
             </div>
             <table>
                 <thead>

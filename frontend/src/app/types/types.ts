@@ -67,8 +67,9 @@ export interface PostOrderResponseDto {
 
 export interface GetOrderDto {
   id: string
-  waybillNumber: number
+  orderNumber: number
   invoiceId: string | null
+  invoiceNumber: number | null
   deliveryDate: string
   customerId: string
   hasNote: boolean
@@ -81,7 +82,7 @@ export interface GetOrderDto {
 export interface GetOrderList {
   id: string
   deliveryDate: string
-  waybillNumber: number
+  orderNumber: number
   status: 'WAITING_FOR_DELIVERY' | 'DELIVERED' | 'INVOICED'
   customer: {
     id: string

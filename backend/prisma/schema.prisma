@@ -341,7 +341,8 @@ enum OrderStatus {
 
 model Order {
   id                  String      @id @default(uuid()) @map("id") @db.Uuid
-  waybillNumber       Int         @map("waybill_number") @db.Integer
+  orderNumber         Int         @map("order_number") @db.Integer
+  waybillS3Key        String?     @map("waybill_s3_key") @db.VarChar(255)
   invoiceId           String?     @map("invoice_id") @db.Uuid
   invoice             Invoice?    @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
   customerId          String      @map("customer_id") @db.Uuid
@@ -360,7 +361,7 @@ model Order {
   updatedAt           DateTime    @default(now()) @updatedAt @map("updated_at")
   deletedAt           DateTime?   @map("deleted_at") @db.Date
 
-  @@unique([waybillNumber, tenantId], map: "waybill_number_uniq")
+  @@unique([orderNumber, tenantId], map: "order_number_uniq")
   @@index([customerId], map: "customer_id")
   @@map("order")
 }
@@ -370,7 +371,8 @@ model OrderHistory {
   operation String @map("operation")
 
   id                  String      @map("id") @db.Uuid
-  waybillNumber       Int         @map("waybill_number") @db.Integer
+  orderNumber         Int         @map("order_number") @db.Integer
+  waybillS3Key        String?     @map("waybill_s3_key") @db.VarChar(255)
   invoiceId           String?     @map("invoice_id") @db.Uuid
   customerId          String      @map("customer_id") @db.Uuid
   deliveryDate        DateTime    @map("delivery_date") @db.Date
