@@ -28,7 +28,7 @@ import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
 import { calculatePricesFromVat0, calculatePricesFromVat14 } from '../../lib/price-utils.js'
 
-export default function NewProduct({ productToEdit, hide, onSave, productTypes, refPackageTypes, refPackageSizes }: { productToEdit?: GetProductResponseDto, hide: () => void, onSave: (product: GetProductResponseDto) => void, productTypes: ProductTypeResponse[], refPackageTypes: string[], refPackageSizes: number[] }) {
+export default function NewProduct({ productToEdit, hide, onSave, refPackageTypes, refPackageSizes }: { productToEdit?: GetProductResponseDto, hide: () => void, onSave: (product: GetProductResponseDto) => void, refPackageTypes: string[], refPackageSizes: number[] }) {
   const mode = productToEdit ? 'edit' : 'create'
   const [product, setProduct] = useState<Partial<{
     name: string
@@ -107,10 +107,6 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
 
       onSave({ ...product, id: res.data.id, price: product.price ? product.price : undefined, price0: product.price0 ? product.price0 : undefined } as GetProductResponseDto)
     }
-  }
-
-  if (!productTypes) {
-    return <div></div>
   }
 
   return (

@@ -36,21 +36,8 @@ export const CustomerService = {
         name: 'asc',
       },
     })
-    const customerGroups = await prisma.customer.findMany({
-      where: {
-        tenantId,
-        customerGroup: {
-          not: null,
-        },
-      },
-      select: {
-        customerGroup: true,
-      },
-      distinct: ['customerGroup'],
-    })
 
     return {
-      customerGroups: customerGroups.map(r => r.customerGroup as string),
       customers: result.map((r) => {
         return {
           id: r.id,
@@ -66,7 +53,6 @@ export const CustomerService = {
           phone: r.phone,
           showPriceWithoutTax: r.showPriceWithoutTax,
           tenantId: r.tenantId,
-          customerGroup: r.customerGroup,
         }
       }),
     }
@@ -94,7 +80,6 @@ export const CustomerService = {
       invoiceReference,
       companyLegalName,
       businessId,
-      customerGroup,
     } = input
 
     if (discount.gt(100)) {
@@ -116,7 +101,6 @@ export const CustomerService = {
           invoiceReference,
           companyLegalName,
           businessId,
-          customerGroup,
         },
       })
 
@@ -165,7 +149,6 @@ export const CustomerService = {
           showPriceWithoutTax: body.showPriceWithoutTax,
           invoiceReference: body.invoiceReference,
           businessId: body.businessId,
-          customerGroup: body.customerGroup,
         },
       })
 

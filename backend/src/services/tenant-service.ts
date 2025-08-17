@@ -296,9 +296,6 @@ export const TenantService = {
         })
         created.packageType = true
       }
-      else {
-        console.log('package type OK')
-      }
     }
 
     if (packageSize) {
@@ -317,9 +314,6 @@ export const TenantService = {
           },
         })
         created.packageSize = true
-      }
-      else {
-        console.log('package size OK')
       }
     }
 

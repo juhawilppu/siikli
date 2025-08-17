@@ -1,4 +1,4 @@
-import type { GetProductResponse, GetProductResponseDto, ProductTypeResponse } from '@siikli/shared'
+import type { GetProductResponse, GetProductResponseDto } from '@siikli/shared'
 import type Decimal from 'decimal.js'
 import prisma from '../prisma'
 import { TenantService } from './tenant-service'
@@ -14,11 +14,6 @@ export const ProductService = {
       price0,
       packageSize,
       packageType,
-      type,
-      variety,
-      info,
-      subtype,
-      customerGroup,
     } = input
 
     if (price && price0 && price.div(1.14).toDecimalPlaces(2).toNumber() !== price0.toDecimalPlaces(2).toNumber()) {
@@ -26,20 +21,14 @@ export const ProductService = {
     }
 
     await TenantService.verifyPackageSizeAndType(packageType, packageSize, tenantId)
-    await ProductService.verifyProductTypeAndSubtype({ type, subtype }, tenantId)
 
     const result = await prisma.product.create({
       data: {
         name,
-        type,
-        variety,
-        info,
         price0,
         price,
-        subtype,
         packageSize,
         packageType,
-        customerGroup,
         tenantId,
       },
     })
@@ -74,90 +63,8 @@ export const ProductService = {
         price0: p.price0,
         packageSize: p.packageSize ? p.packageSize : null,
         packageType: p.packageType,
-        customerGroup: p.customerGroup,
-        variety: p.variety,
-        type: p.type,
-        subtype: p.subtype,
-        info: p.info,
       }
     })
-  },
-
-  async getProductTypes(tenantId: string): Promise<ProductTypeResponse[]> {
-    const rows = await prisma.productType.findMany({
-      where: {
-        tenantId,
-      },
-      include: {
-        productSubtypes: true,
-      },
-    })
-
-    return rows.map((r) => {
-      return {
-        id: r.id,
-        type: r.type!,
-        orderIndex: r.orderIndex,
-        subtypes: r.productSubtypes.map((s) => {
-          return {
-            id: s.id,
-            name: s.subtype!,
-            orderIndex: s.orderIndex,
-          }
-        }),
-      }
-    })
-  },
-
-  async verifyProductTypeAndSubtype(body: { type: string | null, subtype: string | null }, tenantId: string) {
-    console.log('checking type', body.type)
-
-    if (body.type) {
-      const type = await prisma.productType.findFirst({
-        where: {
-          type: body.type,
-          tenantId,
-        },
-      })
-      if (!type) {
-        console.log('creating type', body.type)
-        await prisma.productType.create({
-          data: {
-            tenantId,
-            type: body.type,
-            orderIndex: 0,
-          },
-        })
-      }
-      else {
-        console.log('type OK')
-      }
-    }
-
-    if (body.subtype) {
-      console.log('checking subtype', body.subtype)
-      const subtype = await prisma.productSubtypes.findFirst({
-        where: {
-          type: body.type,
-          subtype: body.subtype,
-          tenantId,
-        },
-      })
-      if (!subtype) {
-        console.log('creating subtype', body.subtype)
-        await prisma.productSubtypes.create({
-          data: {
-            tenantId,
-            type: body.type,
-            subtype: body.subtype,
-            orderIndex: 0,
-          },
-        })
-      }
-      else {
-        console.log('subtype OK')
-      }
-    }
   },
 
   async deleteProduct(id: string, tenantId: string, userId: string) {
@@ -183,20 +90,14 @@ export const ProductService = {
 
   async updateProduct(id: string, tenantId: string, body: GetProductResponseDto, userId: string): Promise<void> {
     await TenantService.verifyPackageSizeAndType(body.packageType, body.packageSize, tenantId)
-    await ProductService.verifyProductTypeAndSubtype(body as any, tenantId)
 
     await prisma.product.update({
       data: {
         name: body.name,
-        type: body.type,
-        variety: body.variety,
-        info: body.info,
         price0: body.price0,
         price: body.price,
-        subtype: body.subtype,
         packageSize: body.packageSize,
         packageType: body.packageType,
-        customerGroup: body.customerGroup,
       },
       where: {
         id,

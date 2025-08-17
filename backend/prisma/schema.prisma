@@ -8,34 +8,32 @@ datasource db {
 }
 
 model Tenant {
-  id                    String            @id @default(uuid()) @map("id") @db.Uuid
-  name                  String            @map("name") @db.VarChar(255)
-  streetAddress         String?           @map("street_address") @db.VarChar(255)
-  postalCode            String?           @map("postal_code") @db.VarChar(255)
-  city                  String?           @map("city") @db.VarChar(255)
-  phone                 String?           @map("phone") @db.VarChar(255)
-  email                 String?           @map("email") @db.VarChar(255)
-  website               String?           @map("website") @db.VarChar(255)
-  businessId            String?           @map("business_id") @db.VarChar(255)
-  invoiceBankName       String?           @map("invoice_bank_name") @db.VarChar(255)
-  invoiceBankAccount    String?           @map("invoice_bank_account") @db.VarChar(255)
-  invoiceSwiftBic       String?           @map("invoice_swift_bic") @db.VarChar(255)
-  invoiceReference      String?           @map("invoice_reference") @db.VarChar(255)
-  invoiceSumRow         String?           @map("invoice_sum_row") @db.VarChar(255)
-  signupCompleted       Boolean           @default(false) @map("signup_completed")
-  createdAt             DateTime          @default(now()) @map("created_at")
-  updatedAt             DateTime          @default(now()) @updatedAt @map("updated_at")
-  subscriptionType      String            @default("FREE") @map("subscription_type")
-  subscriptionEndDate   DateTime?         @map("subscription_end_date")
-  subscriptionStartDate DateTime?         @map("subscription_start_date")
-  trialEndDate          DateTime?         @map("trial_end_date")
+  id                    String        @id @default(uuid()) @map("id") @db.Uuid
+  name                  String        @map("name") @db.VarChar(255)
+  streetAddress         String?       @map("street_address") @db.VarChar(255)
+  postalCode            String?       @map("postal_code") @db.VarChar(255)
+  city                  String?       @map("city") @db.VarChar(255)
+  phone                 String?       @map("phone") @db.VarChar(255)
+  email                 String?       @map("email") @db.VarChar(255)
+  website               String?       @map("website") @db.VarChar(255)
+  businessId            String?       @map("business_id") @db.VarChar(255)
+  invoiceBankName       String?       @map("invoice_bank_name") @db.VarChar(255)
+  invoiceBankAccount    String?       @map("invoice_bank_account") @db.VarChar(255)
+  invoiceSwiftBic       String?       @map("invoice_swift_bic") @db.VarChar(255)
+  invoiceReference      String?       @map("invoice_reference") @db.VarChar(255)
+  invoiceSumRow         String?       @map("invoice_sum_row") @db.VarChar(255)
+  signupCompleted       Boolean       @default(false) @map("signup_completed")
+  createdAt             DateTime      @default(now()) @map("created_at")
+  updatedAt             DateTime      @default(now()) @updatedAt @map("updated_at")
+  subscriptionType      String        @default("FREE") @map("subscription_type")
+  subscriptionEndDate   DateTime?     @map("subscription_end_date")
+  subscriptionStartDate DateTime?     @map("subscription_start_date")
+  trialEndDate          DateTime?     @map("trial_end_date")
   customers             Customer[]
   orders                Order[]
   orderRows             OrderRow[]
   users                 User[]
   products              Product[]
-  productTypes          ProductType[]
-  productSubtypes       ProductSubtypes[]
   PackageType           PackageType[]
   PackageSize           PackageSize[]
   invoices              Invoice[]
@@ -135,7 +133,6 @@ model EmailLoginPinCodeHistory {
 model Customer {
   id                  String    @id @default(uuid()) @map("id") @db.Uuid
   name                String    @map("name") @db.VarChar(50)
-  customerGroup       String?   @map("customer_group") @db.VarChar(255)
   companyLegalName    String?   @map("company_legal_name") @db.VarChar(255)
   discount            Decimal   @map("discount") @db.Decimal(10, 2)
   invoiceReference    String?   @map("invoice_reference") @db.VarChar(255)
@@ -162,7 +159,6 @@ model CustomerHistory {
 
   id                  String   @map("id") @db.Uuid
   name                String   @map("name") @db.VarChar(50)
-  customerGroup       String?  @map("customer_group") @db.VarChar(255)
   companyLegalName    String?  @map("company_legal_name") @db.VarChar(255)
   discount            Decimal  @map("discount") @db.Decimal(10, 2)
   invoiceReference    String?  @map("invoice_reference") @db.VarChar(255)
@@ -221,52 +217,19 @@ model OrderRowHistory {
   @@map("order_row_history")
 }
 
-model ProductType {
-  id              String            @id @default(uuid()) @map("id") @db.Uuid
-  tenantId        String            @map("tenant_id") @db.Uuid
-  tenant          Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  orderIndex      Int               @map("order_index")
-  type            String?           @map("type") @db.VarChar(255)
-  createdAt       DateTime          @default(now()) @map("created_at")
-  updatedAt       DateTime          @default(now()) @updatedAt @map("updated_at")
-  productSubtypes ProductSubtypes[]
-
-  @@unique([type, tenantId], map: "product_type_uniq")
-  @@map("product_type")
-}
-
-model ProductTypeHistory {
-  revision  Int    @id @default(autoincrement()) @map("revision")
-  operation String @map("operation")
-
-  id         String   @map("id") @db.Uuid
-  tenantId   String   @map("tenant_id") @db.Uuid
-  orderIndex Int      @map("order_index")
-  type       String?  @map("type") @db.VarChar(255)
-  createdAt  DateTime @map("created_at")
-  updatedAt  DateTime @map("updated_at")
-
-  @@map("product_type_history")
-}
-
 model Product {
-  id            String     @id @default(uuid()) @map("id") @db.Uuid
-  tenantId      String     @map("tenant_id") @db.Uuid
-  tenant        Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  name          String     @map("name") @db.VarChar(64)
-  variety       String?    @map("variety") @db.VarChar(32)
-  info          String?    @map("info") @db.VarChar(32)
-  price         Decimal?   @map("price") @db.Decimal(10, 2)
-  type          String?    @map("type") @db.VarChar(32)
-  subtype       String?    @map("subtype") @db.VarChar(255)
-  packageSize   Int?       @map("package_size") @db.Integer
-  packageType   String?    @map("package_type") @db.VarChar(16)
-  price0        Decimal?   @map("price0") @db.Decimal(10, 2)
-  customerGroup String?    @map("customer_group") @db.VarChar(256)
-  active        Boolean?   @default(true) @map("active")
-  createdAt     DateTime   @default(now()) @map("created_at")
-  updatedAt     DateTime   @default(now()) @updatedAt @map("updated_at")
-  orderRows     OrderRow[]
+  id          String     @id @default(uuid()) @map("id") @db.Uuid
+  tenantId    String     @map("tenant_id") @db.Uuid
+  tenant      Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name        String     @map("name") @db.VarChar(64)
+  price       Decimal?   @map("price") @db.Decimal(10, 2)
+  price0      Decimal?   @map("price0") @db.Decimal(10, 2)
+  packageSize Int?       @map("package_size") @db.Integer
+  packageType String?    @map("package_type") @db.VarChar(16)
+  active      Boolean?   @default(true) @map("active")
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @default(now()) @updatedAt @map("updated_at")
+  orderRows   OrderRow[]
 
   @@map("product")
 }
@@ -275,21 +238,16 @@ model ProductHistory {
   revision  Int    @id @default(autoincrement()) @map("revision")
   operation String @map("operation")
 
-  id            String   @map("id") @db.Uuid
-  tenantId      String   @map("tenant_id") @db.Uuid
-  name          String   @map("name") @db.VarChar(64)
-  variety       String?  @map("variety") @db.VarChar(32)
-  info          String?  @map("info") @db.VarChar(32)
-  price         Decimal? @map("price") @db.Decimal(10, 2)
-  type          String?  @map("type") @db.VarChar(32)
-  subtype       String?  @map("subtype") @db.VarChar(255)
-  packageSize   Int?     @map("package_size") @db.Integer
-  packageType   String?  @map("package_type") @db.VarChar(16)
-  price0        Decimal? @map("price0") @db.Decimal(10, 2)
-  customerGroup String?  @map("customer_group") @db.VarChar(256)
-  active        Boolean? @map("active")
-  createdAt     DateTime @map("created_at")
-  updatedAt     DateTime @map("updated_at")
+  id          String   @map("id") @db.Uuid
+  tenantId    String   @map("tenant_id") @db.Uuid
+  name        String   @map("name") @db.VarChar(64)
+  price       Decimal? @map("price") @db.Decimal(10, 2)
+  price0      Decimal? @map("price0") @db.Decimal(10, 2)
+  active      Boolean? @map("active")
+  packageSize Int?     @map("package_size") @db.Integer
+  packageType String?  @map("package_type") @db.VarChar(16)
+  createdAt   DateTime @map("created_at")
+  updatedAt   DateTime @map("updated_at")
 
   @@map("product_history")
 }
@@ -388,39 +346,6 @@ model OrderHistory {
   deletedAt           DateTime?   @map("deleted_at") @db.Date
 
   @@map("order_history")
-}
-
-model ProductSubtypes {
-  id           String       @id @default(uuid()) @map("id") @db.Uuid
-  tenantId     String       @map("tenant_id") @db.Uuid
-  tenant       Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  orderIndex   Int          @map("order_index")
-  subtype      String?      @map("subtype") @db.VarChar(255)
-  type         String?      @map("type") @db.VarChar(255)
-  orderId      String?      @map("order_id") @db.Uuid
-  productTypes ProductType? @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  createdAt    DateTime     @default(now()) @map("created_at")
-  updatedAt    DateTime     @default(now()) @updatedAt @map("updated_at")
-
-  @@unique([type, subtype, tenantId], map: "product_subtype_uniq")
-  @@index([orderId])
-  @@map("product_subtype")
-}
-
-model ProductSubtypeHistory {
-  revision  Int    @id @default(autoincrement()) @map("revision")
-  operation String @map("operation")
-
-  id         String   @map("id") @db.Uuid
-  tenantId   String   @map("tenant_id") @db.Uuid
-  orderIndex Int      @map("order_index")
-  subtype    String?  @map("subtype") @db.VarChar(255)
-  type       String?  @map("type") @db.VarChar(255)
-  orderId    String?  @map("order_id") @db.Uuid
-  createdAt  DateTime @map("created_at")
-  updatedAt  DateTime @map("updated_at")
-
-  @@map("product_subtype_history")
 }
 
 model RateLimit {

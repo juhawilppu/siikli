@@ -11,7 +11,6 @@ import {
   Calendar,
   Check,
   ChevronsUpDown,
-  Eye,
   Mail,
   Phone,
   Plus,

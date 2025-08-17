@@ -19,20 +19,8 @@ productsRoute.get(`/api/products`, isAuthenticated, async (req, res) => {
       price0: p.price0 ? serializeNumber(p.price0) : undefined,
       packageSize: p.packageSize,
       packageType: p.packageType,
-      customerGroup: p.customerGroup,
-      variety: p.variety,
-      type: p.type,
-      subtype: p.subtype,
-      info: p.info,
     }
   }) satisfies GetProductResponseDto[])
-})
-
-productsRoute.get(`/api/products/product-types`, isAuthenticated, async (req, res) => {
-  console.log('getting product-types')
-  const { tenantId } = getUser(req)
-  const productTypes = await ProductService.getProductTypes(tenantId)
-  res.status(200).json(productTypes satisfies ProductTypeResponse[])
 })
 
 productsRoute.post(`/api/products`, isAuthenticated, async (req, res) => {
