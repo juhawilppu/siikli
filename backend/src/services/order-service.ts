@@ -279,7 +279,9 @@ export const OrderService = {
         id: tenantId,
       },
     })
-    if (tenant.subscriptionType === 'premium') {
+
+    // TODO: Use enum
+    if (tenant.subscriptionType === 'PREMIUM') {
       return 10000
     }
 
