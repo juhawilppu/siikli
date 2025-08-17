@@ -70,8 +70,8 @@ export function createInvoiceHtml(invoice: InvoiceDto) {
         <td style="padding: 5mm; width: 50%;"><strong>Laskun saaja</strong><br>
           ${invoice.customer.legalName || invoice.customer.name}<br>
           ${invoice.customer.businessId ? `Y-tunnus ${invoice.customer.businessId}` : ''}<br>
-          ${invoice.customer.streetAddress}<br>
-          ${invoice.customer.postalCode} ${invoice.customer.city}
+          ${invoice.customer.streetAddress || ''}<br>
+          ${invoice.customer.postalCode || ''} ${invoice.customer.city || ''}
         </td>
         <td style="padding: 5mm; width: 50%;">
           <strong style="width: 40mm; display: inline-block;">Päivämäärä:</strong> ${formatDate(parseIsoDate(invoice.date))}<br>
