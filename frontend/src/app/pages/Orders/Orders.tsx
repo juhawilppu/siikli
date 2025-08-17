@@ -101,7 +101,9 @@ export default function Orders() {
   }
 
   const handlePrintInvoices = async (preview = false) => {
-    if (!customerId || !customers) {
+    const uniqueCustomerIds = Array.from(new Set(orders.map(o => o.customer.id)))
+
+    if ((uniqueCustomerIds.length > 1 && !customerId) || !customers) {
       toast({
         title: 'Valitse asiakas',
         description: 'Valitse asiakas, jolta haluat tulostaa laskut',
@@ -111,8 +113,9 @@ export default function Orders() {
 
     try {
       setIsPrinting(true)
+      const customerIdToUse = uniqueCustomerIds.length === 1 ? uniqueCustomerIds[0] : customerId
       const response = await axios.get(
-        `/invoices?startDate=${dateToIso(startDate)}&endDate=${dateToIso(endDate)}&preview=${preview}&customerId=${customerId}`,
+        `/invoices?startDate=${dateToIso(startDate)}&endDate=${dateToIso(endDate)}&preview=${preview}&customerId=${customerIdToUse}`,
         { responseType: 'blob' },
       )
 
@@ -123,7 +126,7 @@ export default function Orders() {
       // Create temporary link and trigger download
       const link = document.createElement('a')
       link.href = url
-      link.setAttribute('download', `laskut-${customers.find(c => c.id === customerId)?.name.toLowerCase().replace(' ', '-')}-${dateToIso(startDate)}-${dateToIso(endDate)}.pdf`)
+      link.setAttribute('download', `laskut-${customers.find(c => c.id === customerIdToUse)?.name.toLowerCase().replace(' ', '-')}-${dateToIso(startDate)}-${dateToIso(endDate)}.pdf`)
       document.body.appendChild(link)
       link.click()
 
