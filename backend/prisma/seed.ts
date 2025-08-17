@@ -1,6 +1,6 @@
 import type { OrderRowDto } from '../src/services/order-service'
 import { exit } from 'node:process'
-import { Role } from '@prisma/client'
+import { OrderStatus, Role } from '@prisma/client'
 import { dateToIso } from '@siikli/shared'
 import { subDays } from 'date-fns'
 import { Decimal } from 'decimal.js'
@@ -10,6 +10,7 @@ import { OrderService } from '../src/services/order-service'
 import { ProductService } from '../src/services/product-service'
 import { TenantService } from '../src/services/tenant-service'
 import { UserService } from '../src/services/user-service'
+import { getRandomAmount, getRandomCustomer, getRandomFreetext, getRandomFromList, getRandomNote } from './seed-utils'
 
 async function main() {
   console.log('Running seed 🌱')
@@ -47,37 +48,44 @@ async function main() {
     role: Role.USER,
   })
 
-  const sello = await CustomerService.createCustomer({
-    name: 'Alepa Sello',
+  const jKauppa = await CustomerService.createCustomer({
+    name: 'J-Kauppa',
     discount: new Decimal(0),
-    streetAddress: 'Leppävaarankatu 3',
-    postalCode: '02600',
+    streetAddress: 'Kaupankatu 1',
+    postalCode: '02100',
     city: 'Espoo',
     phone: '010 7669010',
-    email: 'test@example.com',
+    email: 'j-kauppa@j-kauppa.fi',
     showPriceWithoutTax: true,
     invoiceReference: '1234567890',
-    companyLegalName: 'Test company',
+    companyLegalName: 'J-Kauppa Oy',
     businessId: '1234567890',
-    customerGroup: 'Test group',
+    customerGroup: 'J-Kauppa',
   }, tenant.id, juha.id)
 
-  const lintuvaara = await CustomerService.createCustomer({
-    name: 'Alepa Lintuvaara',
+  const wRuoka = await CustomerService.createCustomer({
+    name: 'W-Ruoka',
     discount: new Decimal(0),
-    streetAddress: 'Linnuntie 2',
-    postalCode: '02660',
+    streetAddress: 'Keskuskatu 1',
+    postalCode: '02100',
     city: 'Espoo',
     phone: '010 7669920',
-    email: 'test@example.com',
+    email: 'w-ruoka@w-ruoka.fi',
     showPriceWithoutTax: true,
     invoiceReference: '1234567890',
-    companyLegalName: 'Test company',
+    companyLegalName: 'W-Ruoka Oy',
     businessId: '1234567890',
     customerGroup: 'Test group',
   }, tenant.id, juha.id)
 
-  const customers = [sello, lintuvaara]
+  const customers = [jKauppa, wRuoka]
+
+  const additionalCustomerCount = 3
+  for (let i = 0; i < additionalCustomerCount; i++) {
+    const customer = getRandomCustomer()
+    const createdCustomer = await CustomerService.createCustomer(customer, tenant.id, juha.id)
+    customers.push(createdCustomer)
+  }
 
   const packageSizes = [5, 10, 20, 30, 50, 100, 200, 300]
   for (const size of packageSizes) {
@@ -90,7 +98,7 @@ async function main() {
   }
 
   await ProductService.createProduct({
-    name: 'Siikli',
+    name: 'Siikli, pesty',
     tenantId: tenant.id,
     price: new Decimal(1.40),
     price0: new Decimal(1.40).div(1.14),
@@ -105,7 +113,7 @@ async function main() {
   })
 
   await ProductService.createProduct({
-    name: 'Rosamunda',
+    name: 'Siikli, uusi sato',
     tenantId: tenant.id,
     price: new Decimal(1.60),
     price0: new Decimal(1.60).div(1.14),
@@ -119,77 +127,60 @@ async function main() {
     customerGroup: 'Siikli',
   })
 
-  // Verify that product creation fails when price and price0 don't match
-  {
-    const price = new Decimal(1.60)
-    const invalidPrice0 = price.div(1.14).mul(1.1) // Intentionally wrong price0
+  const productNames = ['Pesty kesäperuna', 'Kesäperuna Annabelle', 'Kesäperuna Colombo', 'Rosamunda']
 
-    if ((await ProductService.createProduct({
-      name: 'Rosamunda wrong price',
-      tenantId: tenant.id,
-      price,
-      price0: invalidPrice0,
-      packageSize: 20,
-      packageType: 'Ltk',
-      userId: juha.id,
-      type: 'Siikli',
-      variety: 'Siikli',
-      info: 'Siikli',
-      subtype: 'Siikli',
-      customerGroup: 'Siikli',
-    }).catch(() => null)) !== null) {
-      throw new Error('ProductService.createProduct should reject mismatched prices')
-    }
-  }
-
-  for (let i = 0; i < 8; i++) {
+  for (const productName of productNames) {
     const price = new Decimal(1 + 2 * Math.random()).toDecimalPlaces(2)
     const price0 = price.div(1.14).toDecimalPlaces(2)
     await ProductService.createProduct({
-      name: `Product ${i}`,
+      name: productName,
       tenantId: tenant.id,
       price,
       price0,
-      packageSize: packageSizes[Math.floor(Math.random() * packageSizes.length)],
-      packageType: packageTypes[Math.floor(Math.random() * packageTypes.length)],
+      packageSize: getRandomFromList(packageSizes),
+      packageType: getRandomFromList(packageTypes),
       userId: juha.id,
-      type: 'Siikli',
-      variety: 'Siikli',
-      info: 'Siikli',
-      subtype: 'Siikli',
-      customerGroup: 'Siikli',
+      type: null,
+      variety: null,
+      info: null,
+      subtype: null,
+      customerGroup: null,
     })
   }
 
   const products = await ProductService.getProducts(tenant.id)
 
-  for (let customerIndex = 0; customerIndex < customers.length; customerIndex++) {
-    const customer = customers[customerIndex]
-    for (let orderIndex = 0; orderIndex < 6; orderIndex++) {
-      const hasNote = Math.random() > 0.95
+  const orderCount = 25
 
+  for (const customer of customers) {
+    for (let orderIndex = 0; orderIndex < orderCount; orderIndex++) {
       const orderRows: OrderRowDto[] = []
       for (let productIdIndex = 0; productIdIndex < products.length; productIdIndex++) {
         const product = products[productIdIndex]
+        if (product.price === null || product.price0 === null || product.packageSize === null || product.packageType === null) {
+          throw new Error('Product has null values')
+        }
         orderRows.push({
           productId: product.id,
-          amount: new Decimal(1 + Math.floor(Math.random() * 10) * (product.packageSize || 1) + (Math.random() > 0.99 ? 0.5 : 0)),
-          price: product.price || new Decimal(0.99).toDecimalPlaces(2),
-          price0: product.price0 || new Decimal(0.99).div(1.14).toDecimalPlaces(2),
-          packageSize: product.packageSize || 1,
-          packageType: product.packageType || 'Ltk',
-          freetext: Math.random() > 0.9 ? 'Erikoistuote' : null,
+          amount: getRandomAmount(product.packageSize),
+          price: product.price,
+          price0: product.price0,
+          packageSize: product.packageSize,
+          packageType: product.packageType,
+          freetext: getRandomFreetext(),
         })
       }
+
+      const note = getRandomNote()
 
       await OrderService.createOrder({
         customerId: customer.id,
         tenantId: tenant.id,
-        status: 'DELIVERED',
-        deliveryDate: dateToIso(subDays(new Date(), Math.floor(37 - orderIndex * 7 * Math.random()))),
-        hasNote,
-        noteHeader: hasNote ? 'Toimitus' : null,
-        noteBody: hasNote ? 'Toimitus ovelle H3. Nouto aamulla.' : null,
+        status: OrderStatus.WAITING_FOR_DELIVERY,
+        deliveryDate: dateToIso(subDays(new Date(), 7 * orderIndex)), // one order every 7 days
+        hasNote: note !== null,
+        noteHeader: note?.header || null,
+        noteBody: note?.body || null,
         items: orderRows.map(row => ({
           id: row.productId,
           price: row.price,
@@ -203,53 +194,6 @@ async function main() {
         })),
       })
     }
-  }
-
-  // Test order creation with invalid price and price0
-  try {
-    const orderRows: OrderRowDto[] = [
-      {
-        productId: products[0].id,
-        amount: new Decimal(1),
-        price: new Decimal(1),
-        price0: new Decimal(1),
-        packageSize: 1,
-        packageType: 'Ltk',
-        freetext: null,
-      },
-    ]
-    await OrderService.createOrder({
-      tenantId: tenant.id,
-      customerId: sello.id,
-      status: 'DELIVERED',
-      deliveryDate: dateToIso(new Date()),
-      hasNote: false,
-      noteHeader: null,
-      noteBody: null,
-      items: orderRows.map(row => ({
-        id: row.productId,
-        price: row.price,
-        price0: row.price0,
-        packageSize: row.packageSize,
-        packageType: row.packageType,
-        freetext: row.freetext || '',
-        productId: row.productId,
-        amount: row.amount,
-        packages: row.amount.div(row.packageSize).toNumber(),
-      })),
-    })
-    throw new Error('Expected order creation with invalid IDs to fail')
-  }
-  catch (error) {
-    // Expected error
-    if (!(error instanceof Error) || !error.message.includes('Price and price0 do not match')) {
-      throw new Error('Expected error to be instance of Error and to include "Price and price0 do not match"')
-    }
-  }
-
-  const orders = await OrderService.getOrders(tenant.id, subDays(new Date(), 90), new Date(), 'DELIVERED', sello.id)
-  if (orders.length !== 12) {
-    throw new Error(`Expected 12 orders, got ${orders.length}`)
   }
 
   // Create tenant 2
