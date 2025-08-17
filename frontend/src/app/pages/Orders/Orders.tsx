@@ -62,8 +62,16 @@ export default function Orders() {
     try {
       setIsPrinting(true)
       const response = await axios.get(
-        `/orders/waybills?startDate=${dateToIso(startDate)}&endDate=${dateToIso(endDate)}&preview=${preview}`,
-        { responseType: 'blob' },
+        `/orders/waybills`,
+        {
+          params: {
+            startDate: dateToIso(startDate),
+            endDate: dateToIso(endDate),
+            customerId,
+            preview,
+          },
+          responseType: 'blob',
+        },
       )
 
       // Create blob URL

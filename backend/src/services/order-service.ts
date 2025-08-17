@@ -296,7 +296,7 @@ export const OrderService = {
     return Math.max(0, 20 - orders)
   },
 
-  async getWaybillHtmls(tenantId: string, startDate: string, endDate: string, preview: boolean): Promise<{ document: string, orders: Order[] }> {
+  async getWaybillHtmls(tenantId: string, startDate: string, endDate: string, customerId: string | null, preview: boolean): Promise<{ document: string, orders: Order[] }> {
     const orders = await prisma.order.findMany({
       include: {
         customer: true,
@@ -323,6 +323,7 @@ export const OrderService = {
           lte: endOfDay(parse(endDate as string, 'yyyy-MM-dd', new Date())),
         },
         tenantId,
+        customerId: customerId ?? undefined,
         status: {
           in: ['WAITING_FOR_DELIVERY'],
         },
@@ -355,8 +356,8 @@ export const OrderService = {
     return { document, orders }
   },
 
-  async getWaybillPdf(tenantId: string, startDate: string, endDate: string, preview: boolean): Promise<Uint8Array> {
-    const { document, orders } = await this.getWaybillHtmls(tenantId, startDate, endDate, preview)
+  async getWaybillPdf(tenantId: string, startDate: string, endDate: string, customerId: string | null, preview: boolean): Promise<Uint8Array> {
+    const { document, orders } = await this.getWaybillHtmls(tenantId, startDate, endDate, customerId, preview)
 
     console.log('creating pdf')
     console.log(document)
