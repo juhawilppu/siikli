@@ -328,7 +328,7 @@ export default function Orders() {
                       <Button
                         variant="outline"
                         onClick={handlePrintWaybills}
-                        disabled={isPrinting || status !== 'WAITING_FOR_DELIVERY' || orders.length === 0}
+                        disabled={isPrinting || status !== 'WAITING_FOR_DELIVERY' || orders.filter(order => order.status === 'WAITING_FOR_DELIVERY').length === 0}
                         className="w-full sm:w-auto"
                       >
                         {isPrinting
@@ -389,7 +389,7 @@ export default function Orders() {
                       <Button
                         variant="outline"
                         onClick={handlePrintInvoices}
-                        disabled={isPrinting || status !== 'DELIVERED' || orders.length === 0}
+                        disabled={isPrinting || status !== 'DELIVERED' || orders.filter(order => order.status === 'DELIVERED').length === 0}
                         className="w-full sm:w-auto"
                       >
                         <Receipt className="mr-2 h-4 w-4" />
