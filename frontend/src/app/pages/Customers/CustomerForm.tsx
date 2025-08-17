@@ -1,9 +1,9 @@
-import type { GetCustomerRequestDto, PostCreateCustomerRequestDto } from '@/app/types/types'
+import type { GetCustomerRequestDto, PostCreateCustomerRequestDto } from '@siikli/shared'
+import { formatNumber } from '@siikli/shared'
 import axios from 'axios'
 import { HelpCircle, Save } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from '@/app/hooks/use-toast'
-import { formatNumber } from '@/app/utils/money'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -45,7 +45,6 @@ export function NewCustomer({ closeDialog, customerToEdit, onSave }: {
       id: string | null
       name: string
       companyLegalName: string | null
-      customerGroup: string | null
       discount: string
       invoiceReference: string | null
       streetAddress: string | null
@@ -62,7 +61,6 @@ export function NewCustomer({ closeDialog, customerToEdit, onSave }: {
         id: null,
         name: '',
         companyLegalName: '',
-        customerGroup: '',
         discount: '',
         invoiceReference: '',
         streetAddress: '',

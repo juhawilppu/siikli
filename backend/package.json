@@ -70,9 +70,10 @@
     "lint:fix": "eslint . --fix",
     "prisma:generate": "prisma generate",
     "start": "vite-node src/index.ts",
-    "test": "vitest",
+    "test": "vitest run",
     "test:coverage": "vitest run --coverage",
-    "test:watch": "vitest --watch"
+    "test:watch": "vitest --watch",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "type": "module",
   "version": "1.0.0"

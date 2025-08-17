@@ -5,7 +5,7 @@ import { TenantService } from './tenant-service'
 
 export const ProductService = {
 
-  async createProduct(input: { name: string, tenantId: string, userId: string, price: Decimal | null, price0: Decimal | null, packageSize: number | null, packageType: string | null, type: string | null, variety: string | null, info: string | null, subtype: string | null, customerGroup: string | null }): Promise<string> {
+  async createProduct(input: { name: string, tenantId: string, userId: string, price: Decimal | null, price0: Decimal | null, packageSize: number | null, packageType: string | null }): Promise<string> {
     const {
       name,
       tenantId,

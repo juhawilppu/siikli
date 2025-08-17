@@ -1,10 +1,17 @@
 import type Decimal from 'decimal.js'
 
+export enum OrderStatus {
+  WAITING_FOR_DELIVERY = 'WAITING_FOR_DELIVERY',
+  DELIVERED = 'DELIVERED',
+  INVOICED = 'INVOICED',
+}
+
 export type GetCurrentUserDto = {
   authenticated: false
 } | {
   authenticated: true
   userId: string
+  email: string
   tenantId: string
   initials: string
   role: 'USER' | 'OWNER'
@@ -56,6 +63,7 @@ export interface PostOrderRequestDto {
   hasNote: boolean
   noteBody: string | null
   noteHeader: string | null
+  status: OrderStatus
   items: PostOrderItemRequestDto[]
 }
 
@@ -66,6 +74,9 @@ export interface PostOrderResponseDto {
 export interface GetOrderDto {
   id: string
   orderNumber: number
+  invoiceId: string | null
+  invoiceNumber: number | null
+  status: OrderStatus
   deliveryDate: string
   customerId: string
   hasNote: boolean
@@ -78,6 +89,7 @@ export interface GetOrderList {
   id: string
   deliveryDate: string
   orderNumber: number
+  status: OrderStatus
   customer: {
     id: string
     name: string
@@ -101,7 +113,6 @@ export interface Customer {
 }
 
 export interface Order {
-  customerGroup: string | null
   customerId: string
   deliveryDate: Date
   hasNote: boolean
@@ -131,8 +142,6 @@ export interface PackagingListGroupedByCustomer {
   rows: {
     customerId: string
     customerName: string
-    productVariety: string
-    productType: string
     productName: string
     packageSize: number
     packageType: string
@@ -146,8 +155,6 @@ export interface PackagingListGroupedByProduct {
   groupedBy: 'product'
   rows: {
     productId: string
-    productVariety: string
-    productType: string
     productName: string
     packageSize: number
     packageType: string
@@ -165,7 +172,7 @@ export interface GetCompanySettings {
   invoiceBankName: string | null
   invoiceBankAccount: string | null
   invoiceReference: string | null
-  invoiceSumRow: string | null
+  invoiceSumRow: string
   phone: string | null
   email: string | null
   website: string | null
@@ -183,7 +190,6 @@ export interface GetUsersResponseDto {
 }
 
 export interface GetCustomersResponse {
-  customerGroups: string[]
   customers: GetCustomerRequest[]
 }
 
@@ -200,11 +206,9 @@ export interface GetCustomerRequest {
   email: string | null
   phone: string | null
   businessId: string | null
-  customerGroup: string | null
 }
 
 export interface GetCustomersResponseDto {
-  customerGroups: string[]
   customers: GetCustomerRequestDto[]
 }
 
@@ -221,7 +225,6 @@ export interface GetCustomerRequestDto {
   email: string | null
   phone: string | null
   businessId: string | null
-  customerGroup: string | null
 }
 
 export interface DeleteCustomerResponseDto {
@@ -241,7 +244,6 @@ export interface PostCreateCustomerRequestDto {
   email: string | null
   phone: string | null
   businessId: string | null
-  customerGroup: string | null
 }
 
 export interface PutUpdateCustomerRequestDto {
@@ -256,7 +258,6 @@ export interface PutUpdateCustomerRequestDto {
   email: string | null
   phone: string | null
   businessId: string | null
-  customerGroup: string | null
 }
 
 export interface PutUpdateCustomerResponseDto {
@@ -324,69 +325,31 @@ export interface ProductDto {
 export interface GetProductResponse {
   id: string
   name: string
-  info: string | null
   price: Decimal | null
   price0: Decimal | null
-  variety: string | null
-  type: string | null
-  subtype: string | null
   packageSize: number | null
   packageType: string | null
-  customerGroup: string | null
 }
 
 export interface GetProductResponseDto {
   id: string
   name: string
-  info: string | null
   price?: string
   price0?: string
-  variety: string | null
-  type: string | null
-  subtype: string | null
   packageSize: number | null
   packageType: string | null
-  customerGroup: string | null
 }
 
 export interface PostProductCreateRequestDto {
   name: string
   price?: number
   price0?: number
-  type?: string
-  subtype?: string
   packageSize?: number
   packageType?: string
-  customerGroup?: string
-  variety: string
-  info: string
-}
-
-export interface ProductTypeResponse {
-  id: string
-  type: string
-  orderIndex: number
-  subtypes: {
-    id: string
-    name: string
-    orderIndex: number
-  }[]
-}
-
-export interface ReorderDto {
-  first: {
-    id: string
-    orderIndex: number
-  }
-  second: {
-    id: string
-    orderIndex: number
-  }
 }
 
 export interface CreateTenantDto {
   name: string
-  businessId: string
   user: {
     marketingConsent: boolean
   }

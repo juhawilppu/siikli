@@ -1,8 +1,9 @@
 'use client'
 
-import type { GetPackageSettings, GetProductResponseDto } from '@/app/types/types'
+import type { GetPackageSettings, GetProductResponseDto } from '@siikli/shared'
 import * as Sentry from '@sentry/react'
 
+import { formatNumber } from '@siikli/shared'
 import axios from 'axios'
 import {
   ChevronDown,
@@ -14,7 +15,6 @@ import {
 import { useEffect, useState } from 'react'
 import SiikliPage from '@/app/components/SiikliPage'
 import { useToast } from '@/app/hooks/use-toast'
-import { formatNumber } from '@/app/utils/money'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -62,8 +62,6 @@ export default function Products() {
       // Search
       const matchesSearch
         = product.name.toLowerCase().includes(searchQuery.toLowerCase())
-          || product.variety?.toLowerCase().includes(searchQuery.toLowerCase())
-          || product.type?.toLowerCase().includes(searchQuery.toLowerCase())
 
       return matchesSearch
     })

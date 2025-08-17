@@ -1,4 +1,4 @@
-import type { GetCustomerRequestDto, GetCustomersResponseDto } from '@/app/types/types'
+import type { GetCustomerRequestDto, GetCustomersResponseDto } from '@siikli/shared'
 import axios from 'axios'
 import {
   Edit,
@@ -43,12 +43,11 @@ function SortableTableRow({ customer, onEdit, onDelete }: {
         </Button>
       </TableCell>
       <TableCell>{customer.city}</TableCell>
-      <TableCell>{customer.customerGroup}</TableCell>
       <TableCell>
         <div className="text-sm">
           {customer.email && (
             <div>
-              <span className="text-gray-500">Email:</span>
+              <span className="text-gray-500">Sähköposti:</span>
               {' '}
               {customer.email}
             </div>
@@ -229,9 +228,6 @@ export function Customers() {
                       Nimi
                     </TableHead>
                     <TableHead>Kaupunki</TableHead>
-                    <TableHead>
-                      Asiakasryhmä
-                    </TableHead>
                     <TableHead>Yhteystiedot</TableHead>
                     <TableHead className="text-right">Toiminnot</TableHead>
                   </TableRow>

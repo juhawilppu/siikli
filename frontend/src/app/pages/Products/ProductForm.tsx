@@ -1,6 +1,6 @@
 'use client'
 
-import type { GetProductResponseDto, PostProductCreateRequestDto } from '@/app/types/types.js'
+import type { GetProductResponseDto, PostProductCreateRequestDto } from '@siikli/shared'
 
 import { Popover } from '@radix-ui/react-popover'
 import axios from 'axios'
@@ -46,23 +46,15 @@ export default function NewProduct({ productToEdit, hide, onSave, refPackageType
         ...productToEdit,
         price: productToEdit?.price ? productToEdit.price : '',
         price0: productToEdit?.price0 ? productToEdit.price0 : '',
-        type: productToEdit?.type || '',
-        subtype: productToEdit?.subtype || '',
         packageSize: productToEdit?.packageSize || undefined,
         packageType: productToEdit?.packageType || '',
-        variety: productToEdit?.variety || '',
-        info: productToEdit?.info || '',
         id: productToEdit?.id || '',
       }
     : {
         price: '',
         price0: '',
-        type: '',
-        subtype: '',
         packageSize: undefined,
         packageType: '',
-        variety: '',
-        info: '',
         id: '',
       })
 
@@ -90,12 +82,8 @@ export default function NewProduct({ productToEdit, hide, onSave, refPackageType
       name: product.name,
       price: product.price ? Number.parseFloat(product.price) : undefined,
       price0: product.price0 ? Number.parseFloat(product.price0) : undefined,
-      type: product.type || undefined,
-      subtype: product.subtype || undefined,
       packageSize: product.packageSize || undefined,
       packageType: product.packageType || '',
-      variety: product.variety || '',
-      info: product.info || '',
     }
 
     if (mode === 'edit') {

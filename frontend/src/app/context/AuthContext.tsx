@@ -1,4 +1,4 @@
-import type { GetCurrentUserDto } from '@/app/types/types'
+import type { GetCurrentUserDto } from '@siikli/shared'
 import * as Sentry from '@sentry/react'
 import axios from 'axios'
 import React, { createContext, useContext, useEffect, useState } from 'react'

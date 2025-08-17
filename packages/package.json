@@ -1,4 +1,15 @@
 {
+  "devDependencies": {
+    "vitest": "^3.2.4"
+  },
   "private": true,
-  "workspaces": ["frontend", "backend", "packages/*"]
+  "scripts": {
+    "test": "vitest run",
+    "test:packages": "npm --workspace packages run test"
+  },
+  "workspaces": [
+    "frontend",
+    "backend",
+    "packages/*"
+  ]
 }

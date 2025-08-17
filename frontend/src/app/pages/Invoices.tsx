@@ -1,7 +1,8 @@
-import type { GetCustomerRequestDto, GetCustomersResponseDto } from '@/app/types/types'
+import type { GetCustomerRequestDto, GetCustomersResponseDto } from '@siikli/shared'
+import { dateToIso, formatDate } from '@siikli/shared'
 import axios from 'axios'
-import { fi } from 'date-fns/locale'
 
+import { fi } from 'date-fns/locale'
 import { Calendar, Check, Eye } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import SiikliPage from '@/app/components/SiikliPage'
@@ -14,7 +15,6 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { cn } from '@/lib/utils'
 import { toast } from '../hooks/use-toast'
-import { dateToIso, formatDate } from '../utils/date'
 
 export interface FlatOrderItem {
   deliveryDate: Date

@@ -1,7 +1,7 @@
 import type { OrderRowDto } from '../src/services/order-service'
 import { exit } from 'node:process'
-import { OrderStatus, Role } from '@prisma/client'
-import { dateToIso } from '@siikli/shared'
+import { Role } from '@prisma/client'
+import { dateToIso, OrderStatus } from '@siikli/shared'
 import { subDays } from 'date-fns'
 import { Decimal } from 'decimal.js'
 import prisma from '../src/prisma'
@@ -60,7 +60,6 @@ async function main() {
     invoiceReference: '1234567890',
     companyLegalName: 'J-Kauppa Oy',
     businessId: '1234567890',
-    customerGroup: 'J-Kauppa',
   }, tenant.id, juha.id)
 
   const wRuoka = await CustomerService.createCustomer({
@@ -75,7 +74,6 @@ async function main() {
     invoiceReference: '1234567890',
     companyLegalName: 'W-Ruoka Oy',
     businessId: '1234567890',
-    customerGroup: 'Test group',
   }, tenant.id, juha.id)
 
   const customers = [jKauppa, wRuoka]
@@ -105,11 +103,6 @@ async function main() {
     packageSize: 10,
     packageType: 'Ltk',
     userId: juha.id,
-    type: 'Siikli',
-    variety: 'Siikli',
-    info: 'Siikli',
-    subtype: 'Siikli',
-    customerGroup: 'Siikli',
   })
 
   await ProductService.createProduct({
@@ -120,11 +113,6 @@ async function main() {
     packageSize: 20,
     packageType: 'Ltk',
     userId: juha.id,
-    type: 'Siikli',
-    variety: 'Siikli',
-    info: 'Siikli',
-    subtype: 'Siikli',
-    customerGroup: 'Siikli',
   })
 
   const productNames = ['Pesty kesäperuna', 'Kesäperuna Annabelle', 'Kesäperuna Colombo', 'Rosamunda']
@@ -140,11 +128,6 @@ async function main() {
       packageSize: getRandomFromList(packageSizes),
       packageType: getRandomFromList(packageTypes),
       userId: juha.id,
-      type: null,
-      variety: null,
-      info: null,
-      subtype: null,
-      customerGroup: null,
     })
   }
 

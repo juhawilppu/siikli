@@ -1,4 +1,3 @@
-import type { OrderStatus } from '@prisma/client'
 import type {
   GetOrderDto,
   GetOrderList,
@@ -7,7 +6,7 @@ import type {
 } from '@siikli/shared'
 import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
-import { parseIsoDate } from '@siikli/shared'
+import { OrderStatus, parseIsoDate } from '@siikli/shared'
 import { Decimal } from 'decimal.js'
 import express from 'express'
 import { getUser, isAuthenticated } from '../middlewares/permissions'
@@ -118,7 +117,7 @@ ordersRoute.post(`/api/orders`, isAuthenticated, async (req, res) => {
   const result = await OrderService.createOrder({
     ...data,
     tenantId,
-    status: 'WAITING_FOR_DELIVERY',
+    status: OrderStatus.WAITING_FOR_DELIVERY,
     deliveryDate: data.deliveryDate,
     items: data.items.map(item => ({
       ...item,

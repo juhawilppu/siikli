@@ -1,9 +1,9 @@
-import type { GetProductResponseDto, PostProductCreateRequestDto, ProductTypeResponse } from '@siikli/shared'
+import type { GetProductResponseDto, PostProductCreateRequestDto } from '@siikli/shared'
 import { Decimal } from '@prisma/client/runtime/library'
 import express from 'express'
 import { getUser, isAuthenticated } from '../middlewares/permissions'
 import { ProductService } from '../services/product-service'
-import { serializeNumber } from '../utils/money'
+import { serializeNumber } from '../utils/serialization'
 
 const productsRoute = express.Router()
 
@@ -36,11 +36,6 @@ productsRoute.post(`/api/products`, isAuthenticated, async (req, res) => {
     price0: body.price0 ? new Decimal(body.price0) : null,
     packageSize: body.packageSize ? body.packageSize : null,
     packageType: body.packageType ? body.packageType : null,
-    type: body.type ? body.type : null,
-    variety: body.variety ? body.variety : null,
-    info: body.info ? body.info : null,
-    subtype: body.subtype ? body.subtype : null,
-    customerGroup: body.customerGroup ? body.customerGroup : null,
   })
   res.status(201).json({ id: productId })
 })

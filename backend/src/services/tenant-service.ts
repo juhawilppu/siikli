@@ -141,7 +141,6 @@ export const TenantService = {
       const tenant = await tx.tenant.update({
         data: {
           name: input.name,
-          businessId: input.businessId,
           signupCompleted: true,
         },
         where: {

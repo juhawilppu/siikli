@@ -10,8 +10,6 @@ export const PackagingListService = {
       c.name AS customer_name,
       product_id,
       p.name AS product_name,
-      type AS product_type,
-      variety AS product_variety,
       SUM(amount)::numeric AS amount,
       op.package_size,
       op.package_type,
@@ -26,8 +24,6 @@ export const PackagingListService = {
       c.name,
       product_id,
       p.name,
-      type,
-      p.variety,
       op.package_size,
       op.package_type,
       freetext
@@ -38,7 +34,6 @@ export const PackagingListService = {
       amount ASC,
       product_name ASC
   `)
-    console.log('results', results)
 
     return {
       deliveryDate,
@@ -62,35 +57,24 @@ export const PackagingListService = {
             SELECT
             product_id,
             p.name AS product_name,
-            p.type AS product_type,
-            p.variety AS product_variety,
             SUM(amount)::numeric AS amount,
             op.package_size,
             op.package_type
             FROM "order" o
             LEFT JOIN order_row op ON (op.order_id = o.id)
             LEFT JOIN product p ON (p.id = op.product_id)
-            LEFT JOIN product_type pt ON (p.type = pt.type and pt.tenant_id = '${tenantId}')
-            LEFT JOIN product_subtype pst ON (p.type = pst.type AND p.subtype = pst.subtype and pst.tenant_id = '${tenantId}')
             WHERE delivery_date = '${deliveryDate}' and o.tenant_id = '${tenantId}'
             GROUP BY
             product_id,
             name,
-            p.type,
-            p.variety,
-            pt.order_index,
-            pst.order_index,
             op.package_size,
             op.package_type
             ORDER BY
-            pt.order_index ASC,
-            pst.order_index ASC,
             product_name ASC,
             op.package_type ASC,
             op.package_size ASC,
             amount ASC;
             `)
-    console.log('results', results)
 
     return {
       deliveryDate,
@@ -99,8 +83,6 @@ export const PackagingListService = {
         return {
           productId: r.product_id,
           productName: r.product_name,
-          productType: r.product_type,
-          productVariety: r.product_variety,
           packageSize: r.package_size,
           packageType: r.package_type,
           amount: new Decimal(r.amount),

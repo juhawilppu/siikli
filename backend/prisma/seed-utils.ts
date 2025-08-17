@@ -92,7 +92,6 @@ export function getRandomCustomer() {
   const cities = ['Helsinki', 'Espoo', 'Vantaa', 'Turku', 'Tampere', 'Oulu', 'Jyväskylä', 'Kuopio', 'Lahti', 'Pori']
   const streets = ['Testikatu 1', 'Helsingintie 5', 'Kauppakatu 10', 'Rantatie 3', 'Puistotie 7', 'Asemakatu 2']
   const emails = ['asiakas@example.com', 'info@yritys.fi', 'contact@kauppa.com', 'testi@firma.fi', 'myynti@supermarket.fi']
-  const groups = ['Test group', 'J-Kauppa', 'W-Ruoka', 'Asiakasryhmä', 'Erikoisryhmä']
 
   return {
     name: `${getRandomFromList(names)} ${Math.floor(Math.random() * 1000)}`,
@@ -106,6 +105,5 @@ export function getRandomCustomer() {
     invoiceReference: maybe(String(Math.floor(1000000000 + Math.random() * 9000000000))),
     companyLegalName: maybe(`Test company ${Math.floor(Math.random() * 100)}`),
     businessId: maybe(`Y-${Math.floor(1000000 + Math.random() * 9000000)}-${Math.floor(Math.random() * 10)}`),
-    customerGroup: maybe(getRandomFromList(groups)),
   }
 }

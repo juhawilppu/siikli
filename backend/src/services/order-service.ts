@@ -1,11 +1,11 @@
-import type { Order, OrderStatus } from '@prisma/client'
-import type { GetOrderDto, GetOrderList, PostOrderItemRequest } from '@siikli/shared'
+import type { Order } from '@prisma/client'
+import type { GetOrderDto, GetOrderList, OrderStatus, PostOrderItemRequest } from '@siikli/shared'
 import { dateToIso, parseIsoDate } from '@siikli/shared'
 import { endOfDay, endOfMonth, parse, startOfDay, startOfMonth } from 'date-fns'
 import { Decimal } from 'decimal.js'
 import puppeteer from 'puppeteer'
 import prisma from '../prisma'
-import { serializeNumber } from '../utils/money'
+import { serializeNumber } from '../utils/serialization'
 import { uploadPdfToS3 } from '../utils/upload-to-s3'
 import { TenantService } from './tenant-service'
 import { createWaybills } from './waybill'
@@ -209,7 +209,7 @@ export const OrderService = {
         id: o.id,
         orderNumber: o.orderNumber,
         deliveryDate: dateToIso(o.deliveryDate),
-        status: o.status,
+        status: o.status as OrderStatus,
         total: o.orderRows.map(o => o.amount.mul(o.price)).reduce((a, b) => a.add(b), new Decimal(0)).toNumber(),
         customer: {
           id: o.customerId,
@@ -249,7 +249,7 @@ export const OrderService = {
       orderNumber: result.orderNumber,
       invoiceId: result.invoice?.id ?? null,
       invoiceNumber: result.invoice?.invoiceNumber ?? null,
-      status: result.status,
+      status: result.status as OrderStatus,
       deliveryDate: dateToIso(result.deliveryDate),
       customerId: result.customerId,
       hasNote: result.hasNote,

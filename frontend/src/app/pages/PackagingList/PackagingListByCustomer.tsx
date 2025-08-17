@@ -1,6 +1,5 @@
-import type { PackagingListGroupedByCustomer } from '@/app/types/types'
-import { formatDate, parseIsoDate } from '@/app/utils/date'
-import { formatNumber } from '@/app/utils/money'
+import type { PackagingListGroupedByCustomer } from '@siikli/shared'
+import { formatDate, formatNumber, parseIsoDate } from '@siikli/shared'
 import '../../pdf.css'
 
 export function PackagingListByCustomer({ report }: {

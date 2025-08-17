@@ -1,4 +1,5 @@
-import type { GetCustomerRequestDto, GetCustomersResponseDto, GetOrderList, OrderStatus } from '@/app/types/types'
+import type { GetCustomerRequestDto, GetCustomersResponseDto, GetOrderList } from '@siikli/shared'
+import { dateToIso, formatDate, formatNumber, OrderStatus, parseIsoDate } from '@siikli/shared'
 import axios from 'axios'
 import { endOfMonth, endOfWeek, startOfMonth, startOfWeek, subMonths } from 'date-fns'
 
@@ -16,8 +17,6 @@ import { OrderStatusBadge } from '@/app/components/OrderStatusBadge'
 import SiikliPage from '@/app/components/SiikliPage'
 import { toast } from '@/app/hooks/use-toast'
 
-import { dateToIso, formatDate, parseIsoDate } from '@/app/utils/date'
-import { formatNumber } from '@/app/utils/money'
 import { Button } from '@/components/ui/button'
 import { Calendar as CalendarComponent } from '@/components/ui/calendar'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
@@ -88,7 +87,7 @@ export default function Orders() {
       link.remove()
       window.URL.revokeObjectURL(url)
       if (!preview) {
-        setOrders(orders.map(order => ({ ...order, status: 'DELIVERED' })))
+        setOrders(orders.map(order => ({ ...order, status: OrderStatus.DELIVERED })))
       }
     }
     catch (error) {
@@ -134,7 +133,7 @@ export default function Orders() {
       link.remove()
       window.URL.revokeObjectURL(url)
       if (!preview) {
-        setOrders(orders.map(order => ({ ...order, status: 'INVOICED' })))
+        setOrders(orders.map(order => ({ ...order, status: OrderStatus.INVOICED })))
       }
     }
     catch (error) {
@@ -188,7 +187,7 @@ export default function Orders() {
                 setViewMode('waybills')
                 setStartDate(startOfWeek(now, { weekStartsOn: 1 }))
                 setEndDate(endOfWeek(now, { weekStartsOn: 1 }))
-                setStatus('WAITING_FOR_DELIVERY')
+                setStatus(OrderStatus.WAITING_FOR_DELIVERY)
               }}
               variant="ghost"
               size="sm"
@@ -208,7 +207,7 @@ export default function Orders() {
                 setViewMode('invoices')
                 setStartDate(startOfMonth(subMonths(now, 1)))
                 setEndDate(endOfMonth(subMonths(now, 1)))
-                setStatus('DELIVERED')
+                setStatus(OrderStatus.DELIVERED)
               }}
               variant="ghost"
               size="sm"
@@ -340,7 +339,7 @@ export default function Orders() {
                       <Button
                         variant="default"
                         onClick={() => handlePrintWaybills(false)}
-                        disabled={isPrinting || status !== 'WAITING_FOR_DELIVERY' || orders.filter(order => order.status === 'WAITING_FOR_DELIVERY').length === 0}
+                        disabled={isPrinting || status !== 'WAITING_FOR_DELIVERY' || orders.filter(order => order.status === OrderStatus.WAITING_FOR_DELIVERY).length === 0}
                         className="w-full sm:w-auto"
                       >
                         {isPrinting
@@ -426,7 +425,7 @@ export default function Orders() {
                       <Button
                         variant="default"
                         onClick={() => handlePrintInvoices(false)}
-                        disabled={isPrinting || status !== 'DELIVERED' || orders.filter(order => order.status === 'DELIVERED').length === 0}
+                        disabled={isPrinting || status !== 'DELIVERED' || orders.filter(order => order.status === OrderStatus.DELIVERED).length === 0}
                         className="w-full sm:w-auto"
                       >
                         <Receipt className="mr-2 h-4 w-4" />
@@ -435,7 +434,7 @@ export default function Orders() {
                       <Button
                         variant="outline"
                         onClick={() => handlePrintInvoices(true)}
-                        disabled={isPrinting || status !== 'DELIVERED' || orders.filter(order => order.status === 'DELIVERED').length === 0}
+                        disabled={isPrinting || status !== 'DELIVERED' || orders.filter(order => order.status === OrderStatus.DELIVERED).length === 0}
                         className="w-full sm:w-auto"
                       >
                         <Receipt className="mr-2 h-4 w-4" />

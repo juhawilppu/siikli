@@ -1,6 +1,7 @@
 import type { OrderRowDto } from '../services/order-service'
 import { Role } from '@prisma/client'
 import { Decimal } from '@prisma/client/runtime/library'
+import { OrderStatus } from '@siikli/shared'
 import { addDays, formatDate, subDays } from 'date-fns'
 import { describe, expect, it } from 'vitest'
 import prisma from '../prisma'
@@ -63,7 +64,6 @@ describe('full business flow e2e test', () => {
 
     await TenantService.completeOnboarding(tenant.id, {
       name: tenantName,
-      businessId: 'Y-1234567-8',
       user: {
         marketingConsent: true,
       },
@@ -161,11 +161,6 @@ describe('full business flow e2e test', () => {
       packageSize: 10,
       packageType: 'Ltk',
       userId: juha.id,
-      type: 'Ltk',
-      variety: 'Siikli',
-      info: 'Erikoistuote',
-      subtype: 'Siikli',
-      customerGroup: null,
     })
     expect(siikli).toBeDefined()
 
@@ -177,11 +172,6 @@ describe('full business flow e2e test', () => {
       packageSize: 10,
       packageType: 'Ltk',
       userId: juha.id,
-      type: 'Ltk',
-      variety: 'Siikli',
-      info: 'Erikoistuote',
-      subtype: 'Siikli',
-      customerGroup: null,
     })
     expect(productToDelete).toBeDefined()
 
@@ -213,11 +203,6 @@ describe('full business flow e2e test', () => {
       packageSize: 10,
       packageType: 'Ltk',
       userId: juha.id,
-      type: 'Ltk',
-      variety: 'Siikli',
-      info: 'Erikoistuote',
-      subtype: 'Siikli',
-      customerGroup: null,
     })).rejects.toThrow('Price and price0 do not match')
 
     const products = await ProductService.getProducts(tenant.id)
@@ -247,7 +232,7 @@ describe('full business flow e2e test', () => {
     const orderId = await OrderService.createOrder({
       customerId: sello.id,
       tenantId: tenant.id,
-      status: 'WAITING_FOR_DELIVERY',
+      status: OrderStatus.WAITING_FOR_DELIVERY,
       deliveryDate,
       hasNote: true,
       noteHeader: 'Toimitus',
@@ -275,7 +260,7 @@ describe('full business flow e2e test', () => {
       userId: juha.id,
       customerId: sello.id,
       id: orderId.id,
-      status: 'WAITING_FOR_DELIVERY',
+      status: OrderStatus.WAITING_FOR_DELIVERY,
       deliveryDate,
       hasNote: true,
       noteHeader: 'Toimitus',
@@ -288,7 +273,7 @@ describe('full business flow e2e test', () => {
       })),
     })
 
-    const orders = await OrderService.getOrders(tenant.id, subDays(new Date(), 10), addDays(new Date(), 10), 'WAITING_FOR_DELIVERY', undefined)
+    const orders = await OrderService.getOrders(tenant.id, subDays(new Date(), 10), addDays(new Date(), 10), OrderStatus.WAITING_FOR_DELIVERY, undefined)
     expect(orders.length).toBe(1)
     expect(orders[0].customer.id).toBe(customers.customers[0].id)
     expect(orders[0].deliveryDate).toBe(deliveryDate)
@@ -367,7 +352,7 @@ describe('full business flow e2e test', () => {
     const deletedCustomer = await CustomerService.getCustomer(sello.id, tenant.id)
     expect(deletedCustomer).toBeNull()
 
-    const deletedOrders = await OrderService.getOrders(tenant.id, subDays(new Date(), 1), addDays(new Date(), 1), 'WAITING_FOR_DELIVERY', undefined)
+    const deletedOrders = await OrderService.getOrders(tenant.id, subDays(new Date(), 1), addDays(new Date(), 1), OrderStatus.WAITING_FOR_DELIVERY, undefined)
     expect(deletedOrders.length).toBe(0)
 
     await TenantService.deleteUser(tenant.id, juha.id, juha.id)

@@ -13,7 +13,6 @@ customersRoute.get(`/api/customers`, isAuthenticated, async (req, res) => {
   const result = await CustomerService.getCustomers(tenantId, userId)
 
   res.json({
-    customerGroups: result.customerGroups,
     customers: result.customers.map(customer => ({
       ...customer,
       discount: customer.discount.toDecimalPlaces(2).toString(),

@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y openssl libssl-dev \
 COPY package.json package-lock.json ./
 COPY backend/package.json backend/
 COPY packages/shared/package.json packages/shared/
-RUN npm ci --workspaces
+RUN HUSKY=0 npm ci --workspaces --include=dev
 
 # build shared so it exists at runtime
 COPY packages/shared ./packages/shared

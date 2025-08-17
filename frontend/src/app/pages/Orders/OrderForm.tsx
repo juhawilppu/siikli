@@ -1,8 +1,9 @@
+import type { GetCustomerRequestDto, GetCustomersResponseDto, GetOrderDto, GetPackageSettings, GetProductResponseDto, OrderRow, PostOrderRequestDto, PostOrderResponseDto } from '@siikli/shared'
+
 import type React from 'react'
 
-import type { GetCustomerRequestDto, GetCustomersResponseDto, GetOrderDto, GetPackageSettings, GetProductResponseDto, OrderRow, OrderStatus, PostOrderRequestDto, PostOrderResponseDto } from '@/app/types/types'
-
 import { captureException } from '@sentry/react'
+import { dateToIso, formatNumber, OrderStatus, parseDecimal, parseToNumber } from '@siikli/shared'
 import axios from 'axios'
 import { format } from 'date-fns'
 import { fi } from 'date-fns/locale'
@@ -25,8 +26,6 @@ import { OrderStatusBadge } from '@/app/components/OrderStatusBadge'
 import SiikliPage from '@/app/components/SiikliPage'
 import { useIsMobile } from '@/app/hooks/use-mobile'
 import { useToast } from '@/app/hooks/use-toast'
-import { dateToIso } from '@/app/utils/date'
-import { formatNumber, parseDecimal, parseToNumber, serializeNumber } from '@/app/utils/money'
 import { Button } from '@/components/ui/button'
 import { Calendar as CalendarComponent } from '@/components/ui/calendar'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
@@ -40,6 +39,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Separator } from '@/components/ui/separator'
 import { Textarea } from '@/components/ui/textarea'
 import { cn } from '@/lib/utils'
+import { serializeNumber } from '@/utils/serialization'
 import ConfirmDialog from '../../components/ConfirmDialog'
 
 export default function CreateOrder() {
@@ -47,7 +47,7 @@ export default function CreateOrder() {
   const [products, setProducts] = useState<GetProductResponseDto[]>()
   const [isLoading, setIsLoading] = useState(true)
   // const [openOrderStatus, setOpenOrderStatus] = useState(false)
-  const [status, setStatus] = useState<OrderStatus>('WAITING_FOR_DELIVERY')
+  const [status, setStatus] = useState<OrderStatus>(OrderStatus.WAITING_FOR_DELIVERY)
   const [invoiceId, setInvoiceId] = useState<string | null>(null)
   const [deliveryDate, setDeliveryDate] = useState<Date>()
   const [customerId, setCustomerId] = useState<string>('')

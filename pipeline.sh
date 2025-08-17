@@ -6,7 +6,7 @@ command -v docker >/dev/null 2>&1 || { echo >&2 "❌ Docker is not installed. Ab
 command -v aws >/dev/null 2>&1 || { echo >&2 "❌ AWS CLI is not installed. Aborting."; exit 1; }
 
 echo "🔍 Running tests..."
-npm run test:coverage:backend --no-watch --yes || true
+npm run test || true
 
 echo "🔍 Running linter..."
 npm run lint:frontend

@@ -15,12 +15,14 @@
   },
   "scripts": {
     "build": "tsup src/index.ts --format esm,cjs --dts",
-    "clean": "rimraf dist"
+    "clean": "rimraf dist",
+    "test": "vitest run"
   },
   "devDependencies": {
     "tsup": "^8.2.4",
     "typescript": "^5.5.4",
-    "rimraf": "^6.0.1"
+    "rimraf": "^6.0.1",
+    "vitest": "^3.2.4"
   },
   "files": ["dist"]
 }

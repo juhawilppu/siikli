@@ -309,7 +309,6 @@ model Order {
   noteBody            String?     @map("note_body") @db.VarChar(1000)
   noteHeader          String?     @map("note_header") @db.VarChar(255)
   showPriceWithoutTax Boolean?    @default(false) @map("show_price_without_tax")
-  customerGroup       String?     @map("customer_group") @db.VarChar(256)
   customer            Customer    @relation(fields: [customerId], references: [id], onDelete: Cascade)
   orderRows           OrderRow[]
   tenantId            String      @map("tenant_id") @db.Uuid
@@ -338,7 +337,6 @@ model OrderHistory {
   noteBody            String?     @map("note_body") @db.VarChar(1000)
   noteHeader          String?     @map("note_header") @db.VarChar(255)
   showPriceWithoutTax Boolean?    @map("show_price_without_tax")
-  customerGroup       String?     @map("customer_group") @db.VarChar(256)
   tenantId            String      @map("tenant_id") @db.Uuid
   status              OrderStatus @default(WAITING_FOR_DELIVERY) @map("status")
   createdAt           DateTime    @map("created_at")
