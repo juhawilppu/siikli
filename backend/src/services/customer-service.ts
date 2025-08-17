@@ -15,7 +15,6 @@ interface CustomerCreateInput {
   email: string | null
   phone: string | null
   businessId: string | null
-  customerGroup: string | null
 }
 
 export const CustomerService = {

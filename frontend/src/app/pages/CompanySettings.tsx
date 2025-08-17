@@ -319,10 +319,19 @@ export default function CompanySettings() {
                     </div>
 
                     <Separator className="my-4" />
-                    <h3 className="text-lg font-medium">Pankkitiedot</h3>
+                    <h3 className="text-lg font-medium">Laskutustiedot</h3>
                     <CardDescription className="text-gray-700">
-                      Pankkitietoja käytetään laskuissa.
+                      Näytä tietoja käytetään laskuissa.
                     </CardDescription>
+                    <div className="space-y-2">
+                      <Label htmlFor="invoice-bank-name">Laskun yhteenveto</Label>
+                      <Input
+                        id="invoice-summary-row"
+                        name="invoiceSumRow"
+                        value={companyData.invoiceSumRow}
+                        onChange={handleInputChange}
+                      />
+                    </div>
                     <div className="space-y-2">
                       <Label htmlFor="invoice-bank-name">Pankin nimi</Label>
                       <Input

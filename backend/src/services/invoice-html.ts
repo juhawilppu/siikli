@@ -1,6 +1,8 @@
 import type { InvoiceDto } from './invoice-service'
 import { formatDate, formatNumber, parseIsoDate } from '@siikli/shared'
 
+export const DEFAULT_INVOICE_SUMMARY_ROW = 'Perunaa ym. - lähetteen mukaan'
+
 // The max amount of invoice items per page in the appendix is 29
 const LAST_ITEM_INDEX = 29
 
@@ -102,7 +104,7 @@ export function createInvoiceHtml(invoice: InvoiceDto) {
         <td class="border-right border-top-bottom" style="text-align: right;"><strong>${invoice.customer.showPriceWithoutTax ? 'Ilman ALV' : 'ALV 14 %'}<br />Yht EUR</strong></td>
       </tr>
       <tr>
-        <td class="border-left">Perunaa, porkkanaa, sipulia, ym. - lähetteen mukaan</td>
+        <td class="border-left">${invoice.company.invoiceSumRow || DEFAULT_INVOICE_SUMMARY_ROW}</td>
         <td style="text-align: right;">${formatNumber(invoice.totals.totalKg)}</td>
         <td class="border-right" style="text-align: right;">${formatNumber(invoice.customer.showPriceWithoutTax ? invoice.totals.totalSumWithoutTax : invoice.totals.totalSumWithTax)}</td>
       </tr>

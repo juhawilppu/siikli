@@ -173,7 +173,7 @@ export interface GetCompanySettings {
   invoiceBankName: string | null
   invoiceBankAccount: string | null
   invoiceReference: string | null
-  invoiceSumRow: string | null
+  invoiceSumRow: string
   phone: string | null
   email: string | null
   website: string | null

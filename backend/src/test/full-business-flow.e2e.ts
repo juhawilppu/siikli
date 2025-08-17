@@ -110,7 +110,6 @@ describe('full business flow e2e test', () => {
       invoiceReference: '1234567890',
       companyLegalName: 'Test company',
       businessId: '1234567890',
-      customerGroup: 'Test group',
     }, tenant.id, juha.id)
     expect(sello).toBeDefined()
 
@@ -193,11 +192,6 @@ describe('full business flow e2e test', () => {
       price0: new Decimal(1.40).div(1.14).toString(),
       packageSize: 10,
       packageType: 'Ltk',
-      type: 'Ltk',
-      variety: 'Siikli',
-      info: 'Erikoistuote',
-      subtype: 'Siikli',
-      customerGroup: null,
     }, juha.id)
 
     const products2 = await ProductService.getProducts(tenant.id)
@@ -233,13 +227,6 @@ describe('full business flow e2e test', () => {
     expect(products[0].price0).toBeDefined()
     expect(products[0].packageSize).toBe(10)
     expect(products[0].packageType).toBe('Ltk')
-    expect(products[0].customerGroup).toBeNull()
-
-    const productTypes = await ProductService.getProductTypes(tenant.id)
-    expect(productTypes.length).toBe(1)
-    expect(productTypes[0].type).toBe('Ltk')
-    expect(productTypes[0].subtypes.length).toBe(0)
-    expect(productTypes[0].id).toBeDefined()
 
     const orderRows: OrderRowDto[] = []
     for (let productIdIndex = 0; productIdIndex < products.length; productIdIndex++) {
@@ -306,7 +293,7 @@ describe('full business flow e2e test', () => {
     expect(orders[0].customer.id).toBe(customers.customers[0].id)
     expect(orders[0].deliveryDate).toBe(deliveryDate)
 
-    const { document, orders: _orders } = await OrderService.getWaybillHtmls(tenant.id, deliveryDate, deliveryDate, true)
+    const { document, orders: _orders } = await OrderService.getWaybillHtmls(tenant.id, deliveryDate, deliveryDate, null, true)
     expect(document).toBeDefined()
     expect(document.includes('Siikli')).toBe(true)
     expect(document).toContain('<h1>Kuormakirja</h1>')
@@ -318,7 +305,7 @@ describe('full business flow e2e test', () => {
     expect(document.trim().startsWith('<html')).toBe(true)
     expect(document.trim().endsWith('</html>')).toBe(true)
 
-    const waybillPdf = await OrderService.getWaybillPdf(tenant.id, deliveryDate, deliveryDate, true)
+    const waybillPdf = await OrderService.getWaybillPdf(tenant.id, deliveryDate, deliveryDate, null, true)
     expect(waybillPdf).toBeInstanceOf(Uint8Array)
     expect(waybillPdf.length).toBeGreaterThan(100)
 

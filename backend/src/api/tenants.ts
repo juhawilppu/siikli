@@ -1,6 +1,7 @@
 import type { CreateTenantDto, GetCompanySettings, GetPackageSettings, GetUsersResponseDto, PostCompanySettings, PostSubscriptionChangeRequest } from '@siikli/shared'
 import express from 'express'
 import { getUser, isAuthenticated, isOwner } from '../middlewares/permissions'
+import { DEFAULT_INVOICE_SUMMARY_ROW } from '../services/invoice-html'
 import { TenantService } from '../services/tenant-service'
 
 const companiesRoute = express.Router()
@@ -18,7 +19,7 @@ companiesRoute.get(`/api/tenants`, isAuthenticated, async (req, res) => {
     invoiceBankName: result.invoiceBankName,
     invoiceBankAccount: result.invoiceBankAccount,
     invoiceReference: result.invoiceReference,
-    invoiceSumRow: result.invoiceSumRow,
+    invoiceSumRow: result.invoiceSumRow || DEFAULT_INVOICE_SUMMARY_ROW,
     phone: result.phone,
     email: result.email,
     website: result.website,

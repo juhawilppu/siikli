@@ -3,6 +3,7 @@ import { addDays } from 'date-fns'
 import Decimal from 'decimal.js'
 import prisma from '../prisma'
 import { uploadPdfToS3 } from '../utils/upload-to-s3'
+import { DEFAULT_INVOICE_SUMMARY_ROW } from './invoice-html'
 
 export type InvoiceRow = {
   usePrice0: true
@@ -66,6 +67,7 @@ export interface InvoiceDto {
     email: string | null
     website: string | null
     businessId: string | null
+    invoiceSumRow: string
   }
   paymentCondition: string
   interestRate: number
@@ -181,6 +183,7 @@ export const InvoiceService = {
         email: company.email,
         website: company.website,
         businessId: company.businessId,
+        invoiceSumRow: company.invoiceSumRow || DEFAULT_INVOICE_SUMMARY_ROW,
       },
       ...calculateTotals(items, customer.discount, customer.showPriceWithoutTax),
     } satisfies InvoiceDto

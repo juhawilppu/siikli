@@ -28,6 +28,7 @@ const invoiceData = {
     email: 'test@test.com',
     website: 'https://test.com',
     businessId: '1234567890',
+    invoiceSumRow: 'Potatoes etc. as per waybill',
   },
   paymentCondition: 'Test Payment Condition',
   interestRate: 0,
@@ -51,6 +52,7 @@ describe('createInvoiceHtml', () => {
     expect(invoice).toContain('Test Legal Name')
     expect(invoice).toContain('Test Payment Condition')
     expect(invoice).toContain('Test Notification Period')
+    expect(invoice).toContain('Potatoes etc. as per waybill')
     expect(invoice).toContain('Test Street')
     expect(invoice).toContain('00100')
     expect(invoice).toContain('Test City')
