@@ -163,7 +163,7 @@ export function createInvoiceHtml(invoice: InvoiceDto) {
       </tr>
     </table>
 
-    <table style="margin-top: 20mm;">
+    <table style="margin-top: 15mm; page-break-inside: avoid;">
         <tr>
           <td class="border-left border-top-bottom" style="width: 25%;"><strong>Osoite</strong><br />
           ${invoice.company.name || ''}<br />
