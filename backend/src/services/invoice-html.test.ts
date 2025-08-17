@@ -3,48 +3,50 @@ import { Decimal } from 'decimal.js'
 import { describe, expect, it } from 'vitest'
 import { createInvoiceHtml } from './invoice-html'
 
+const invoiceData = {
+  invoiceId: 1,
+  date: dateToIso(new Date()),
+  dueDate: dateToIso(new Date()),
+  customer: {
+    streetAddress: 'Test Street',
+    postalCode: '00100',
+    city: 'Test City',
+    name: 'Test Customer',
+    legalName: 'Test Legal Name',
+    businessId: '1234567890',
+    showPriceWithoutTax: false,
+    discount: new Decimal(0),
+  },
+  company: {
+    name: 'Test Company',
+    bankNumber: '1234567890',
+    bankName: 'Test Bank',
+    streetAddress: 'Test Street',
+    postalCode: '00100',
+    city: 'Test City',
+    phone: '1234567890',
+    email: 'test@test.com',
+    website: 'https://test.com',
+    businessId: '1234567890',
+  },
+  paymentCondition: 'Test Payment Condition',
+  interestRate: 0,
+  notificationPeriod: 'Test Notification Period',
+  items: [],
+  totals: {
+    totalSumWithTax: new Decimal(100),
+    finalSumWithTax: new Decimal(124),
+    totalSumWithoutTax: new Decimal(100),
+    finalSumWithoutTax: new Decimal(100),
+    totalTax: new Decimal(100),
+    totalKg: new Decimal(100),
+    totalDiscount: new Decimal(0),
+  },
+}
+
 describe('createInvoiceHtml', () => {
   it('should create a valid html invoice', () => {
-    const invoice = createInvoiceHtml({
-      invoiceId: 1,
-      date: dateToIso(new Date()),
-      dueDate: dateToIso(new Date()),
-      customer: {
-        streetAddress: 'Test Street',
-        postalCode: '00100',
-        city: 'Test City',
-        name: 'Test Customer',
-        legalName: 'Test Legal Name',
-        businessId: '1234567890',
-        showPriceWithoutTax: false,
-        discount: new Decimal(0),
-      },
-      company: {
-        name: 'Test Company',
-        bankNumber: '1234567890',
-        bankName: 'Test Bank',
-        streetAddress: 'Test Street',
-        postalCode: '00100',
-        city: 'Test City',
-        phone: '1234567890',
-        email: 'test@test.com',
-        website: 'https://test.com',
-        businessId: '1234567890',
-      },
-      paymentCondition: 'Test Payment Condition',
-      interestRate: 0,
-      notificationPeriod: 'Test Notification Period',
-      items: [],
-      totals: {
-        totalSumWithTax: new Decimal(100),
-        finalSumWithTax: new Decimal(124),
-        totalSumWithoutTax: new Decimal(100),
-        finalSumWithoutTax: new Decimal(100),
-        totalTax: new Decimal(100),
-        totalKg: new Decimal(100),
-        totalDiscount: new Decimal(0),
-      },
-    })
+    const invoice = createInvoiceHtml(invoiceData)
     expect(invoice).toContain('Test Company')
     expect(invoice).toContain('Test Legal Name')
     expect(invoice).toContain('Test Payment Condition')
@@ -54,45 +56,21 @@ describe('createInvoiceHtml', () => {
     expect(invoice).toContain('Test City')
     expect(invoice).toContain('124,00')
   })
+
   it('should create a valid html invoice with no nulls', () => {
     const invoice = createInvoiceHtml({
-      invoiceId: 1,
-      date: dateToIso(new Date()),
-      dueDate: dateToIso(new Date()),
+      ...invoiceData,
       customer: {
+        ...invoiceData.customer,
         streetAddress: null,
         postalCode: null,
         city: null,
-        name: 'Test Customer',
-        legalName: null,
-        businessId: null,
-        showPriceWithoutTax: false,
-        discount: new Decimal(0),
       },
       company: {
-        name: 'Test Company',
-        bankNumber: '1234567890',
-        bankName: 'Test Bank',
+        ...invoiceData.company,
         streetAddress: null,
         postalCode: null,
-        city: null,
         phone: null,
-        email: null,
-        website: null,
-        businessId: null,
-      },
-      paymentCondition: 'Test Payment Condition',
-      interestRate: 0,
-      notificationPeriod: 'Test Notification Period',
-      items: [],
-      totals: {
-        totalSumWithTax: new Decimal(100),
-        finalSumWithTax: new Decimal(124),
-        totalSumWithoutTax: new Decimal(100),
-        finalSumWithoutTax: new Decimal(100),
-        totalTax: new Decimal(100),
-        totalKg: new Decimal(100),
-        totalDiscount: new Decimal(0),
       },
     })
 
@@ -104,5 +82,17 @@ describe('createInvoiceHtml', () => {
     expect(invoice).toContain('Test Bank')
     expect(invoice).toContain('1234567890')
     expect(invoice).toContain('124,00')
+  })
+
+  it('should create a valid html invoice with discount', () => {
+    const invoice = createInvoiceHtml({
+      ...invoiceData,
+      totals: {
+        ...invoiceData.totals,
+        totalDiscount: new Decimal(10),
+      },
+    })
+
+    expect(invoice).toContain('&ndash;10,00')
   })
 })
