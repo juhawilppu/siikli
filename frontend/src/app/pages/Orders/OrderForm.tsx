@@ -15,6 +15,7 @@ import {
   Mail,
   Phone,
   Plus,
+  Printer,
   Save,
   Trash2,
   X,
@@ -632,8 +633,8 @@ export default function CreateOrder() {
                             }
                           }}
                         >
-                          <Eye className="w-4 h-4" />
-                          <span className="ml-1 xs:inline">Kuormakirja</span>
+                          <Printer className="w-4 h-4" />
+                          <span className="ml-0.5 xs:inline">Kuormakirja</span>
                         </Button>
                       </div>
                     )}
@@ -660,8 +661,8 @@ export default function CreateOrder() {
                             }
                           }}
                         >
-                          <Eye className="w-4 h-4" />
-                          <span className="ml-1 xs:inline">Lasku</span>
+                          <Printer className="w-4 h-4" />
+                          <span className="ml-0.5 xs:inline">Lasku</span>
                         </Button>
                       </div>
                     )}
