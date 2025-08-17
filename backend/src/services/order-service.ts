@@ -65,7 +65,7 @@ export const OrderService = {
         if (orderRow.price.div(1.14).toDecimalPlaces(2).cmp(orderRow.price0) !== 0) {
           throw new Error('Price and price0 do not match')
         }
-
+        await TenantService.verifyPackageSizeAndType(orderRow.packageType, orderRow.packageSize, tenantId)
         await tx.orderRow.create({
           data: {
             orderId: order.id,
