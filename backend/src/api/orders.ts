@@ -53,11 +53,11 @@ ordersRoute.get(`/api/orders/waybills`, isAuthenticated, async (req, res) => {
     return res.status(400)
   }
 
-  const changeStatus = req.query.changeStatus === 'true'
+  const preview = req.query.preview === 'true'
 
   const { tenantId } = getUser(req)
 
-  const pdfBuffer = await OrderService.getWaybillPdf(tenantId, req.query.startDate as string, req.query.endDate as string, changeStatus)
+  const pdfBuffer = await OrderService.getWaybillPdf(tenantId, req.query.startDate as string, req.query.endDate as string, preview)
 
   console.log('pdfBuffer', pdfBuffer)
 

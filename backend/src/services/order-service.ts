@@ -296,7 +296,7 @@ export const OrderService = {
     return Math.max(0, 20 - orders)
   },
 
-  async getWaybillHtmls(tenantId: string, startDate: string, endDate: string, changeStatus: boolean): Promise<{ document: string, orders: Order[] }> {
+  async getWaybillHtmls(tenantId: string, startDate: string, endDate: string, preview: boolean): Promise<{ document: string, orders: Order[] }> {
     const orders = await prisma.order.findMany({
       include: {
         customer: true,
@@ -329,7 +329,7 @@ export const OrderService = {
       },
     })
 
-    if (changeStatus) {
+    if (!preview) {
       await prisma.order.updateMany({
         where: {
           id: {
@@ -355,8 +355,8 @@ export const OrderService = {
     return { document, orders }
   },
 
-  async getWaybillPdf(tenantId: string, startDate: string, endDate: string, changeStatus: boolean): Promise<Uint8Array> {
-    const { document, orders } = await this.getWaybillHtmls(tenantId, startDate, endDate, changeStatus)
+  async getWaybillPdf(tenantId: string, startDate: string, endDate: string, preview: boolean): Promise<Uint8Array> {
+    const { document, orders } = await this.getWaybillHtmls(tenantId, startDate, endDate, preview)
 
     console.log('creating pdf')
     console.log(document)
@@ -382,24 +382,26 @@ export const OrderService = {
 
     await browser.close()
 
-    const s3Key = `${process.env.NODE_ENV === 'production' ? 'prod' : 'dev'}/waybills/${tenantId}/${startDate}-${endDate}.pdf`
-    await uploadPdfToS3({
-      bucket: 'siikli-prod-files',
-      key: s3Key,
-      pdfBuffer,
-    })
+    if (!preview) {
+      const s3Key = `${process.env.NODE_ENV === 'production' ? 'prod' : 'dev'}/waybills/${tenantId}/${startDate}-${endDate}.pdf`
+      await uploadPdfToS3({
+        bucket: 'siikli-prod-files',
+        key: s3Key,
+        pdfBuffer,
+      })
 
-    await prisma.order.updateMany({
-      where: {
-        id: {
-          in: orders.map(o => o.id),
+      await prisma.order.updateMany({
+        where: {
+          id: {
+            in: orders.map(o => o.id),
+          },
+          tenantId,
         },
-        tenantId,
-      },
-      data: {
-        waybillS3Key: s3Key,
-      },
-    })
+        data: {
+          waybillS3Key: s3Key,
+        },
+      })
+    }
 
     return pdfBuffer
   },

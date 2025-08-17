@@ -37,7 +37,6 @@ export default function Orders() {
   const [openStartDate, setOpenStartDate] = useState(false)
   const [viewMode, setViewMode] = useState<'free' | 'waybills' | 'invoices'>('free')
   const [status, setStatus] = useState<OrderStatus | 'ALL'>('ALL')
-  const [changeStatusOnPrint, setChangeStatusOnPrint] = useState(true)
   const [openEndDate, setOpenEndDate] = useState(false)
   const [isPrinting, setIsPrinting] = useState(false)
   const [orders, setOrders] = useState<GetOrderList[]>([])
@@ -59,11 +58,11 @@ export default function Orders() {
       .then(res => setOrders(res.data))
   }, [startDate, endDate, status, customerId])
 
-  const handlePrintWaybills = async () => {
+  const handlePrintWaybills = async (preview = false) => {
     try {
       setIsPrinting(true)
       const response = await axios.get(
-        `/orders/waybills?startDate=${dateToIso(startDate)}&endDate=${dateToIso(endDate)}&changeStatus=${changeStatusOnPrint}`,
+        `/orders/waybills?startDate=${dateToIso(startDate)}&endDate=${dateToIso(endDate)}&preview=${preview}`,
         { responseType: 'blob' },
       )
 
@@ -81,7 +80,7 @@ export default function Orders() {
       // Cleanup
       link.remove()
       window.URL.revokeObjectURL(url)
-      if (changeStatusOnPrint) {
+      if (!preview) {
         setOrders(orders.map(order => ({ ...order, status: 'DELIVERED' })))
       }
     }
@@ -94,7 +93,7 @@ export default function Orders() {
     }
   }
 
-  const handlePrintInvoices = async () => {
+  const handlePrintInvoices = async (preview = false) => {
     if (!customerId || !customers) {
       toast({
         title: 'Valitse asiakas',
@@ -106,7 +105,7 @@ export default function Orders() {
     try {
       setIsPrinting(true)
       const response = await axios.get(
-        `/invoices?startDate=${dateToIso(startDate)}&endDate=${dateToIso(endDate)}&changeStatus=${changeStatusOnPrint}&customerId=${customerId}`,
+        `/invoices?startDate=${dateToIso(startDate)}&endDate=${dateToIso(endDate)}&preview=${preview}&customerId=${customerId}`,
         { responseType: 'blob' },
       )
 
@@ -124,7 +123,7 @@ export default function Orders() {
       // Cleanup
       link.remove()
       window.URL.revokeObjectURL(url)
-      if (changeStatusOnPrint) {
+      if (!preview) {
         setOrders(orders.map(order => ({ ...order, status: 'INVOICED' })))
       }
     }
@@ -326,8 +325,8 @@ export default function Orders() {
                   {viewMode === 'waybills' && (
                     <div className="flex flex-col w-full gap-2 sm:gap-4 sm:flex-row-reverse sm:items-center">
                       <Button
-                        variant="outline"
-                        onClick={handlePrintWaybills}
+                        variant="default"
+                        onClick={() => handlePrintWaybills(false)}
                         disabled={isPrinting || status !== 'WAITING_FOR_DELIVERY' || orders.filter(order => order.status === 'WAITING_FOR_DELIVERY').length === 0}
                         className="w-full sm:w-auto"
                       >
@@ -366,50 +365,69 @@ export default function Orders() {
                               </>
                             )}
                       </Button>
-                      {/* Checkbox: below button on mobile, left of button on desktop */}
-                      <div className="flex items-start space-x-2 text-muted-foreground p-2 rounded-md sm:space-x-2 sm:p-0">
-                        <Checkbox
-                          id="changeStatus"
-                          checked={changeStatusOnPrint}
-                          onCheckedChange={value => setChangeStatusOnPrint(value === 'indeterminate' ? true : value)}
-                          disabled={isPrinting || status !== 'WAITING_FOR_DELIVERY'}
-                          className="mt-1"
-                        />
-                        <label
-                          htmlFor="changeStatus"
-                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                        >
-                          Merkitse tilaukset toimitetuksi
-                        </label>
-                      </div>
+                      <Button
+                        variant="outline"
+                        onClick={() => handlePrintWaybills(true)}
+                        disabled={isPrinting || status !== 'WAITING_FOR_DELIVERY' || orders.filter(order => order.status === 'WAITING_FOR_DELIVERY').length === 0}
+                        className="w-full sm:w-auto"
+                      >
+                        {isPrinting
+                          ? (
+                              <>
+                                <svg
+                                  className="mr-2 h-4 w-4 animate-spin"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <circle
+                                    className="opacity-25"
+                                    cx="12"
+                                    cy="12"
+                                    r="10"
+                                    stroke="currentColor"
+                                    strokeWidth="4"
+                                  >
+                                  </circle>
+                                  <path
+                                    className="opacity-75"
+                                    fill="currentColor"
+                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                  >
+                                  </path>
+                                </svg>
+                                Esikatselu
+                              </>
+                            )
+                          : (
+                              <>
+                                <Printer className="mr-2 h-4 w-4" />
+                                Esikatselu
+                              </>
+                            )}
+                      </Button>
                     </div>
                   )}
                   {viewMode === 'invoices' && (
                     <div className="flex flex-col w-full gap-2 sm:gap-4 sm:flex-row-reverse sm:items-center">
                       <Button
-                        variant="outline"
-                        onClick={handlePrintInvoices}
+                        variant="default"
+                        onClick={() => handlePrintInvoices(false)}
                         disabled={isPrinting || status !== 'DELIVERED' || orders.filter(order => order.status === 'DELIVERED').length === 0}
                         className="w-full sm:w-auto"
                       >
                         <Receipt className="mr-2 h-4 w-4" />
                         Tulosta lasku
                       </Button>
-                      <div className="flex items-start gap-2 w-full sm:w-auto sm:order-1">
-                        <Checkbox
-                          id="changeStatus"
-                          checked={changeStatusOnPrint}
-                          onCheckedChange={value => setChangeStatusOnPrint(value === 'indeterminate' ? true : value)}
-                          disabled={isPrinting || status !== 'DELIVERED'}
-                          className="mt-1"
-                        />
-                        <label
-                          htmlFor="changeStatus"
-                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                        >
-                          Merkitse tilaukset laskutetuksi
-                        </label>
-                      </div>
+                      <Button
+                        variant="outline"
+                        onClick={() => handlePrintInvoices(true)}
+                        disabled={isPrinting || status !== 'DELIVERED' || orders.filter(order => order.status === 'DELIVERED').length === 0}
+                        className="w-full sm:w-auto"
+                      >
+                        <Receipt className="mr-2 h-4 w-4" />
+                        Esikatselu
+                      </Button>
                     </div>
                   )}
                 </CardHeader>

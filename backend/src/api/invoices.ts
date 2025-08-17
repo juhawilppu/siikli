@@ -66,7 +66,7 @@ invoiceRoute.get(`/api/invoices`, isAuthenticated, async (req, res) => {
   const customerId = req.query.customerId as string
   const startDate = parseIsoDate(req.query.startDate as string)
   const endDate = parseIsoDate(req.query.endDate as string)
-  const changeStatus = req.query.changeStatus === 'true'
+  const preview = req.query.preview === 'true'
 
   const { invoice, orders } = await InvoiceService.getInvoice(customerId, tenantId, startDate, endDate)
 
@@ -103,7 +103,7 @@ invoiceRoute.get(`/api/invoices`, isAuthenticated, async (req, res) => {
 
   await browser.close()
 
-  if (changeStatus) {
+  if (!preview) {
     await InvoiceService.storeInvoice(invoice.invoiceId, tenantId, customerId, orders.map(o => o.id), invoice.totals.finalSumWithTax, pdfBuffer)
   }
 
