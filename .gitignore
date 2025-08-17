@@ -12,3 +12,6 @@ node_modules
 backend/coverage/*
 
 packages/shared/dist
+
+debug_*.sh
+pipeline_*.sh

@@ -1,6 +1,6 @@
 'use client'
 
-import type { GetProductResponseDto, PostProductCreateRequestDto, ProductTypeResponse } from '@/app/types/types.js'
+import type { GetProductResponseDto, PostProductCreateRequestDto } from '@/app/types/types.js'
 
 import { Popover } from '@radix-ui/react-popover'
 import axios from 'axios'

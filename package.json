@@ -1,31 +1,37 @@
 {
-    "name": "siikli",
-    "private": true,
-    "workspaces": [
-        "frontend",
-        "backend",
-        "packages/*"
-    ],
-    "scripts": {
-        "dev": "npm-run-all -p dev:*",
-        "dev:frontend": "npm --workspace frontend run dev",
-        "dev:backend": "npm --workspace backend run dev",
-        "test": "npm run test:backend",
-        "test:backend": "npm --workspace backend run test",
-        "test:coverage:backend": "npm --workspace backend run test:coverage",
-        "lint:frontend": "npm --workspace frontend run lint",
-        "lint:backend": "npm --workspace backend run lint",
-        "lint:fix:frontend": "npm --workspace frontend run lint:fix",
-        "lint:fix:backend": "npm --workspace backend run lint:fix",
-        "build:packages": "npm --workspace packages run build"
-    },
-    "devDependencies": {
-        "@antfu/eslint-config": "^5.2.0",
-        "@typescript-eslint/eslint-plugin": "^8.39.0",
-        "@typescript-eslint/parser": "^8.39.0",
-        "eslint": "^9.32.0",
-        "eslint-import-resolver-node": "^0.3.9",
-        "eslint-plugin-unicorn": "^60.0.0",
-        "npm-run-all": "^4.1.5"
-    }
+  "name": "siikli",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm-run-all -p dev:*",
+    "dev:frontend": "npm --workspace frontend run dev",
+    "dev:backend": "npm --workspace backend run dev",
+    "test": "npm run test:backend",
+    "test:backend": "npm --workspace backend run test",
+    "test:coverage:backend": "npm --workspace backend run test:coverage",
+    "lint:frontend": "npm --workspace frontend run lint",
+    "lint:backend": "npm --workspace backend run lint",
+    "lint:fix:frontend": "npm --workspace frontend run lint:fix",
+    "lint:fix:backend": "npm --workspace backend run lint:fix",
+    "build:packages": "npm --workspace packages run build",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{js,ts,jsx,tsx}": "eslint --fix"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "^5.2.0",
+    "@typescript-eslint/eslint-plugin": "^8.39.0",
+    "@typescript-eslint/parser": "^8.39.0",
+    "eslint": "^9.32.0",
+    "eslint-import-resolver-node": "^0.3.9",
+    "eslint-plugin-unicorn": "^60.0.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.1.5",
+    "npm-run-all": "^4.1.5"
+  }
 }
