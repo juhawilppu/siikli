@@ -179,8 +179,8 @@ export function createInvoiceHtml(invoice: InvoiceDto) {
             ${invoice.company.email || ''}<br />
             ${invoice.company.website || ''}<br /><br />
           </td>
-          <td class="border-right border-top-bottom" style="width: 25%;"><strong>Y-tunnus</strong><br />
-            ${invoice.company.businessId || ''}<br /><br /><br />
+          <td class="border-right border-top-bottom" style="width: 25%;">
+            ${invoice.company.businessId ? `<strong>Y-tunnus</strong><br />${invoice.company.businessId}` : ''}
           </td>
         </tr>
     </table>

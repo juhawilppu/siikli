@@ -10,6 +10,7 @@
         "dev": "npm-run-all -p dev:*",
         "dev:frontend": "npm --workspace frontend run dev",
         "dev:backend": "npm --workspace backend run dev",
+        "test": "npm run test:backend",
         "test:backend": "npm --workspace backend run test",
         "test:coverage:backend": "npm --workspace backend run test:coverage",
         "lint:frontend": "npm --workspace frontend run lint",

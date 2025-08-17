@@ -1,3 +1,4 @@
+import { OrderStatus } from '@prisma/client'
 import { Decimal } from 'decimal.js'
 import { describe, expect, it } from 'vitest'
 import createWaybill from './waybill'
@@ -63,6 +64,9 @@ describe('createWaybill', () => {
       createdAt: new Date(),
       updatedAt: new Date(),
       deletedAt: null,
+      waybillS3Key: null,
+      invoiceId: null,
+      status: OrderStatus.WAITING_FOR_DELIVERY,
       orderRows: [
         {
           id: '1',
@@ -136,6 +140,7 @@ describe('createWaybill', () => {
     expect(html).toContain('Test Street 1')
     expect(html).toContain('00100 Helsinki')
     expect(html).toContain('Y-tunnus: 1234567-8')
+    expect(html).not.toContain('null')
 
     // Verify order details
     expect(html).toContain('Test Customer')
@@ -151,5 +156,110 @@ describe('createWaybill', () => {
 
     // Verify signature section exists
     expect(html).toContain('____&nbsp;&nbsp;/&nbsp;&nbsp;____&nbsp;&nbsp;/&nbsp;&nbsp;20______')
+  })
+
+  it('should not show nulls in waybill', async () => {
+    const tenant = {
+      id: '1',
+      name: 'Test Company',
+      streetAddress: null,
+      postalCode: null,
+      city: null,
+      businessId: null,
+      phone: null,
+      email: null,
+      website: null,
+      invoiceBankName: null,
+      invoiceBankAccount: null,
+      invoiceBankBic: null,
+      invoiceReference: null,
+      invoiceSumRow: null,
+      invoiceSwiftBic: null,
+      signupCompleted: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      subscriptionType: 'free',
+      subscriptionStartDate: new Date(),
+      subscriptionEndDate: new Date(),
+      trialEndDate: new Date(),
+      trialDaysLeft: 10,
+      trialDays: 10,
+    }
+
+    const order = {
+      id: '1',
+      orderNumber: 1,
+      customerId: '1',
+      deliveryDate: new Date('2024-01-15'),
+      hasNote: false,
+      noteHeader: null,
+      noteBody: null,
+      customer: {
+        id: '1',
+        name: 'Test Customer',
+        companyLegalName: null,
+        discount: new Decimal(0),
+        invoiceReference: null,
+        email: null,
+        phone: null,
+        streetAddress: null,
+        postalCode: null,
+        city: null,
+        businessId: null,
+        showPriceWithoutTax: false,
+        tenantId: '1',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        customerGroup: '1',
+      },
+      showPriceWithoutTax: false,
+      customerGroup: '1',
+      tenantId: '1',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      deletedAt: null,
+      waybillS3Key: null,
+      invoiceId: null,
+      status: OrderStatus.WAITING_FOR_DELIVERY,
+      orderRows: [
+        {
+          id: '1',
+          orderId: '1',
+          tenantId: '1',
+          productId: '1',
+          amount: new Decimal(2),
+          price: new Decimal(10),
+          price0: new Decimal(10),
+          packageSize: 1,
+          freetext: null,
+          packageType: null,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          product: {
+            id: '1',
+            tenantId: '1',
+            name: 'Test Product',
+            variety: null,
+            info: null,
+            price: null,
+            type: null,
+            subtype: null,
+            packageSize: null,
+            packageType: null,
+            price0: null,
+            customerGroup: null,
+            active: true,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          },
+        },
+      ],
+    }
+
+    const html = await createWaybill(tenant, order, true)
+
+    // Verify no nulls in waybill
+    expect(html).not.toContain('null')
+    expect(html).not.toContain('Y-tunnus:')
   })
 })

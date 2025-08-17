@@ -179,11 +179,11 @@ export default async function createWaybill(
             <div style="height: 3em;">
                 <div style="float: left;">
                     <div class="company-name">${company.name}</div>
-                    <div>${company.streetAddress}</div>
-                    <div>${company.postalCode} ${company.city}</div>
+                    <div>${company.streetAddress || ''}</div>
+                    <div>${company.postalCode || ''} ${company.city || ''}</div>
                 </div>
                 <div style="float: right;">
-                    Y-tunnus: ${company.businessId}
+                    ${company.businessId ? `Y-tunnus: ${company.businessId}` : ''}
                 </div>
             </div>
             <h1>Kuormakirja</h1>

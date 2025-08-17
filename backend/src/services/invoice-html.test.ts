@@ -54,4 +54,55 @@ describe('createInvoiceHtml', () => {
     expect(invoice).toContain('Test City')
     expect(invoice).toContain('124,00')
   })
+  it('should create a valid html invoice with no nulls', () => {
+    const invoice = createInvoiceHtml({
+      invoiceId: 1,
+      date: dateToIso(new Date()),
+      dueDate: dateToIso(new Date()),
+      customer: {
+        streetAddress: null,
+        postalCode: null,
+        city: null,
+        name: 'Test Customer',
+        legalName: null,
+        businessId: null,
+        showPriceWithoutTax: false,
+        discount: new Decimal(0),
+      },
+      company: {
+        name: 'Test Company',
+        bankNumber: '1234567890',
+        bankName: 'Test Bank',
+        streetAddress: null,
+        postalCode: null,
+        city: null,
+        phone: null,
+        email: null,
+        website: null,
+        businessId: null,
+      },
+      paymentCondition: 'Test Payment Condition',
+      interestRate: 0,
+      notificationPeriod: 'Test Notification Period',
+      items: [],
+      totals: {
+        totalSumWithTax: new Decimal(100),
+        finalSumWithTax: new Decimal(124),
+        totalSumWithoutTax: new Decimal(100),
+        finalSumWithoutTax: new Decimal(100),
+        totalTax: new Decimal(100),
+        totalKg: new Decimal(100),
+        totalDiscount: new Decimal(0),
+      },
+    })
+
+    // Should not contain nulls
+    expect(invoice).not.toContain('null')
+    expect(invoice).not.toContain('Y-tunnus:')
+
+    // Should contain something
+    expect(invoice).toContain('Test Bank')
+    expect(invoice).toContain('1234567890')
+    expect(invoice).toContain('124,00')
+  })
 })
