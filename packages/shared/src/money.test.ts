@@ -9,6 +9,7 @@ it('formats numbers correctly', () => {
   expect(formatNumber('2')).toBe('2,00')
   expect(formatNumber('2.5')).toBe('2,50')
   expect(formatNumber('2.59')).toBe('2,59')
+  expect(formatNumber('35000')).toBe('35 000,00')
 })
 
 it('formats percentage correctly', () => {

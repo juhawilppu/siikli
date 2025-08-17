@@ -10,6 +10,13 @@ export function parseDecimal(number: string) {
   }
 }
 
+function _formatNumber(amount: number) {
+  // Format integer part with spaces as thousands separator
+  const [intPart, decPart] = amount.toFixed(2).split('.')
+  const intWithSpaces = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
+  return `${intWithSpaces},${decPart}`
+}
+
 /**
  * In Finland, numbers are formatted with a comma as the decimal separator.
  * @param amount - The number to format, like "2.55" (string, serialized number) or 2.5 (Decimal, number)
@@ -22,16 +29,14 @@ export function formatNumber(amount?: Decimal | number | string) {
   }
 
   if (amount instanceof Decimal) {
-    return amount.toNumber().toFixed(2).replace('.', ',')
+    return _formatNumber(amount.toNumber())
   }
 
   if (typeof amount === 'string') {
-    return parseDecimal(amount).toFixed(2).replace('.', ',')
+    return _formatNumber(parseDecimal(amount).toNumber())
   }
 
-  return `${amount
-    .toFixed(2)
-    .replace('.', ',')}`
+  return _formatNumber(amount)
 }
 
 export function formatPercentage(amount: number) {
