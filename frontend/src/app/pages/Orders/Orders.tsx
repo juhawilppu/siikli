@@ -238,15 +238,18 @@ export default function Orders() {
                     <div className="space-y-2 w-full md:w-1/4">
                       <Label htmlFor="customer">Asiakas</Label>
                       <Select
-                        value={customerId}
+                        value={customerId !== undefined ? customerId : 'none'}
                         onValueChange={(value) => {
-                          setCustomerId(value)
+                          setCustomerId(value === 'none' ? undefined : value)
                         }}
                       >
                         <SelectTrigger id="customer" className="w-full truncate">
                           <SelectValue placeholder="Valitse asiakas" />
                         </SelectTrigger>
                         <SelectContent>
+                          <SelectItem value="none">
+                            <span className="text-gray-500">Valitse asiakas</span>
+                          </SelectItem>
                           {customers?.map(customer => (
                             <SelectItem key={customer.id} value={customer.id}>
                               {customer.name}
