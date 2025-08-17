@@ -173,7 +173,16 @@ export default function Products() {
 
   return (
     <>
-      <SiikliPage title="Tuotteet" description="Hallitse tuotteita ja hintoja">
+      <SiikliPage
+        title="Tuotteet"
+        description="Hallitse tuotteita ja hintoja"
+        mainAction={(
+          <Button onClick={() => setShowNewProductDialog(true)}>
+            <Plus className="h-4 w-4 mr-2" />
+            Lisää tuote
+          </Button>
+        )}
+      >
 
         <div className="space-y-4">
           <div className="flex flex-col gap-4 md:flex-row md:items-center">
@@ -207,12 +216,7 @@ export default function Products() {
               )}
             </div>
             <Dialog open={showNewProductDialog} onOpenChange={setShowNewProductDialog}>
-              <DialogTrigger asChild>
-                <Button className="bg-primary hover:bg-primary/90">
-                  <Plus className="h-4 w-4 mr-2" />
-                  Lisää tuote
-                </Button>
-              </DialogTrigger>
+
               {showNewProductDialog
                 && <NewProduct hide={() => setShowNewProductDialog(false)} onSave={onProductSaved} productTypes={productTypes} refPackageSizes={packageSizes} refPackageTypes={packageTypes} />}
             </Dialog>

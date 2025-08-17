@@ -2,6 +2,7 @@ import type { GetCustomerRequestDto, GetCustomersResponseDto } from '@/app/types
 import axios from 'axios'
 import {
   Edit,
+  Plus,
   Trash2,
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
@@ -191,9 +192,17 @@ export function Customers() {
 
   return (
     <>
-      <SiikliPage title="Asiakkaat" description="Hallitse asiakastietoja">
-
-        {/* Toiminnot ja suodattimet */}
+      <SiikliPage
+        title="Asiakkaat"
+        description="Hallitse asiakastietoja"
+        mainAction={(
+          <Button onClick={() => setShowCreateDialog(true)}>
+            <Plus className="h-4 w-4 mr-2" />
+            {' '}
+            Lisää asiakas
+          </Button>
+        )}
+      >
         <div className="mb-4 flex flex-col sm:flex-row gap-4 justify-between">
           <div className="flex flex-wrap gap-2">
             <Input
@@ -204,7 +213,6 @@ export function Customers() {
               className="w-full sm:w-auto"
             />
           </div>
-          <Button onClick={() => setShowCreateDialog(true)}>Lisää asiakas</Button>
         </div>
 
         {/* Customer table */}

@@ -17,7 +17,6 @@ import { Button } from '@/components/ui/button'
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from '@/components/ui/command'
 import {
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -66,11 +65,6 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
         info: '',
         id: '',
       })
-  const [openType, setOpenType] = useState(false)
-  const [inputValueType, setInputValueType] = useState('')
-
-  const [openSubtype, setOpenSubtype] = useState(false)
-  const [inputValueSubtype, setInputValueSubtype] = useState('')
 
   const [openPackageSize, setOpenPackageSize] = useState(false)
   const [inputValuePackageSize, setInputValuePackageSize] = useState('')
@@ -115,39 +109,6 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
     }
   }
 
-  const handleSelectType = (value: string) => {
-    setProduct({ ...product, type: value })
-    setOpenType(false)
-  }
-
-  const handleSelectSubtype = (value: string) => {
-    setProduct({ ...product, subtype: value })
-    setOpenSubtype(false)
-  }
-
-  const handleCreateType = () => {
-    const newType = inputValueType.trim()
-    if (newType && !productTypes.some(p => p.type === newType)) {
-      // optionally: add to list or emit callback
-      productTypes.push({ id: 'TODO', type: newType, orderIndex: 0, subtypes: [] })
-      setProduct({ ...product, type: newType })
-    }
-    setOpenType(false)
-  }
-
-  const handleCreateSubtype = () => {
-    if (!product.type || !productTypes) {
-      return
-    }
-    const newType = inputValueSubtype.trim()
-    if (newType && !productTypes.find(p => p.type === product.type)?.subtypes.some(p => p.name === newType)) {
-      // optionally: add to list or emit callback
-      productTypes.find(p => p.type === product.type)?.subtypes.push({ id: 'TODO', name: newType, orderIndex: 0 })
-      setProduct({ ...product, subtype: newType })
-    }
-    setOpenSubtype(false)
-  }
-
   if (!productTypes) {
     return <div></div>
   }
@@ -156,10 +117,7 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
     <DialogContent className="sm:max-w-[500px] w-full h-full sm:h-auto overflow-y-auto">
       <form onSubmit={handleSubmit}>
         <DialogHeader>
-          <DialogTitle>{mode === 'create' ? 'Lisää uusi tuote' : 'Muokkaa tuotetta'}</DialogTitle>
-          <DialogDescription>
-            Täytä tuotteen tiedot. Pakolliset kentät on merkitty tähdellä (*).
-          </DialogDescription>
+          <DialogTitle className="text-lg font-bold">{mode === 'create' ? 'Uusi tuote' : 'Muokkaa tuotetta'}</DialogTitle>
         </DialogHeader>
         <div className="py-4 space-y-4">
           <div className="space-y-2">
@@ -178,111 +136,13 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
             />
           </div>
           <Separator />
-          <Accordion type="single" collapsible defaultValue="pricing" className="w-full overflow-x-visible">
-            {false && (
-              <AccordionItem value="grouping">
-                <AccordionTrigger className="py-3 text-base font-medium">Ryhmittelytiedot</AccordionTrigger>
-                <AccordionContent className="space-y-4 overflow-x-visible">
-                  <p className="text-sm text-muted-foreground">
-                    Ryhmittelytiedot ovat vapaaehtoisia. Niitä käytetään ryhmittelyyn keräilylistoissa.
-                  </p>
-                  <div className="space-y-2 overflow-x-visible">
-                    <Label htmlFor="variety" className="text-base font-medium">
-                      Lajike
-                    </Label>
-                    <Input
-                      id="variety"
-                      value={product.variety || ''}
-                      className="w-full overflow-x-visible"
-                      onChange={e => setProduct({ ...product, variety: e.target.value })}
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="type" className="text-base font-medium">
-                        Tuoteryhmä (pääryhmä)
-                      </Label>
-                      <Popover open={openType} onOpenChange={setOpenType}>
-                        <PopoverTrigger asChild>
-                          <Button variant="outline" role="combobox" className={`w-full justify-between ${product.type ? '' : 'placeholder'}`}>
-                            {product.type || 'Valitse tuoteryhmä'}
-                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-full p-0">
-                          <Command>
-                            <CommandInput
-                              placeholder="Hae tai lisää"
-                              value={inputValueType}
-                              onValueChange={setInputValueType}
-                            />
-                            <CommandEmpty>
-                              <button onClick={handleCreateType} className="flex items-center space-x-2 text-sm p-2 hover:bg-muted w-full text-left">
-                                <Plus className="w-4 h-4" />
-                                <span>
-                                  Luo:
-                                  {inputValueType}
-                                </span>
-                              </button>
-                            </CommandEmpty>
-                            <CommandGroup>
-                              {productTypes.map(type => (
-                                <CommandItem key={type.type} value={type.type} onSelect={handleSelectType}>
-                                  <Check className={cn('mr-2 h-4 w-4', product.type !== null && product.type === type.type ? 'opacity-100' : 'opacity-0')} />
-                                  {type.type}
-                                </CommandItem>
-                              ))}
-                            </CommandGroup>
-                          </Command>
-                        </PopoverContent>
-                      </Popover>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="subtype" className="text-base font-medium">
-                        Tuoteryhmä (aliryhmä)
-                      </Label>
-                      <Popover open={openSubtype} onOpenChange={setOpenSubtype}>
-                        <PopoverTrigger asChild>
-                          <Button variant="outline" role="combobox" className={`w-full justify-between ${product.subtype ? '' : 'placeholder'}`}>
-                            {product.subtype || 'Valitse aliryhmä'}
-                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-full p-0">
-                          <Command>
-                            <CommandInput
-                              placeholder="Hae tai lisää"
-                              value={inputValueSubtype}
-                              onValueChange={setInputValueSubtype}
-                            />
-                            <CommandEmpty>
-                              <button onClick={handleCreateSubtype} className="flex items-center space-x-2 text-sm p-2 hover:bg-muted w-full text-left">
-                                <Plus className="w-4 h-4" />
-                                <span>
-                                  Luo:
-                                  {inputValueSubtype}
-                                </span>
-                              </button>
-                            </CommandEmpty>
-                            <CommandGroup>
-                              {productTypes.find(p => p.type === product.type)?.subtypes.map(subtype => (
-                                <CommandItem key={subtype.name} value={subtype.name} onSelect={handleSelectSubtype}>
-                                  <Check className={cn('mr-2 h-4 w-4', product.subtype === subtype.name ? 'opacity-100' : 'opacity-0')} />
-                                  {subtype.name}
-                                </CommandItem>
-                              ))}
-                            </CommandGroup>
-                          </Command>
-                        </PopoverContent>
-                      </Popover>
-                    </div>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-            )}
+          <Accordion type="single" collapsible className="w-full overflow-x-visible">
             <AccordionItem value="pricing">
-              <AccordionTrigger className="py-3 text-base font-medium">Hinta</AccordionTrigger>
+              <AccordionTrigger className="py-4 text-base font-semibold">
+                💶
+                {' '}
+                Hinta
+              </AccordionTrigger>
               <AccordionContent className="space-y-4">
                 <p className="text-sm text-muted-foreground">
                   Voit määrittää tuotteelle oletushinnan, jota käytetään tilauksessa. Voit kuitenkin muuttaa hinnan tilauksen yhteydessä.
@@ -329,7 +189,11 @@ export default function NewProduct({ productToEdit, hide, onSave, productTypes, 
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="packaging">
-              <AccordionTrigger className="py-3 text-base font-medium">Pakkaustiedot</AccordionTrigger>
+              <AccordionTrigger className="py-4 text-base font-semibold">
+                📦
+                {' '}
+                Pakkaustiedot
+              </AccordionTrigger>
               <AccordionContent className="space-y-4">
                 <p className="text-sm text-muted-foreground">
                   Voit määrittää tuotteelle oletuspakkaustiedot, eli uusille tilausriveille tulee suoraan tämä pakkauskoko ja pakkaustyyppi. Voit kuitenkin muuttaa nämä tilausta tehdessä.

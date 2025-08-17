@@ -7,9 +7,10 @@ import { formatNumber } from '@/app/utils/money'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Separator } from '@/components/ui/separator'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
 function instructionTooltip(text: string) {
@@ -188,35 +189,33 @@ export function NewCustomer({ closeDialog, customerToEdit, onSave }: {
       <DialogContent className="sm:max-w-[500px] w-full h-full sm:h-auto overflow-y-auto">
         <form className="flex flex-col h-full">
           <DialogHeader>
-            <DialogTitle>{customerToEdit ? 'Muokkaa asiakasta' : 'Uusi asiakas'}</DialogTitle>
-            <DialogDescription>
-              {customerToEdit ? 'Muokkaa asiakkaan tietoja.' : 'Lisää uusi asiakas.'}
-            </DialogDescription>
+            <DialogTitle className="text-lg font-bold">{customerToEdit ? 'Muokkaa asiakasta' : 'Uusi asiakas'}</DialogTitle>
           </DialogHeader>
-          <Accordion type="single" collapsible defaultValue="basic" className="w-full overflow-x-visible">
-            <AccordionItem value="basic">
-              <AccordionTrigger className="py-3 text-base font-medium">Perustiedot</AccordionTrigger>
-              <AccordionContent className="space-y-4 overflow-x-visible">
-                <div className="space-y-2">
-                  <Label htmlFor="edit-name" className="font-medium">
-                    Nimi
-                    {' '}
-                    <span className="text-red-500">*</span>
-                  </Label>
-                  <Input
-                    id="edit-name"
-                    className="w-full"
-                    value={customer.name}
-                    onChange={e => setCustomer({ ...customer, name: e.target.value })}
-                    maxLength={50}
-                    required
-                  />
-                </div>
-              </AccordionContent>
-            </AccordionItem>
-
+          <div className="py-4 space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="edit-name" className="font-medium">
+                Nimi
+                {' '}
+                <span className="text-red-500">*</span>
+              </Label>
+              <Input
+                id="edit-name"
+                className="w-full"
+                value={customer.name}
+                onChange={e => setCustomer({ ...customer, name: e.target.value })}
+                maxLength={50}
+                required
+              />
+            </div>
+          </div>
+          <Separator />
+          <Accordion type="single" collapsible className="w-full overflow-x-visible">
             <AccordionItem value="contact">
-              <AccordionTrigger className="py-3 text-base font-medium">Yhteystiedot</AccordionTrigger>
+              <AccordionTrigger className="py-4 text-base font-semibold">
+                ☎️
+                {' '}
+                Yhteystiedot
+              </AccordionTrigger>
               <AccordionContent className="space-y-4 overflow-x-visible">
                 <div className="space-y-2">
                   <Label htmlFor="edit-address" className="font-medium">
@@ -283,8 +282,12 @@ export function NewCustomer({ closeDialog, customerToEdit, onSave }: {
               </AccordionContent>
             </AccordionItem>
 
-            <AccordionItem value="pricing">
-              <AccordionTrigger className="py-3 text-base font-medium">Laskutus</AccordionTrigger>
+            <AccordionItem value="invoicing">
+              <AccordionTrigger className="py-4 text-base font-semibold">
+                🧾
+                {' '}
+                Laskutustiedot
+              </AccordionTrigger>
               <AccordionContent className="space-y-4 overflow-x-visible">
                 <div className="flex items-center space-x-2 pt-2">
                   <Checkbox
