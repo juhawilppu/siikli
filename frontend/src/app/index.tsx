@@ -1,6 +1,7 @@
 import { Building2, ClipboardList, FileText, HelpCircle, LineChart, PlusCircle, Receipt, Search, ShoppingBasket, Users } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Navigate, NavLink, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
+import { useIsMobile } from '@/app/hooks/use-mobile'
 import CompanySettings from '@/app/pages/CompanySettings.js'
 import { Customers } from '@/app/pages/Customers/Customers.js'
 import { Invoices } from '@/app/pages/Invoices.js'
@@ -16,9 +17,9 @@ import SiikliCookieConsent from '@/components/SiikliCookieConsent'
 import { Button } from '@/components/ui/button.js'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu.js'
 import { Input } from '@/components/ui/input.js'
+
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { Toaster } from '@/components/ui/toaster.js'
-
 import { initPosthog } from '@/lib/posthog'
 import { useAuth } from './context/AuthContext'
 import Support from './pages/Support'
@@ -38,6 +39,7 @@ const navItems = [
 function App() {
   const navigate = useNavigate()
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false)
+  const isMobile = useIsMobile()
 
   const location = useLocation()
 
@@ -81,19 +83,24 @@ function App() {
     return (
       <>
         <div className="flex min-h-screen flex-col">
-          <header className="sticky top-0 z-30 flex h-16 items-center gap-4 bg-gradient-to-b from-blue-600 via-blue-600 to-blue-700 text-white px-4 md:px-6 shadow-lg">
+          <header
+            className="fixed top-0 left-0 right-0 z-40 flex h-16 items-center gap-4 bg-gradient-to-b from-blue-600 via-blue-600 to-blue-700 text-white px-4 md:px-6 shadow-lg"
+            style={{
+              width: '100%',
+            }}
+          >
             <Sheet open={isMobileNavOpen} onOpenChange={setIsMobileNavOpen}>
               <SheetTrigger asChild>
                 <Button
                   variant="outline"
                   size="icon"
-                  className="md:hidden bg-transparent text-white hover:bg-white/10 border border-gray-300"
+                  className={`${isMobile ? '' : 'hidden'} bg-transparent text-white hover:bg-white/10 border border-gray-300`}
                 >
                   <Menu className="h-5 w-5 text-white" />
                   <span className="sr-only">Toggle Menu</span>
                 </Button>
               </SheetTrigger>
-              <SheetContent side="left" className="md:hidden">
+              <SheetContent side="left" className={`${isMobile ? '' : 'hidden'}`}>
                 <MobileSidebar setIsMobileNavOpen={setIsMobileNavOpen} />
               </SheetContent>
             </Sheet>
@@ -161,14 +168,28 @@ function App() {
               </DropdownMenu>
             </div>
           </header>
-          <div className="flex flex-1">
+          <div className="flex flex-1 min-h-0" style={{ paddingTop: '4rem' }}>
             {/* Desktop Sidebar */}
-            <aside className="hidden w-64 shrink-0 border-r border-slate-300 bg-gradient-to-b from-slate-100 to-slate-200 md:block" style={{ zIndex: 20 }}>
-              <DesktopSidebar currentPath={location.pathname} />
+            <aside
+              className="hidden md:block w-64 shrink-0 border-r border-slate-300 bg-gradient-to-b from-slate-100 to-slate-200"
+              style={{
+                zIndex: 20,
+                position: 'fixed',
+                top: '64px', // header height (h-16 = 4rem = 64px)
+                left: 0,
+                height: 'calc(100vh - 64px)',
+                overflow: 'visible',
+              }}
+            >
+              <div className="flex flex-col h-full">
+                <DesktopSidebar currentPath={location.pathname} />
+              </div>
             </aside>
 
             {/* Main Content */}
-            <main className="flex-1 overflow-auto">
+            <main
+              className={`flex-1 overflow-auto min-h-0 ${isMobile ? 'ml-0' : 'ml-64'}`}
+            >
               <Routes>
                 <Route path="/" element={<Navigate to="/app/orders" replace />} />
                 <Route path="/orders" element={<Orders />} />
