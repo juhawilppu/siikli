@@ -161,8 +161,8 @@ export default async function createWaybill(
                 <td class="align-left width-25">${item.product.name} ${item.price.lessThan(0) ? '(Hyvitys)' : ''
                 }</td>
                 <td class="align-right width-25">${formatNumber(item.amount)}</td>
-                <td class="align-right width-25">${formatNumber(item.price)} €</td>
-                <td class="align-right width-25">${formatNumber(item.amount.mul(item.price))} €</td>
+                <td class="align-right width-25">${formatNumber(order.customer.showPriceWithoutTax ? item.price0 : item.price)} €</td>
+                <td class="align-right width-25">${formatNumber(order.customer.showPriceWithoutTax ? item.amount.mul(item.price0) : item.amount.mul(item.price))} €</td>
             </tr>`
   })
   const note = order.noteBody
@@ -197,8 +197,8 @@ export default async function createWaybill(
                     <tr>
                         <td class="align-left width-25">Tuote</td>
                         <td class="align-right width-25">Kappalemäärä (kg)</td>
-                        <td class="align-right width-25">Kilohinta (€/kg/kpl)<br>sis. ALV 14 %</td>
-                        <td class="align-right width-25">Kokonaishinta (€)<br>sis. ALV 14 %</td>
+                        <td class="align-right width-25">Kilohinta (€/kg/kpl)<br>${order.customer.showPriceWithoutTax ? 'ALV 0 %' : 'sis. ALV 14 %'}</td>
+                        <td class="align-right width-25">Kokonaishinta (€)<br>${order.customer.showPriceWithoutTax ? 'ALV 0 %' : 'sis. ALV 14 %'}</td>
                     </tr>
                 </thead>
                 <tbody>
