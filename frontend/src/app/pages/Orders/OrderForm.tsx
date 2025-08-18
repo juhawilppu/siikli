@@ -42,6 +42,15 @@ import { cn } from '@/lib/utils'
 import { serializeNumber } from '@/utils/serialization'
 import ConfirmDialog from '../../components/ConfirmDialog'
 
+function downloadUrl(url: string, isMobile: boolean) {
+  if (isMobile) {
+    window.location.href = url
+  }
+  else {
+    window.open(url, '_blank', 'noopener,noreferrer')
+  }
+}
+
 export default function CreateOrder() {
   const [customers, setCustomers] = useState<GetCustomerRequestDto[]>()
   const [products, setProducts] = useState<GetProductResponseDto[]>()
@@ -95,9 +104,8 @@ export default function CreateOrder() {
   const [orderLimit, setOrderLimit] = useState<number | null>(null)
   const { orderId } = useParams()
   const navigate = useNavigate()
-  const { toast } = useToast()
-
   const isMobile = useIsMobile()
+  const { toast } = useToast()
 
   const handleAddItem = () => {
     setOrderItems([
@@ -620,7 +628,7 @@ export default function CreateOrder() {
                             try {
                               const res = await axios.get(`/orders/${orderId}/waybill`)
                               const { url } = res.data
-                              window.open(url, '_blank')
+                              downloadUrl(url, isMobile)
                             }
                             catch (err) {
                               console.error(err)
@@ -648,7 +656,7 @@ export default function CreateOrder() {
                             try {
                               const res = await axios.get(`/invoices/${invoiceId}/url`)
                               const { url } = res.data
-                              window.open(url, '_blank')
+                              downloadUrl(url, isMobile)
                             }
                             catch (err) {
                               console.error(err)
