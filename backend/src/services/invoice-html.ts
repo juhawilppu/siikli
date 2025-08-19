@@ -34,6 +34,18 @@ export function createInvoiceHtml(invoice: InvoiceDto) {
         vertical-align: top;
       }
 
+      .width-10 {
+        width: 10%;
+      }
+
+      .width-20 {
+        width: 20%;
+      }
+
+      .width-30 {
+        width: 30%;
+      }
+
       table.borders td, th {
         border: 1px solid black;
       }
@@ -190,8 +202,8 @@ export function createInvoiceHtml(invoice: InvoiceDto) {
     <table style="border-collapse: collapse;">
       <thead>
         <tr>
-          <td class="border-left border-top-bottom"><strong>Toimituspäivä</strong></td>
-          <td class="border-top-bottom"><strong>Tilausnumero</strong></td>
+          <td class="border-left border-top-bottom"><strong>Toimitus&shy;päivä</strong></td>
+          <td class="border-top-bottom"><strong>Tilaus&shy;numero</strong></td>
           <td class="border-top-bottom"><strong>Tuotenimike</strong></td>
           <td class="border-top-bottom" style="text-align: right;"><strong>Määrä (kg/kpl)</strong></td>
           <td class="border-top-bottom" style="text-align: right;"><strong>Yksikköhinta<br/>(€/kg/kpl)<br />${invoice.customer.showPriceWithoutTax ? 'ALV 0 %' : 'sis. ALV 14 %'}</strong></td>
@@ -201,12 +213,12 @@ export function createInvoiceHtml(invoice: InvoiceDto) {
       <tbody>
         ${invoice.items.map((item, i) => `
           <tr>
-            <td class="border-left ${i === LAST_ITEM_INDEX ? 'border-bottom' : ''}">${formatDate(item.deliveryDate)}</td>
-            <td class="${i === LAST_ITEM_INDEX ? 'border-bottom' : ''}">${item.orderNumber}</td>
-            <td class="${i === LAST_ITEM_INDEX ? 'border-bottom' : ''}">${item.productName}</td>
-            <td class="${i === LAST_ITEM_INDEX ? 'border-bottom' : ''}" style="text-align: right;">${formatNumber(item.quantity)}</td>
-            <td class="${i === LAST_ITEM_INDEX ? 'border-bottom' : ''}" style="text-align: right;">${formatNumber(invoice.customer.showPriceWithoutTax ? item.priceWithoutTax : item.priceWithTax)}</td>
-            <td class="border-right ${i === LAST_ITEM_INDEX ? 'border-bottom' : ''}" style="text-align: right;">${formatNumber(invoice.customer.showPriceWithoutTax ? item.totalWithoutTax : item.totalWithTax)}</td>
+            <td class="width-10 border-left ${i === LAST_ITEM_INDEX ? 'border-bottom' : ''}">${formatDate(item.deliveryDate)}</td>
+            <td class="width-10 ${i === LAST_ITEM_INDEX ? 'border-bottom' : ''}">${item.orderNumber}</td>
+            <td class="width-30 ${i === LAST_ITEM_INDEX ? 'border-bottom' : ''}">${item.productName}</td>
+            <td class="width-20 ${i === LAST_ITEM_INDEX ? 'border-bottom' : ''}" style="text-align: right;">${formatNumber(item.quantity)}</td>
+            <td class="width-10 ${i === LAST_ITEM_INDEX ? 'border-bottom' : ''}" style="text-align: right;">${formatNumber(invoice.customer.showPriceWithoutTax ? item.priceWithoutTax : item.priceWithTax)}</td>
+            <td class="width-20 border-right ${i === LAST_ITEM_INDEX ? 'border-bottom' : ''}" style="text-align: right;">${formatNumber(invoice.customer.showPriceWithoutTax ? item.totalWithoutTax : item.totalWithTax)}</td>
           </tr>
         `).join('')}
         ${invoice.items.length === 0

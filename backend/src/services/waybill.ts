@@ -36,6 +36,10 @@ const defaultStyle = `
             border-top: 1px solid black;
         }
 
+        .pdf .width-10 {
+            width: 10%;
+        }
+
         .pdf .width-20 {
             width: 20%;
         }
@@ -158,11 +162,11 @@ export default async function createWaybill(
   const itemsTable = order.orderRows.map((item) => {
     return `
             <tr>
-                <td class="align-left width-25">${item.product.name} ${item.price.lessThan(0) ? '(Hyvitys)' : ''
+                <td class="align-left width-40">${item.product.name} ${item.price.lessThan(0) ? '(Hyvitys)' : ''
                 }</td>
-                <td class="align-right width-25">${formatNumber(item.amount)}</td>
-                <td class="align-right width-25">${formatNumber(order.customer.showPriceWithoutTax ? item.price0 : item.price)} €</td>
-                <td class="align-right width-25">${formatNumber(order.customer.showPriceWithoutTax ? item.amount.mul(item.price0) : item.amount.mul(item.price))} €</td>
+                <td class="align-right width-20">${formatNumber(item.amount)}</td>
+                <td class="align-right width-20">${formatNumber(order.customer.showPriceWithoutTax ? item.price0 : item.price)} €</td>
+                <td class="align-right width-20">${formatNumber(order.customer.showPriceWithoutTax ? item.amount.mul(item.price0) : item.amount.mul(item.price))} €</td>
             </tr>`
   })
   const note = order.noteBody
@@ -195,10 +199,10 @@ export default async function createWaybill(
             <table>
                 <thead>
                     <tr>
-                        <td class="align-left width-25">Tuote</td>
-                        <td class="align-right width-25">Kappalemäärä (kg)</td>
-                        <td class="align-right width-25">Kilohinta (€/kg/kpl)<br>${order.customer.showPriceWithoutTax ? 'ALV 0 %' : 'sis. ALV 14 %'}</td>
-                        <td class="align-right width-25">Kokonaishinta (€)<br>${order.customer.showPriceWithoutTax ? 'ALV 0 %' : 'sis. ALV 14 %'}</td>
+                        <td class="align-left">Tuote</td>
+                        <td class="align-right">Kappale&shy;määrä (kg)</td>
+                        <td class="align-right">Kilohinta (€/kg/kpl)<br>${order.customer.showPriceWithoutTax ? 'ALV 0 %' : 'sis. ALV 14 %'}</td>
+                        <td class="align-right">Kokonaishinta (€)<br>${order.customer.showPriceWithoutTax ? 'ALV 0 %' : 'sis. ALV 14 %'}</td>
                     </tr>
                 </thead>
                 <tbody>
