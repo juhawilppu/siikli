@@ -209,7 +209,7 @@ export function Customers() {
               placeholder="Hae asiakasta"
               value={searchQuery}
               onChange={handleSearch}
-              className="w-full sm:w-auto"
+              className="h-8 w-full md:w-[300px] bg-white"
             />
           </div>
         </div>

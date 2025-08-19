@@ -166,7 +166,12 @@ export default function Products() {
         <div className="space-y-4">
           <div className="flex flex-col gap-4 md:flex-row md:items-center">
             <div className="flex flex-1 items-center gap-2">
-              <Input className="h-8 w-full md:w-[300px]" placeholder="Hae tuotetta" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
+              <Input
+                className="h-8 w-full md:w-[300px] bg-white"
+                placeholder="Hae tuotetta"
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+              />
             </div>
             <Dialog open={showNewProductDialog} onOpenChange={setShowNewProductDialog}>
 
