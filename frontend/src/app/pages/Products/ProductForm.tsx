@@ -7,6 +7,8 @@ import axios from 'axios'
 import {
   Check,
   ChevronsUpDown,
+  Euro,
+  Package,
   Plus,
   Save,
 } from 'lucide-react'
@@ -122,10 +124,13 @@ export default function NewProduct({ productToEdit, hide, onSave, refPackageType
           <Separator />
           <Accordion type="single" collapsible className="w-full overflow-x-visible">
             <AccordionItem value="pricing">
-              <AccordionTrigger className="py-4 text-base font-semibold">
-                💶
-                {' '}
-                Hinta
+              <AccordionTrigger className="py-4 text-base font-semibold" itemType="button">
+                <span className="flex items-center">
+                  <Euro
+                    className="w-5 h-5 mr-2"
+                  />
+                  Hinnat
+                </span>
               </AccordionTrigger>
               <AccordionContent className="space-y-4">
                 <p className="text-sm text-muted-foreground">
@@ -174,9 +179,10 @@ export default function NewProduct({ productToEdit, hide, onSave, refPackageType
             </AccordionItem>
             <AccordionItem value="packaging">
               <AccordionTrigger className="py-4 text-base font-semibold">
-                📦
-                {' '}
-                Pakkaustiedot
+                <span className="flex items-center">
+                  <Package className="w-5 h-5 mr-2" />
+                  Pakkaustiedot
+                </span>
               </AccordionTrigger>
               <AccordionContent className="space-y-4">
                 <p className="text-sm text-muted-foreground">

@@ -1,7 +1,7 @@
 import type { GetCustomerRequestDto, PostCreateCustomerRequestDto } from '@siikli/shared'
 import { formatNumber } from '@siikli/shared'
 import axios from 'axios'
-import { HelpCircle, Save } from 'lucide-react'
+import { FileText, HelpCircle, Phone, Save } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from '@/app/hooks/use-toast'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
@@ -210,9 +210,10 @@ export function NewCustomer({ closeDialog, customerToEdit, onSave }: {
           <Accordion type="single" collapsible className="w-full overflow-x-visible">
             <AccordionItem value="contact">
               <AccordionTrigger className="py-4 text-base font-semibold">
-                ☎️
-                {' '}
-                Yhteystiedot
+                <span className="flex items-center">
+                  <Phone className="w-5 h-5 mr-2" />
+                  Yhteystiedot
+                </span>
               </AccordionTrigger>
               <AccordionContent className="space-y-4 overflow-x-visible">
                 <div className="space-y-2">
@@ -282,9 +283,10 @@ export function NewCustomer({ closeDialog, customerToEdit, onSave }: {
 
             <AccordionItem value="invoicing">
               <AccordionTrigger className="py-4 text-base font-semibold">
-                🧾
-                {' '}
-                Laskutustiedot
+                <span className="flex items-center">
+                  <FileText className="w-5 h-5 mr-2" />
+                  Laskutustiedot
+                </span>
               </AccordionTrigger>
               <AccordionContent className="space-y-4 overflow-x-visible">
                 <div className="flex items-center space-x-2 pt-2">
