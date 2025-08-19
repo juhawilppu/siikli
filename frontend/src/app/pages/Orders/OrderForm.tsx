@@ -38,18 +38,9 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
 import { Textarea } from '@/components/ui/textarea'
-import { cn } from '@/lib/utils'
+import { cn, downloadUrl } from '@/lib/utils'
 import { serializeNumber } from '@/utils/serialization'
 import ConfirmDialog from '../../components/ConfirmDialog'
-
-function downloadUrl(url: string, isMobile: boolean) {
-  if (isMobile) {
-    window.location.href = url
-  }
-  else {
-    window.open(url, '_blank', 'noopener,noreferrer')
-  }
-}
 
 export default function CreateOrder() {
   const [customers, setCustomers] = useState<GetCustomerRequestDto[]>()

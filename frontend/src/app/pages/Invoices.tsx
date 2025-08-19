@@ -13,7 +13,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Label } from '@/components/ui/label'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { cn } from '@/lib/utils'
+import { cn, downloadUrl } from '@/lib/utils'
+import { useIsMobile } from '../hooks/use-mobile'
 import { toast } from '../hooks/use-toast'
 
 export interface FlatOrderItem {
@@ -28,6 +29,8 @@ function renderInvoiceStatus(status: 'PENDING' | 'PAID') {
 }
 
 export function Invoices() {
+  const isMobile = useIsMobile()
+
   const [customers, setCustomers] = useState<GetCustomerRequestDto[]>()
   const [invoices, setInvoices] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
@@ -184,7 +187,7 @@ export function Invoices() {
                         onClick={async () => {
                           const res = await axios.get(`/invoices/${invoice.id}/url`)
                           const { url } = res.data
-                          window.open(url, '_blank') // open PDF in new tab
+                          downloadUrl(url, isMobile)
                         }}
                       >
                         <Eye className="w-4 h-4" />
