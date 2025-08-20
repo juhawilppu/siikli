@@ -169,6 +169,13 @@ export function Invoices() {
                 </tr>
               </thead>
               <tbody>
+                {invoices.length === 0 && (
+                  <tr>
+                    <td colSpan={5} className="p-4 text-center">
+                      Ei laskuja
+                    </td>
+                  </tr>
+                )}
                 {invoices.map(invoice => (
                   <tr key={invoice.invoiceId} className="border-b">
                     <td className="p-4">{invoice.invoiceId}</td>
