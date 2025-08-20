@@ -71,7 +71,6 @@ const testData = {
         productId: '1',
         amount: new Decimal(2),
         price: new Decimal(10),
-        price0: new Decimal(8.77),
         packageSize: 1,
         freetext: null,
         packageType: null,
@@ -88,7 +87,6 @@ const testData = {
           subtype: null,
           packageSize: null,
           packageType: null,
-          price0: null,
           active: true,
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -101,7 +99,6 @@ const testData = {
         productId: '2',
         amount: new Decimal(1),
         price: new Decimal(-5),
-        price0: new Decimal(-5),
         packageSize: 1,
         freetext: null,
         packageType: null,
@@ -118,7 +115,6 @@ const testData = {
           subtype: null,
           packageSize: null,
           packageType: null,
-          price0: null,
           active: true,
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -147,9 +143,9 @@ describe('createWaybill', () => {
     // Verify products
     expect(html).toContain('Test Product')
     expect(html).toContain('Discount Product (Hyvitys)')
-    expect(html).toContain('Kilohinta (€/kg/kpl)<br>sis. ALV 14 %')
+    expect(html).toContain('Kilohinta (€/kg/kpl)<br>ALV 0 %')
     expect(html).toContain('20,00')
-    expect(html).toContain('Kokonaishinta (€)<br>sis. ALV 14 %')
+    expect(html).toContain('Kokonaishinta (€)<br>ALV 0 %')
 
     // Verify note
     expect(html).toContain('Test Note Header')
@@ -157,20 +153,6 @@ describe('createWaybill', () => {
 
     // Verify signature section exists
     expect(html).toContain('____&nbsp;&nbsp;/&nbsp;&nbsp;____&nbsp;&nbsp;/&nbsp;&nbsp;20______')
-  })
-
-  it('should generate correct HTML content without VAT', async () => {
-    const { tenant, order } = {
-      ...testData,
-      order: { ...testData.order, customer: { ...testData.order.customer, showPriceWithoutTax: true } },
-    }
-
-    const html = await createWaybill(tenant, order, false)
-
-    // Verify VAT 0 % price is used (2 x 8.77)
-    expect(html).toContain('Kilohinta (€/kg/kpl)<br>ALV 0 %')
-    expect(html).toContain('17,54')
-    expect(html).toContain('Kokonaishinta (€)<br>ALV 0 %')
   })
 
   it('should not show nulls in waybill', async () => {
@@ -242,7 +224,6 @@ describe('createWaybill', () => {
           productId: '1',
           amount: new Decimal(2),
           price: new Decimal(10),
-          price0: new Decimal(10),
           packageSize: 1,
           freetext: null,
           packageType: null,
@@ -259,7 +240,6 @@ describe('createWaybill', () => {
             subtype: null,
             packageSize: null,
             packageType: null,
-            price0: null,
             active: true,
             createdAt: new Date(),
             updatedAt: new Date(),

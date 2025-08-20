@@ -1,4 +1,4 @@
-import type { GetCustomerRequestDto, GetCustomersResponseDto, GetOrderList } from '@siikli/shared'
+import type { GetCustomerRequestDto, GetCustomersResponseDto, GetOrderListDto } from '@siikli/shared'
 import { dateToIso, formatDate, formatNumber, OrderStatus, parseIsoDate } from '@siikli/shared'
 import axios from 'axios'
 import { endOfMonth, endOfWeek, startOfMonth, startOfWeek, subMonths } from 'date-fns'
@@ -37,7 +37,7 @@ export default function Orders() {
   const [status, setStatus] = useState<OrderStatus | 'ALL'>('ALL')
   const [openEndDate, setOpenEndDate] = useState(false)
   const [isPrinting, setIsPrinting] = useState(false)
-  const [orders, setOrders] = useState<GetOrderList[]>([])
+  const [orders, setOrders] = useState<GetOrderListDto[]>([])
 
   useEffect(() => {
     axios.get<GetCustomersResponseDto>('/customers').then(res => setCustomers(res.data.customers))
@@ -45,7 +45,7 @@ export default function Orders() {
 
   useEffect(() => {
     axios
-      .get<GetOrderList[]>('/orders', {
+      .get<GetOrderListDto[]>('/orders', {
         params: {
           startDate: dateToIso(startDate),
           endDate: dateToIso(endDate),
@@ -451,7 +451,7 @@ export default function Orders() {
                         <TableHead>Päivämäärä</TableHead>
                         <TableHead>Tila</TableHead>
                         <TableHead>Asiakas</TableHead>
-                        <TableHead className="text-right">Summa sis. ALV 14 %</TableHead>
+                        <TableHead className="text-right">Summa ALV 0 %</TableHead>
                         <TableHead className="text-right"></TableHead>
                       </TableRow>
                     </TableHeader>

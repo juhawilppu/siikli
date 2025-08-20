@@ -221,7 +221,7 @@ export default function Products() {
                     */}
                     <TableHead className="cursor-pointer" onClick={() => changeSorting('price')}>
                       <div className="flex items-center">
-                        Hinta ALV 14 % (€)
+                        Hinta ALV 0 % (€)
                         {orderByField === 'price'
                           && (orderDirection === 'asc'
                             ? (
@@ -232,7 +232,6 @@ export default function Products() {
                               ))}
                       </div>
                     </TableHead>
-                    <TableHead>Hinta ALV 0 % (€)</TableHead>
                     <TableHead>Pakkaustiedot</TableHead>
                     <TableHead className="text-right">Toiminnot</TableHead>
                   </TableRow>
@@ -310,7 +309,6 @@ export default function Products() {
                         <TableCell>{product.subtype}</TableCell>
                         */}
                             <TableCell className="font-medium">{product.price ? `${formatNumber(product.price)} €` : ''}</TableCell>
-                            <TableCell>{product.price0 ? `${formatNumber(product.price0)} €` : ''}</TableCell>
                             <TableCell>
                               {[product.packageSize ? `${product.packageSize} kg` : '', product.packageType].filter(Boolean).join(', ')}
                             </TableCell>

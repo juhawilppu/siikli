@@ -5,26 +5,12 @@ import prisma from '../prisma'
 import { uploadPdfToS3 } from '../utils/upload-to-s3'
 import { DEFAULT_INVOICE_SUMMARY_ROW } from './invoice-html'
 
-export type InvoiceRow = {
-  usePrice0: true
+export interface InvoiceRow {
   deliveryDate: Date
   orderNumber: number
   productName: string
   quantity: Decimal
-  priceWithTax: undefined
   priceWithoutTax: Decimal
-  totalWithTax: Decimal
-  totalWithoutTax: Decimal
-  tax: Decimal
-}
-| {
-  usePrice0: false
-  deliveryDate: Date
-  orderNumber: number
-  productName: string
-  quantity: Decimal
-  priceWithTax: Decimal
-  priceWithoutTax: undefined
   totalWithTax: Decimal
   totalWithoutTax: Decimal
   tax: Decimal
@@ -38,7 +24,6 @@ export interface InvoiceItemDto {
   productName: string
   amount: Decimal
   price: Decimal
-  price0: Decimal
 }
 
 export interface InvoiceDto {
@@ -52,7 +37,6 @@ export interface InvoiceDto {
     name: string
     legalName: string | null
     businessId: string | null
-    showPriceWithoutTax: boolean
     invoiceReference?: string
     discount: Decimal
   }
@@ -76,10 +60,11 @@ export interface InvoiceDto {
   totals: {
     totalSumWithTax: Decimal
     finalSumWithTax: Decimal
-    totalDiscount: Decimal
+    totalDiscountWithoutTax: Decimal
+    totalDiscountWithTax: Decimal
     totalSumWithoutTax: Decimal
     finalSumWithoutTax: Decimal
-    totalTax: Decimal
+    finalTax: Decimal
     totalKg: Decimal
   }
 }
@@ -136,7 +121,6 @@ export const InvoiceService = {
           deliveryDate: o.deliveryDate,
           productName: p.product.name,
           price: p.price,
-          price0: p.price0,
         }
       })
     },
@@ -169,7 +153,6 @@ export const InvoiceService = {
         postalCode: customer.postalCode,
         city: customer.city,
         businessId: customer.businessId,
-        showPriceWithoutTax: customer.showPriceWithoutTax,
         discount: customer.discount,
       },
       company: {
@@ -185,7 +168,7 @@ export const InvoiceService = {
         businessId: company.businessId,
         invoiceSumRow: company.invoiceSumRow || DEFAULT_INVOICE_SUMMARY_ROW,
       },
-      ...calculateTotals(items, customer.discount, customer.showPriceWithoutTax),
+      ...calculateTotals(items, customer.discount),
     } satisfies InvoiceDto
 
     return { invoice, orders }
@@ -237,98 +220,68 @@ export const InvoiceService = {
   },
 }
 
-export function calculateTotals(items: InvoiceItemDto[], discount: Decimal, usePrice0: boolean) {
-  let totalSumWithoutTax = new Decimal(0)
-  let totalSumWithTax = new Decimal(0)
-  let totalDiscount = new Decimal(0)
-  let totalTax = new Decimal(0)
-  let finalSumWithoutTax = new Decimal(0)
-  let finalSumWithTax = new Decimal(0)
+export function calculateTotals(items: InvoiceItemDto[], discountPercent: Decimal) {
+  let totalNet = new Decimal(0)
+  let totalGross = new Decimal(0)
   let totalKg = new Decimal(0)
 
-  const invoiceRows: InvoiceRow[] = []
+  const rows: InvoiceRow[] = []
 
   for (const item of items) {
-    if (usePrice0) {
-      // Calculation will be based on VAT 0 % price
-      const priceWithTax = undefined
-      const priceWithoutTax = new Decimal(item.price0).toDecimalPlaces(2, Decimal.ROUND_HALF_UP)
+    const unitNet = new Decimal(item.price).toDecimalPlaces(2, Decimal.ROUND_HALF_UP)
 
-      const totalWithoutTax = new Decimal(item.amount).mul(priceWithoutTax).toDecimalPlaces(2, Decimal.ROUND_HALF_UP)
-      const totalWithTax = totalWithoutTax.mul(1.14).toDecimalPlaces(2, Decimal.ROUND_HALF_UP)
-      const tax = (totalWithTax.sub(totalWithoutTax)).toDecimalPlaces(2, Decimal.ROUND_HALF_UP)
+    const rowNet = unitNet.mul(item.amount).toDecimalPlaces(2, Decimal.ROUND_HALF_UP)
+    const rowVat = rowNet.mul(0.14).toDecimalPlaces(2, Decimal.ROUND_HALF_UP)
+    const rowGross = rowNet.add(rowVat)
 
-      invoiceRows.push({
-        usePrice0,
-        deliveryDate: item.deliveryDate,
-        orderNumber: item.orderNumber,
-        productName: item.productName,
-        quantity: item.amount,
-        priceWithTax,
-        priceWithoutTax,
-        totalWithTax,
-        totalWithoutTax,
-        tax,
-      })
-    }
-    else {
-      // Calculation will be based on VAT 14 % price
-      const priceWithTax = new Decimal(item.price).toDecimalPlaces(2, Decimal.ROUND_HALF_UP)
-      const priceWithoutTax = undefined
+    console.log('---')
+    console.log('rowNet', rowNet.toString())
+    console.log('rowVat', rowVat.toString())
+    console.log('rowGross', rowGross.toString())
+    console.log('---')
 
-      const totalWithTax = new Decimal(item.amount).mul(priceWithTax).toDecimalPlaces(2, Decimal.ROUND_HALF_UP)
-      const totalWithoutTax = totalWithTax.div(1.14).toDecimalPlaces(2, Decimal.ROUND_HALF_UP)
-      const tax = (totalWithTax.sub(totalWithoutTax)).toDecimalPlaces(2, Decimal.ROUND_HALF_UP)
+    rows.push({
+      deliveryDate: item.deliveryDate,
+      orderNumber: item.orderNumber,
+      productName: item.productName,
+      quantity: item.amount,
+      priceWithoutTax: unitNet,
+      totalWithoutTax: rowNet,
+      tax: rowVat,
+      totalWithTax: rowGross,
+    })
 
-      invoiceRows.push({
-        usePrice0,
-        deliveryDate: item.deliveryDate,
-        orderNumber: item.orderNumber,
-        productName: item.productName,
-        quantity: item.amount,
-        priceWithTax,
-        priceWithoutTax,
-        totalWithTax,
-        totalWithoutTax,
-        tax,
-      })
-    }
+    totalNet = totalNet.add(rowNet)
+    totalGross = totalGross.add(rowGross)
+    totalKg = totalKg.add(item.amount)
   }
 
-  for (const invoiceRow of invoiceRows) {
-    totalSumWithoutTax = totalSumWithoutTax.add(invoiceRow.totalWithoutTax)
-    totalSumWithTax = totalSumWithTax.add(invoiceRow.totalWithTax)
-    totalKg = totalKg.add(invoiceRow.quantity)
-  }
-
-  totalSumWithTax = totalSumWithTax.toDecimalPlaces(2, Decimal.ROUND_HALF_UP)
-
-  totalSumWithoutTax = totalSumWithTax
-    .div(1.14)
+  // Discount
+  const discountNet = totalNet
+    .mul(discountPercent.div(100))
     .toDecimalPlaces(2, Decimal.ROUND_HALF_UP)
 
-  totalDiscount = totalSumWithoutTax
-    .mul(new Decimal(discount).div(100))
-    .toDecimalPlaces(2, Decimal.ROUND_HALF_UP)
-
-  finalSumWithoutTax = totalSumWithoutTax.sub(totalDiscount).toDecimalPlaces(2, Decimal.ROUND_HALF_UP)
-
-  totalTax = finalSumWithoutTax
+  const discountVat = discountNet
     .mul(0.14)
     .toDecimalPlaces(2, Decimal.ROUND_HALF_UP)
 
-  // TODO: Rows are calculated differently regarding tax. Tax is there subtracted from the total-total without tax.
-  finalSumWithTax = finalSumWithoutTax.add(totalTax)
+  const discountGross = discountNet.add(discountVat)
+
+  // Final totals
+  const finalNet = totalNet.sub(discountNet).toDecimalPlaces(2, Decimal.ROUND_HALF_UP)
+  const finalGross = totalGross.sub(discountGross).toDecimalPlaces(2, Decimal.ROUND_HALF_UP)
+  const finalVat = finalGross.sub(finalNet).toDecimalPlaces(2, Decimal.ROUND_HALF_UP)
 
   return {
-    items: invoiceRows,
+    items: rows,
     totals: {
-      totalSumWithoutTax,
-      totalSumWithTax,
-      totalDiscount,
-      totalTax,
-      finalSumWithoutTax,
-      finalSumWithTax,
+      totalSumWithoutTax: totalNet,
+      totalSumWithTax: totalGross,
+      totalDiscountWithoutTax: discountNet,
+      totalDiscountWithTax: discountGross,
+      finalSumWithoutTax: finalNet,
+      finalSumWithTax: finalGross,
+      finalTax: finalVat,
       totalKg,
     },
   }

@@ -7,7 +7,6 @@ import { dateToIso, formatNumber, OrderStatus, parseDecimal, parseToNumber } fro
 import axios from 'axios'
 import { format } from 'date-fns'
 import { fi } from 'date-fns/locale'
-import { Decimal } from 'decimal.js'
 import {
   Calendar,
   Check,
@@ -41,6 +40,21 @@ import { Textarea } from '@/components/ui/textarea'
 import { cn, downloadUrl } from '@/lib/utils'
 import { serializeNumber } from '@/utils/serialization'
 import ConfirmDialog from '../../components/ConfirmDialog'
+import { calculateTotal } from './orders-utils'
+
+export interface OrderItem {
+  id: string
+  deleted?: boolean
+  productId: string
+  price: string // Use string to render with 2 decimal places and allow empty string
+  amount: string // Use string to render with 2 decimal places
+  packages: number
+  packageSize?: number
+  packageType: string
+  freetext: string
+  unsaved?: boolean
+  createdAt: Date
+}
 
 export default function CreateOrder() {
   const [customers, setCustomers] = useState<GetCustomerRequestDto[]>()
@@ -62,20 +76,8 @@ export default function CreateOrder() {
   const [packageSizes, setPackageSizes] = useState<number[]>()
   const [openPackageType, setOpenPackageType] = useState<string>()
   const [openPackageSize, setOpenPackageSize] = useState<string>()
-  const [orderItems, setOrderItems] = useState<{
-    id: string
-    deleted?: boolean
-    productId: string
-    price: string // Use string to render with 2 decimal places and allow empty string
-    price0: string // Use string to render with 2 decimal places and allow empty string
-    amount: string // Use string to render with 2 decimal places
-    packages: number
-    packageSize?: number
-    packageType: string
-    freetext: string
-    unsaved?: boolean
-    createdAt: Date
-  }[]>([
+
+  const [orderItems, setOrderItems] = useState<OrderItem[]>([
     {
       id: Date.now().toString(),
       deleted: false,
@@ -86,7 +88,6 @@ export default function CreateOrder() {
       packageSize: undefined,
       packageType: '',
       price: '',
-      price0: '',
       freetext: '',
       createdAt: new Date(),
     },
@@ -110,7 +111,6 @@ export default function CreateOrder() {
         packageSize: 0,
         packageType: '',
         price: '',
-        price0: '',
         freetext: '',
         createdAt: new Date(),
       },
@@ -136,7 +136,6 @@ export default function CreateOrder() {
         setOrderItems(res.data.items.map(item => ({
           ...item,
           price: formatNumber(item.price),
-          price0: formatNumber(item.price0),
           amount: formatNumber(item.amount),
           createdAt: new Date(item.createdAt),
         })))
@@ -171,9 +170,6 @@ export default function CreateOrder() {
     setOrderItems(
       orderItems.map((item) => {
         if (item.id === id) {
-          console.log('item', item)
-          console.log('field', field)
-          console.log('value', value)
           const updatedItem = { ...item, [field]: value }
 
           // If product changed, update price and package details
@@ -181,17 +177,9 @@ export default function CreateOrder() {
             const product = products.find(p => p.id === value)
             if (product) {
               updatedItem.price = product.price ? formatNumber(product.price) : ''
-              updatedItem.price0 = product.price0 ? formatNumber(product.price0) : ''
               updatedItem.packageSize = product.packageSize || undefined
               updatedItem.packageType = product.packageType || ''
             }
-          }
-
-          if (field === 'price') {
-            updatedItem.price0 = formatNumber(parseDecimal(value || '0').mul(1 / 1.14))
-          }
-          if (field === 'price0') {
-            updatedItem.price = formatNumber(parseDecimal(value || '0').mul(1.14))
           }
 
           // Recalculate packages if amount or package size changed
@@ -209,11 +197,6 @@ export default function CreateOrder() {
   }
 
   const selectedCustomer = customers?.find(c => c.id === customerId)
-
-  const calculateTotal = () => {
-    const total = orderItems.filter(item => !item.deleted).reduce((sum, item) => sum.plus((parseDecimal(item.amount || '0')).mul(parseDecimal(item.price || '0'))), new Decimal(0))
-    return total.toDecimalPlaces(2)
-  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -297,15 +280,6 @@ export default function CreateOrder() {
           setIsSubmitting(false)
           return
         }
-        if (!item.price0) {
-          toast({
-            title: 'Hinta ei voi olla tyhjä',
-            description: 'Valitse hinta tai poista rivi',
-            variant: 'destructive',
-          })
-          setIsSubmitting(false)
-          return
-        }
         if (!item.packageSize) {
           toast({
             title: 'Pakkauskoko ei voi olla tyhjä',
@@ -337,7 +311,6 @@ export default function CreateOrder() {
           ...item,
           id: item.unsaved ? undefined : item.id,
           price: serializeNumber(item.price),
-          price0: serializeNumber(item.price0),
           amount: serializeNumber(item.amount),
           packageSize: item.packageSize || 0,
           packageType: item.packageType || '',
@@ -352,7 +325,6 @@ export default function CreateOrder() {
         setOrderItems(res.data.items.map(item => ({
           ...item,
           price: formatNumber(item.price),
-          price0: formatNumber(item.price0),
           amount: formatNumber(item.amount),
           createdAt: new Date(item.createdAt),
         })))
@@ -774,55 +746,28 @@ export default function CreateOrder() {
                           />
                         </div>
 
-                        {!selectedCustomer?.showPriceWithoutTax && (
-                          <div className="space-y-2">
-                            <Label htmlFor={`price-${item.id}`}>
-                              Hinta (€/kg)
-                              {' '}
-                              ALV 14 %
-                            </Label>
-                            <Input
-                              id={`price-${item.id}`}
-                              value={isMobile ? parseToNumber(item.price) : item.price}
-                              inputMode="decimal"
-                              type={isMobile ? 'number' : 'text'}
-                              min={isMobile ? 0 : undefined}
-                              step={isMobile ? 0.01 : undefined}
-                              disabled={status !== 'WAITING_FOR_DELIVERY'}
-                              onChange={e =>
-                                handleItemChange(item.id, 'price', e.target.value)}
-                              onBlur={(e) => {
-                                console.log('onBlur', e.target.value)
-                                handleItemChange(item.id, 'price', formatNumber(e.target.value || '0'))
-                              }}
-                            />
-                          </div>
-                        )}
-
-                        {selectedCustomer?.showPriceWithoutTax && (
-                          <div className="space-y-2">
-                            <Label htmlFor={`price-${item.id}`}>
-                              Hinta (€/kg)
-                              {' '}
-                              ALV 0 %
-                            </Label>
-                            <Input
-                              id={`price-${item.id}`}
-                              value={isMobile ? parseToNumber(item.price0) : item.price0}
-                              inputMode="decimal"
-                              type={isMobile ? 'number' : 'text'}
-                              min={isMobile ? 0 : undefined}
-                              step={isMobile ? 0.01 : undefined}
-                              disabled={status !== 'WAITING_FOR_DELIVERY'}
-                              onChange={e =>
-                                handleItemChange(item.id, 'price0', e.target.value)}
-                              onBlur={(e) => {
-                                console.log('onBlur', e.target.value)
-                                handleItemChange(item.id, 'price0', formatNumber(e.target.value || '0'))
-                              }}
-                            />
-                          </div>
-                        )}
+                        <div className="space-y-2">
+                          <Label htmlFor={`price-${item.id}`}>
+                            Hinta (€/kg)
+                            {' '}
+                            ALV 0 %
+                          </Label>
+                          <Input
+                            id={`price-${item.id}`}
+                            value={isMobile ? parseToNumber(item.price) : item.price}
+                            inputMode="decimal"
+                            type={isMobile ? 'number' : 'text'}
+                            min={isMobile ? 0 : undefined}
+                            step={isMobile ? 0.01 : undefined}
+                            disabled={status !== 'WAITING_FOR_DELIVERY'}
+                            onChange={e =>
+                              handleItemChange(item.id, 'price', e.target.value)}
+                            onBlur={(e) => {
+                              console.log('onBlur', e.target.value)
+                              handleItemChange(item.id, 'price', formatNumber(e.target.value || '0'))
+                            }}
+                          />
+                        </div>
 
                         <div className="space-y-2">
                           <Label htmlFor={`package-size-${item.id}`}>Pakkauskoko</Label>
@@ -1053,24 +998,13 @@ export default function CreateOrder() {
                       </div>
 
                       <div className="mt-4 text-right">
-                        {!selectedCustomer?.showPriceWithoutTax && (
-                          <p className="text-sm font-medium">
-                            Tuote yhteensä (sis. ALV 14 %):
-                            {' '}
-                            {formatNumber(parseDecimal(item.amount || '0').mul(parseDecimal(item.price || '0')))}
-                            {' '}
-                            €
-                          </p>
-                        )}
-                        {selectedCustomer?.showPriceWithoutTax && (
-                          <p className="text-sm font-medium">
-                            Tuote yhteensä (ALV 0 %):
-                            {' '}
-                            {formatNumber(parseDecimal(item.amount || '0').mul(parseDecimal(item.price0 || '0')))}
-                            {' '}
-                            €
-                          </p>
-                        )}
+                        <p className="text-sm font-medium">
+                          Tuote yhteensä (ALV 0 %):
+                          {' '}
+                          {formatNumber(parseDecimal(item.amount || '0').mul(parseDecimal(item.price || '0')))}
+                          {' '}
+                          €
+                        </p>
                       </div>
                     </div>
                   ))}
@@ -1095,9 +1029,11 @@ export default function CreateOrder() {
                 </p>
               </div>
               <div className="text-right">
-                <p className="text-sm text-muted-foreground">Tilauksen kokonaissumma (sis. ALV 14 %)</p>
+                <p className="text-sm text-muted-foreground">
+                  Tilauksen kokonaissumma (ALV 0 %)
+                </p>
                 <p className="text-2xl font-bold">
-                  {formatNumber(calculateTotal())}
+                  {formatNumber(calculateTotal(orderItems))}
                   {' '}
                   €
                 </p>

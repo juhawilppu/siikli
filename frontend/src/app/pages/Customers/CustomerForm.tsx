@@ -6,7 +6,6 @@ import { useState } from 'react'
 import { toast } from '@/app/hooks/use-toast'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { Button } from '@/components/ui/button'
-import { Checkbox } from '@/components/ui/checkbox'
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -53,7 +52,6 @@ export function NewCustomer({ closeDialog, customerToEdit, onSave }: {
       businessId: string | null
       email: string | null
       phone: string | null
-      showPriceWithoutTax: boolean
     }
   >(customerToEdit
     ? { ...customerToEdit, discount: formatNumber(customerToEdit?.discount) }
@@ -69,7 +67,6 @@ export function NewCustomer({ closeDialog, customerToEdit, onSave }: {
         businessId: '',
         email: '',
         phone: '',
-        showPriceWithoutTax: false,
       })
 
   const saveCustomerToEdit = () => {
@@ -223,6 +220,7 @@ export function NewCustomer({ closeDialog, customerToEdit, onSave }: {
                   <Input
                     id="edit-address"
                     value={customer.streetAddress || ''}
+                    className="ml-[1px] mr-[1px] w-[calc(100%-2px)]"
                     onChange={e => setCustomer({ ...customer, streetAddress: e.target.value })}
                     maxLength={255}
                   />
@@ -236,6 +234,7 @@ export function NewCustomer({ closeDialog, customerToEdit, onSave }: {
                     <Input
                       id="edit-postal_code"
                       value={customer.postalCode || ''}
+                      className="ml-[1px] mr-[1px] w-[calc(100%-2px)]"
                       onChange={e => setCustomer({ ...customer, postalCode: e.target.value })}
                       maxLength={5}
                     />
@@ -248,6 +247,7 @@ export function NewCustomer({ closeDialog, customerToEdit, onSave }: {
                       id="edit-city"
                       value={customer.city || ''}
                       onChange={e => setCustomer({ ...customer, city: e.target.value })}
+                      className="ml-[1px] mr-[1px] w-[calc(100%-2px)]"
                       maxLength={255}
                     />
                   </div>
@@ -263,6 +263,7 @@ export function NewCustomer({ closeDialog, customerToEdit, onSave }: {
                       type="email"
                       value={customer.email || ''}
                       onChange={e => setCustomer({ ...customer, email: e.target.value })}
+                      className="ml-[1px] mr-[1px] w-[calc(100%-2px)]"
                       maxLength={255}
                     />
                   </div>
@@ -274,6 +275,7 @@ export function NewCustomer({ closeDialog, customerToEdit, onSave }: {
                       id="edit-phone"
                       value={customer.phone || ''}
                       onChange={e => setCustomer({ ...customer, phone: e.target.value })}
+                      className="ml-[1px] mr-[1px] w-[calc(100%-2px)]"
                       maxLength={255}
                     />
                   </div>
@@ -289,20 +291,6 @@ export function NewCustomer({ closeDialog, customerToEdit, onSave }: {
                 </span>
               </AccordionTrigger>
               <AccordionContent className="space-y-4 overflow-x-visible">
-                <div className="flex items-center space-x-2 pt-2">
-                  <Checkbox
-                    id="edit-show_price_without_tax"
-                    checked={customer.showPriceWithoutTax}
-                    onCheckedChange={checked =>
-                      setCustomer({ ...customer, showPriceWithoutTax: checked as boolean })}
-                  />
-                  <span className="flex">
-                    <Label htmlFor="edit-show_price_without_tax" className="font-medium">
-                      Näytä hinnat ilman veroa
-                    </Label>
-                    {instructionTooltip('Jos olet sopinut asiakkaan kanssa ALV 0 % hinnat, valitse tämä. Tämän jälkeen laskuissa näytetään ALV 0 % hinnat. Tämä asetus on tehty, jotta vältytään pyöristysvirheiltä.')}
-                  </span>
-                </div>
                 <div className="space-y-2">
                   <Label htmlFor="edit-business_id" className="font-medium">
                     Y-tunnus
@@ -312,6 +300,7 @@ export function NewCustomer({ closeDialog, customerToEdit, onSave }: {
                     placeholder="1234567-8"
                     value={customer.businessId || ''}
                     onChange={e => setCustomer({ ...customer, businessId: e.target.value })}
+                    className="ml-[1px] mr-[1px] w-[calc(100%-2px)]"
                     maxLength={255}
                   />
                 </div>
@@ -327,6 +316,7 @@ export function NewCustomer({ closeDialog, customerToEdit, onSave }: {
                     placeholder="Oy Myymäläketju Ab"
                     value={customer.companyLegalName || ''}
                     onChange={e => setCustomer({ ...customer, companyLegalName: e.target.value })}
+                    className="ml-[1px] mr-[1px] w-[calc(100%-2px)]"
                     maxLength={255}
                   />
                 </div>
@@ -335,12 +325,13 @@ export function NewCustomer({ closeDialog, customerToEdit, onSave }: {
                     <Label htmlFor="edit-discount" className="font-medium">
                       Alennus (%)
                     </Label>
-                    {instructionTooltip('Tämä asettaa yritykselle yleisen alennuksen, joka vaikuttaa kaikkiin laskuihin. Esimerkiksi 10,00 tarkoittaa 10 % alennusta.')}
+                    {instructionTooltip('Tämä asettaa yritykselle yleisen alennuksen, joka vaikuttaa kaikkiin laskuihin. Esimerkiksi 10 % tarkoittaa 10 % alennusta.')}
                   </div>
                   <Input
                     id="edit-discount"
                     placeholder="0,00"
                     value={customer.discount}
+                    className="ml-[1px] mr-[1px] w-[calc(100%-2px)]"
                     onChange={e =>
                       setCustomer({
                         ...customer,
@@ -366,6 +357,7 @@ export function NewCustomer({ closeDialog, customerToEdit, onSave }: {
                     value={customer.invoiceReference || ''}
                     onChange={e => setCustomer({ ...customer, invoiceReference: e.target.value })}
                     maxLength={255}
+                    className="ml-[1px] mr-[1px] w-[calc(100%-2px)]"
                   />
                 </div>
               </AccordionContent>

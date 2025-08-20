@@ -1,6 +1,6 @@
 import type {
   GetOrderDto,
-  GetOrderList,
+  GetOrderListDto,
   PostOrderRequestDto,
   PostOrderResponseDto,
 } from '@siikli/shared'
@@ -42,7 +42,7 @@ ordersRoute.get(`/api/orders`, isAuthenticated, async (req, res) => {
 
   const orders = await OrderService.getOrders(tenantId, startDate, endDate, status, customerId)
 
-  res.json(orders satisfies GetOrderList[])
+  res.json(orders satisfies GetOrderListDto[])
 })
 
 ordersRoute.get(`/api/orders/waybills`, isAuthenticated, async (req, res) => {
@@ -122,7 +122,6 @@ ordersRoute.post(`/api/orders`, isAuthenticated, async (req, res) => {
     items: data.items.map(item => ({
       ...item,
       price: new Decimal(item.price),
-      price0: new Decimal(item.price0),
       amount: new Decimal(item.amount),
     })),
   })
@@ -146,7 +145,6 @@ ordersRoute.post(`/api/orders/:id`, isAuthenticated, async (req, res) => {
     items: data.items.map(item => ({
       ...item,
       price: new Decimal(item.price),
-      price0: new Decimal(item.price0),
       amount: new Decimal(item.amount),
     })),
   })

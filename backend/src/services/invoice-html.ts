@@ -113,18 +113,18 @@ export function createInvoiceHtml(invoice: InvoiceDto) {
       <tr>
         <td class="border-left border-top-bottom"><strong>Tuotenimike</strong></td>
         <td class="border-top-bottom" style="text-align: right;"><strong>Määrä (kg/kpl)</strong></td>
-        <td class="border-right border-top-bottom" style="text-align: right;"><strong>${invoice.customer.showPriceWithoutTax ? 'Ilman ALV' : 'ALV 14 %'}<br />Yht EUR</strong></td>
+        <td class="border-right border-top-bottom" style="text-align: right;"><strong>Ilman ALV<br />Yht EUR</strong></td>
       </tr>
       <tr>
         <td class="border-left">${invoice.company.invoiceSumRow || DEFAULT_INVOICE_SUMMARY_ROW}</td>
         <td style="text-align: right;">${formatNumber(invoice.totals.totalKg)}</td>
-        <td class="border-right" style="text-align: right;">${formatNumber(invoice.customer.showPriceWithoutTax ? invoice.totals.totalSumWithoutTax : invoice.totals.totalSumWithTax)}</td>
+        <td class="border-right" style="text-align: right;">${formatNumber(invoice.totals.totalSumWithoutTax)}</td>
       </tr>
-      ${!invoice.totals.totalDiscount.isZero()
+      ${!invoice.totals.totalDiscountWithoutTax.isZero()
         ? `<tr>
             <td class="border-left">Hyvitys (${formatNumber(invoice.customer.discount)})</td>
             <td style="text-align: right;">${formatNumber(invoice.totals.totalKg)}</td>
-            <td class="border-right" style="text-align: right;">&ndash;${formatNumber(invoice.totals.totalDiscount)}</td>
+            <td class="border-right" style="text-align: right;">&ndash;${formatNumber(invoice.totals.totalDiscountWithoutTax)}</td>
             </tr>`
         : ''}
       <tr style="height: ${16 * 12}px;">
@@ -140,7 +140,7 @@ export function createInvoiceHtml(invoice: InvoiceDto) {
       <tr>
         <td class="border-left border-top-bottom"><strong>ALV 14 %</strong></td>
         <td class="border-top-bottom"></td>
-        <td class="border-right border-top-bottom" style="text-align: right;">${formatNumber(invoice.totals.totalTax)}</td>
+        <td class="border-right border-top-bottom" style="text-align: right;">${formatNumber(invoice.totals.finalTax)}</td>
       </tr>
       <tr>
         <td class="border-left border-top-bottom"><strong>Yhteensä (ALV 14 %)</strong></td>
@@ -206,8 +206,9 @@ export function createInvoiceHtml(invoice: InvoiceDto) {
           <td class="border-top-bottom"><strong>Tilaus&shy;numero</strong></td>
           <td class="border-top-bottom"><strong>Tuotenimike</strong></td>
           <td class="border-top-bottom" style="text-align: right;"><strong>Määrä (kg/kpl)</strong></td>
-          <td class="border-top-bottom" style="text-align: right;"><strong>Yksikköhinta<br/>(€/kg/kpl)<br />${invoice.customer.showPriceWithoutTax ? 'ALV 0 %' : 'sis. ALV 14 %'}</strong></td>
-          <td class="border-right border-top-bottom" style="text-align: right;"><strong>Kokonaishinta<br/>(€)<br />${invoice.customer.showPriceWithoutTax ? 'ALV 0 %' : 'sis. ALV 14 %'}</strong></td>
+          <td class="border-top-bottom" style="text-align: right;"><strong>Yksikkö&shy;hinta (€/kg/kpl) ALV 0 %</strong></td>
+          <td class="border-top-bottom" style="text-align: right;"><strong>Kokonais&shy;hinta (€) ALV 0 %</strong></td>
+          <td class="border-right border-top-bottom" style="text-align: right;"><strong>Kokonais&shy;hinta (€) ALV 14 %</strong></td>
         </tr>
       </thead>
       <tbody>
@@ -217,19 +218,21 @@ export function createInvoiceHtml(invoice: InvoiceDto) {
             <td class="width-10 ${i === LAST_ITEM_INDEX ? 'border-bottom' : ''}">${item.orderNumber}</td>
             <td class="width-30 ${i === LAST_ITEM_INDEX ? 'border-bottom' : ''}">${item.productName}</td>
             <td class="width-20 ${i === LAST_ITEM_INDEX ? 'border-bottom' : ''}" style="text-align: right;">${formatNumber(item.quantity)}</td>
-            <td class="width-10 ${i === LAST_ITEM_INDEX ? 'border-bottom' : ''}" style="text-align: right;">${formatNumber(invoice.customer.showPriceWithoutTax ? item.priceWithoutTax : item.priceWithTax)}</td>
-            <td class="width-20 border-right ${i === LAST_ITEM_INDEX ? 'border-bottom' : ''}" style="text-align: right;">${formatNumber(invoice.customer.showPriceWithoutTax ? item.totalWithoutTax : item.totalWithTax)}</td>
+            <td class="width-10 ${i === LAST_ITEM_INDEX ? 'border-bottom' : ''}" style="text-align: right;">${formatNumber(item.priceWithoutTax)}</td>
+            <td class="width-10 ${i === LAST_ITEM_INDEX ? 'border-bottom' : ''}" style="text-align: right;">${formatNumber(item.totalWithoutTax)}</td>
+            <td class="width-10 border-right ${i === LAST_ITEM_INDEX ? 'border-bottom' : ''}" style="text-align: right;">${formatNumber(item.totalWithTax)}</td>
           </tr>
         `).join('')}
         ${invoice.items.length === 0
           ? `<tr><td class="border-left border-bottom border-right" colspan="6" style="text-align: center;">Ei tuotteita</td></tr>`
           : ''}
         <tr>
-          <td class="border-left border-top-bottom" colspan="2"><strong>Yhteensä (${invoice.customer.showPriceWithoutTax ? 'ALV 0 %' : 'ALV 14 %'})</strong></td>
+          <td class="border-left border-top-bottom" colspan="2"><strong>Yhteensä</strong></td>
           <td class="border-top-bottom"></td>
           <td class="border-top-bottom" style="text-align: right;">${formatNumber(invoice.totals.totalKg)}</td>
           <td class="border-top-bottom"></td>
-          <td class="border-right border-top-bottom" style="text-align: right;">${formatNumber(invoice.customer.showPriceWithoutTax ? invoice.totals.totalSumWithoutTax : invoice.totals.totalSumWithTax)}</td>
+          <td class="border-top-bottom" style="text-align: right;">${formatNumber(invoice.totals.totalSumWithoutTax)}</td>
+          <td class="border-right border-top-bottom" style="text-align: right;">${formatNumber(invoice.totals.totalSumWithTax)}</td>
         </tr>
       </tbody>
     </table>

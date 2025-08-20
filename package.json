@@ -1,12 +1,12 @@
 {
   "name": "siikli",
+  "type": "module",
   "private": true,
   "workspaces": [
     "frontend",
     "backend",
     "packages/*"
   ],
-  "type": "module",
   "scripts": {
     "dev": "npm-run-all -p dev:*",
     "dev:frontend": "npm --workspace frontend run dev",
@@ -14,7 +14,7 @@
     "typecheck": "npm-run-all -c typecheck:*",
     "typecheck:backend": "npm --workspace backend run typecheck",
     "typecheck:frontend": "npm --workspace frontend run typecheck",
-    "test": "npm run test:backend && npm run test:packages",
+    "test": "npm run test:frontend && npm run test:backend && npm run test:packages",
     "test:backend": "npm --workspace backend run test",
     "test:frontend": "npm --workspace frontend run test",
     "test:packages": "npm --workspace packages run test",

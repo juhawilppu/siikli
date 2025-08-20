@@ -11,7 +11,6 @@ interface CustomerCreateInput {
   streetAddress: string | null
   postalCode: string | null
   city: string | null
-  showPriceWithoutTax: boolean
   email: string | null
   phone: string | null
   businessId: string | null
@@ -50,7 +49,6 @@ export const CustomerService = {
           businessId: r.businessId,
           email: r.email,
           phone: r.phone,
-          showPriceWithoutTax: r.showPriceWithoutTax,
           tenantId: r.tenantId,
         }
       }),
@@ -75,7 +73,6 @@ export const CustomerService = {
       city,
       phone,
       email,
-      showPriceWithoutTax,
       invoiceReference,
       companyLegalName,
       businessId,
@@ -96,7 +93,6 @@ export const CustomerService = {
           city,
           phone,
           email,
-          showPriceWithoutTax,
           invoiceReference,
           companyLegalName,
           businessId,
@@ -145,7 +141,6 @@ export const CustomerService = {
           city: body.city,
           email: body.email,
           phone: body.phone,
-          showPriceWithoutTax: body.showPriceWithoutTax,
           invoiceReference: body.invoiceReference,
           businessId: body.businessId,
         },

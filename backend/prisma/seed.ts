@@ -56,7 +56,6 @@ async function main() {
     city: 'Espoo',
     phone: '010 7669010',
     email: 'j-kauppa@j-kauppa.fi',
-    showPriceWithoutTax: true,
     invoiceReference: '1234567890',
     companyLegalName: 'J-Kauppa Oy',
     businessId: '1234567890',
@@ -70,7 +69,6 @@ async function main() {
     city: 'Espoo',
     phone: '010 7669920',
     email: 'w-ruoka@w-ruoka.fi',
-    showPriceWithoutTax: true,
     invoiceReference: '1234567890',
     companyLegalName: 'W-Ruoka Oy',
     businessId: '1234567890',
@@ -99,7 +97,6 @@ async function main() {
     name: 'Siikli, pesty',
     tenantId: tenant.id,
     price: new Decimal(1.40),
-    price0: new Decimal(1.40).div(1.14),
     packageSize: 10,
     packageType: 'Ltk',
     userId: juha.id,
@@ -109,7 +106,6 @@ async function main() {
     name: 'Siikli, uusi sato',
     tenantId: tenant.id,
     price: new Decimal(1.60),
-    price0: new Decimal(1.60).div(1.14),
     packageSize: 20,
     packageType: 'Ltk',
     userId: juha.id,
@@ -119,12 +115,10 @@ async function main() {
 
   for (const productName of productNames) {
     const price = new Decimal(1 + 2 * Math.random()).toDecimalPlaces(2)
-    const price0 = price.div(1.14).toDecimalPlaces(2)
     await ProductService.createProduct({
       name: productName,
       tenantId: tenant.id,
       price,
-      price0,
       packageSize: getRandomFromList(packageSizes),
       packageType: getRandomFromList(packageTypes),
       userId: juha.id,
@@ -140,14 +134,13 @@ async function main() {
       const orderRows: OrderRowDto[] = []
       for (let productIdIndex = 0; productIdIndex < products.length; productIdIndex++) {
         const product = products[productIdIndex]
-        if (product.price === null || product.price0 === null || product.packageSize === null || product.packageType === null) {
+        if (product.price === null || product.packageSize === null || product.packageType === null) {
           throw new Error('Product has null values')
         }
         orderRows.push({
           productId: product.id,
           amount: getRandomAmount(product.packageSize),
           price: product.price,
-          price0: product.price0,
           packageSize: product.packageSize,
           packageType: product.packageType,
           freetext: getRandomFreetext(),
@@ -167,7 +160,6 @@ async function main() {
         items: orderRows.map(row => ({
           id: row.productId,
           price: row.price,
-          price0: row.price0,
           packageSize: row.packageSize,
           packageType: row.packageType,
           freetext: row.freetext || '',

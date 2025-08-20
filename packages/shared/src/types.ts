@@ -22,7 +22,6 @@ export interface GetOrderRowDto {
   id: string
   productId: string
   price: string
-  price0: string
   amount: string
   packages: number
   packageSize: number
@@ -36,7 +35,6 @@ export interface PostOrderItemRequestDto {
   deleted?: boolean
   productId: string
   price: string
-  price0: string
   amount: string
   packages: number
   packageSize: number
@@ -49,7 +47,6 @@ export interface PostOrderItemRequest {
   deleted?: boolean
   productId: string
   price: Decimal
-  price0: Decimal
   amount: Decimal
   packages: number
   packageSize: number
@@ -85,7 +82,7 @@ export interface GetOrderDto {
   items: GetOrderRowDto[]
 }
 
-export interface GetOrderList {
+export interface GetOrderListDto {
   id: string
   deliveryDate: string
   orderNumber: number
@@ -94,7 +91,7 @@ export interface GetOrderList {
     id: string
     name: string
   }
-  total: number
+  total: string
 }
 
 export interface Customer {
@@ -109,7 +106,6 @@ export interface Customer {
   companyName: string | null
   orderIndex: number | null
   city: string | null
-  showPriceWithoutTax: boolean | null
 }
 
 export interface Order {
@@ -120,7 +116,6 @@ export interface Order {
   noteBody: string | null
   noteHeader: string | null
   rows: OrderRow[]
-  showPriceWithoutTax: boolean | null
   tenantId: string
 }
 
@@ -129,8 +124,7 @@ export interface OrderRow {
   orderId: string
   productId: string
   amount: number
-  price: number
-  price0: number
+  price: string
   packageSize: number
   packageType: string | null
   freetext: string | null
@@ -202,7 +196,6 @@ export interface GetCustomerRequest {
   streetAddress: string | null
   postalCode: string | null
   city: string | null
-  showPriceWithoutTax: boolean
   email: string | null
   phone: string | null
   businessId: string | null
@@ -221,7 +214,6 @@ export interface GetCustomerRequestDto {
   streetAddress: string | null
   postalCode: string | null
   city: string | null
-  showPriceWithoutTax: boolean
   email: string | null
   phone: string | null
   businessId: string | null
@@ -240,7 +232,6 @@ export interface PostCreateCustomerRequestDto {
   streetAddress: string | null
   postalCode: string | null
   city: string | null
-  showPriceWithoutTax: boolean
   email: string | null
   phone: string | null
   businessId: string | null
@@ -254,7 +245,6 @@ export interface PutUpdateCustomerRequestDto {
   streetAddress: string | null
   postalCode: string | null
   city: string | null
-  showPriceWithoutTax: boolean
   email: string | null
   phone: string | null
   businessId: string | null
@@ -264,25 +254,13 @@ export interface PutUpdateCustomerResponseDto {
   id: string
 }
 
-export type InvoiceRowDto = {
-  usePrice0: true
-  deliveryDate: Date
-  orderNumber: number
-  productName: string
-  quantity: number
-  priceWithTax: undefined
-  priceWithoutTax: number
-  totalWithTax: number
-  totalWithoutTax: number
-  tax: number
-} | {
-  usePrice0: false
+export interface InvoiceRowDto {
   deliveryDate: Date
   orderNumber: number
   productName: string
   quantity: number
   priceWithTax: number
-  priceWithoutTax: undefined
+  priceWithoutTax: number
   totalWithTax: number
   totalWithoutTax: number
   tax: number
@@ -313,20 +291,10 @@ export interface DashboardDataDto {
   }[]
 }
 
-export interface ProductDto {
-  id: string
-  chain: string
-  name: string
-  price: number
-  packageSize: number
-  packageType: string
-}
-
 export interface GetProductResponse {
   id: string
   name: string
   price: Decimal | null
-  price0: Decimal | null
   packageSize: number | null
   packageType: string | null
 }
@@ -335,15 +303,13 @@ export interface GetProductResponseDto {
   id: string
   name: string
   price?: string
-  price0?: string
   packageSize: number | null
   packageType: string | null
 }
 
 export interface PostProductCreateRequestDto {
   name: string
-  price?: number
-  price0?: number
+  price?: string
   packageSize?: number
   packageType?: string
 }

@@ -76,6 +76,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "preview": "vite preview",
+    "test": "vitest",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "type": "module",

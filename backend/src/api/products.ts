@@ -16,7 +16,6 @@ productsRoute.get(`/api/products`, isAuthenticated, async (req, res) => {
       id: p.id,
       name: p.name,
       price: p.price ? serializeNumber(p.price) : undefined,
-      price0: p.price0 ? serializeNumber(p.price0) : undefined,
       packageSize: p.packageSize,
       packageType: p.packageType,
     }
@@ -33,7 +32,6 @@ productsRoute.post(`/api/products`, isAuthenticated, async (req, res) => {
     tenantId,
     userId,
     price: body.price ? new Decimal(body.price) : null,
-    price0: body.price0 ? new Decimal(body.price0) : null,
     packageSize: body.packageSize ? body.packageSize : null,
     packageType: body.packageType ? body.packageType : null,
   })

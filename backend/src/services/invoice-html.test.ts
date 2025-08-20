@@ -39,9 +39,10 @@ const invoiceData = {
     finalSumWithTax: new Decimal(124),
     totalSumWithoutTax: new Decimal(100),
     finalSumWithoutTax: new Decimal(100),
-    totalTax: new Decimal(100),
+    finalTax: new Decimal(100),
     totalKg: new Decimal(100),
-    totalDiscount: new Decimal(0),
+    totalDiscountWithoutTax: new Decimal(0),
+    totalDiscountWithTax: new Decimal(0),
   },
 }
 
@@ -91,10 +92,11 @@ describe('createInvoiceHtml', () => {
       ...invoiceData,
       totals: {
         ...invoiceData.totals,
-        totalDiscount: new Decimal(10),
+        totalDiscountWithoutTax: new Decimal(11.23),
+        totalDiscountWithTax: new Decimal(12.80),
       },
     })
 
-    expect(invoice).toContain('&ndash;10,00')
+    expect(invoice).toContain('&ndash;11,23')
   })
 })

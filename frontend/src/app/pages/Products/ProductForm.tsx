@@ -3,6 +3,7 @@
 import type { GetProductResponseDto, PostProductCreateRequestDto } from '@siikli/shared'
 
 import { Popover } from '@radix-ui/react-popover'
+import { formatNumber } from '@siikli/shared'
 import axios from 'axios'
 import {
   Check,
@@ -13,6 +14,7 @@ import {
   Save,
 } from 'lucide-react'
 import { useState } from 'react'
+import { useIsMobile } from '@/app/hooks/use-mobile'
 import { toast } from '@/app/hooks/use-toast.js'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { Button } from '@/components/ui/button'
@@ -28,16 +30,16 @@ import { Label } from '@/components/ui/label'
 import { PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
-import { calculatePricesFromVat0, calculatePricesFromVat14 } from '../../lib/price-utils.js'
+import { serializeNumber } from '@/utils/serialization'
 
 export default function NewProduct({ productToEdit, hide, onSave, refPackageTypes, refPackageSizes }: { productToEdit?: GetProductResponseDto, hide: () => void, onSave: (product: GetProductResponseDto) => void, refPackageTypes: string[], refPackageSizes: number[] }) {
   const mode = productToEdit ? 'edit' : 'create'
+  const isMobile = useIsMobile()
   const [product, setProduct] = useState<Partial<{
     name: string
     type: string
     subtype: string
     price: string
-    price0: string
     packageSize: number
     packageType: string
     variety: string
@@ -46,15 +48,13 @@ export default function NewProduct({ productToEdit, hide, onSave, refPackageType
   }>>(mode === 'edit'
     ? {
         ...productToEdit,
-        price: productToEdit?.price ? productToEdit.price : '',
-        price0: productToEdit?.price0 ? productToEdit.price0 : '',
+        price: productToEdit?.price ? formatNumber(productToEdit.price) : '',
         packageSize: productToEdit?.packageSize || undefined,
         packageType: productToEdit?.packageType || '',
         id: productToEdit?.id || '',
       }
     : {
         price: '',
-        price0: '',
         packageSize: undefined,
         packageType: '',
         id: '',
@@ -82,20 +82,19 @@ export default function NewProduct({ productToEdit, hide, onSave, refPackageType
 
     const data: PostProductCreateRequestDto = {
       name: product.name,
-      price: product.price ? Number.parseFloat(product.price) : undefined,
-      price0: product.price0 ? Number.parseFloat(product.price0) : undefined,
+      price: product.price ? serializeNumber(product.price) : undefined,
       packageSize: product.packageSize || undefined,
       packageType: product.packageType || '',
     }
 
     if (mode === 'edit') {
       await axios.put(`/products/${product.id}`, data)
-      onSave({ ...product, price: product.price ? Number.parseFloat(product.price) : undefined, price0: product.price0 ? Number.parseFloat(product.price0) : undefined } as GetProductResponseDto)
+      onSave({ ...product, id: product.id as string, name: product.name as string, packageSize: product.packageSize || null, packageType: product.packageType || null, price: product.price ? serializeNumber(product.price) : undefined } satisfies GetProductResponseDto)
     }
     else {
       const res = await axios.post<{ id: string }>('/products', data)
 
-      onSave({ ...product, id: res.data.id, price: product.price ? product.price : undefined, price0: product.price0 ? product.price0 : undefined } as GetProductResponseDto)
+      onSave({ ...product, id: res.data.id, price: product.price } as GetProductResponseDto)
     }
   }
 
@@ -138,41 +137,31 @@ export default function NewProduct({ productToEdit, hide, onSave, refPackageType
                 </p>
                 <div className="space-y-2">
                   <Label htmlFor="price" className="text-base font-medium">
-                    Hinta ALV 14 % (€)
+                    Hinta ALV 0 % (€)
                   </Label>
                   <Input
                     id="price"
-                    type="number"
-                    step="0.01"
+                    type={isMobile ? 'number' : 'text'}
+                    step={isMobile ? '0.01' : undefined}
                     min="0"
                     className="ml-[1px]"
                     style={{ width: 'calc(100% - 2px)' }}
                     value={product.price || ''}
-                    onChange={e => setProduct({
-                      ...product,
-                      ...calculatePricesFromVat14(e.target.value, false),
-                    })}
-                    onBlur={(e) => {
-                      setProduct({ ...product, ...calculatePricesFromVat14(e.target.value, true) })
-                    }}
+                    onChange={e => setProduct({ ...product, price: e.target.value })}
+                    onBlur={e => setProduct({ ...product, price: formatNumber(e.target.value) })}
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="price0" className="text-base font-medium">
-                    Hinta ALV 0 % (€)
+                  <Label htmlFor="tax" className="text-base font-medium">
+                    Verokanta
                   </Label>
                   <Input
-                    id="price0"
-                    type="number"
-                    step="0.01"
-                    min="0"
+                    id="tax"
+                    type="text"
+                    value="14 %"
+                    readOnly
                     className="ml-[1px]"
                     style={{ width: 'calc(100% - 2px)' }}
-                    value={product.price0 || ''}
-                    onChange={e => setProduct({ ...product, ...calculatePricesFromVat0(e.target.value, false) })}
-                    onBlur={(e) => {
-                      setProduct({ ...product, ...calculatePricesFromVat0(e.target.value, true) })
-                    }}
                   />
                 </div>
               </AccordionContent>

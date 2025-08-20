@@ -1,5 +1,5 @@
 import type { Order } from '@prisma/client'
-import type { GetOrderDto, GetOrderList, OrderStatus, PostOrderItemRequest } from '@siikli/shared'
+import type { GetOrderDto, GetOrderListDto, OrderStatus, PostOrderItemRequest } from '@siikli/shared'
 import { dateToIso, parseIsoDate } from '@siikli/shared'
 import { endOfDay, endOfMonth, parse, startOfDay, startOfMonth } from 'date-fns'
 import { Decimal } from 'decimal.js'
@@ -14,7 +14,6 @@ export interface OrderRowDto {
   productId: string
   amount: Decimal
   price: Decimal
-  price0: Decimal
   packageSize: number
   packageType: string
   freetext: string | null
@@ -62,9 +61,6 @@ export const OrderService = {
       })
 
       for (const orderRow of items) {
-        if (orderRow.price.div(1.14).toDecimalPlaces(2).cmp(orderRow.price0) !== 0) {
-          throw new Error('Price and price0 do not match')
-        }
         await TenantService.verifyPackageSizeAndType(orderRow.packageType, orderRow.packageSize, tenantId)
         await tx.orderRow.create({
           data: {
@@ -72,7 +68,6 @@ export const OrderService = {
             productId: orderRow.productId,
             amount: orderRow.amount,
             price: orderRow.price,
-            price0: orderRow.price0,
             packageSize: orderRow.packageSize,
             packageType: orderRow.packageType,
             tenantId,
@@ -96,7 +91,6 @@ export const OrderService = {
         status: data.status,
         noteHeader: data.hasNote ? data.noteHeader : undefined,
         noteBody: data.hasNote ? data.noteBody : undefined,
-        showPriceWithoutTax: false,
         customer: {
           connect: {
             id: data.customerId,
@@ -124,7 +118,6 @@ export const OrderService = {
             productId: r.productId,
             amount: r.amount,
             price: r.price || 0,
-            price0: r.price0 || 0,
             freetext: r.freetext,
             packageSize: r.packageSize,
             packageType: r.packageType,
@@ -142,7 +135,6 @@ export const OrderService = {
             productId: r.productId,
             amount: r.amount,
             price: r.price || 0,
-            price0: r.price0 || 0,
             freetext: r.freetext,
             packageSize: r.packageSize,
             packageType: r.packageType,
@@ -178,7 +170,7 @@ export const OrderService = {
     })
   },
 
-  async getOrders(tenantId: string, startDate: Date, endDate: Date, status: OrderStatus | undefined, customerId: string | undefined): Promise<GetOrderList[]> {
+  async getOrders(tenantId: string, startDate: Date, endDate: Date, status: OrderStatus | undefined, customerId: string | undefined): Promise<GetOrderListDto[]> {
     const result = await prisma.order.findMany({
       include: {
         customer: true,
@@ -210,7 +202,7 @@ export const OrderService = {
         orderNumber: o.orderNumber,
         deliveryDate: dateToIso(o.deliveryDate),
         status: o.status as OrderStatus,
-        total: o.orderRows.map(o => o.amount.mul(o.price)).reduce((a, b) => a.add(b), new Decimal(0)).toNumber(),
+        total: serializeNumber(o.orderRows.map(o => o.amount.mul(o.price)).reduce((a, b) => a.add(b), new Decimal(0))),
         customer: {
           id: o.customerId,
           name: o.customer.name,
@@ -218,7 +210,7 @@ export const OrderService = {
       }
     })
 
-    return mapped satisfies GetOrderList[]
+    return mapped satisfies GetOrderListDto[]
   },
 
   async getOrder(id: string, tenantId: string): Promise<GetOrderDto> {
@@ -260,7 +252,6 @@ export const OrderService = {
           id: p.id,
           productId: p.productId,
           price: serializeNumber(p.price || 0),
-          price0: serializeNumber(p.price0 || 0),
           amount: serializeNumber(p.amount),
           packages: p.amount.div(p.packageSize).toNumber(),
           packageSize: p.packageSize,

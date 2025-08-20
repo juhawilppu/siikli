@@ -5,27 +5,21 @@ import { TenantService } from './tenant-service'
 
 export const ProductService = {
 
-  async createProduct(input: { name: string, tenantId: string, userId: string, price: Decimal | null, price0: Decimal | null, packageSize: number | null, packageType: string | null }): Promise<string> {
+  async createProduct(input: { name: string, tenantId: string, userId: string, price: Decimal | null, packageSize: number | null, packageType: string | null }): Promise<string> {
     const {
       name,
       tenantId,
       userId,
       price,
-      price0,
       packageSize,
       packageType,
     } = input
-
-    if (price && price0 && price.div(1.14).toDecimalPlaces(2).toNumber() !== price0.toDecimalPlaces(2).toNumber()) {
-      throw new Error('Price and price0 do not match')
-    }
 
     await TenantService.verifyPackageSizeAndType(packageType, packageSize, tenantId)
 
     const result = await prisma.product.create({
       data: {
         name,
-        price0,
         price,
         packageSize,
         packageType,
@@ -60,7 +54,6 @@ export const ProductService = {
         id: p.id,
         name: p.name,
         price: p.price,
-        price0: p.price0,
         packageSize: p.packageSize ? p.packageSize : null,
         packageType: p.packageType,
       }
@@ -94,7 +87,6 @@ export const ProductService = {
     await prisma.product.update({
       data: {
         name: body.name,
-        price0: body.price0,
         price: body.price,
         packageSize: body.packageSize,
         packageType: body.packageType,

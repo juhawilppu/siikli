@@ -103,12 +103,6 @@ Solution: Keep monetary values as **strings** in the UI until calculations are n
 - **Mobile:** Numeric keyboard for better UX.
 - **Calcultions:** Uses `decimal.js` for precision.
 
-Stores both:
-- `price` (incl. VAT)
-- `price0` (excl. VAT)
-
-Avoids rounding errors and matches how users think about money.
-
 ## Deployment
 
 - ECS + Fargate for containers.

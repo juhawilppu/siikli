@@ -106,7 +106,6 @@ describe('full business flow e2e test', () => {
       city: 'Espoo',
       phone: '010 7669010',
       email: 'test@example.com',
-      showPriceWithoutTax: true,
       invoiceReference: '1234567890',
       companyLegalName: 'Test company',
       businessId: '1234567890',
@@ -157,7 +156,6 @@ describe('full business flow e2e test', () => {
       name: 'Siikli',
       tenantId: tenant.id,
       price: new Decimal(1.40),
-      price0: new Decimal(1.40).div(1.14),
       packageSize: 10,
       packageType: 'Ltk',
       userId: juha.id,
@@ -168,7 +166,6 @@ describe('full business flow e2e test', () => {
       name: 'Siikli To Update',
       tenantId: tenant.id,
       price: new Decimal(1.40),
-      price0: new Decimal(1.40).div(1.14),
       packageSize: 10,
       packageType: 'Ltk',
       userId: juha.id,
@@ -179,7 +176,6 @@ describe('full business flow e2e test', () => {
       id: productToDelete,
       name: 'Siikli To Delete',
       price: new Decimal(1.40).toString(),
-      price0: new Decimal(1.40).div(1.14).toString(),
       packageSize: 10,
       packageType: 'Ltk',
     }, juha.id)
@@ -195,21 +191,10 @@ describe('full business flow e2e test', () => {
     expect(products3.map(p => p.name)).toContain('Siikli')
     expect(products3.map(p => p.name)).not.toContain('Siikli To Delete')
 
-    await expect(ProductService.createProduct({
-      name: 'Siikli',
-      tenantId: tenant.id,
-      price: new Decimal(1.40),
-      price0: new Decimal(1.40), // This is wrong on purpose
-      packageSize: 10,
-      packageType: 'Ltk',
-      userId: juha.id,
-    })).rejects.toThrow('Price and price0 do not match')
-
     const products = await ProductService.getProducts(tenant.id)
     expect(products.length).toBe(1)
     expect(products[0].name).toBe('Siikli')
     expect(products[0].price).toBeDefined()
-    expect(products[0].price0).toBeDefined()
     expect(products[0].packageSize).toBe(10)
     expect(products[0].packageType).toBe('Ltk')
 
@@ -220,7 +205,6 @@ describe('full business flow e2e test', () => {
         productId: product.id,
         amount: new Decimal(37),
         price: product.price || new Decimal(0.99).toDecimalPlaces(2),
-        price0: product.price0 || new Decimal(0.99).div(1.14).toDecimalPlaces(2),
         packageSize: product.packageSize || 1,
         packageType: product.packageType || 'Ltk',
         freetext: 'Erikoistuote',
@@ -268,7 +252,6 @@ describe('full business flow e2e test', () => {
       items: order.items.map(item => ({
         ...item,
         price: new Decimal(item.price),
-        price0: new Decimal(item.price0),
         amount: new Decimal(item.amount),
       })),
     })
@@ -314,8 +297,8 @@ describe('full business flow e2e test', () => {
     expect(invoice.items.length).toBe(products.length)
     expect(invoice.totals.totalSumWithTax.equals(new Decimal(51.88))).toBe(true)
     expect(invoice.totals.totalSumWithoutTax.equals(new Decimal(45.51))).toBe(true)
-    expect(invoice.totals.totalDiscount.equals(new Decimal(0))).toBe(true)
-    expect(invoice.totals.totalTax.equals(new Decimal(6.37))).toBe(true)
+    expect(invoice.totals.totalDiscountWithoutTax.equals(new Decimal(0))).toBe(true)
+    expect(invoice.totals.finalTax.equals(new Decimal(6.37))).toBe(true)
     expect(invoice.totals.finalSumWithTax.equals(new Decimal(51.88))).toBe(true)
     expect(invoice.totals.finalSumWithoutTax.equals(new Decimal(45.51))).toBe(true)
     expect(invoice.totals.totalKg.equals(new Decimal(37))).toBe(true)
