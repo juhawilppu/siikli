@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "test": "vitest run",
-    "test:packages": "npm --workspace packages run test"
+    "test:coverage": "vitest run --coverage"
   },
   "workspaces": [
     "frontend",

@@ -14,7 +14,7 @@ export default defineConfig({
         'src/test/**',
         '**/*.config.*',
       ],
-      reporter: ['text', 'html'],
+      reporter: ['text', 'html', 'lcov'],
     },
   },
 })

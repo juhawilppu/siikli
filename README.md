@@ -163,6 +163,8 @@ Security-first approach:
 
 ## Testing
 
+[![codecov](https://codecov.io/gh/juhawilppu/siikli/branch/main/graph/badge.svg)](https://codecov.io/gh/juhawilppu/siikli)
+
 - Unit tests for core business logic (e.g. waybill content, invoice sum calculations).
 - End-to-end integration tests running against real services and database.
 - ~700 lines of test code in total, ensuring correctness and long-term maintainability.

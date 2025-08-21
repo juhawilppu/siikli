@@ -1,11 +1,10 @@
 {
-  "name": "@siikli/shared",
-  "version": "0.1.0",
-  "private": true,
-  "type": "module",
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "devDependencies": {
+    "rimraf": "^6.0.1",
+    "tsup": "^8.2.4",
+    "typescript": "^5.5.4",
+    "vitest": "^3.2.4"
+  },
   "exports": {
     ".": {
       "import": "./dist/index.js",
@@ -13,17 +12,20 @@
       "types": "./dist/index.d.ts"
     }
   },
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "name": "@siikli/shared",
+  "private": true,
   "scripts": {
     "build": "tsup src/index.ts --format esm,cjs --dts",
     "clean": "rimraf dist",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
   },
-  "devDependencies": {
-    "tsup": "^8.2.4",
-    "typescript": "^5.5.4",
-    "rimraf": "^6.0.1",
-    "vitest": "^3.2.4"
-  },
-  "files": ["dist"]
+  "type": "module",
+  "types": "./dist/index.d.ts",
+  "version": "0.1.0"
 }
-
