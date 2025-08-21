@@ -1,29 +1,18 @@
 # 🌾 Siikli
 
-Siikli is a modern ERP built for the realities of Finnish agriculture. It’s used in production to manage millions of euros in orders and invoices — simply, reliably, and without unnecessary complexity.
+Siikli is a modern ERP built for the realities of Finnish agriculture. In daily production use since 2017, it has processed more than €10M in invoices — simply, reliably, and without unnecessary complexity.
+
+Rebuilt in 2025 with a modern architecture, Siikli streamlines the core operations of agricultural businesses — from inventory tracking to invoicing and customer management.
 
 ![Siikli order view screenshot](docs/screenshots/order-view.png)
 
-Whether it’s keeping track of inventory, sending invoices, or managing customers, Siikli streamlines the essential operations of agricultural businesses.
+## 🚀 Features
 
-> “Everything you need. Nothing you don’t.”
-
-🚀 Features
-
-- 📦 Order & invoicing — from quote to paid invoice
+- 📦 Orders & invoicing — from quote to paid invoice
 - 👥 Customer & supplier management
-- 📋 Product & price list management (incl. VAT & no-VAT pricing)
-- 📊 Simple, exportable reports for bookkeeping
-- 🔍 Full history tracking for every change
-
-## 🧰 Tech stack
-
-![React](https://img.shields.io/badge/Frontend-React-blue)
-![Node.js](https://img.shields.io/badge/Backend-Node.js-green)
-![Prisma](https://img.shields.io/badge/ORM-Prisma-lightblue)
-![PostgreSQL](https://img.shields.io/badge/Database-PostgreSQL-blue)
-![Terraform](https://img.shields.io/badge/IaC-Terraform-purple)
-![AWS](https://img.shields.io/badge/Cloud-AWS-orange)
+- 📋 Product & price list management
+- 📊 Exportable reports for bookkeeping
+- 🔍 Full change history and audit trail
 
 ## 🛠️ Getting started
 
@@ -39,7 +28,16 @@ npm run dev
 
 The frontend and backend run concurrently via `npm run dev`.
 
-## 📁 Project structure
+## Tech stack
+
+- **Frontend:** `React`, `Vite`, `TypeScript`
+- **Backend:** `Node.js`, `Express`
+- **ORM:** `Prisma`
+- **Database:** `PostgreSQL (Aurora RDS)`
+- **Infrastructure as Code:** `Terraform`
+- **Cloud:** `AWS (ECS Fargate, S3, RDS)`
+
+## Project structure
 
 ```bash
 siikli/
@@ -51,7 +49,47 @@ siikli/
 └── ...
 ```
 
-## 🧱 Architecture
+## Architecture
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#ffffff', 'edgeLabelBackground':'#ffffff', 'tertiaryColor': '#ffffff'}}}%%
+
+flowchart TD
+    Browser -->|HTTPS| CF
+
+    subgraph Client["👩‍💻 Client"]
+        Browser[Browser]
+    end
+
+    subgraph AWS["☁️ AWS Infrastructure"]
+        CF[CloudFront]
+
+        S3_LP[S3: Landing page]
+        S3_PDF[S3: PDF storage]
+
+        ALB[Application Load Balancer]
+        ECS[ECS Fargate<br/>Node.js/Express]
+        RDS[(Aurora PostgreSQL)]
+    end
+
+    CF -->|"/"| S3_LP
+    CF -->|"/api"| ALB
+
+    ALB --> ECS
+    ECS --> RDS
+
+    ECS -->|Store PDFs| S3_PDF
+    Browser -->|Download via pre-signed URL| S3_PDF
+
+    %% Styling
+    classDef client fill:#FFFFFF,stroke:#9E9E9E,color:#424242,stroke-width:2px,rx:8,ry:8;
+    classDef aws fill:#FFFFFF,stroke:#2F6FDB,color:#1B3C87,stroke-width:2px,rx:8,ry:8;
+    classDef db fill:#FFFFFF,stroke:#2E7D32,color:#1B5E20,stroke-width:2px,rx:8,ry:8;
+
+    class Browser client
+    class CF,S3_LP,S3_PDF,ALB,ECS aws
+    class RDS db
+```
 
 ### Layered structure
 
@@ -59,7 +97,7 @@ Follows a **Service–Controller–Model** pattern for clarity, testability, and
 
 - **Controller** -- Handles HTTP, request validation, and permissions.
 - **Services** -- Business logic.
-- **Model** -- Database access via prisma.
+- **Model** -- Database access via Prisma.
 
 ### Type safety
 
@@ -101,14 +139,13 @@ Solution: Keep monetary values as **strings** in the UI until calculations are n
 - **API:** Uses strings (`"10.00"`) for serialization.
 - **UI:** Accepts multiple formats (`"10"`, `"10,0"`, `"10.0"`, etc.), formats to `"10,00"` on blur.
 - **Mobile:** Numeric keyboard for better UX.
-- **Calcultions:** Uses `decimal.js` for precision.
+- **Calculations:** Uses `decimal.js` for precision.
 
 ## Deployment
 
-- ECS + Fargate for containers.
+- ECS + Fargate for containers (running in `eu-north-1`, Sweden).
 - RDS for database.
 - Terraform for provisioning.
-- Currently runs in `eu-north-1` (Sweden).
 
 ## Security
 
@@ -120,18 +157,19 @@ Security-first approach:
 - ✅ Tenant isolation via Prisma middleware
 - ✅ UUID-based identifiers
 - ✅ Rate-limiting
-- ✅ Passwordless login
+- ✅ Passwordless login (email-based OTP code)
 - ✅ Secure cookies (HttpOnly)
 - ✅ IDOR prevention
-- ✅ ALTCHA bot protection
 
-## Simplicity
+## Testing
+
+- Unit tests for core business logic (e.g. waybill content, invoice sum calculations).
+- End-to-end integration tests running against real services and database.
+- ~700 lines of test code in total, ensuring correctness and long-term maintainability.
+
+## Philosophy
 
 - No unnecessary abstractions.
 - Readable > clever.
 - “Boring” tech that works.
-
-## 🤖 AI-assisted, human-led
-
-- AI used for prototyping UI design ([v0.dev](https://v0.dev/)), brainstorming ([ChatGPT](https://chatgpt.com/)) and code autocompletion ([Cursor](https://cursor.com/)).
-- All code is reviewed and adapted before use.
+- AI-assisted, human-led — AI used for prototyping, brainstorming, and autocomplete.
