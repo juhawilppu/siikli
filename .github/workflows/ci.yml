@@ -23,9 +23,15 @@ jobs:
           --health-interval=10s
           --health-timeout=5s
           --health-retries=5
+      redis:
+        image: redis:7-alpine
+        ports: ['6379:6379']
 
     env:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/siikli_test
+      REDIS_URL: redis://127.0.0.1:6379
+      SESSION_SECRET: ${{ secrets.TEST_SESSION_SECRET }}
+      ENVIRONMENT: localhost
 
     steps:
       - name: Checkout repo

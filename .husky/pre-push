@@ -1,6 +1,11 @@
 #!/bin/sh
 set -e
 cd -- "$(git rev-parse --show-toplevel)"
+
+if [ "$HUSKY" = "0" ]; then
+  exit 0
+fi
+
 npx lint-staged
 npm run -s typecheck
 npm run -s test
