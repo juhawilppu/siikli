@@ -10,7 +10,6 @@ import helmet from 'helmet'
 import passport from 'passport'
 import { authRoute } from './api/auth'
 import { customersRoute } from './api/customers'
-import dashboardRoute from './api/dashboard'
 import { healthRoute } from './api/health'
 import invoiceRoute from './api/invoices'
 import { ordersRoute } from './api/orders'
@@ -112,7 +111,6 @@ export async function createApp(): Promise<express.Application> {
   app.use(salesReportRoute)
   app.use(invoiceRoute)
   app.use(packagingListRoute)
-  app.use(dashboardRoute)
   app.use(healthRoute)
 
   app.use((req, res, next) => {

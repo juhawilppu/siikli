@@ -276,21 +276,6 @@ export interface MetricDto {
   unit: 'money' | 'count'
 }
 
-export interface DashboardDataDto {
-  metrics: {
-    salesThisYear: MetricDto
-    invoicesSent: MetricDto
-    ordersToday: MetricDto
-    uninvoiced: MetricDto
-  }
-  orders: {
-    orderId: string
-    deliveryDate: Date
-    customerName: string
-    amount: number
-  }[]
-}
-
 export interface GetProductResponse {
   id: string
   name: string
