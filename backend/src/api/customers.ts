@@ -7,8 +7,6 @@ import { CustomerService } from '../services/customer-service'
 export const customersRoute = express.Router()
 
 customersRoute.get(`/api/customers`, isAuthenticated, async (req, res) => {
-  console.log('getting customers', req.user)
-
   const { userId, tenantId } = getUser(req)
   const result = await CustomerService.getCustomers(tenantId, userId)
 
@@ -21,8 +19,6 @@ customersRoute.get(`/api/customers`, isAuthenticated, async (req, res) => {
 })
 
 customersRoute.post(`/api/customers`, isAuthenticated, async (req, res) => {
-  console.log('creating customer')
-
   const { userId, tenantId } = getUser(req)
   const body = req.body as PostCreateCustomerRequestDto
 
@@ -39,7 +35,6 @@ customersRoute.post(`/api/customers`, isAuthenticated, async (req, res) => {
 })
 
 customersRoute.put(`/api/customers/:id`, isAuthenticated, async (req, res) => {
-  console.log('updating customer')
   const { userId, tenantId } = getUser(req)
 
   const id = req.params.id

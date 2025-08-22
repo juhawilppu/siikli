@@ -43,7 +43,6 @@ describe('full business flow e2e test', () => {
       website: 'https://siikli.fi',
       invoiceBankName: 'Test bank',
       invoiceBankAccount: '1234567890',
-      invoiceSwiftBic: '1234567890',
       invoiceReference: '1234567890',
       invoiceSumRow: 'Test sum row',
       signupCompleted: true,
@@ -80,7 +79,6 @@ describe('full business flow e2e test', () => {
       website: 'https://siikli.fi',
       invoiceBankName: 'Test bank',
       invoiceBankAccount: '1234567890',
-      invoiceSwiftBic: '1234567890',
       invoiceReference: '1234567890',
       invoiceSumRow: 'Test sum row',
     }, juha.id)
