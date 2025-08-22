@@ -8,7 +8,6 @@ import { serializeNumber } from '../utils/serialization'
 const productsRoute = express.Router()
 
 productsRoute.get(`/api/products`, isAuthenticated, async (req, res) => {
-  console.log('getting products')
   const { tenantId } = getUser(req)
   const products = await ProductService.getProducts(tenantId)
   res.status(200).json(products.map((p) => {
@@ -23,7 +22,6 @@ productsRoute.get(`/api/products`, isAuthenticated, async (req, res) => {
 })
 
 productsRoute.post(`/api/products`, isAuthenticated, async (req, res) => {
-  console.log('saving product')
   const body = req.body as PostProductCreateRequestDto
   const { tenantId, userId } = getUser(req)
 
@@ -39,7 +37,6 @@ productsRoute.post(`/api/products`, isAuthenticated, async (req, res) => {
 })
 
 productsRoute.delete(`/api/products/:id`, isAuthenticated, async (req, res) => {
-  console.log('delete', req.body)
   const { tenantId, userId } = getUser(req)
   const id = req.params.id
 
@@ -49,7 +46,6 @@ productsRoute.delete(`/api/products/:id`, isAuthenticated, async (req, res) => {
 
 productsRoute.put(`/api/products/:id`, isAuthenticated, async (req, res) => {
   const id = req.params.id
-  console.log(`updating product ${id}`)
   const { tenantId, userId } = getUser(req)
   const body = req.body as GetProductResponseDto
 

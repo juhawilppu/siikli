@@ -30,7 +30,7 @@ describe('/api/customers', () => {
     agent = request.agent(app)
     await agent
       .post('/api/auth/email/check-pin')
-      .send({ email: 'test@example.com', pinCode: '123456' })
+      .send({ email: 'test-customers@example.com', pinCode: '123456' })
       .expect(302)
   })
 

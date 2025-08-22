@@ -69,7 +69,7 @@ function init() {
     new LocalStrategy(
       { usernameField: 'email', passwordField: 'pinCode' },
       async (email, pinCode, done) => {
-        if (email === 'test@example.com' && process.env.ENVIRONMENT === 'localhost' && process.env.VITEST === 'true') {
+        if (email.endsWith('@example.com') && process.env.ENVIRONMENT === 'localhost' && process.env.VITEST === 'true') {
           const existingUser = await prisma.user.findFirst({
             where: { email },
           })
