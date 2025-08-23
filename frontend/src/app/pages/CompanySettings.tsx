@@ -19,6 +19,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Separator } from '@/components/ui/separator'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import ConfirmDialog from '../components/ConfirmDialog'
+import { Checkmark } from '../components/custom-icons'
 import { useAuth } from '../context/AuthContext'
 
 export default function CompanySettings() {
@@ -535,57 +536,15 @@ export default function CompanySettings() {
                       </p>
                       <ul className="space-y-3 mb-6">
                         <li className="flex items-start">
-                          <svg
-                            className="h-5 w-5 text-green-500 mr-2 mt-0.5"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth="2"
-                              d="M5 13l4 4L19 7"
-                            >
-                            </path>
-                          </svg>
+                          <Checkmark />
                           <span>Kaikki ominaisuudet</span>
                         </li>
                         <li className="flex items-start">
-                          <svg
-                            className="h-5 w-5 text-green-500 mr-2 mt-0.5"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth="2"
-                              d="M5 13l4 4L19 7"
-                            >
-                            </path>
-                          </svg>
+                          <Checkmark />
                           <span>Rajoitettu määrä käyttäjiä (1)</span>
                         </li>
                         <li className="flex items-start">
-                          <svg
-                            className="h-5 w-5 text-green-500 mr-2 mt-0.5"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth="2"
-                              d="M5 13l4 4L19 7"
-                            >
-                            </path>
-                          </svg>
+                          <Checkmark />
                           <span>Rajoitettu määrä tilauksia (20/kk)</span>
                         </li>
                       </ul>
@@ -606,57 +565,15 @@ export default function CompanySettings() {
                       </p>
                       <ul className="space-y-3 mb-6">
                         <li className="flex items-start">
-                          <svg
-                            className="h-5 w-5 text-green-500 mr-2 mt-0.5"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth="2"
-                              d="M5 13l4 4L19 7"
-                            >
-                            </path>
-                          </svg>
+                          <Checkmark />
                           <span>Kaikki ominaisuudet</span>
                         </li>
                         <li className="flex items-start">
-                          <svg
-                            className="h-5 w-5 text-green-500 mr-2 mt-0.5"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth="2"
-                              d="M5 13l4 4L19 7"
-                            >
-                            </path>
-                          </svg>
+                          <Checkmark />
                           <span>Rajoittamaton määrä käyttäjiä</span>
                         </li>
                         <li className="flex items-start">
-                          <svg
-                            className="h-5 w-5 text-green-500 mr-2 mt-0.5"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth="2"
-                              d="M5 13l4 4L19 7"
-                            >
-                            </path>
-                          </svg>
+                          <Checkmark />
                           <span>Rajoittamaton määrä tilauksia</span>
                         </li>
                       </ul>
