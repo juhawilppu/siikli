@@ -55,6 +55,7 @@ companiesRoute.get(`/api/tenants/package-settings`, isAuthenticated, async (req,
   } satisfies GetPackageSettings)
 })
 
+// TODO: should be PUT
 companiesRoute.post(`/api/tenants`, isAuthenticated, async (req, res) => {
   const { tenantId, userId } = getSessionOrThrow(req)
 

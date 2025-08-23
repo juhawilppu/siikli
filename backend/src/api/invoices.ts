@@ -65,6 +65,7 @@ invoiceRoute.post(`/api/invoices/:invoiceId/mark-paid`, isAuthenticated, async (
   res.json({ message: 'Invoice marked as paid' })
 })
 
+// TODO: should be POST
 invoiceRoute.get(`/api/invoices`, isAuthenticated, async (req, res) => {
   const { tenantId } = getSessionOrThrow(req)
 
@@ -77,6 +78,7 @@ invoiceRoute.get(`/api/invoices`, isAuthenticated, async (req, res) => {
 
   // For a finalized invoice, we need to have the bank account and name set
   if (!preview && (!tenant.invoiceBankAccount?.trim() || !tenant.invoiceBankName?.trim())) {
+    console.log('required_settings_missing', tenant)
     return res.status(400).send({ error: 'required_settings_missing' }).end()
   }
 

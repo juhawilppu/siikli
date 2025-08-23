@@ -47,6 +47,7 @@ ordersRoute.get(`/api/orders`, isAuthenticated, async (req, res) => {
   res.json(orders satisfies GetOrderListDto[])
 })
 
+// TODO: should be POST
 ordersRoute.get(`/api/orders/waybills`, isAuthenticated, async (req, res) => {
   const { tenantId } = getSessionOrThrow(req)
 

@@ -4,8 +4,8 @@ import { faker } from '@faker-js/faker'
 import prisma from '../../prisma'
 import { TenantService } from '../../services/tenant-service'
 
-export const TenantFactory = {
-  async createTenant(overrides: Partial<CreateTenantDto> = {}) {
+export class TenantFactory {
+  static async createTenant(overrides: Partial<CreateTenantDto> = {}) {
     const tenant = await TenantService.createTenant({
       name: faker.company.name(),
       businessId: '1234567-8',
@@ -26,8 +26,9 @@ export const TenantFactory = {
     },
     )
     return tenant
-  },
-  async createUser(tenantId: string, overrides: Partial<User> = {}) {
+  }
+
+  static async createUser(tenantId: string, overrides: Partial<User> = {}) {
     const user = await prisma.user.create({
       data: {
         tenantId,
@@ -37,5 +38,5 @@ export const TenantFactory = {
       },
     })
     return user
-  },
+  }
 }

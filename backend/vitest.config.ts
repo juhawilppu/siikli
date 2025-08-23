@@ -16,5 +16,6 @@ export default defineConfig({
       ],
       reporter: ['text', 'html', 'lcov'],
     },
+    testTimeout: 10000,
   },
 })

@@ -352,8 +352,6 @@ export const OrderService = {
   async getWaybillPdf(tenantId: string, startDate: string, endDate: string, customerId: string | null, preview: boolean): Promise<Uint8Array> {
     const { document, orders } = await this.getWaybillHtmls(tenantId, startDate, endDate, customerId, preview)
 
-    console.log('creating pdf')
-    console.log(document)
     const browser = await puppeteer.launch({
       headless: true,
       args: ['--no-sandbox'],

@@ -105,8 +105,10 @@ function init() {
     new LocalStrategy(
       { usernameField: 'email', passwordField: 'pinCode' },
       async (email, pinCode, done) => {
+        // Allow tests to bypass pin code check
         if (
           email.endsWith('@example.com')
+          && pinCode === '123456'
           && process.env.ENVIRONMENT === 'localhost'
           && process.env.VITEST === 'true'
         ) {

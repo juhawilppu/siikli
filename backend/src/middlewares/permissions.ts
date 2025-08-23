@@ -18,7 +18,6 @@ export function isAuthenticated(req: express.Request, res: express.Response, nex
 
 export function getSessionOrThrow(req: express.Request) {
   const user = req.user as UserSessionFromPassport
-  console.log('user', user)
   if (!user?.tenantId) {
     console.log('getSessionOrThrow - No tenant ID found')
     throw new Error(' No tenant ID found')
@@ -32,7 +31,6 @@ export function getSessionOrThrow(req: express.Request) {
 
 export function isOwner(req: express.Request, res: express.Response, next: express.NextFunction) {
   const user = req.user as User
-  console.log('user', user)
   if (user.role !== 'OWNER') {
     res.status(403).json({ error: 'Forbidden' })
     return
