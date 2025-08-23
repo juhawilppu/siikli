@@ -1,13 +1,14 @@
 import type { DeleteCustomerResponseDto, GetCustomersResponseDto, PostCreateCustomerRequestDto, PutUpdateCustomerRequestDto, PutUpdateCustomerResponseDto } from '@siikli/shared'
 import { Decimal } from 'decimal.js'
 import express from 'express'
-import { getUser, isAuthenticated } from '../middlewares/permissions'
+import { getSessionOrThrow, isAuthenticated } from '../middlewares/permissions'
 import { CustomerService } from '../services/customer-service'
 
 export const customersRoute = express.Router()
 
 customersRoute.get(`/api/customers`, isAuthenticated, async (req, res) => {
-  const { userId, tenantId } = getUser(req)
+  const { userId, tenantId } = getSessionOrThrow(req)
+
   const result = await CustomerService.getCustomers(tenantId, userId)
 
   res.json({
@@ -19,7 +20,8 @@ customersRoute.get(`/api/customers`, isAuthenticated, async (req, res) => {
 })
 
 customersRoute.post(`/api/customers`, isAuthenticated, async (req, res) => {
-  const { userId, tenantId } = getUser(req)
+  const { userId, tenantId } = getSessionOrThrow(req)
+
   const body = req.body as PostCreateCustomerRequestDto
 
   const result = await CustomerService.createCustomer(
@@ -35,7 +37,7 @@ customersRoute.post(`/api/customers`, isAuthenticated, async (req, res) => {
 })
 
 customersRoute.put(`/api/customers/:id`, isAuthenticated, async (req, res) => {
-  const { userId, tenantId } = getUser(req)
+  const { userId, tenantId } = getSessionOrThrow(req)
 
   const id = req.params.id
   const body = req.body as PutUpdateCustomerRequestDto
@@ -50,7 +52,8 @@ customersRoute.put(`/api/customers/:id`, isAuthenticated, async (req, res) => {
 })
 
 customersRoute.delete(`/api/customers/:id`, isAuthenticated, async (req, res) => {
-  const { userId, tenantId } = getUser(req)
+  const { userId, tenantId } = getSessionOrThrow(req)
+
   const id = req.params.id
 
   const result = await CustomerService.deleteCustomer(id, tenantId, userId)

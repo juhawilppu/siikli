@@ -41,7 +41,6 @@ export default function CompanySettings() {
     try {
       setIsSaving(true)
       await axios.delete('/tenants')
-      await axios.post('/auth/logout')
       toast({
         title: 'Yritys poistettu',
         description: 'Yritys on poistettu onnistuneesti. Sinut ohjataan etusivulle.',
@@ -49,6 +48,7 @@ export default function CompanySettings() {
       })
       setShowDeleteCompanyModal(false)
       setTimeout(() => {
+        // User session is already invalid on the server, just redirect
         window.location.href = '/'
       }, 2000)
     }

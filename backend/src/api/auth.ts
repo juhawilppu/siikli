@@ -1,5 +1,5 @@
 import type { GetCurrentUserDto } from '@siikli/shared'
-import type { UserWithTenant } from '../passportConfig'
+import type { UserSessionFromPassport } from '../passportConfig'
 import express from 'express'
 import passport from 'passport'
 import { rateLimit } from '../middlewares/rate-limit'
@@ -72,7 +72,7 @@ authRoute.post('/api/auth/logout', (req, res) => {
 authRoute.get('/api/auth/current-user', (req, res) => {
   console.log('auth/current-user here')
   if (req.user) {
-    const user = req.user as UserWithTenant
+    const user = req.user as UserSessionFromPassport
     const initials = user.email
       .split('@')[0] // Take part before @
       .includes('.')
@@ -86,7 +86,7 @@ authRoute.get('/api/auth/current-user', (req, res) => {
           .split('@')[0]
           .slice(0, 2)
           .toUpperCase()
-    res.status(200).send({ authenticated: true, userId: user.id, email: user.email, tenantId: user.tenantId, initials, signupCompleted: user.tenant.signupCompleted, role: user.role as 'USER' | 'OWNER' } satisfies GetCurrentUserDto)
+    res.status(200).send({ authenticated: true, userId: user.userId, email: user.email, tenantId: user.tenantId, initials, signupCompleted: user.tenantSignupCompleted, role: user.role as 'USER' | 'OWNER' } satisfies GetCurrentUserDto)
   }
   else {
     res.status(200).send({ authenticated: false } satisfies GetCurrentUserDto)

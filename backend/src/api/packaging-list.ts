@@ -1,12 +1,12 @@
 import type { PackagingListGroupedByCustomer, PackagingListGroupedByProduct } from '@siikli/shared'
 import express from 'express'
-import { getUser } from '../middlewares/permissions'
+import { getSessionOrThrow } from '../middlewares/permissions'
 import { PackagingListService } from '../services/packaging-list-service'
 
 const router = express.Router()
 
 router.get('/api/packaging-list/grouped-by/customer', async (req, res) => {
-  const { tenantId } = getUser(req)
+  const { tenantId } = getSessionOrThrow(req)
   const query = req.query
 
   if (!query.deliveryDate || typeof query.deliveryDate !== 'string') {
@@ -18,7 +18,8 @@ router.get('/api/packaging-list/grouped-by/customer', async (req, res) => {
 })
 
 router.get('/api/packaging-list/grouped-by/product', async (req, res) => {
-  const { tenantId } = getUser(req)
+  const { tenantId } = getSessionOrThrow(req)
+
   const query = req.query
 
   if (!query.deliveryDate || typeof query.deliveryDate !== 'string') {

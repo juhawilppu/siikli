@@ -1,14 +1,15 @@
 import type { GetProductResponseDto, PostProductCreateRequestDto } from '@siikli/shared'
 import { Decimal } from '@prisma/client/runtime/library'
 import express from 'express'
-import { getUser, isAuthenticated } from '../middlewares/permissions'
+import { getSessionOrThrow, isAuthenticated } from '../middlewares/permissions'
 import { ProductService } from '../services/product-service'
 import { serializeNumber } from '../utils/serialization'
 
 const productsRoute = express.Router()
 
 productsRoute.get(`/api/products`, isAuthenticated, async (req, res) => {
-  const { tenantId } = getUser(req)
+  const { tenantId } = getSessionOrThrow(req)
+
   const products = await ProductService.getProducts(tenantId)
   res.status(200).json(products.map((p) => {
     return {
@@ -22,8 +23,9 @@ productsRoute.get(`/api/products`, isAuthenticated, async (req, res) => {
 })
 
 productsRoute.post(`/api/products`, isAuthenticated, async (req, res) => {
+  const { tenantId, userId } = getSessionOrThrow(req)
+
   const body = req.body as PostProductCreateRequestDto
-  const { tenantId, userId } = getUser(req)
 
   const productId = await ProductService.createProduct({
     ...body,
@@ -37,7 +39,8 @@ productsRoute.post(`/api/products`, isAuthenticated, async (req, res) => {
 })
 
 productsRoute.delete(`/api/products/:id`, isAuthenticated, async (req, res) => {
-  const { tenantId, userId } = getUser(req)
+  const { tenantId, userId } = getSessionOrThrow(req)
+
   const id = req.params.id
 
   await ProductService.deleteProduct(id, tenantId, userId)
@@ -45,8 +48,9 @@ productsRoute.delete(`/api/products/:id`, isAuthenticated, async (req, res) => {
 })
 
 productsRoute.put(`/api/products/:id`, isAuthenticated, async (req, res) => {
+  const { tenantId, userId } = getSessionOrThrow(req)
+
   const id = req.params.id
-  const { tenantId, userId } = getUser(req)
   const body = req.body as GetProductResponseDto
 
   await ProductService.updateProduct(id, tenantId, body, userId)

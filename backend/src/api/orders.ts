@@ -9,7 +9,7 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 import { OrderStatus, parseIsoDate } from '@siikli/shared'
 import { Decimal } from 'decimal.js'
 import express from 'express'
-import { getUser, isAuthenticated } from '../middlewares/permissions'
+import { getSessionOrThrow, isAuthenticated } from '../middlewares/permissions'
 import prisma from '../prisma'
 import { OrderService } from '../services/order-service'
 
@@ -21,13 +21,17 @@ export interface GetOrderLimitResponseDto {
 }
 
 ordersRoute.get(`/api/orders/limit`, isAuthenticated, async (req, res) => {
-  const { tenantId } = getUser(req)
+  const { tenantId } = getSessionOrThrow(req)
+
   const remaining = await OrderService.getRemainingOrders(tenantId)
   return res.status(200).json({ remaining })
 })
 
 ordersRoute.get(`/api/orders`, isAuthenticated, async (req, res) => {
-  console.log('getting orders')
+  const { tenantId, userId } = getSessionOrThrow(req)
+
+  console.log('get orders')
+  console.log('userId', userId)
 
   if (!req.query.startDate || !req.query.endDate) {
     return res.status(400)
@@ -38,23 +42,19 @@ ordersRoute.get(`/api/orders`, isAuthenticated, async (req, res) => {
   const status = req.query.status as OrderStatus | undefined
   const customerId = req.query.customerId as string | undefined
 
-  const { tenantId } = getUser(req)
-
   const orders = await OrderService.getOrders(tenantId, startDate, endDate, status, customerId)
 
   res.json(orders satisfies GetOrderListDto[])
 })
 
 ordersRoute.get(`/api/orders/waybills`, isAuthenticated, async (req, res) => {
-  console.log('getting orders')
+  const { tenantId } = getSessionOrThrow(req)
 
   if (!req.query.startDate || !req.query.endDate) {
     return res.status(400)
   }
 
   const preview = req.query.preview === 'true'
-
-  const { tenantId } = getUser(req)
 
   const pdfBuffer = await OrderService.getWaybillPdf(tenantId, req.query.startDate as string, req.query.endDate as string, req.query.customerId as string | null, preview)
 
@@ -70,7 +70,8 @@ ordersRoute.get(`/api/orders/waybills`, isAuthenticated, async (req, res) => {
 })
 
 ordersRoute.get(`/api/orders/:id/waybill`, isAuthenticated, async (req, res) => {
-  const { tenantId } = getUser(req)
+  const { tenantId } = getSessionOrThrow(req)
+
   const orderId = req.params.id
   // Look up invoice metadata in DB
   const order = await prisma.order.findUnique({ where: { id: orderId, tenantId } })
@@ -87,10 +88,9 @@ ordersRoute.get(`/api/orders/:id/waybill`, isAuthenticated, async (req, res) => 
 })
 
 ordersRoute.get(`/api/orders/:id`, isAuthenticated, async (req, res) => {
-  console.log(`getting order ${req.params.id}`)
+  const { tenantId } = getSessionOrThrow(req)
 
   const orderId = req.params.id
-  const { tenantId } = getUser(req)
 
   const order = await OrderService.getOrder(orderId, tenantId)
 
@@ -98,10 +98,9 @@ ordersRoute.get(`/api/orders/:id`, isAuthenticated, async (req, res) => {
 })
 
 ordersRoute.delete(`/api/orders/:id`, isAuthenticated, async (req, res) => {
-  console.log(`deleting order ${req.params.id}`)
+  const { tenantId } = getSessionOrThrow(req)
 
   const orderId = req.params.id
-  const { tenantId } = getUser(req)
 
   await OrderService.deleteOrder(orderId, tenantId)
 
@@ -112,7 +111,7 @@ ordersRoute.post(`/api/orders`, isAuthenticated, async (req, res) => {
   console.log('saving order')
 
   const data = req.body as PostOrderRequestDto
-  const { tenantId } = getUser(req)
+  const { tenantId } = getSessionOrThrow(req)
 
   const result = await OrderService.createOrder({
     ...data,
@@ -130,10 +129,9 @@ ordersRoute.post(`/api/orders`, isAuthenticated, async (req, res) => {
 })
 
 ordersRoute.post(`/api/orders/:id`, isAuthenticated, async (req, res) => {
-  console.log(`saving order ${req.params.id}`)
+  const { tenantId, userId } = getSessionOrThrow(req)
 
   const data = req.body as PostOrderRequestDto
-  const { tenantId, userId } = getUser(req)
 
   await OrderService.updateOrder({
     ...data,

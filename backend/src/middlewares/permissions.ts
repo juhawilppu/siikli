@@ -1,5 +1,6 @@
 import type { User } from '@prisma/client'
 import type express from 'express'
+import type { UserSessionFromPassport } from '../passportConfig'
 
 export function isAuthenticated(req: express.Request, res: express.Response, next: express.NextFunction) {
   const user = req.user as User
@@ -15,13 +16,18 @@ export function isAuthenticated(req: express.Request, res: express.Response, nex
   next()
 }
 
-export function getUser(req: express.Request) {
-  const user = req.user as User
+export function getSessionOrThrow(req: express.Request) {
+  const user = req.user as UserSessionFromPassport
+  console.log('user', user)
   if (!user?.tenantId) {
-    console.log('getTenantId - No tenant ID found')
+    console.log('getSessionOrThrow - No tenant ID found')
     throw new Error(' No tenant ID found')
   }
-  return { userId: user.id, tenantId: user.tenantId }
+  if (!user?.userId) {
+    console.log('getSessionOrThrow - No user ID found')
+    throw new Error(' No user ID found')
+  }
+  return { userId: user.userId, tenantId: user.tenantId }
 }
 
 export function isOwner(req: express.Request, res: express.Response, next: express.NextFunction) {

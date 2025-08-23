@@ -3,7 +3,7 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 import { dateToIso, formatNumber, parseIsoDate } from '@siikli/shared'
 import express from 'express'
 import puppeteer from 'puppeteer'
-import { getUser, isAuthenticated } from '../middlewares/permissions'
+import { getSessionOrThrow, isAuthenticated } from '../middlewares/permissions'
 import prisma from '../prisma'
 import { createInvoiceHtml } from '../services/invoice-html'
 import { InvoiceService } from '../services/invoice-service'
@@ -21,7 +21,8 @@ export interface GetInvoiceListResponseDto {
 }
 
 invoiceRoute.get(`/api/invoices/list`, isAuthenticated, async (req, res) => {
-  const { tenantId } = getUser(req)
+  const { tenantId } = getSessionOrThrow(req)
+
   const customerId = req.query.customerId as string
   const startDate = parseIsoDate(req.query.startDate as string)
   const endDate = parseIsoDate(req.query.endDate as string)
@@ -39,7 +40,8 @@ invoiceRoute.get(`/api/invoices/list`, isAuthenticated, async (req, res) => {
 })
 
 invoiceRoute.get(`/api/invoices/:invoiceId/url`, isAuthenticated, async (req, res) => {
-  const { tenantId } = getUser(req)
+  const { tenantId } = getSessionOrThrow(req)
+
   const invoiceId = req.params.invoiceId
   // Look up invoice metadata in DB
   const invoice = await prisma.invoice.findUnique({ where: { id: invoiceId, tenantId } })
@@ -56,14 +58,16 @@ invoiceRoute.get(`/api/invoices/:invoiceId/url`, isAuthenticated, async (req, re
 })
 
 invoiceRoute.post(`/api/invoices/:invoiceId/mark-paid`, isAuthenticated, async (req, res) => {
-  const { tenantId } = getUser(req)
+  const { tenantId } = getSessionOrThrow(req)
+
   const invoiceId = req.params.invoiceId
   await prisma.invoice.update({ where: { id: invoiceId, tenantId }, data: { status: 'PAID' } })
   res.json({ message: 'Invoice marked as paid' })
 })
 
 invoiceRoute.get(`/api/invoices`, isAuthenticated, async (req, res) => {
-  const { tenantId } = getUser(req)
+  const { tenantId } = getSessionOrThrow(req)
+
   const customerId = req.query.customerId as string
   const startDate = parseIsoDate(req.query.startDate as string)
   const endDate = parseIsoDate(req.query.endDate as string)
