@@ -1,8 +1,9 @@
 import type { GetCustomerRequestDto, PostCreateCustomerRequestDto } from '@siikli/shared'
 import { formatNumber } from '@siikli/shared'
 import axios from 'axios'
-import { FileText, HelpCircle, Phone, Save } from 'lucide-react'
+import { FileText, Phone, Save } from 'lucide-react'
 import { useState } from 'react'
+import { InfoTooltip } from '@/app/components/info-tooltip'
 import { toast } from '@/app/hooks/use-toast'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { Button } from '@/components/ui/button'
@@ -10,29 +11,6 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-
-function instructionTooltip(text: string) {
-  const [isOpen, setIsOpen] = useState(false)
-
-  return (
-    <TooltipProvider>
-      <Tooltip delayDuration={0} open={isOpen} onOpenChange={setIsOpen}>
-        <TooltipTrigger asChild>
-          <div
-            className="inline-flex items-center cursor-pointer hover:opacity-80"
-            onClick={() => setIsOpen(!isOpen)}
-          >
-            <HelpCircle className="h-4 w-4 text-muted-foreground ml-1" />
-          </div>
-        </TooltipTrigger>
-        <TooltipContent className="max-w-[300px]">
-          <p>{text}</p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
-  )
-}
 
 export function NewCustomer({ closeDialog, customerToEdit, onSave }: {
   closeDialog: () => void
@@ -309,7 +287,7 @@ export function NewCustomer({ closeDialog, customerToEdit, onSave }: {
                     <Label htmlFor="edit-company_legal_name" className="font-medium">
                       Yrityksen virallinen nimi
                     </Label>
-                    {instructionTooltip('Yrityksen virallinen kaupparekisterissä oleva nimi, jota käytetään laskuissa. Jos tämä on tyhjä, käytetään nimeä.')}
+                    <InfoTooltip>Yrityksen virallinen kaupparekisterissä oleva nimi, jota käytetään laskuissa. Jos tämä on tyhjä, käytetään nimeä.</InfoTooltip>
                   </span>
                   <Input
                     id="edit-company_legal_name"
@@ -325,7 +303,7 @@ export function NewCustomer({ closeDialog, customerToEdit, onSave }: {
                     <Label htmlFor="edit-discount" className="font-medium">
                       Alennus (%)
                     </Label>
-                    {instructionTooltip('Tämä asettaa yritykselle yleisen alennuksen, joka vaikuttaa kaikkiin laskuihin. Esimerkiksi 10 % tarkoittaa 10 % alennusta.')}
+                    <InfoTooltip>Tämä asettaa yritykselle yleisen alennuksen, joka vaikuttaa kaikkiin laskuihin. Voit antaa esimerkiksi 5 % alennuksen, joka lasketaan laskun kokonaishinnasta.</InfoTooltip>
                   </div>
                   <Input
                     id="edit-discount"
@@ -350,7 +328,7 @@ export function NewCustomer({ closeDialog, customerToEdit, onSave }: {
                     <Label htmlFor="edit-reference" className="font-medium">
                       Laskun viite
                     </Label>
-                    {instructionTooltip('Voit määrittää viitekoodin, joka näkyy laskuissa.')}
+                    <InfoTooltip>Määrittää laskun viitekoodin. Tämä on asiakaskohtainen.</InfoTooltip>
                   </span>
                   <Input
                     id="edit-reference"

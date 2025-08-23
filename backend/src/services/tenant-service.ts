@@ -16,7 +16,6 @@ interface CreateTenant {
   website: string
   invoiceBankName: string
   invoiceBankAccount: string
-  invoiceReference: string
   invoiceSumRow: string
   signupCompleted: boolean
   subscriptionType: 'FREE' | 'PREMIUM'
@@ -32,7 +31,6 @@ export interface UpdateTenant {
   city?: string | null
   invoiceBankName?: string | null
   invoiceBankAccount?: string | null
-  invoiceReference?: string | null
   invoiceSumRow?: string | null
   phone?: string | null
   email?: string | null
@@ -178,7 +176,6 @@ export const TenantService = {
       city,
       invoiceBankName,
       invoiceBankAccount,
-      invoiceReference,
       invoiceSumRow,
       phone,
       email,
@@ -194,7 +191,6 @@ export const TenantService = {
           city,
           invoiceBankName,
           invoiceBankAccount,
-          invoiceReference,
           invoiceSumRow,
           phone,
           email,

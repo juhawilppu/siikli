@@ -18,7 +18,6 @@ companiesRoute.get(`/api/tenants`, isAuthenticated, async (req, res) => {
     city: result.city,
     invoiceBankName: result.invoiceBankName,
     invoiceBankAccount: result.invoiceBankAccount,
-    invoiceReference: result.invoiceReference,
     invoiceSumRow: result.invoiceSumRow || DEFAULT_INVOICE_SUMMARY_ROW,
     phone: result.phone,
     email: result.email,

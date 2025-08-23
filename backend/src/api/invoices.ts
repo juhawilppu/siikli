@@ -7,6 +7,7 @@ import { getUser, isAuthenticated } from '../middlewares/permissions'
 import prisma from '../prisma'
 import { createInvoiceHtml } from '../services/invoice-html'
 import { InvoiceService } from '../services/invoice-service'
+import { TenantService } from '../services/tenant-service'
 
 const invoiceRoute = express.Router()
 
@@ -68,9 +69,15 @@ invoiceRoute.get(`/api/invoices`, isAuthenticated, async (req, res) => {
   const endDate = parseIsoDate(req.query.endDate as string)
   const preview = req.query.preview === 'true'
 
+  const tenant = await TenantService.getTenant(tenantId)
+
+  // For a finalized invoice, we need to have the bank account and name set
+  if (!preview && (!tenant.invoiceBankAccount?.trim() || !tenant.invoiceBankName?.trim())) {
+    return res.status(400).send({ error: 'required_settings_missing' }).end()
+  }
+
   const { invoice, orders } = await InvoiceService.getInvoice(customerId, tenantId, startDate, endDate)
 
-  console.log('creating pdf')
   const html = createInvoiceHtml(invoice)
 
   const browser = await puppeteer.launch({

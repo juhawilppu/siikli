@@ -165,7 +165,6 @@ export interface GetCompanySettings {
   city: string | null
   invoiceBankName: string | null
   invoiceBankAccount: string | null
-  invoiceReference: string | null
   invoiceSumRow: string
   phone: string | null
   email: string | null

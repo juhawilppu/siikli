@@ -20,6 +20,7 @@ import { Separator } from '@/components/ui/separator'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import ConfirmDialog from '../components/ConfirmDialog'
 import { Checkmark } from '../components/custom-icons'
+import { InfoTooltip } from '../components/info-tooltip'
 import { useAuth } from '../context/AuthContext'
 
 export default function CompanySettings() {
@@ -90,7 +91,6 @@ export default function CompanySettings() {
       city: companyData.city,
       invoiceBankName: companyData.invoiceBankName,
       invoiceBankAccount: companyData.invoiceBankAccount,
-      invoiceReference: companyData.invoiceReference,
       invoiceSumRow: companyData.invoiceSumRow,
       phone: companyData.phone,
       email: companyData.email,
@@ -322,16 +322,22 @@ export default function CompanySettings() {
                       Näytä tietoja käytetään laskuissa.
                     </CardDescription>
                     <div className="space-y-2">
-                      <Label htmlFor="invoice-bank-name">Laskun yhteenveto</Label>
+                      <Label htmlFor="invoice-bank-account">
+                        Pankkitilin numero (IBAN)
+                        <InfoTooltip>Yrityksesi pankkitilin numero, joka näytetään laskuissa. Asiakas maksaa laskun tälle pankkitilille.</InfoTooltip>
+                      </Label>
                       <Input
-                        id="invoice-summary-row"
-                        name="invoiceSumRow"
-                        value={companyData.invoiceSumRow}
+                        id="invoice-bank-account"
+                        name="invoiceBankAccount"
+                        value={companyData.invoiceBankAccount || ''}
                         onChange={handleInputChange}
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="invoice-bank-name">Pankin nimi</Label>
+                      <Label htmlFor="invoice-bank-name">
+                        Pankin nimi
+                        <InfoTooltip>Yrityksesi pankin nimi, joka näytetään laskuissa.</InfoTooltip>
+                      </Label>
                       <Input
                         id="invoice-bank-name"
                         name="invoiceBankName"
@@ -339,26 +345,19 @@ export default function CompanySettings() {
                         onChange={handleInputChange}
                       />
                     </div>
-
-                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                      <div className="space-y-2">
-                        <Label htmlFor="invoice-bank-account">Pankkitilin numero (IBAN)</Label>
-                        <Input
-                          id="invoice-bank-account"
-                          name="invoiceBankAccount"
-                          value={companyData.invoiceBankAccount || ''}
-                          onChange={handleInputChange}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="nvoice-reference">SWIFT/BIC</Label>
-                        <Input
-                          id="invoice-reference"
-                          name="invoiceReference"
-                          value={companyData.invoiceReference || ''}
-                          onChange={handleInputChange}
-                        />
-                      </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="invoice-bank-name">
+                        Laskun yhteenvetorivi
+                        <InfoTooltip>
+                          Yhteenvetorivi näytetään laskun etusivulla. Tämän lisäksi laskulla on myös liite, joka erittelee laskun tarkan sisällön.
+                        </InfoTooltip>
+                      </Label>
+                      <Input
+                        id="invoice-summary-row"
+                        name="invoiceSumRow"
+                        value={companyData.invoiceSumRow}
+                        onChange={handleInputChange}
+                      />
                     </div>
 
                     <Separator className="my-4" />

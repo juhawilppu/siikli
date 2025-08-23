@@ -45,13 +45,21 @@ export default function Invoices() {
       link.remove()
       window.URL.revokeObjectURL(url)
     }
-    catch (error) {
-      console.error('Error downloading PDF:', error)
-      toast({
-        title: 'Tapahtui virhe laskun tulostamisessa',
-        description: 'Yritä uudelleen myöhemmin.',
-        variant: 'destructive',
-      })
+    catch (error: any) {
+      if (error.response.status === 400) {
+        toast({
+          title: 'Laskun tulostaminen ei onnistu',
+          description: 'Saajan tilinumero puuttuu. Voit lisätä nämä tiedot sivulla "Oma yritys".',
+          variant: 'destructive',
+        })
+      }
+      else {
+        toast({
+          title: 'Tapahtui virhe laskun tulostamisessa',
+          description: 'Yritä uudelleen myöhemmin.',
+          variant: 'destructive',
+        })
+      }
     }
     finally {
       setIsPrinting(null)

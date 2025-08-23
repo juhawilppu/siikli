@@ -12,7 +12,6 @@ const updateTenantBody = {
   city: 'Test City',
   invoiceBankName: 'Test Bank',
   invoiceBankAccount: '123456',
-  invoiceReference: '123456',
   invoiceSumRow: 'Test Sum Row',
   phone: '123456',
   email: 'test-tenants@example.com',
