@@ -402,7 +402,7 @@ export default function LandingPage() {
                 <CardTitle className="text-2xl">{t('landing.pricing.premium.title')}</CardTitle>
                 <CardDescription className="text-lg text-muted-foreground">{t('landing.pricing.premium.description')}</CardDescription>
                 <div className="mt-4">
-                  <span className="text-4xl font-bold">149 €</span>
+                  <span className="text-4xl font-bold">49 €</span>
                   <span className="text-muted-foreground text-lg">/kk</span>
                 </div>
               </CardHeader>

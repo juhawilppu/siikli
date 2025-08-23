@@ -37,7 +37,7 @@ export interface UpdateTenant {
   website?: string | null
 }
 
-const TRIAL_DURATION_MONTHS = 3
+const TRIAL_DURATION_MONTHS = 1
 
 export const TenantService = {
   // TODO: Remove this. It's only used in the tests and should be a factory method.
@@ -71,7 +71,7 @@ export const TenantService = {
           signupCompleted: false,
           subscriptionType: 'PREMIUM',
           subscriptionEndDate: null,
-          trialEndDate: addMonths(new Date(), 3).toISOString(),
+          trialEndDate: addMonths(new Date(), TRIAL_DURATION_MONTHS).toISOString(),
         },
       })
 
