@@ -234,12 +234,6 @@ export function calculateTotals(items: InvoiceItemDto[], discountPercent: Decima
     const rowVat = rowNet.mul(0.14).toDecimalPlaces(2, Decimal.ROUND_HALF_UP)
     const rowGross = rowNet.add(rowVat)
 
-    console.log('---')
-    console.log('rowNet', rowNet.toString())
-    console.log('rowVat', rowVat.toString())
-    console.log('rowGross', rowGross.toString())
-    console.log('---')
-
     rows.push({
       deliveryDate: item.deliveryDate,
       orderNumber: item.orderNumber,

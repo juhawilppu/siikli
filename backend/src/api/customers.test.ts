@@ -2,24 +2,7 @@ import request from 'supertest'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { createApp } from '../app'
 import redisClient from '../redis'
-
-async function createCustomer(agent: request.SuperAgentTest, data: Record<string, any>) {
-  const res = await agent.post('/api/customers').send(data).expect(201)
-  return res.body.id
-}
-
-async function getCustomers(agent: request.SuperAgentTest) {
-  const res = await agent.get('/api/customers').expect(200)
-  return res.body.customers
-}
-
-async function updateCustomer(agent: request.SuperAgentTest, id: string, data: Record<string, any>) {
-  await agent.put(`${'/api/customers'}/${id}`).send(data).expect(200)
-}
-
-async function deleteCustomer(agent: request.SuperAgentTest, id: string) {
-  await agent.delete(`/api/customers/${id}`).expect(200)
-}
+import { CustomerFactory } from '../test/factories/customer-factory'
 
 describe('/api/customers', () => {
   let agent: request.SuperAgentTest
@@ -39,7 +22,7 @@ describe('/api/customers', () => {
   })
 
   it('should create a simple customer', async () => {
-    createdCustomerId = await createCustomer(agent, { name: 'J-Store' })
+    createdCustomerId = await CustomerFactory.createCustomer(agent, { name: 'J-Store' })
     expect(createdCustomerId).toBeTruthy()
   })
 
@@ -55,8 +38,8 @@ describe('/api/customers', () => {
       phone: '1234567890',
       businessId: '1234567890',
     }
-    const id = await createCustomer(agent, customerData)
-    const customers = await getCustomers(agent)
+    const id = await CustomerFactory.createCustomer(agent, customerData)
+    const customers = await CustomerFactory.getCustomers(agent)
     const customer = customers.find((c: any) => c.id === id)
     expect(customer).toMatchObject({
       id,
@@ -73,7 +56,7 @@ describe('/api/customers', () => {
   })
 
   it('should fetch the created customer', async () => {
-    const customers = await getCustomers(agent)
+    const customers = await CustomerFactory.getCustomers(agent)
     expect(Array.isArray(customers)).toBe(true)
     const customer = customers.find((c: any) => c.id === createdCustomerId)
     expect(customer).toBeTruthy()
@@ -83,8 +66,8 @@ describe('/api/customers', () => {
 
   it('should update the customer by id', async () => {
     const updateData = { name: 'J-Store2', email: 'j-store2@example.com' }
-    await updateCustomer(agent, createdCustomerId, updateData)
-    const customers = await getCustomers(agent)
+    await CustomerFactory.updateCustomer(agent, createdCustomerId, updateData)
+    const customers = await CustomerFactory.getCustomers(agent)
     const customer = customers.find((c: any) => c.id === createdCustomerId)
     expect(customer).toBeTruthy()
     expect(customer.name).toBe(updateData.name)
@@ -92,8 +75,8 @@ describe('/api/customers', () => {
   })
 
   it('should delete the customer by id', async () => {
-    await deleteCustomer(agent, createdCustomerId)
-    const customers = await getCustomers(agent)
+    await CustomerFactory.deleteCustomer(agent, createdCustomerId)
+    const customers = await CustomerFactory.getCustomers(agent)
     const customer = customers.find((c: any) => c.id === createdCustomerId)
     expect(customer).toBeUndefined()
     // There should be only one customer left (from the "all fields" test)

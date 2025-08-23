@@ -278,7 +278,6 @@ export const TenantService = {
         },
       })
       if (!p) {
-        console.log('creating package type', packageType)
         await prisma.packageType.create({
           data: {
             tenantId,
@@ -297,7 +296,6 @@ export const TenantService = {
         },
       })
       if (!s) {
-        console.log('creating package size', packageSize)
         await prisma.packageSize.create({
           data: {
             tenantId,

@@ -125,9 +125,10 @@ ordersRoute.post(`/api/orders`, isAuthenticated, async (req, res) => {
     })),
   })
 
-  res.json({ id: result.id } satisfies PostOrderResponseDto)
+  res.status(201).json({ id: result.id } satisfies PostOrderResponseDto)
 })
 
+// TODO: Should be PUT
 ordersRoute.post(`/api/orders/:id`, isAuthenticated, async (req, res) => {
   const { tenantId, userId } = getSessionOrThrow(req)
 

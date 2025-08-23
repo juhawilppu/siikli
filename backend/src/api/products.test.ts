@@ -1,26 +1,9 @@
-import type { GetProductResponseDto, PostProductCreateRequestDto } from '@siikli/shared'
+import type { PostProductCreateRequestDto } from '@siikli/shared'
 import request from 'supertest'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { createApp } from '../app'
 import redisClient from '../redis'
-
-async function createProduct(agent: request.SuperAgentTest, data: Record<string, any>) {
-  const res = await agent.post('/api/products').send(data).expect(201)
-  return res.body.id
-}
-
-async function getProducts(agent: request.SuperAgentTest): Promise<GetProductResponseDto[]> {
-  const res = await agent.get('/api/products').expect(200)
-  return res.body
-}
-
-async function updateProduct(agent: request.SuperAgentTest, id: string, data: Record<string, any>) {
-  await agent.put(`/api/products/${id}`).send(data).expect(200)
-}
-
-async function deleteProduct(agent: request.SuperAgentTest, id: string) {
-  await agent.delete(`/api/products/${id}`).expect(200)
-}
+import { ProductFactory } from '../test/factories/product-factory'
 
 describe('/api/products', () => {
   let agent: request.SuperAgentTest
@@ -40,7 +23,7 @@ describe('/api/products', () => {
   })
 
   it('should create a simple product', async () => {
-    createdProductId = await createProduct(agent, { name: 'Sieglinde, simple' })
+    createdProductId = await ProductFactory.createProduct(agent, { name: 'Sieglinde, simple' })
     expect(createdProductId).toBeTruthy()
   })
 
@@ -52,8 +35,8 @@ describe('/api/products', () => {
       packageType: 'Box',
 
     } satisfies PostProductCreateRequestDto
-    const id = await createProduct(agent, productData)
-    const products = await getProducts(agent)
+    const id = await ProductFactory.createProduct(agent, productData)
+    const products = await ProductFactory.getProducts(agent)
     console.log(products)
     const product = products.find((p: any) => p.id === id)
     expect(product).toMatchObject({
@@ -64,7 +47,7 @@ describe('/api/products', () => {
   })
 
   it('should fetch the created product', async () => {
-    const products = await getProducts(agent)
+    const products = await ProductFactory.getProducts(agent)
     expect(Array.isArray(products)).toBe(true)
     const product = products.find((p: any) => p.id === createdProductId)
     expect(product).toBeTruthy()
@@ -73,8 +56,8 @@ describe('/api/products', () => {
 
   it('should update the product by id', async () => {
     const updateData = { name: 'Sieglinde, updated', price: '29.99' }
-    await updateProduct(agent, createdProductId, updateData)
-    const products = await getProducts(agent)
+    await ProductFactory.updateProduct(agent, createdProductId, updateData)
+    const products = await ProductFactory.getProducts(agent)
     const product = products.find((p: any) => p.id === createdProductId)
     expect(product).toBeDefined()
     expect(product?.name).toBe(updateData.name)
@@ -82,8 +65,8 @@ describe('/api/products', () => {
   })
 
   it('should delete the product by id', async () => {
-    await deleteProduct(agent, createdProductId)
-    const products = await getProducts(agent)
+    await ProductFactory.deleteProduct(agent, createdProductId)
+    const products = await ProductFactory.getProducts(agent)
     const product = products.find((p: any) => p.id === createdProductId)
     expect(product).toBeUndefined()
     // There should be only one product left (from the "all fields" test)

@@ -46,8 +46,7 @@ export async function createApp(): Promise<express.Application> {
 
   app.use(express.json({ limit: '200kb' }))
 
-  console.log('starting')
-  console.log(process.env)
+  console.log('Siikli backend starting...')
 
   app.use(cookieParser()) // For parsing cookies
   app.set('trust proxy', 1) // trust first proxy
