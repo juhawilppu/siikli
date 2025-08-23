@@ -152,7 +152,7 @@ async function main() {
         customerId: customer.id,
         tenantId: tenant.id,
         status: OrderStatus.WAITING_FOR_DELIVERY,
-        deliveryDate: dateToIso(subDays(new Date(), (orderCount + orderIndex) * 7)), // one order every 7 days
+        deliveryDate: dateToIso(subDays(new Date(), (orderCount - orderIndex) * 7)), // one order every 7 days
         hasNote: note !== null,
         noteHeader: note?.header || null,
         noteBody: note?.body || null,

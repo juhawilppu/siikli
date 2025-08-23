@@ -1,10 +1,9 @@
-import { Building2, ClipboardList, FileText, HelpCircle, LineChart, PlusCircle, Receipt, Search, ShoppingBasket, Users } from 'lucide-react'
+import { Building2, ClipboardList, FileText, HelpCircle, LineChart, Receipt, Search, ShoppingBasket, Users } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Navigate, NavLink, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { useIsMobile } from '@/app/hooks/use-mobile'
 import CompanySettings from '@/app/pages/CompanySettings.js'
 import { Customers } from '@/app/pages/Customers/Customers.js'
-import { Invoices } from '@/app/pages/Invoices.js'
 import Order from '@/app/pages/Orders/OrderForm.js'
 import Orders from '@/app/pages/Orders/Orders.js'
 import { PackagingList } from '@/app/pages/PackagingList/PackagingList.js'
@@ -12,6 +11,7 @@ import Products from '@/app/pages/Products/Products.js'
 import TuoteryhmatJarjestely from '@/app/pages/Products/ProductTypeReorder.js'
 import { SalesReport } from '@/app/pages/SalesReport.js'
 import SelfSignup from '@/app/pages/SelfSignup.js'
+import { SentInvoices } from '@/app/pages/SentInvoices.js'
 import LanguageSwitcher from '@/components/LanguageSwitcher.js'
 import SiikliCookieConsent from '@/components/SiikliCookieConsent'
 import { Button } from '@/components/ui/button.js'
@@ -21,15 +21,19 @@ import { Input } from '@/components/ui/input.js'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { Toaster } from '@/components/ui/toaster.js'
 import { initPosthog } from '@/lib/posthog'
+import { Bell, Menu } from './components/custom-icons'
 import { useAuth } from './context/AuthContext'
+import Invoices from './pages/Invoices'
 import Support from './pages/Support'
+import Waybills from './pages/Waybills'
 
 const navItems = [
   // { title: "Etusivu", href: '/', icon: Home },
   { title: 'Tilaukset', href: '/app/orders', icon: ClipboardList },
-  { title: 'Uusi tilaus', href: '/app/orders/new', icon: PlusCircle },
   { title: 'Pakkauslista', href: '/app/packaging-list', icon: FileText },
+  { title: 'Kuormakirjat', href: '/app/waybills', icon: Receipt },
   { title: 'Laskut', href: '/app/invoices', icon: Receipt },
+  { title: 'Lähetetyt laskut', href: '/app/sent-invoices', icon: Receipt },
   { title: 'Myyntiraportti', href: '/app/sales-report', icon: LineChart },
   { title: 'Tuotteet', href: '/app/products', icon: ShoppingBasket },
   { title: 'Asiakkaat', href: '/app/customers', icon: Users },
@@ -195,9 +199,11 @@ function App() {
                 <Route path="/orders" element={<Orders />} />
                 <Route path="/orders/new" element={<Order key="new" />} />
                 <Route path="/orders/:orderId" element={<Order key="edit" />} />
+                <Route path="/waybills" element={<Waybills />} />
                 <Route path="/sales-report" element={<SalesReport />} />
                 <Route path="/packaging-list" element={<PackagingList />} />
                 <Route path="/invoices" element={<Invoices />} />
+                <Route path="/sent-invoices" element={<SentInvoices />} />
                 <Route path="/customers" element={<Customers />} />
                 <Route path="/products" element={<Products />} />
                 <Route path="/products/reorder" element={<TuoteryhmatJarjestely />} />
@@ -255,7 +261,7 @@ function DesktopSidebar({ currentPath }: { currentPath: string }) {
               to={item.href}
               key={item.href}
               className={`flex items-center gap-3 rounded-full px-3 py-2 transition-all ${
-                currentPath === item.href
+                currentPath.startsWith(item.href)
                   ? 'bg-blue-200 text-black font-semibold [&>svg]:text-black'
                   : 'text-gray-700 hover:text-muted-foreground hover:bg-blue-100'
               }`}
@@ -267,48 +273,5 @@ function DesktopSidebar({ currentPath }: { currentPath: string }) {
         </nav>
       </div>
     </div>
-  )
-}
-
-// Menu icon component
-function Menu(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <line x1="4" x2="20" y1="12" y2="12" />
-      <line x1="4" x2="20" y1="6" y2="6" />
-      <line x1="4" x2="20" y1="18" y2="18" />
-    </svg>
-  )
-}
-
-// Bell icon component
-function Bell(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
-      <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
-    </svg>
   )
 }
