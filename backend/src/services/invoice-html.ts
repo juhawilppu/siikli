@@ -122,7 +122,7 @@ export function createInvoiceHtml(invoice: InvoiceDto) {
       </tr>
       ${!invoice.totals.totalDiscountWithoutTax.isZero()
         ? `<tr>
-            <td class="border-left">Hyvitys (${formatNumber(invoice.customer.discount)})</td>
+            <td class="border-left">Hyvitys (${formatNumber(invoice.customer.discount)} %)</td>
             <td style="text-align: right;">${formatNumber(invoice.totals.totalKg)}</td>
             <td class="border-right" style="text-align: right;">&ndash;${formatNumber(invoice.totals.totalDiscountWithoutTax)}</td>
             </tr>`

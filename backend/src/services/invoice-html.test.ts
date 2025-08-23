@@ -90,6 +90,10 @@ describe('createInvoiceHtml', () => {
   it('should create a valid html invoice with discount', () => {
     const invoice = createInvoiceHtml({
       ...invoiceData,
+      customer: {
+        ...invoiceData.customer,
+        discount: new Decimal(10),
+      },
       totals: {
         ...invoiceData.totals,
         totalDiscountWithoutTax: new Decimal(11.23),
@@ -98,5 +102,6 @@ describe('createInvoiceHtml', () => {
     })
 
     expect(invoice).toContain('&ndash;11,23')
+    expect(invoice).toContain('Hyvitys (10,00 %)')
   })
 })
