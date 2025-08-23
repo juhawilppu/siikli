@@ -49,12 +49,13 @@ export function formatPercentage(amount: number) {
 /**
  * Parse a Siikli internal formatted monetary string to a number for HTML input element.
  *
- * @param amount - The number to parse, like "2,55" or "2.55"
+ * @param amount - The number to parse, like "2,55" or "2.55" or 2.55
  * @returns The parsed number, like 2.55
  */
-export function parseToNumber(amount?: string): string | number {
+export function parseToNumber(amount?: string | number): string | number {
   if (!amount) {
-    return '' // Empty value should be an empty string, not null
+    // TODO: Why not null?
+    return '' // Empty value should be an empty string, not null.
   }
-  return parseDecimal(amount).toNumber()
+  return parseDecimal(amount.toString().replace(' ', '').replace(',', '.')).toNumber()
 }

@@ -188,9 +188,6 @@ export default function Products() {
               <Table>
                 <TableHeader className="bg-gray-50">
                   <TableRow>
-                    {/*
-                    <TableHead className="w-[80px]">Järjestys</TableHead>
-                    */}
                     <TableHead className="cursor-pointer" onClick={() => changeSorting('name')}>
                       <div className="flex items-center">
                         Nimi
@@ -204,21 +201,6 @@ export default function Products() {
                               ))}
                       </div>
                     </TableHead>
-                    { /*
-                    <TableHead>Lajike</TableHead>
-                    <TableHead className="cursor-pointer" onClick={() => vaihdaJarjestys("type")}>
-                      <div className="flex items-center">
-                        Tuoteryhmä
-                        {orderByField === "type" &&
-                          (orderDirection === "asc" ? (
-                            <ChevronUp className="ml-1 h-4 w-4" />
-                          ) : (
-                            <ChevronDown className="ml-1 h-4 w-4" />
-                          ))}
-                      </div>
-                    </TableHead>
-                    <TableHead>Aliryhmä</TableHead>
-                    */}
                     <TableHead className="cursor-pointer" onClick={() => changeSorting('price')}>
                       <div className="flex items-center">
                         Hinta ALV 0 % (€)
@@ -248,51 +230,6 @@ export default function Products() {
                     : (
                         filteredTuotteet.map((product, index) => (
                           <TableRow key={product.id} className={index % 2 === 0 ? 'bg-white' : 'bg-white'}>
-                            {/*
-                        <TableCell>
-                          <div className="flex items-center">
-                            <span className="font-medium mr-2">{product.orderIndex + 1}</span>
-                            <div className="flex flex-col">
-                              <TooltipProvider>
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <Button
-                                      variant="ghost"
-                                      size="icon"
-                                      className="h-6 w-6"
-                                      onClick={() => changeOrderIndex(product.id, "up")}
-                                      disabled={product.orderIndex === 1}
-                                    >
-                                      <ChevronUp className="h-4 w-4" />
-                                    </Button>
-                                  </TooltipTrigger>
-                                  <TooltipContent>
-                                    <p>Siirrä ylöspäin</p>
-                                  </TooltipContent>
-                                </Tooltip>
-                              </TooltipProvider>
-                              <TooltipProvider>
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <Button
-                                      variant="ghost"
-                                      size="icon"
-                                      className="h-6 w-6"
-                                      onClick={() => changeOrderIndex(product.id, "down")}
-                                      disabled={product.orderIndex === products.length}
-                                    >
-                                      <ChevronDown className="h-4 w-4" />
-                                    </Button>
-                                  </TooltipTrigger>
-                                  <TooltipContent>
-                                    <p>Siirrä alaspäin</p>
-                                  </TooltipContent>
-                                </Tooltip>
-                              </TooltipProvider>
-                            </div>
-                          </div>
-                        </TableCell>
-                        */}
                             <TableCell className="font-medium">
                               <Button
                                 variant="ghost"
@@ -303,11 +240,6 @@ export default function Products() {
                                 {product.name}
                               </Button>
                             </TableCell>
-                            { /*
-                        <TableCell>{product.variety}</TableCell>
-                        <TableCell>{product.type}</TableCell>
-                        <TableCell>{product.subtype}</TableCell>
-                        */}
                             <TableCell className="font-medium">{product.price ? `${formatNumber(product.price)} €` : ''}</TableCell>
                             <TableCell>
                               {[product.packageSize ? `${product.packageSize} kg` : '', product.packageType].filter(Boolean).join(', ')}

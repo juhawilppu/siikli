@@ -3,7 +3,7 @@
 import type { GetProductResponseDto, PostProductCreateRequestDto } from '@siikli/shared'
 
 import { Popover } from '@radix-ui/react-popover'
-import { formatNumber } from '@siikli/shared'
+import { formatNumber, parseToNumber } from '@siikli/shared'
 import axios from 'axios'
 import {
   Check,
@@ -142,13 +142,14 @@ export default function NewProduct({ productToEdit, hide, onSave, refPackageType
                   <Input
                     id="price"
                     type={isMobile ? 'number' : 'text'}
-                    step={isMobile ? '0.01' : undefined}
-                    min="0"
+                    min={isMobile ? 0 : undefined}
+                    step={isMobile ? 0.01 : undefined}
                     className="ml-[1px]"
                     style={{ width: 'calc(100% - 2px)' }}
-                    value={product.price || ''}
+                    value={isMobile ? parseToNumber(product.price) : product.price}
                     onChange={e => setProduct({ ...product, price: e.target.value })}
                     onBlur={e => setProduct({ ...product, price: formatNumber(e.target.value) })}
+                    inputMode="decimal"
                   />
                 </div>
                 <div className="space-y-2">

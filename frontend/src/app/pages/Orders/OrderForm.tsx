@@ -741,7 +741,6 @@ export default function CreateOrder() {
                             onChange={e =>
                               handleItemChange(item.id, 'amount', e.target.value)}
                             onBlur={() => {
-                              console.log('onBlur', item.amount)
                               handleItemChange(item.id, 'amount', formatNumber(item.amount || '0'))
                             }}
                           />

@@ -313,7 +313,6 @@ export interface PostCompanySettings {
   city: string | null
   invoiceBankName: string | null
   invoiceBankAccount: string | null
-  invoiceReference: string | null
   invoiceSumRow: string | null
   phone: string | null
   email: string | null
