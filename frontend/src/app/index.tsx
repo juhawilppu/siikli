@@ -8,7 +8,6 @@ import Order from '@/app/pages/Orders/OrderForm.js'
 import Orders from '@/app/pages/Orders/Orders.js'
 import { PackagingList } from '@/app/pages/PackagingList/PackagingList.js'
 import Products from '@/app/pages/Products/Products.js'
-import TuoteryhmatJarjestely from '@/app/pages/Products/ProductTypeReorder.js'
 import { SalesReport } from '@/app/pages/SalesReport.js'
 import SelfSignup from '@/app/pages/SelfSignup.js'
 import { SentInvoices } from '@/app/pages/SentInvoices.js'
@@ -206,7 +205,6 @@ function App() {
                 <Route path="/sent-invoices" element={<SentInvoices />} />
                 <Route path="/customers" element={<Customers />} />
                 <Route path="/products" element={<Products />} />
-                <Route path="/products/reorder" element={<TuoteryhmatJarjestely />} />
                 <Route path="/support" element={<Support />} />
                 <Route path="/own-company" element={<CompanySettings />} />
                 <Route path="*" element={<Navigate to="/app/orders" replace />} />
