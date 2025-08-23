@@ -2,7 +2,7 @@ import type { Filters } from '@/app/components/OrderListBase'
 import { dateToIso, OrderStatus } from '@siikli/shared'
 import axios from 'axios'
 import { endOfWeek, startOfWeek } from 'date-fns'
-import { Printer } from 'lucide-react'
+import { Check, Printer } from 'lucide-react'
 import { useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import OrderListBase from '@/app/components/OrderListBase'
@@ -93,13 +93,13 @@ export default function Invoices() {
                 ? (
                     <>
                       <LoadingSpinner />
-                      Tulosta lasku
+                      Vahvista & tulosta
                     </>
                   )
                 : (
                     <>
-                      <Printer className="mr-2 h-4 w-4" />
-                      Tulosta lasku
+                      <Check className="mr-2 h-4 w-4" />
+                      Vahvista & tulosta
                     </>
                   )}
             </Button>
