@@ -52,7 +52,7 @@ export default function SelfSignup() {
 
       await axios.post('/tenants/create', data)
 
-      window.location.href = '/app'
+      window.location.href = '/app/onboarding'
     }
     catch (e) {
       console.error('error', e)
@@ -126,7 +126,7 @@ export default function SelfSignup() {
                       id="yrityksen-nimi"
                       placeholder="Esim. Siikli Solutions Oy"
                       value={companyNamy}
-                      onChange={e => setCompanyName(e.target.value)}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCompanyName(e.target.value)}
                       required
                     />
                   </div>

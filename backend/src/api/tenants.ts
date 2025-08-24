@@ -1,10 +1,24 @@
-import type { CreateTenantDto, GetCompanySettings, GetPackageSettings, GetUsersResponseDto, PostCompanySettings, PostSubscriptionChangeRequest } from '@siikli/shared'
+import type { CreateTenantDto, GetCompanySettings, GetOnboardingResponseDto, GetPackageSettings, GetUsersResponseDto, PostCompanySettings, PostSubscriptionChangeRequest } from '@siikli/shared'
 import express from 'express'
 import { getSessionOrThrow, isAuthenticated, isOwner } from '../middlewares/permissions'
 import { DEFAULT_INVOICE_SUMMARY_ROW } from '../services/invoice-html'
 import { TenantService } from '../services/tenant-service'
 
 const companiesRoute = express.Router()
+
+companiesRoute.get(`/api/tenants/onboarding`, isAuthenticated, async (req, res) => {
+  const { tenantId } = getSessionOrThrow(req)
+
+  const result = await TenantService.getOnboarding(tenantId)
+  res.json({
+    productCreated: result.productCreated,
+    customerCreated: result.customerCreated,
+    orderCreated: result.orderCreated,
+    invoiceCreated: result.invoiceCreated,
+    waybillCreated: result.waybillCreated,
+    bankInformationSet: result.bankInformationSet,
+  } satisfies GetOnboardingResponseDto)
+})
 
 companiesRoute.get(`/api/tenants`, isAuthenticated, async (req, res) => {
   const { tenantId } = getSessionOrThrow(req)

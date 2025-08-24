@@ -1,5 +1,14 @@
 import type Decimal from 'decimal.js'
 
+export interface GetOnboardingResponseDto {
+  productCreated: boolean
+  customerCreated: boolean
+  orderCreated: boolean
+  invoiceCreated: boolean
+  waybillCreated: boolean
+  bankInformationSet: boolean
+}
+
 export enum OrderStatus {
   WAITING_FOR_DELIVERY = 'WAITING_FOR_DELIVERY',
   DELIVERED = 'DELIVERED',

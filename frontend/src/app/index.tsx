@@ -1,33 +1,33 @@
-import { Building2, ClipboardList, FileText, HelpCircle, LineChart, Receipt, Search, ShoppingBasket, Users } from 'lucide-react'
+import { Building2, Check, ClipboardList, FileText, HelpCircle, LineChart, Receipt, Search, ShoppingBasket, Users } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Navigate, NavLink, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { useIsMobile } from '@/app/hooks/use-mobile'
-import CompanySettings from '@/app/pages/CompanySettings.js'
-import { Customers } from '@/app/pages/Customers/Customers.js'
-import Order from '@/app/pages/Orders/OrderForm.js'
-import Orders from '@/app/pages/Orders/Orders.js'
-import { PackagingList } from '@/app/pages/PackagingList/PackagingList.js'
-import Products from '@/app/pages/Products/Products.js'
-import { SalesReport } from '@/app/pages/SalesReport.js'
-import SelfSignup from '@/app/pages/SelfSignup.js'
-import { SentInvoices } from '@/app/pages/SentInvoices.js'
-import LanguageSwitcher from '@/components/LanguageSwitcher.js'
+import CompanySettings from '@/app/pages/CompanySettings'
+import { Customers } from '@/app/pages/Customers/Customers'
+import Order from '@/app/pages/Orders/OrderForm'
+import Orders from '@/app/pages/Orders/Orders'
+import { PackagingList } from '@/app/pages/PackagingList/PackagingList'
+import Products from '@/app/pages/Products/Products'
+import { SalesReport } from '@/app/pages/SalesReport'
+import SelfSignup from '@/app/pages/SelfSignup'
+import { SentInvoices } from '@/app/pages/SentInvoices'
+import LanguageSwitcher from '@/components/LanguageSwitcher'
 import SiikliCookieConsent from '@/components/SiikliCookieConsent'
-import { Button } from '@/components/ui/button.js'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu.js'
-import { Input } from '@/components/ui/input.js'
-
+import { Button } from '@/components/ui/button'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { Input } from '@/components/ui/input'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
-import { Toaster } from '@/components/ui/toaster.js'
+import { Toaster } from '@/components/ui/toaster'
 import { initPosthog } from '@/lib/posthog'
 import { Bell, Menu } from './components/custom-icons'
 import { useAuth } from './context/AuthContext'
 import Invoices from './pages/Invoices'
+import Onboarding from './pages/Onboarding'
 import Support from './pages/Support'
 import Waybills from './pages/Waybills'
 
 const navItems = [
-  // { title: "Etusivu", href: '/', icon: Home },
+  { title: 'Käyttöönotto', href: '/app/onboarding', icon: Check },
   { title: 'Tilaukset', href: '/app/orders', icon: ClipboardList },
   { title: 'Pakkauslista', href: '/app/packaging-list', icon: FileText },
   { title: 'Kuormakirjat', href: '/app/waybills', icon: Receipt },
@@ -195,6 +195,7 @@ function App() {
             >
               <Routes>
                 <Route path="/" element={<Navigate to="/app/orders" replace />} />
+                <Route path="/onboarding" element={<Onboarding />} />
                 <Route path="/orders" element={<Orders />} />
                 <Route path="/orders/new" element={<Order key="new" />} />
                 <Route path="/orders/:orderId" element={<Order key="edit" />} />
@@ -232,6 +233,7 @@ function MobileSidebar({ setIsMobileNavOpen }: { setIsMobileNavOpen: (isOpen: bo
         <nav className="grid gap-1 px-2">
           {navItems.map(item => (
             <NavLink
+              key={item.href}
               to={item.href}
               className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-foreground"
               onClick={() => {
