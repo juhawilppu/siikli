@@ -38,7 +38,7 @@ export default function OnboardingPage() {
             <h3 className="font-semibold mb-4">Tarvitsetko apua?</h3>
             <div className="flex flex-wrap gap-3">
               <Button variant="outline" size="sm">
-                <a href="https://youtu.be/LSd6b7ejHqg">🎥 Katso 3 min esittelyvideo</a>
+                <a href="https://www.youtube.com/watch?v=ZCOCyZbOQn8">🎥 Katso 4 min esittelyvideo</a>
               </Button>
               <Button variant="outline" size="sm" onClick={() => navigate('/app/support')}>
                 💬 Ota yhteyttä
