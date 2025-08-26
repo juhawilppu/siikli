@@ -7,4 +7,8 @@ describe('orders-utils', () => {
     const orderItems = [{ amount: '10', price: '1.20' }] as OrderItem[]
     expect(calculateTotal(orderItems).toNumber()).toBeCloseTo(12)
   })
+  it('should handle empty values', () => {
+    const orderItems = [{ amount: '', price: '' }] as OrderItem[]
+    expect(calculateTotal(orderItems).toNumber()).toBeCloseTo(0)
+  })
 })

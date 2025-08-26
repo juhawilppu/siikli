@@ -57,11 +57,10 @@ export interface OrderItem {
   createdAt: Date
 }
 
-export default function CreateOrder() {
+export default function OrderForm() {
   const [customers, setCustomers] = useState<GetCustomerRequestDto[]>()
   const [products, setProducts] = useState<GetProductResponseDto[]>()
   const [isLoading, setIsLoading] = useState(true)
-  // const [openOrderStatus, setOpenOrderStatus] = useState(false)
   const [status, setStatus] = useState<OrderStatus>(OrderStatus.WAITING_FOR_DELIVERY)
   const [invoiceId, setInvoiceId] = useState<string | null>(null)
   const [deliveryDate, setDeliveryDate] = useState<Date>()
@@ -213,7 +212,6 @@ export default function CreateOrder() {
           description: 'Asiakas ei voi olla tyhjä',
           variant: 'destructive',
         })
-        setIsSubmitting(false)
         return
       }
       if (!deliveryDate) {
@@ -486,7 +484,7 @@ export default function CreateOrder() {
           onCancel={() => setConfirmDialog(false)}
         />
       )}
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} role="form">
         <div className="space-y-6 pb-20">
           {/* Customer and Delivery Information */}
           <Card>
@@ -707,7 +705,7 @@ export default function CreateOrder() {
 
                       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                         <div className="space-y-2">
-                          <Label htmlFor={`product-${item.productId}`}>Tuote</Label>
+                          <Label htmlFor={`product-${item.id}`}>Tuote</Label>
                           <Select
                             value={item.productId}
                             disabled={status !== 'WAITING_FOR_DELIVERY'}
@@ -763,7 +761,6 @@ export default function CreateOrder() {
                             onChange={e =>
                               handleItemChange(item.id, 'price', e.target.value)}
                             onBlur={(e) => {
-                              console.log('onBlur', e.target.value)
                               handleItemChange(item.id, 'price', formatNumber(e.target.value || '0'))
                             }}
                           />
@@ -774,6 +771,7 @@ export default function CreateOrder() {
                           <Popover open={openPackageSize === item.id} onOpenChange={open => setOpenPackageSize(open ? item.id : undefined)}>
                             <PopoverTrigger asChild>
                               <Button
+                                id={`package-size-${item.id}`}
                                 variant="outline"
                                 role="combobox"
                                 className={`w-full justify-between ${item.packageSize ? '' : 'placeholder'}`}
@@ -882,6 +880,7 @@ export default function CreateOrder() {
                           <Popover open={openPackageType === item.id} onOpenChange={open => setOpenPackageType(open ? item.id : undefined)}>
                             <PopoverTrigger asChild>
                               <Button
+                                id={`package-type-${item.id}`}
                                 variant="outline"
                                 role="combobox"
                                 className={`w-full justify-between ${item.packageType ? '' : 'placeholder'}`}
@@ -1045,7 +1044,10 @@ export default function CreateOrder() {
 
         <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 static bg-transparent border-0 p-0">
           <div className="flex justify-end gap-4">
-            <Button type="submit" disabled={isSubmitting}>
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+            >
               {isSubmitting
                 ? (
                     <>
