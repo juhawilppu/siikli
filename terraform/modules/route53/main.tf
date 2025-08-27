@@ -78,6 +78,18 @@ resource "aws_route53_record" "dkim_records" {
   records = ["${element(aws_ses_domain_dkim.siikli.dkim_tokens, count.index)}.dkim.amazonses.com"]
 }
 
+locals {
+  dkim_txt = "v=DKIM1;k=rsa;p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwt0VKkU+HIZYK5xu3GWEGh11AJV072JsxYneZzFpkuTUMzjNTrseK+uvSN0vYAHo5xCL5mtYEt//ucIIZa7WKnzwgDPEXc5OBEJeY5Pszn6uMN33Y0E1eQ3lD3LrWNoDcZ7weIrPHcndv100fAlD4RN5MknE2DgjJ9GlkKgGxQItG297BCFH+ZzcAWwvD/KuIiT/PVGsaE+0p86pSV3jhkHo9uEoz6b6AciMMIV+HlKNcAx5kqcHLa8Y5eM6Q4+ryDNPXQt3RRc5rAlR2QZY/KSy+pmqF/52swBzlZ1Md9C8JIl8Tesg0hOQVVeA3JZ3amoDzufCMtHcloXjQ9L3kwIDAQAB"
+}
+
+resource "aws_route53_record" "dkim_default" {
+  zone_id = aws_route53_zone.siikli.id
+  name    = "default._domainkey.siikli.fi"
+  type    = "TXT"
+  ttl     = 300
+  records = [ join("\"\"", regexall(".{1,255}", local.dkim_txt)) ]
+}
+
 resource "aws_route53_record" "dmarc_root" {
   zone_id = aws_route53_zone.siikli.id
 
