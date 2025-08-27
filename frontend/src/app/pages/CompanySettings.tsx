@@ -346,7 +346,7 @@ export default function CompanySettings() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="invoice-bank-name">
+                      <Label htmlFor="invoice-summary-row">
                         Laskun yhteenvetorivi
                         <InfoTooltip>
                           Yhteenvetorivi näytetään laskun etusivulla. Tämän lisäksi laskulla on myös liite, joka erittelee laskun tarkan sisällön.
