@@ -77,10 +77,10 @@ export function NewCustomer({ closeDialog, customerToEdit, onSave }: {
   }
 
   const createCustomer = () => {
-    const newCustomer: PostCreateCustomerRequestDto = {
+    const newCustomer = {
       ...customer,
-      discount: Number.parseFloat(customer.discount),
-    } as PostCreateCustomerRequestDto
+      discount: Number.parseFloat(customer.discount || '0'),
+    } satisfies PostCreateCustomerRequestDto
 
     axios
       .post('/customers', newCustomer)
