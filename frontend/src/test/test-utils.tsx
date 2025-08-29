@@ -2,12 +2,20 @@ import type { ReactElement } from 'react'
 import { render } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 
-export function renderWithProviders(ui: ReactElement, { route = '/' } = {}) {
-  return render(
+export function renderWithProviders(
+  ui: ReactElement,
+  { route = '/', params = {} } = {},
+) {
+  // Convert params object into actual values in the route
+  const path = Object.entries(params).reduce(
+    (acc, [key, value]) => acc.replace(`:${key}`, value as string),
+    route,
+  )
 
-    <MemoryRouter initialEntries={[route]}>
+  return render(
+    <MemoryRouter initialEntries={[path]}>
       <Routes>
-        <Route path="*" element={ui} />
+        <Route path={route} element={ui} />
       </Routes>
     </MemoryRouter>,
   )

@@ -1,6 +1,6 @@
-import type { GetCurrentUserDto, GetCustomersResponseDto } from '@siikli/shared'
+import type { GetCurrentUserDto } from '@siikli/shared'
 import type { Mocked } from 'vitest'
-import { act, fireEvent, screen } from '@testing-library/react'
+import { act, screen } from '@testing-library/react'
 import axios from 'axios'
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import { AppProvider } from '@/context/AppContext'
@@ -61,6 +61,7 @@ describe('main app', () => {
             <MainApp />
           </AuthProvider>
         </AppProvider>,
+        { route: '/app/orders' },
       )
     })
 
