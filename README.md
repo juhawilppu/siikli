@@ -1,5 +1,8 @@
 # 🌾 Siikli
 
+[![CI](https://github.com/juhawilppu/siikli/actions/workflows/ci.yml/badge.svg)](https://github.com/juhawilppu/siikli/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/juhawilppu/siikli/graph/badge.svg?token=TVNPVFN5W6)](https://codecov.io/gh/juhawilppu/siikli)
+
 Siikli is a modern ERP built for the realities of Finnish agriculture. In daily production use since 2017, it has processed more than €10M in invoices — simply, reliably, and without unnecessary complexity.
 
 Rebuilt in 2025 with a modern architecture, Siikli streamlines the core operations of agricultural businesses — from inventory tracking to invoicing and customer management.
@@ -162,8 +165,6 @@ Security-first approach:
 - ✅ IDOR prevention
 
 ## Testing
-
-[![codecov](https://codecov.io/gh/juhawilppu/siikli/branch/main/graph/badge.svg)](https://codecov.io/gh/juhawilppu/siikli)
 
 - Unit tests for core business logic (e.g. waybill content, invoice sum calculations).
 - End-to-end integration tests running against real services and database.
