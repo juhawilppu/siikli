@@ -1,10 +1,12 @@
-import type { GetCustomersResponseDto, GetOrderDto, GetPackageSettings, GetProductResponseDto } from '@siikli/shared'
+import type { GetCustomersResponse, GetOrderResponse, GetPackageSettingsResponse, GetProductsResponse, PostCreateOrderRequest } from '@siikli/shared'
 import type { UserEvent } from '@testing-library/user-event'
 import type { Mocked } from 'vitest'
-import { OrderStatus } from '@siikli/shared'
+import type { z } from 'zod'
+import { dateToIso, OrderStatus } from '@siikli/shared'
 import { act, fireEvent, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import axios from 'axios'
+import { v4 as uuidv4 } from 'uuid'
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import { renderWithProviders } from '../../../test/test-utils'
 import OrderForm from './OrderForm'
@@ -39,6 +41,8 @@ vi.mock('axios')
 const mockedAxios = axios as Mocked<typeof axios>
 
 describe('orderForm (create new order)', () => {
+  const CUSTOMER_ID = uuidv4()
+  const PRODUCT_ID = uuidv4()
   beforeAll(() => {
     Object.defineProperty(window, 'matchMedia', {
       writable: true,
@@ -59,18 +63,18 @@ describe('orderForm (create new order)', () => {
       if (url === '/customers') {
         return Promise.resolve({
           data: {
-            customers: [{ id: '200', name: 'J-Groceries', companyLegalName: 'J-Groceries', discount: '10', invoiceReference: '1234567890', streetAddress: '123 Main St', postalCode: '12345', city: 'Anytown', email: 'john.doe@example.com', phone: '1234567890', businessId: '1234567890' }],
-          } satisfies GetCustomersResponseDto,
+            customers: [{ id: CUSTOMER_ID, name: 'J-Groceries', companyLegalName: 'J-Groceries', discount: '10', invoiceReference: '1234567890', streetAddress: '123 Main St', postalCode: '12345', city: 'Anytown', email: 'john.doe@example.com', phone: '1234567890', businessId: '1234567890' }],
+          } satisfies GetCustomersResponse,
         })
       }
       if (url === '/products') {
         return Promise.resolve({
-          data: [{ id: '110', name: 'Siikli, pesty', price: '1.20', packageSize: 1, packageType: 'kg' }] satisfies GetProductResponseDto[],
+          data: [{ id: PRODUCT_ID, name: 'Siikli, pesty', price: '1.20', packageSize: 1, packageType: 'kg' }] satisfies GetProductsResponse[],
         })
       }
       if (url === '/tenants/package-settings') {
         return Promise.resolve({
-          data: { packageTypes: ['kg'], packageSizes: [1] } satisfies GetPackageSettings,
+          data: { packageTypes: ['kg'], packageSizes: [1] } satisfies GetPackageSettingsResponse,
         })
       }
       if (url === '/orders/limit') {
@@ -79,7 +83,7 @@ describe('orderForm (create new order)', () => {
       return Promise.resolve({ data: [] })
     })
 
-    mockedAxios.post.mockResolvedValue({ data: { id: '123', status: 'WAITING_FOR_DELIVERY' } })
+    mockedAxios.post.mockResolvedValue({ data: { id: uuidv4(), status: 'WAITING_FOR_DELIVERY' } })
   })
 
   afterEach(() => {
@@ -100,7 +104,8 @@ describe('orderForm (create new order)', () => {
 
     await setValueToSelect('Asiakas', 'J-Groceries')
 
-    await setValueToDate(user, 'Toimituspäivä', '26')
+    const DAY_OF_MONTH = 26
+    await setValueToDate(user, 'Toimituspäivä', DAY_OF_MONTH.toString())
 
     await setValueToSelect('Tuote', 'Siikli, pesty')
     await setValueToInput('Määrä (kg)', '10')
@@ -125,32 +130,37 @@ describe('orderForm (create new order)', () => {
 
     // Verify the API call
     expect(mockedAxios.post).toHaveBeenCalledWith('/orders', {
-      customerId: '200',
-      deliveryDate: '2025-08-26',
+      customerId: CUSTOMER_ID,
+      deliveryDate: dateToIso(new Date(new Date().getFullYear(), new Date().getMonth(), DAY_OF_MONTH)),
       hasNote: false,
       status: 'WAITING_FOR_DELIVERY',
       items: [
         {
           id: undefined,
-          deleted: false,
-          createdAt: expect.any(Date),
           amount: '10',
-          freetext: '',
           packageSize: 1,
           packageType: 'kg',
           packages: 10,
           price: '1.40',
-          productId: '110',
-          unsaved: true,
+          productId: PRODUCT_ID,
         },
       ],
-      noteBody: null,
-      noteHeader: null,
+      noteBody: undefined,
+      noteHeader: undefined,
     })
   })
 })
 
 describe('orderForm (edit existing order)', () => {
+  const ORDER_ID = uuidv4()
+  const CUSTOMER_ID = uuidv4()
+
+  const ORDER_ITEM1_ID = uuidv4()
+  const PRODUCT1_ID = uuidv4()
+
+  const ORDER_ITEM2_ID = uuidv4()
+  const PRODUCT2_ID = uuidv4()
+
   beforeAll(() => {
     Object.defineProperty(window, 'matchMedia', {
       writable: true,
@@ -168,18 +178,18 @@ describe('orderForm (edit existing order)', () => {
   })
   beforeEach(() => {
     mockedAxios.get.mockImplementation((url) => {
-      if (url === '/orders/123') {
+      if (url === `/orders/${ORDER_ID}`) {
         return Promise.resolve({
           data: {
-            id: '123',
-            customerId: '200',
+            id: ORDER_ID,
+            customerId: CUSTOMER_ID,
             deliveryDate: '2025-08-26',
             hasNote: false,
             status: OrderStatus.WAITING_FOR_DELIVERY,
             items: [
               {
-                id: '110',
-                productId: '110',
+                id: ORDER_ITEM1_ID,
+                productId: PRODUCT1_ID,
                 amount: '10',
                 price: '1.20',
                 packageSize: 1,
@@ -189,8 +199,8 @@ describe('orderForm (edit existing order)', () => {
                 packages: 10,
               },
               {
-                id: '111',
-                productId: '111',
+                id: ORDER_ITEM2_ID,
+                productId: PRODUCT2_ID,
                 amount: '20',
                 price: '1.30',
                 packageSize: 2,
@@ -205,24 +215,24 @@ describe('orderForm (edit existing order)', () => {
             orderNumber: 1000,
             invoiceId: null,
             invoiceNumber: null,
-          } satisfies GetOrderDto,
+          } satisfies GetOrderResponse,
         })
       }
       if (url === '/customers') {
         return Promise.resolve({
           data: {
-            customers: [{ id: '200', name: 'J-Groceries', companyLegalName: 'J-Groceries', discount: '10', invoiceReference: '1234567890', streetAddress: '123 Main St', postalCode: '12345', city: 'Anytown', email: 'john.doe@example.com', phone: '1234567890', businessId: '1234567890' }],
-          } satisfies GetCustomersResponseDto,
+            customers: [{ id: CUSTOMER_ID, name: 'J-Groceries', companyLegalName: 'J-Groceries', discount: '10', invoiceReference: '1234567890', streetAddress: '123 Main St', postalCode: '12345', city: 'Anytown', email: 'john.doe@example.com', phone: '1234567890', businessId: '1234567890' }],
+          } satisfies GetCustomersResponse,
         })
       }
       if (url === '/products') {
         return Promise.resolve({
-          data: [{ id: '110', name: 'Siikli, pesty', price: '1.20', packageSize: 1, packageType: 'kg' }, { id: '111', name: 'Rosamunda', price: '1.30', packageSize: 2, packageType: 'kg' }] satisfies GetProductResponseDto[],
+          data: [{ id: PRODUCT1_ID, name: 'Siikli, pesty', price: '1.20', packageSize: 1, packageType: 'kg' }, { id: PRODUCT2_ID, name: 'Rosamunda', price: '1.30', packageSize: 2, packageType: 'kg' }] satisfies GetProductsResponse[],
         })
       }
       if (url === '/tenants/package-settings') {
         return Promise.resolve({
-          data: { packageTypes: ['kg'], packageSizes: [1] } satisfies GetPackageSettings,
+          data: { packageTypes: ['kg'], packageSizes: [1] } satisfies GetPackageSettingsResponse,
         })
       }
       if (url === '/orders/limit') {
@@ -231,7 +241,7 @@ describe('orderForm (edit existing order)', () => {
       return Promise.resolve({ data: [] })
     })
 
-    mockedAxios.post.mockResolvedValue({ data: { id: '123', status: 'WAITING_FOR_DELIVERY' } })
+    mockedAxios.post.mockResolvedValue({ data: { id: uuidv4(), status: 'WAITING_FOR_DELIVERY' } })
   })
 
   afterEach(() => {
@@ -240,11 +250,11 @@ describe('orderForm (edit existing order)', () => {
 
   it('renders order form', async () => {
     await act(async () => {
-      renderWithProviders(<OrderForm />, { route: '/orders/:orderId', params: { orderId: '123' } })
+      renderWithProviders(<OrderForm />, { route: '/orders/:orderId', params: { orderId: ORDER_ID } })
     })
 
     // Verify that the order details were fetched
-    expect(mockedAxios.get).toHaveBeenCalledWith('/orders/123')
+    expect(mockedAxios.get).toHaveBeenCalledWith(`/orders/${ORDER_ID}`)
 
     // Assert the heading is present
     expect(await screen.findByRole('heading', { name: 'Tilaus', level: 1 })).toBeInTheDocument()
@@ -262,37 +272,33 @@ describe('orderForm (edit existing order)', () => {
     })
 
     // Verify the API call
-    expect(mockedAxios.post).toHaveBeenCalledWith('/orders/123', {
-      customerId: '200',
+    expect(mockedAxios.post).toHaveBeenCalledWith(`/orders/${ORDER_ID}`, {
+      customerId: CUSTOMER_ID,
       deliveryDate: '2025-08-26',
       status: OrderStatus.WAITING_FOR_DELIVERY,
       hasNote: false,
+      noteBody: undefined,
+      noteHeader: undefined,
       items: [
         {
-          id: '110',
-          createdAt: expect.any(Date),
+          id: ORDER_ITEM1_ID,
           amount: '10.00',
-          freetext: '',
           packageSize: 1,
           packageType: 'kg',
           packages: 10,
           price: '1.20',
-          productId: '110',
+          productId: PRODUCT1_ID,
         },
         {
-          id: '111',
-          createdAt: expect.any(Date),
+          id: ORDER_ITEM2_ID,
           amount: '20.00',
-          freetext: '',
           packageSize: 2,
           packageType: 'kg',
           packages: 10,
           price: '1.30',
-          productId: '111',
+          productId: PRODUCT2_ID,
         },
       ],
-      noteBody: null,
-      noteHeader: null,
-    })
+    } satisfies z.infer<typeof PostCreateOrderRequest>)
   })
 })

@@ -1,4 +1,4 @@
-import type { GetCustomersResponseDto, GetPackageSettings, GetProductResponseDto } from '@siikli/shared'
+import type { GetCustomersResponse, GetPackageSettingsResponse, GetProductsResponse } from '@siikli/shared'
 import type { Mocked } from 'vitest'
 import { act, fireEvent, screen } from '@testing-library/react'
 import axios from 'axios'
@@ -46,17 +46,17 @@ describe('orderForm', () => {
         return Promise.resolve({
           data: {
             customers: [{ id: '200', name: 'J-Groceries', companyLegalName: 'J-Groceries', discount: '10', invoiceReference: '1234567890', streetAddress: '123 Main St', postalCode: '12345', city: 'Anytown', email: 'john.doe@example.com', phone: '1234567890', businessId: '1234567890' }],
-          } satisfies GetCustomersResponseDto,
+          } satisfies GetCustomersResponse,
         })
       }
       if (url === '/products') {
         return Promise.resolve({
-          data: [{ id: '110', name: 'Siikli, pesty', price: '1.20', packageSize: 1, packageType: 'kg' }] satisfies GetProductResponseDto[],
+          data: [{ id: '110', name: 'Siikli, pesty', price: '1.20', packageSize: 1, packageType: 'kg' }] satisfies GetProductsResponse[],
         })
       }
       if (url === '/tenants/package-settings') {
         return Promise.resolve({
-          data: { packageTypes: ['kg'], packageSizes: [1] } satisfies GetPackageSettings,
+          data: { packageTypes: ['kg'], packageSizes: [1] } satisfies GetPackageSettingsResponse,
         })
       }
       if (url === '/orders/limit') {
@@ -105,10 +105,9 @@ describe('orderForm', () => {
 
     // Verify the API call
     expect(mockedAxios.post).toHaveBeenCalledWith('/customers', {
-      id: null, // TODO: this shouldn't be here
       name: 'J-Groceries',
       companyLegalName: 'J-Groceries',
-      discount: 0,
+      discount: '0',
       invoiceReference: '1234567890',
       streetAddress: '123 Main St',
       postalCode: '12345',

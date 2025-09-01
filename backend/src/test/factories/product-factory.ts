@@ -1,4 +1,4 @@
-import type { GetProductResponseDto } from '@siikli/shared'
+import type { GetProductsResponse } from '@siikli/shared'
 import type request from 'supertest'
 
 export class ProductFactory {
@@ -7,16 +7,16 @@ export class ProductFactory {
     return res.body.id
   }
 
-  static async getProducts(agent: request.SuperAgentTest): Promise<GetProductResponseDto[]> {
+  static async getProducts(agent: request.SuperAgentTest): Promise<GetProductsResponse[]> {
     const res = await agent.get('/api/products').expect(200)
     return res.body
   }
 
   static async updateProduct(agent: request.SuperAgentTest, id: string, data: Record<string, any>) {
-    await agent.put(`/api/products/${id}`).send(data).expect(200)
+    await agent.put(`/api/products/${id}`).send(data).expect(204)
   }
 
   static async deleteProduct(agent: request.SuperAgentTest, id: string) {
-    await agent.delete(`/api/products/${id}`).expect(200)
+    await agent.delete(`/api/products/${id}`).expect(204)
   }
 }

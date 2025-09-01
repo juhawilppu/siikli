@@ -1,68 +1,14 @@
 import type { PackageSize, PackageType, Tenant, User } from '@prisma/client'
-import type { CreateTenantDto } from '@siikli/shared'
+import type { PostCompleteSignupRequest } from '@siikli/shared'
+import type { z } from 'zod'
 import { Role } from '@prisma/client'
 import { addMonths } from 'date-fns'
 import prisma from '../prisma'
 import { sendEmail, sendEventEmail } from './email-service'
 
-interface CreateTenant {
-  name: string
-  businessId: string
-  streetAddress: string
-  postalCode: string
-  city: string
-  phone: string
-  email: string
-  website: string
-  invoiceBankName: string
-  invoiceBankAccount: string
-  invoiceSumRow: string
-  signupCompleted: boolean
-  subscriptionType: 'FREE' | 'PREMIUM'
-  subscriptionEndDate: Date | null
-  subscriptionStartDate: Date | null
-}
-
-export interface UpdateTenant {
-  name?: string
-  businessId?: string | null
-  streetAddress?: string | null
-  postalCode?: string | null
-  city?: string | null
-  invoiceBankName?: string | null
-  invoiceBankAccount?: string | null
-  invoiceSumRow?: string | null
-  phone?: string | null
-  email?: string | null
-  website?: string | null
-}
-
 const TRIAL_DURATION_MONTHS = 1
 
 export class TenantService {
-  // TODO: Remove this. It's only used in the tests and should be a factory method.
-  static async createTenant(input: CreateTenant): Promise<Tenant> {
-    const tenant = await prisma.$transaction(async (tx) => {
-      const newTenant = await tx.tenant.create({
-        data: {
-          ...input,
-          trialEndDate: addMonths(new Date(), TRIAL_DURATION_MONTHS),
-        },
-      })
-
-      await tx.log.create({
-        data: {
-          tenantId: newTenant.id,
-          event: 'tenant_created',
-        },
-      })
-
-      return newTenant
-    })
-
-    return tenant
-  }
-
   static async createUserAndTenant(email: string, googleExternalId?: string): Promise<{ tenant: Tenant, user: User }> {
     const { tenant, user } = await prisma.$transaction(async (tx) => {
       const tenant = await tx.tenant.create({
@@ -133,7 +79,7 @@ export class TenantService {
     return { tenant, user }
   }
 
-  static async completeOnboarding(tenantId: string, input: CreateTenantDto, adminUserId: string): Promise<Tenant> {
+  static async completeSignup(tenantId: string, input: z.infer<typeof PostCompleteSignupRequest>, adminUserId: string): Promise<Tenant> {
     const result = await prisma.$transaction(async (tx) => {
       const tenant = await tx.tenant.update({
         data: {
@@ -168,7 +114,7 @@ export class TenantService {
     return result
   }
 
-  static async updateTenant(tenantId: string, input: UpdateTenant, userId: string): Promise<Tenant> {
+  static async updateTenant(tenantId: string, input: Partial<Tenant>, userId: string): Promise<Tenant> {
     const {
       name,
       businessId,

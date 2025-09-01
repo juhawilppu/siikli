@@ -1,4 +1,4 @@
-import type { GetCustomersResponseDto } from '@siikli/shared'
+import type { GetCustomersResponse } from '@siikli/shared'
 import type { Mocked } from 'vitest'
 import { act, fireEvent, screen } from '@testing-library/react'
 import axios from 'axios'
@@ -40,7 +40,7 @@ describe('orderForm', () => {
         return Promise.resolve({
           data: {
             customers: [{ id: '200', name: 'J-Groceries', companyLegalName: 'J-Groceries', discount: '10', invoiceReference: '1234567890', streetAddress: '123 Main St', postalCode: '12345', city: 'Anytown', email: 'john.doe@example.com', phone: '1234567890', businessId: '1234567890' }],
-          } satisfies GetCustomersResponseDto,
+          } satisfies GetCustomersResponse,
         })
       }
       return Promise.resolve({ data: [] })

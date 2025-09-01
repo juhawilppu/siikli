@@ -1,5 +1,6 @@
-import type { GetProductResponseDto, PostProductCreateRequestDto } from '@siikli/shared'
+import type { GetProductsResponse, IdAsBodyDto } from '@siikli/shared'
 import { Decimal } from '@prisma/client/runtime/library'
+import { IdParams, PostCreateProductRequest } from '@siikli/shared'
 import express from 'express'
 import { getSessionOrThrow, isAuthenticated } from '../middlewares/permissions'
 import { ProductService } from '../services/product-service'
@@ -19,13 +20,12 @@ productsRoute.get(`/api/products`, isAuthenticated, async (req, res) => {
       packageSize: p.packageSize,
       packageType: p.packageType,
     }
-  }) satisfies GetProductResponseDto[])
+  }) satisfies GetProductsResponse[])
 })
 
 productsRoute.post(`/api/products`, isAuthenticated, async (req, res) => {
   const { tenantId, userId } = getSessionOrThrow(req)
-
-  const body = req.body as PostProductCreateRequestDto
+  const body = PostCreateProductRequest.parse(req.body)
 
   const productId = await ProductService.createProduct({
     ...body,
@@ -35,26 +35,24 @@ productsRoute.post(`/api/products`, isAuthenticated, async (req, res) => {
     packageSize: body.packageSize ? body.packageSize : null,
     packageType: body.packageType ? body.packageType : null,
   })
-  res.status(201).json({ id: productId })
+  res.status(201).json({ id: productId } satisfies IdAsBodyDto)
 })
 
 productsRoute.delete(`/api/products/:id`, isAuthenticated, async (req, res) => {
   const { tenantId, userId } = getSessionOrThrow(req)
-
-  const id = req.params.id
+  const { id } = IdParams.parse(req.params)
 
   await ProductService.deleteProduct(id, tenantId, userId)
-  res.status(200).json({ message: 'OK' })
+  res.status(204).end()
 })
 
 productsRoute.put(`/api/products/:id`, isAuthenticated, async (req, res) => {
   const { tenantId, userId } = getSessionOrThrow(req)
-
-  const id = req.params.id
-  const body = req.body as GetProductResponseDto
+  const { id } = IdParams.parse(req.params)
+  const body = PostCreateProductRequest.parse(req.body)
 
   await ProductService.updateProduct(id, tenantId, body, userId)
-  res.status(200).json({ message: 'OK' })
+  res.status(204).end()
 })
 
 export default productsRoute

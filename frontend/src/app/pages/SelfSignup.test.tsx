@@ -55,7 +55,7 @@ it('allows entering company details and submitting', async () => {
   const submitButton = screen.getByRole('button', { name: /Jatka/i })
   await user.click(submitButton)
 
-  expect(mockedAxios.post).toHaveBeenCalledWith('/tenants/create', {
+  expect(mockedAxios.post).toHaveBeenCalledWith('/tenants/complete-signup', {
     name: 'Test Company Oy',
     user: {
       marketingConsent: true,

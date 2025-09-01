@@ -1,4 +1,4 @@
-import type { GetCustomerRequestDto, GetCustomersResponseDto } from '@siikli/shared'
+import type { GetCustomerResponse, GetCustomersResponse, GetInvoicesResponse } from '@siikli/shared'
 import { dateToIso, formatDate } from '@siikli/shared'
 import axios from 'axios'
 
@@ -31,7 +31,7 @@ function renderInvoiceStatus(status: 'PENDING' | 'PAID') {
 export function SentInvoices() {
   const isMobile = useIsMobile()
 
-  const [customers, setCustomers] = useState<GetCustomerRequestDto[]>()
+  const [customers, setCustomers] = useState<GetCustomerResponse[]>()
   const [invoices, setInvoices] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [startDate, setStartDate] = useState<Date>(
@@ -47,12 +47,12 @@ export function SentInvoices() {
 
   useEffect(() => {
     axios
-      .get<GetCustomersResponseDto>('/customers')
+      .get<GetCustomersResponse>('/customers')
       .then(response => setCustomers(response.data.customers))
       .finally(() => setLoading(false))
 
     axios
-      .get<any[]>('/invoices/list', {
+      .get<GetInvoicesResponse[]>('/invoices/list', {
         params: {
           customerId,
           startDate: dateToIso(startDate),

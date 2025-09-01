@@ -1,6 +1,6 @@
 'use client'
 
-import type { GetPackageSettings, GetProductResponseDto } from '@siikli/shared'
+import type { GetPackageSettingsResponse, GetProductsResponse } from '@siikli/shared'
 import * as Sentry from '@sentry/react'
 
 import { formatNumber } from '@siikli/shared'
@@ -29,7 +29,7 @@ import NewProduct from './ProductForm'
 export default function Products() {
   const [searchQuery, setSearchQuery] = useState('')
   const [loading, setLoading] = useState(true)
-  const [products, setProducts] = useState<GetProductResponseDto[]>([])
+  const [products, setProducts] = useState<GetProductsResponse[]>([])
   const [packageTypes, setPackageTypes] = useState<string[]>([])
   const [packageSizes, setPackageSizes] = useState<number[]>([])
 
@@ -38,15 +38,15 @@ export default function Products() {
   const [editProductId, setEditProductId] = useState<string>()
 
   const [orderDirection, setOrderDirection] = useState<'asc' | 'desc'>('asc')
-  const [orderByField, setOrderByField] = useState<keyof GetProductResponseDto>('name')
+  const [orderByField, setOrderByField] = useState<keyof GetProductsResponse>('name')
 
   const { toast } = useToast()
 
   useEffect(() => {
     const loadData = async () => {
       const promises = await Promise.all([
-        axios.get<GetProductResponseDto[]>('/products'),
-        axios.get<GetPackageSettings>('/tenants/package-settings'),
+        axios.get<GetProductsResponse[]>('/products'),
+        axios.get<GetPackageSettingsResponse>('/tenants/package-settings'),
       ])
       setProducts(promises[0].data)
       setPackageTypes(promises[1].data.packageTypes)
@@ -79,7 +79,7 @@ export default function Products() {
       }
     })
 
-  const onProductSaved = async (product: GetProductResponseDto) => {
+  const onProductSaved = async (product: GetProductsResponse) => {
     if (showNewProductDialog) {
       setProducts([...products, product])
       setShowNewProductDialog(false)
@@ -137,7 +137,7 @@ export default function Products() {
   }
 
   // Change sort order
-  const changeSorting = (field: keyof GetProductResponseDto) => {
+  const changeSorting = (field: keyof GetProductsResponse) => {
     if (orderByField === field) {
       setOrderDirection(orderDirection === 'asc' ? 'desc' : 'asc')
     }

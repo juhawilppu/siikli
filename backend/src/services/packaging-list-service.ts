@@ -1,9 +1,9 @@
-import type { PackagingListGroupedByCustomer, PackagingListGroupedByProduct } from '@siikli/shared'
+import type { GetPackagingListGroupedByCustomerResponse, GetPackagingListGroupedByProductResponse } from '@siikli/shared'
 import { Decimal } from '@prisma/client/runtime/library'
 import prisma from '../prisma'
 
 export const PackagingListService = {
-  getPackagingListGroupedByCustomer: async (tenantId: string, deliveryDate: string): Promise<PackagingListGroupedByCustomer> => {
+  getPackagingListGroupedByCustomer: async (tenantId: string, deliveryDate: string) => {
     const results = await prisma.$queryRawUnsafe<any>(`
     SELECT
       customer_id,
@@ -50,9 +50,9 @@ export const PackagingListService = {
           amount: new Decimal(r.amount),
         }
       }),
-    } satisfies PackagingListGroupedByCustomer
+    } satisfies GetPackagingListGroupedByCustomerResponse
   },
-  getPackagingListGroupedByProduct: async (tenantId: string, deliveryDate: string): Promise<PackagingListGroupedByProduct> => {
+  getPackagingListGroupedByProduct: async (tenantId: string, deliveryDate: string) => {
     const results = await prisma.$queryRawUnsafe<any>(`
             SELECT
             product_id,
@@ -88,6 +88,6 @@ export const PackagingListService = {
           amount: new Decimal(r.amount),
         }
       }),
-    } satisfies PackagingListGroupedByProduct
+    } satisfies GetPackagingListGroupedByProductResponse
   },
 }

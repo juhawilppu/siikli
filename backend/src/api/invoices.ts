@@ -1,6 +1,7 @@
+import type { GetInvoices } from '@siikli/shared'
 import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
-import { dateToIso, formatNumber, parseIsoDate } from '@siikli/shared'
+import { dateToIso, GetInvoicesQuery, IdParams, parseIsoDate, PostCreateInvoiceRequest } from '@siikli/shared'
 import express from 'express'
 import puppeteer from 'puppeteer'
 import { getSessionOrThrow, isAuthenticated } from '../middlewares/permissions'
@@ -8,43 +9,34 @@ import prisma from '../prisma'
 import { createInvoiceHtml } from '../services/invoice-html'
 import { InvoiceService } from '../services/invoice-service'
 import { TenantService } from '../services/tenant-service'
+import { serializeNumber } from '../utils/serialization'
 
 const invoiceRoute = express.Router()
 
 const s3 = new S3Client({ region: process.env.AWS_REGION })
 
-export interface GetInvoiceListResponseDto {
-  invoiceId: number
-  customerId: string
-  createdAt: string
-  total: number
-}
-
 invoiceRoute.get(`/api/invoices/list`, isAuthenticated, async (req, res) => {
   const { tenantId } = getSessionOrThrow(req)
+  const { customerId, startDate, endDate } = GetInvoicesQuery.parse(req.query)
 
-  const customerId = req.query.customerId as string
-  const startDate = parseIsoDate(req.query.startDate as string)
-  const endDate = parseIsoDate(req.query.endDate as string)
-
-  const invoices = await InvoiceService.getInvoices(customerId, tenantId, startDate, endDate)
+  const invoices = await InvoiceService.getInvoices(customerId, tenantId, parseIsoDate(startDate), parseIsoDate(endDate))
   res.json(invoices.map(i => ({
     id: i.id,
     invoiceId: i.invoiceNumber,
     customerId: i.customerId,
     customerName: i.customer.name,
     createdAt: dateToIso(i.createdAt),
-    total: formatNumber(i.total),
+    total: serializeNumber(i.total),
     status: i.status,
-  })))
+  })) satisfies GetInvoices[])
 })
 
-invoiceRoute.get(`/api/invoices/:invoiceId/url`, isAuthenticated, async (req, res) => {
+invoiceRoute.get(`/api/invoices/:id/url`, isAuthenticated, async (req, res) => {
   const { tenantId } = getSessionOrThrow(req)
+  const { id } = IdParams.parse(req.params)
 
-  const invoiceId = req.params.invoiceId
   // Look up invoice metadata in DB
-  const invoice = await prisma.invoice.findUnique({ where: { id: invoiceId, tenantId } })
+  const invoice = await prisma.invoice.findUnique({ where: { id, tenantId } })
   if (!invoice?.filename)
     return res.status(404).send('Not found')
 
@@ -57,32 +49,26 @@ invoiceRoute.get(`/api/invoices/:invoiceId/url`, isAuthenticated, async (req, re
   res.json({ url })
 })
 
-invoiceRoute.post(`/api/invoices/:invoiceId/mark-paid`, isAuthenticated, async (req, res) => {
+invoiceRoute.post(`/api/invoices/:id/mark-paid`, isAuthenticated, async (req, res) => {
   const { tenantId } = getSessionOrThrow(req)
+  const { id } = IdParams.parse(req.params)
 
-  const invoiceId = req.params.invoiceId
-  await prisma.invoice.update({ where: { id: invoiceId, tenantId }, data: { status: 'PAID' } })
-  res.json({ message: 'Invoice marked as paid' })
+  await prisma.invoice.update({ where: { id, tenantId }, data: { status: 'PAID' } })
+  res.status(204).end()
 })
 
-// TODO: should be POST
-invoiceRoute.get(`/api/invoices`, isAuthenticated, async (req, res) => {
+invoiceRoute.post(`/api/invoices`, isAuthenticated, async (req, res) => {
   const { tenantId } = getSessionOrThrow(req)
-
-  const customerId = req.query.customerId as string
-  const startDate = parseIsoDate(req.query.startDate as string)
-  const endDate = parseIsoDate(req.query.endDate as string)
-  const preview = req.query.preview === 'true'
+  const { customerId, startDate, endDate, preview } = PostCreateInvoiceRequest.parse(req.body)
 
   const tenant = await TenantService.getTenant(tenantId)
 
   // For a finalized invoice, we need to have the bank account and name set
   if (!preview && (!tenant.invoiceBankAccount?.trim() || !tenant.invoiceBankName?.trim())) {
-    console.log('required_settings_missing', tenant)
     return res.status(400).send({ error: 'required_settings_missing' }).end()
   }
 
-  const { invoice, orders } = await InvoiceService.getInvoice(customerId, tenantId, startDate, endDate)
+  const { invoice, orders } = await InvoiceService.getInvoice(customerId, tenantId, parseIsoDate(startDate), parseIsoDate(endDate))
 
   const html = createInvoiceHtml(invoice)
 

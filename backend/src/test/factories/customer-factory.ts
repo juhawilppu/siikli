@@ -1,7 +1,9 @@
+import type { PostCreateCustomerRequest } from '@siikli/shared'
 import type request from 'supertest'
+import type z from 'zod'
 
 export class CustomerFactory {
-  static async createCustomer(agent: request.SuperAgentTest, data: Record<string, any>) {
+  static async createCustomer(agent: request.SuperAgentTest, data: z.infer<typeof PostCreateCustomerRequest>) {
     const res = await agent.post('/api/customers').send(data).expect(201)
     return res.body.id
   }
@@ -11,7 +13,7 @@ export class CustomerFactory {
     return res.body.customers
   }
 
-  static async updateCustomer(agent: request.SuperAgentTest, id: string, data: Record<string, any>) {
+  static async updateCustomer(agent: request.SuperAgentTest, id: string, data: z.infer<typeof PostCreateCustomerRequest>) {
     await agent.put(`${'/api/customers'}/${id}`).send(data).expect(200)
   }
 

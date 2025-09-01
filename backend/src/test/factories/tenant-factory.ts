@@ -1,28 +1,32 @@
-import type { User } from '@prisma/client'
-import type { CreateTenantDto } from '@siikli/shared'
+import type { Tenant, User } from '@prisma/client'
+import type { z } from 'zod'
 import { faker } from '@faker-js/faker'
+import { addMonths } from 'date-fns'
 import prisma from '../../prisma'
-import { TenantService } from '../../services/tenant-service'
 
 export class TenantFactory {
-  static async createTenant(overrides: Partial<CreateTenantDto> = {}) {
-    const tenant = await TenantService.createTenant({
-      name: faker.company.name(),
-      businessId: '1234567-8',
-      streetAddress: faker.location.streetAddress(),
-      postalCode: '12345',
-      city: 'Helsinki',
-      phone: faker.phone.number(),
-      email: faker.internet.email(),
-      website: faker.internet.url(),
-      invoiceBankName: 'Test bank',
-      invoiceBankAccount: '1234567890',
-      invoiceSumRow: 'Test sum row',
-      signupCompleted: true,
-      subscriptionType: 'PREMIUM',
-      subscriptionEndDate: null,
-      subscriptionStartDate: null,
-      ...overrides,
+  static async createTenant(overrides: Partial<Tenant> = {}) {
+    const tenant = await prisma.tenant.create({
+      data: {
+        name: faker.company.name(),
+        businessId: '1234567-8',
+        streetAddress: faker.location.streetAddress(),
+        postalCode: '12345',
+        city: 'Helsinki',
+        phone: faker.phone.number(),
+        email: faker.internet.email(),
+        website: faker.internet.url(),
+        invoiceBankName: 'Test bank',
+        invoiceBankAccount: '1234567890',
+        invoiceSumRow: 'Test sum row',
+        signupCompleted: true,
+        subscriptionType: 'PREMIUM',
+        subscriptionEndDate: null,
+        subscriptionStartDate: null,
+        trialEndDate: addMonths(new Date(), 1,
+        ),
+        ...overrides,
+      },
     },
     )
     return tenant

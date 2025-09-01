@@ -1,9 +1,9 @@
 'use client'
 
-import type { GetProductResponseDto, PostProductCreateRequestDto } from '@siikli/shared'
+import type { GetProductsResponse } from '@siikli/shared'
 
 import { Popover } from '@radix-ui/react-popover'
-import { formatNumber, parseToNumber } from '@siikli/shared'
+import { formatNumber, parseToNumber, PostCreateProductRequest } from '@siikli/shared'
 import axios from 'axios'
 import {
   Check,
@@ -32,7 +32,7 @@ import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
 import { serializeNumber } from '@/utils/serialization'
 
-export default function NewProduct({ productToEdit, hide, onSave, refPackageTypes, refPackageSizes }: { productToEdit?: GetProductResponseDto, hide: () => void, onSave: (product: GetProductResponseDto) => void, refPackageTypes: string[], refPackageSizes: number[] }) {
+export default function NewProduct({ productToEdit, hide, onSave, refPackageTypes, refPackageSizes }: { productToEdit?: GetProductsResponse, hide: () => void, onSave: (product: GetProductsResponse) => void, refPackageTypes: string[], refPackageSizes: number[] }) {
   const mode = productToEdit ? 'edit' : 'create'
   const isMobile = useIsMobile()
   const [product, setProduct] = useState<Partial<{
@@ -80,21 +80,21 @@ export default function NewProduct({ productToEdit, hide, onSave, refPackageType
       return
     }
 
-    const data: PostProductCreateRequestDto = {
+    const data = PostCreateProductRequest.parse({
       name: product.name,
       price: product.price ? serializeNumber(product.price) : undefined,
       packageSize: product.packageSize || undefined,
       packageType: product.packageType || '',
-    }
+    })
 
     if (mode === 'edit') {
       await axios.put(`/products/${product.id}`, data)
-      onSave({ ...product, id: product.id as string, name: product.name as string, packageSize: product.packageSize || null, packageType: product.packageType || null, price: product.price ? serializeNumber(product.price) : undefined } satisfies GetProductResponseDto)
+      onSave({ ...product, id: product.id as string, name: product.name as string, packageSize: product.packageSize || null, packageType: product.packageType || null, price: product.price ? serializeNumber(product.price) : undefined } satisfies GetProductsResponse)
     }
     else {
       const res = await axios.post<{ id: string }>('/products', data)
 
-      onSave({ ...product, id: res.data.id, price: product.price } as GetProductResponseDto)
+      onSave({ ...product, id: res.data.id, price: product.price } as GetProductsResponse)
     }
   }
 

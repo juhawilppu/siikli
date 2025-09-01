@@ -1,18 +1,18 @@
-import type { PackagingListGroupedByCustomer } from '@siikli/shared'
+import type { GetPackagingListGroupedByCustomerResponse } from '@siikli/shared'
 import { formatDate, formatNumber, parseIsoDate } from '@siikli/shared'
 import '../../pdf.css'
 
 export function PackagingListByCustomer({ report }: {
-  report: PackagingListGroupedByCustomer
+  report: GetPackagingListGroupedByCustomerResponse
 }) {
-  const groupByCustomerName = (orders: PackagingListGroupedByCustomer['rows']): Record<string, PackagingListGroupedByCustomer['rows']> => {
+  const groupByCustomerName = (orders: GetPackagingListGroupedByCustomerResponse['rows']): Record<string, GetPackagingListGroupedByCustomerResponse['rows']> => {
     return orders.reduce((acc, order) => {
       if (!acc[order.customerName]) {
         acc[order.customerName] = []
       }
       acc[order.customerName].push(order)
       return acc
-    }, {} as Record<string, PackagingListGroupedByCustomer['rows']>)
+    }, {} as Record<string, GetPackagingListGroupedByCustomerResponse['rows']>)
   }
 
   const groupedData = groupByCustomerName(report.rows)

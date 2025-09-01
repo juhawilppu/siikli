@@ -1,5 +1,6 @@
 import type { Order } from '@prisma/client'
-import type { GetOrderDto, GetOrderListDto, OrderStatus, PostOrderItemRequest } from '@siikli/shared'
+import type { GetOrderResponse, GetOrdersResponse, OrderStatus, PostCreateOrderItemRequest } from '@siikli/shared'
+import type { z } from 'zod'
 import { dateToIso, parseIsoDate } from '@siikli/shared'
 import { endOfDay, endOfMonth, parse, startOfDay, startOfMonth } from 'date-fns'
 import { Decimal } from 'decimal.js'
@@ -21,7 +22,7 @@ export interface OrderRowDto {
 
 export const OrderService = {
 
-  async createOrder(input: { tenantId: string, customerId: string, status: OrderStatus, deliveryDate: string, hasNote: boolean, noteHeader: string | null, noteBody: string | null, items: PostOrderItemRequest[] }): Promise<Order> {
+  async createOrder(input: { tenantId: string, customerId: string, status: OrderStatus, deliveryDate: string, hasNote: boolean, noteHeader?: string, noteBody?: string, items: z.infer<typeof PostCreateOrderItemRequest>[] }): Promise<Order> {
     const {
       tenantId,
       customerId,
@@ -80,7 +81,7 @@ export const OrderService = {
     })
   },
 
-  async updateOrder(data: { tenantId: string, userId: string, customerId: string, id: string, status: OrderStatus, deliveryDate: string, hasNote: boolean, noteHeader: string | null, noteBody: string | null, items: PostOrderItemRequest[] }): Promise<void> {
+  async updateOrder(data: { tenantId: string, userId: string, customerId: string, id: string, status: OrderStatus, deliveryDate: string, hasNote: boolean, noteHeader?: string, noteBody?: string, items: z.infer<typeof PostCreateOrderItemRequest>[] }): Promise<void> {
     for (const item of data.items) {
       await TenantService.verifyPackageSizeAndType(item.packageType, item.packageSize, data.tenantId)
     }
@@ -107,7 +108,6 @@ export const OrderService = {
         tenantId: data.tenantId,
       },
     })
-    console.log(data.items)
     const toCreate = data.items.filter(r => !r.id)
     if (toCreate.length > 0) {
       await prisma.orderRow.createMany({
@@ -170,7 +170,7 @@ export const OrderService = {
     })
   },
 
-  async getOrders(tenantId: string, startDate: Date, endDate: Date, status: OrderStatus | undefined, customerId: string | undefined): Promise<GetOrderListDto[]> {
+  async getOrders(tenantId: string, startDate: Date, endDate: Date, status: OrderStatus | undefined, customerId: string | undefined): Promise<GetOrdersResponse[]> {
     const result = await prisma.order.findMany({
       include: {
         customer: true,
@@ -210,10 +210,10 @@ export const OrderService = {
       }
     })
 
-    return mapped satisfies GetOrderListDto[]
+    return mapped satisfies GetOrdersResponse[]
   },
 
-  async getOrder(id: string, tenantId: string): Promise<GetOrderDto> {
+  async getOrder(id: string, tenantId: string): Promise<GetOrderResponse> {
     const result = await prisma.order.findFirstOrThrow({
       include: {
         customer: true,
@@ -260,7 +260,6 @@ export const OrderService = {
           createdAt: p.createdAt,
         }
       )),
-
     }
   },
 
@@ -349,7 +348,7 @@ export const OrderService = {
     return { document, orders }
   },
 
-  async getWaybillPdf(tenantId: string, startDate: string, endDate: string, customerId: string | null, preview: boolean): Promise<Uint8Array> {
+  async  getWaybillPdf(tenantId: string, startDate: string, endDate: string, customerId: string | null, preview: boolean): Promise<Uint8Array> {
     const { document, orders } = await this.getWaybillHtmls(tenantId, startDate, endDate, customerId, preview)
 
     const browser = await puppeteer.launch({

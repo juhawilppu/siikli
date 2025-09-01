@@ -1,4 +1,4 @@
-import type { GetCurrentUserDto } from '@siikli/shared'
+import type { GetCurrentUserResponse } from '@siikli/shared'
 import type { Mocked } from 'vitest'
 import { act, screen } from '@testing-library/react'
 import axios from 'axios'
@@ -42,7 +42,7 @@ describe('main app', () => {
             initials: 'JD',
             email: 'john.doe@example.com',
             role: 'OWNER',
-          } satisfies GetCurrentUserDto,
+          } satisfies GetCurrentUserResponse,
         })
       }
       return Promise.resolve({ data: [] })

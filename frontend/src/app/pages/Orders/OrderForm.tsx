@@ -1,11 +1,10 @@
-import type { GetCustomerRequestDto, GetCustomersResponseDto, GetOrderDto, GetPackageSettings, GetProductResponseDto, OrderRow, PostOrderRequestDto, PostOrderResponseDto } from '@siikli/shared'
-
+import type { GetCustomerResponse, GetCustomersResponse, GetOrderLimit, GetOrderResponse, GetPackageSettingsResponse, GetProductsResponse, IdAsBodyDto } from '@siikli/shared'
 import type React from 'react'
 
 import { captureException } from '@sentry/react'
-import { dateToIso, formatNumber, OrderStatus, parseDecimal, parseToNumber } from '@siikli/shared'
+import { dateToIso, formatNumber, OrderStatus, parseDecimal, parseIsoDate, parseToNumber, PostCreateOrderRequest } from '@siikli/shared'
 import axios from 'axios'
-import { format } from 'date-fns'
+import { format, parse } from 'date-fns'
 import { fi } from 'date-fns/locale'
 import {
   Calendar,
@@ -39,6 +38,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Separator } from '@/components/ui/separator'
 import { Textarea } from '@/components/ui/textarea'
 import { cn, downloadUrl } from '@/lib/utils'
+import { typeParse } from '@/lib/validate'
 import { serializeNumber } from '@/utils/serialization'
 import ConfirmDialog from '../../components/ConfirmDialog'
 import { calculateTotal } from './orders-utils'
@@ -58,8 +58,8 @@ export interface OrderItem {
 }
 
 export default function OrderForm() {
-  const [customers, setCustomers] = useState<GetCustomerRequestDto[]>()
-  const [products, setProducts] = useState<GetProductResponseDto[]>()
+  const [customers, setCustomers] = useState<GetCustomerResponse[]>()
+  const [products, setProducts] = useState<GetProductsResponse[]>()
   const [isLoading, setIsLoading] = useState(true)
   const [status, setStatus] = useState<OrderStatus>(OrderStatus.WAITING_FOR_DELIVERY)
   const [invoiceId, setInvoiceId] = useState<string | null>(null)
@@ -93,7 +93,7 @@ export default function OrderForm() {
     },
   ])
 
-  const [orderLimit, setOrderLimit] = useState<number | null>(null)
+  const [orderLimit, setGetOrderLimit] = useState<number | null>(null)
   const { orderId } = useParams()
   const navigate = useNavigate()
   const isMobile = useIsMobile()
@@ -120,19 +120,19 @@ export default function OrderForm() {
   useEffect(() => {
     const loadData = async () => {
       const promises = await Promise.all([
-        axios.get<GetCustomersResponseDto>('/customers'),
-        axios.get<GetProductResponseDto[]>('/products'),
-        axios.get<GetPackageSettings>('/tenants/package-settings'),
-        axios.get<{ remaining: number }>(`/orders/limit`),
+        axios.get<GetCustomersResponse>('/customers'),
+        axios.get<GetProductsResponse[]>('/products'),
+        axios.get<GetPackageSettingsResponse>('/tenants/package-settings'),
+        axios.get<GetOrderLimit>(`/orders/limit`),
       ])
 
       setCustomers(promises[0].data.customers)
       setProducts(promises[1].data)
       setPackageTypes(promises[2].data.packageTypes)
       setPackageSizes(promises[2].data.packageSizes)
-      setOrderLimit(promises[3].data.remaining)
+      setGetOrderLimit(promises[3].data.remaining)
       if (orderId) {
-        const res = await axios.get<GetOrderDto>(`/orders/${orderId}`)
+        const res = await axios.get<GetOrderResponse>(`/orders/${orderId}`)
         setOrderItems(res.data.items.map(item => ({
           ...item,
           price: formatNumber(item.price),
@@ -141,8 +141,7 @@ export default function OrderForm() {
         })))
         setCustomerId(res.data.customerId)
         setInvoiceId(res.data.invoiceId)
-        console.log(`settins customerId to ${res.data.customerId}`)
-        setDeliveryDate(new Date(res.data.deliveryDate))
+        setDeliveryDate(parseIsoDate(res.data.deliveryDate))
         setStatus(res.data.status)
         setHasWaybillNote(res.data.hasNote)
         if (res.data.hasNote) {
@@ -163,7 +162,7 @@ export default function OrderForm() {
     }))
   }
 
-  const handleItemChange = (id: string, field: keyof OrderRow, value: any) => {
+  const handleItemChange = (id: string, field: keyof OrderItem, value: any) => {
     if (!products) {
       return
     }
@@ -299,28 +298,29 @@ export default function OrderForm() {
         }
       }
 
-      const data: PostOrderRequestDto = {
+      const data = typeParse(PostCreateOrderRequest, {
         customerId: selectedCustomer.id,
         deliveryDate: dateToIso(deliveryDate),
         hasNote: hasWaybillNote,
         status,
-        noteBody: hasWaybillNote ? waybillNote.content : null,
-        noteHeader: hasWaybillNote ? waybillNote.title : null,
+        noteBody: hasWaybillNote ? waybillNote.content : undefined,
+        noteHeader: hasWaybillNote ? waybillNote.title : undefined,
         items: orderItems.filter(item => !(item.unsaved && item.deleted)).map(item => ({
-          ...item,
+          productId: item.productId,
+          packages: item.packages,
           id: item.unsaved ? undefined : item.id,
           price: serializeNumber(item.price),
           amount: serializeNumber(item.amount),
           packageSize: item.packageSize || 0,
           packageType: item.packageType || '',
         })),
-      }
-      console.log('Saving order:', data)
+      })
 
       if (orderId) {
         // Update order
         await axios.post(`/orders/${orderId}`, data)
-        const res = await axios.get<GetOrderDto>(`/orders/${orderId}`)
+
+        const res = await axios.get<GetOrderResponse>(`/orders/${orderId}`)
         setOrderItems(res.data.items.map(item => ({
           ...item,
           price: formatNumber(item.price),
@@ -335,7 +335,7 @@ export default function OrderForm() {
       }
       else {
         // Create new order
-        const res = await axios.post<PostOrderResponseDto>('/orders', data)
+        const res = await axios.post<IdAsBodyDto>('/orders', data)
         toast({
           title: 'Tilaus luotu',
           description: `Tilaus asiakkaalle ${customer.name} luotiin onnistuneesti.`,

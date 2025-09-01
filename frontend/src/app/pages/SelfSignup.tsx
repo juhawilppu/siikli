@@ -1,8 +1,7 @@
-'use client'
+import { PostCompleteSignupRequest } from '@siikli/shared'
 
 import axios from 'axios'
 import { Building2, Check, Loader2, Rocket, Users } from 'lucide-react'
-
 import { useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import { useToast } from '@/app/hooks/use-toast'
@@ -43,14 +42,14 @@ export default function SelfSignup() {
     setIsLoading(true)
 
     try {
-      const data = {
+      const data = PostCompleteSignupRequest.parse({
         name: companyNamy,
         user: {
           marketingConsent,
         },
-      }
+      })
 
-      await axios.post('/tenants/create', data)
+      await axios.post('/tenants/complete-signup', data)
 
       window.location.href = '/app/onboarding'
     }

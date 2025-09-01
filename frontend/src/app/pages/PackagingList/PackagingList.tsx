@@ -1,5 +1,5 @@
-import type { PackagingListGroupedByCustomer, PackagingListGroupedByProduct } from '@siikli/shared'
-import { dateToIso, formatDate } from '@siikli/shared'
+import type { GetPackagingListGroupedByCustomerResponse, GetPackagingListGroupedByProductResponse } from '@siikli/shared'
+import { dateToIso, formatDate, GetPackagingListQuery } from '@siikli/shared'
 import axios from 'axios'
 import { fi } from 'date-fns/locale'
 import Decimal from 'decimal.js'
@@ -16,29 +16,53 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import PackagingListByCustomer from './PackagingListByCustomer.js'
 import PackagingListByProduct from './PackagingListByProduct.js'
 
+type CustomerReport = GetPackagingListGroupedByCustomerResponse
+type ProductReport = GetPackagingListGroupedByProductResponse
+
 export function PackagingList() {
   const [deliveryDate, setDeliveryDate] = useState<Date | undefined>(new Date())
   const [groupBy, setGroupBy] = useState<'customer' | 'product'>('customer')
   const [isLoading, setIsLoading] = useState(false)
   const [openDeliveryDate, setOpenDeliveryDate] = useState(false)
-  const [report, setReport] = useState<PackagingListGroupedByProduct | PackagingListGroupedByCustomer>()
+  const [customerReport, setCustomerReport] = useState<CustomerReport>()
+  const [productReport, setProductReport] = useState<ProductReport>()
 
   const handleFetch = async () => {
     if (!deliveryDate) {
       return
     }
     setIsLoading(true)
-    const res = await axios.get(`/packaging-list/grouped-by/${groupBy}`, {
-      params: {
-        deliveryDate: dateToIso(deliveryDate),
-      },
-    })
-    console.log('report', res.data)
-    setReport({ ...res.data, rows: res.data.rows.map((item: any) => ({
-      ...item,
-      amount: new Decimal(item.amount),
-    })) })
-    setIsLoading(false)
+
+    try {
+      const res = await axios.get<CustomerReport | ProductReport>(`/packaging-list/grouped-by/${groupBy}`, {
+        params: GetPackagingListQuery.parse({
+          deliveryDate: dateToIso(deliveryDate),
+        }),
+      })
+
+      const mappedRows = res.data.rows.map(item => ({
+        ...item,
+        amount: new Decimal(item.amount),
+      }))
+
+      if (groupBy === 'customer') {
+        setCustomerReport({
+          ...res.data,
+          rows: mappedRows,
+        } as CustomerReport)
+        setProductReport(undefined)
+      }
+      else {
+        setProductReport({
+          ...res.data,
+          rows: mappedRows,
+        } as ProductReport)
+        setCustomerReport(undefined)
+      }
+    }
+    finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -73,7 +97,8 @@ export function PackagingList() {
                       defaultMonth={deliveryDate}
                       onSelect={(value: Date | undefined) => {
                         setDeliveryDate(value)
-                        setReport(undefined)
+                        setCustomerReport(undefined)
+                        setProductReport(undefined)
                         setOpenDeliveryDate(false)
                       }}
                       initialFocus
@@ -89,7 +114,8 @@ export function PackagingList() {
                   value={groupBy}
                   onValueChange={(value: 'customer' | 'product') => {
                     setGroupBy(value)
-                    setReport(undefined)
+                    setCustomerReport(undefined)
+                    setProductReport(undefined)
                   }}
                   className="flex gap-6"
                 >
@@ -123,31 +149,31 @@ export function PackagingList() {
             </Button>
           </CardFooter>
         </Card>
-        {report && (
+        {(customerReport || productReport) && (
           <Card className="p-5 overflow-x-auto">
             <div className="min-w-[320px]">
-              {report.rows.length === 0 && (
+              {(!customerReport?.rows.length && !productReport?.rows.length) && (
                 <div className="flex justify-center items-center h-full">
                   <p className="text-sm text-muted-foreground">Ei tilauksia kyseisellä päivällä</p>
                 </div>
               )}
-              {report.rows.length > 0 && report.groupedBy === 'customer' && (
+              {customerReport?.rows.length && (
                 <>
                   <div className="flex justify-end">
                     <Button variant="outline" onClick={() => window.print()}>Tulosta</Button>
                   </div>
                   <PackagingListByCustomer
-                    report={report}
+                    report={customerReport}
                   />
                 </>
               )}
-              {report.rows.length > 0 && report.groupedBy === 'product' && (
+              {productReport?.rows.length && (
                 <>
                   <div className="flex justify-end">
                     <Button variant="outline" onClick={() => window.print()}>Tulosta</Button>
                   </div>
                   <PackagingListByProduct
-                    report={report}
+                    report={productReport}
                   />
                 </>
               )}

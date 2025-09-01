@@ -1,4 +1,4 @@
-import type { GetOnboardingResponseDto } from '@siikli/shared'
+import type { GetOnboardingResponse } from '@siikli/shared'
 
 import axios from 'axios'
 import { useEffect, useState } from 'react'
@@ -9,10 +9,10 @@ import { Button } from '@/components/ui/button'
 export default function OnboardingPage() {
   const navigate = useNavigate()
 
-  const [onboarding, setOnboarding] = useState<GetOnboardingResponseDto | null>(null)
+  const [onboarding, setOnboarding] = useState<GetOnboardingResponse | null>(null)
 
   useEffect(() => {
-    axios.get<GetOnboardingResponseDto>('/tenants/onboarding').then((res) => {
+    axios.get<GetOnboardingResponse>('/tenants/onboarding').then((res) => {
       setOnboarding(res.data)
     })
   }, [])

@@ -1,5 +1,5 @@
 import type { Customer } from '@prisma/client'
-import type { DeleteCustomerResponseDto, GetCustomersResponse } from '@siikli/shared'
+import type { DeleteCustomerResponse, GetCustomersResponse } from '@siikli/shared'
 import type Decimal from 'decimal.js'
 import prisma from '../prisma'
 
@@ -17,7 +17,7 @@ interface CustomerCreateInput {
 }
 
 export const CustomerService = {
-  async getCustomers(tenantId: string, userId: string): Promise<GetCustomersResponse> {
+  async getCustomers(tenantId: string, userId: string) {
     await prisma.log.create({
       data: {
         userId,
@@ -163,7 +163,7 @@ export const CustomerService = {
 
     return result
   },
-  async deleteCustomer(id: string, tenantId: string, userId: string): Promise<DeleteCustomerResponseDto> {
+  async deleteCustomer(id: string, tenantId: string, userId: string): Promise<DeleteCustomerResponse> {
     const result = await prisma.$transaction(async (tx) => {
       const deletedOrders = await tx.order.deleteMany({
         where: {
@@ -194,7 +194,7 @@ export const CustomerService = {
       return {
         deletedOrders: deletedOrders.count,
         deletedCustomer: deletedCustomer.id,
-      } satisfies DeleteCustomerResponseDto
+      } satisfies DeleteCustomerResponse
     })
 
     return result

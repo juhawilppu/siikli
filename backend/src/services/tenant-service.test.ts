@@ -13,7 +13,7 @@ describe('tenantService', () => {
   })
   it('can complete the onboarding', async () => {
     const { tenant, user } = await TenantService.createUserAndTenant(`${faker.internet.email()}`)
-    await TenantService.completeOnboarding(tenant.id, { name: 'Test Tenant', businessId: '1234567-8', user: { marketingConsent: true } }, user.id)
+    await TenantService.completeSignup(tenant.id, { name: 'Test Tenant', user: { marketingConsent: true } }, user.id)
     const tenantFromDb = await TenantService.getTenant(tenant.id)
     expect(tenantFromDb).toBeDefined()
     expect(tenantFromDb.signupCompleted).toBe(true)

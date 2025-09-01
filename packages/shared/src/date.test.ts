@@ -1,5 +1,15 @@
 import { describe, expect, it } from 'vitest'
-import { dateToIso, formatDate, parseIsoDate } from './date'
+import { dateToIso, formatDate, isValidIsoDate, parseIsoDate } from './date'
+
+describe('isValidIsoDate', () => {
+  it('returns true for valid date', () => {
+    expect(isValidIsoDate('2021-05-30')).toBe(true)
+  })
+
+  it('returns false for invalid date', () => {
+    expect(isValidIsoDate('2021-05-30-1')).toBe(false)
+  })
+})
 
 describe('dateToIso', () => {
   it('formats date correctly', () => {

@@ -22,15 +22,27 @@ describe('/api/customers', () => {
   })
 
   it('should create a simple customer', async () => {
-    createdCustomerId = await CustomerFactory.createCustomer(agent, { name: 'J-Store' })
+    createdCustomerId = await CustomerFactory.createCustomer(agent, {
+      name: 'J-Store',
+      companyLegalName: null,
+      discount: null,
+      invoiceReference: null,
+      streetAddress: null,
+      postalCode: null,
+      email: null,
+      city: null,
+      phone: null,
+      businessId: null,
+    })
     expect(createdCustomerId).toBeTruthy()
   })
 
   it('should create a customer with all fields', async () => {
     const customerData = {
       name: 'J-Store',
+      companyLegalName: null,
       email: 'j-store@example.com',
-      discount: 10,
+      discount: '10',
       invoiceReference: '1234567890',
       streetAddress: '123 Main St',
       postalCode: '12345',
@@ -65,7 +77,7 @@ describe('/api/customers', () => {
   })
 
   it('should update the customer by id', async () => {
-    const updateData = { name: 'J-Store2', email: 'j-store2@example.com' }
+    const updateData = { name: 'J-Store2', email: 'j-store2@example.com', companyLegalName: null, discount: null, invoiceReference: null, streetAddress: null, postalCode: null, city: null, phone: null, businessId: null }
     await CustomerFactory.updateCustomer(agent, createdCustomerId, updateData)
     const customers = await CustomerFactory.getCustomers(agent)
     const customer = customers.find((c: any) => c.id === createdCustomerId)

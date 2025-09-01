@@ -1,4 +1,5 @@
-import type { PostProductCreateRequestDto } from '@siikli/shared'
+import type { PostCreateProductRequest } from '@siikli/shared'
+import type { z } from 'zod'
 import request from 'supertest'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { createApp } from '../app'
@@ -34,10 +35,10 @@ describe('/api/products', () => {
       packageSize: 10,
       packageType: 'Box',
 
-    } satisfies PostProductCreateRequestDto
+    } satisfies z.infer<typeof PostCreateProductRequest>
     const id = await ProductFactory.createProduct(agent, productData)
     const products = await ProductFactory.getProducts(agent)
-    console.log(products)
+
     const product = products.find((p: any) => p.id === id)
     expect(product).toMatchObject({
       id,

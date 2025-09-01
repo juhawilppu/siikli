@@ -1,4 +1,4 @@
-import type { GetOrderDto } from '@siikli/shared'
+import type { GetOrderResponse } from '@siikli/shared'
 import { OrderStatus } from '@siikli/shared'
 import request from 'supertest'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
@@ -13,7 +13,7 @@ describe('/api/orders', () => {
   let createdCustomerId: string
   let createdProductId: string
   let createdOrderId: string
-  let order: GetOrderDto
+  let order: GetOrderResponse
 
   beforeAll(async () => {
     const app = await createApp()
@@ -29,7 +29,18 @@ describe('/api/orders', () => {
   })
 
   it('should create an order', async () => {
-    createdCustomerId = await CustomerFactory.createCustomer(agent, { name: 'J-Store' })
+    createdCustomerId = await CustomerFactory.createCustomer(agent, {
+      name: 'J-Store',
+      companyLegalName: null,
+      discount: null,
+      invoiceReference: null,
+      streetAddress: null,
+      postalCode: null,
+      city: null,
+      email: null,
+      phone: null,
+      businessId: null,
+    })
     expect(createdCustomerId).toBeTruthy()
 
     createdProductId = await ProductFactory.createProduct(agent, { name: 'Sieglinde, simple' })
@@ -47,7 +58,6 @@ describe('/api/orders', () => {
           productId: createdProductId,
           amount: '1',
           price: '10.00',
-          id: '1',
           packages: 1,
           packageSize: 1,
           packageType: 'Box',
@@ -73,13 +83,23 @@ describe('/api/orders', () => {
 
   it('should update an order', async () => {
     await OrderFactory.updateOrder(agent, createdOrderId, {
-      ...order,
+      customerId: order.customerId,
       status: OrderStatus.DELIVERED,
       deliveryDate: '2025-08-24',
       hasNote: false,
       noteBody: '',
       noteHeader: '',
-      items: order.items.map(item => ({ ...item, deleted: true })),
+      items: order.items.map(item => ({
+        id: item.id,
+        productId: item.productId,
+        amount: item.amount,
+        price: item.price,
+        packages: item.packages,
+        packageSize: item.packageSize,
+        packageType: item.packageType,
+        freetext: item.freetext,
+        deleted: true,
+      })),
     })
     const fetchedOrder = await OrderFactory.getOrder(agent, createdOrderId)
     expect(fetchedOrder.status).toBe(OrderStatus.DELIVERED)
@@ -100,7 +120,7 @@ describe('/api/orders', () => {
   })
 
   it('should return order limit', async () => {
-    const limit = await OrderFactory.getOrderLimit(agent)
+    const limit = await OrderFactory.getGetOrderLimit(agent)
     expect(limit).toBe(10000)
   })
 

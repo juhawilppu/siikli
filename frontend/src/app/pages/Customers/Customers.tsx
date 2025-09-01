@@ -1,4 +1,4 @@
-import type { GetCustomerRequestDto, GetCustomersResponseDto } from '@siikli/shared'
+import type { GetCustomerResponse, GetCustomersResponse } from '@siikli/shared'
 import axios from 'axios'
 import {
   Edit,
@@ -26,8 +26,8 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { NewCustomer } from './CustomerForm'
 
 function SortableTableRow({ customer, onEdit, onDelete }: {
-  customer: GetCustomerRequestDto
-  onEdit: (customer: GetCustomerRequestDto) => void
+  customer: GetCustomerResponse
+  onEdit: (customer: GetCustomerResponse) => void
   onDelete: (id: string) => void
 }) {
   return (
@@ -104,11 +104,11 @@ function SortableTableRow({ customer, onEdit, onDelete }: {
 }
 
 export function Customers() {
-  const [customers, setCustomers] = useState<GetCustomerRequestDto[]>([])
+  const [customers, setCustomers] = useState<GetCustomerResponse[]>([])
 
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
-  const [customerToEdit, setCustomerToEdit] = useState<GetCustomerRequestDto>()
+  const [customerToEdit, setCustomerToEdit] = useState<GetCustomerResponse>()
   const [showCreateDialog, setShowCreateDialog] = useState(false)
   const [customerIdToDelete, setCustomerIdToDelete] = useState<string | null>(null)
   const { toast } = useToast()
@@ -119,7 +119,7 @@ export function Customers() {
 
   const refreshCustomers = () => {
     axios
-      .get<GetCustomersResponseDto>('/customers')
+      .get<GetCustomersResponse>('/customers')
       .then((response) => {
         setCustomers(response.data.customers)
       })
@@ -146,7 +146,7 @@ export function Customers() {
     })
 
   // Customer edit
-  const startEdit = (customer: GetCustomerRequestDto) => {
+  const startEdit = (customer: GetCustomerResponse) => {
     setCustomerToEdit({ ...customer })
     setShowCreateDialog(true)
   }

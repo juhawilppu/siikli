@@ -1,6 +1,12 @@
 import { format } from 'date-fns'
 import { fi } from 'date-fns/locale'
 
+export const DATE_FORMAT = 'yyyy-MM-dd'
+
+export function isValidIsoDate(date: string): boolean {
+  return /^\d{4}-\d{2}-\d{2}$/.test(date)
+}
+
 /**
  * Converts a Date object to a string in the format 'yyyy-MM-dd', using local timezone.
  * @param date The Date object to convert.

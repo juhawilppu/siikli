@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto'
 import { OrderStatus } from '@siikli/shared'
 import request from 'supertest'
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
@@ -21,7 +22,7 @@ vi.mock('../utils/upload-to-s3', () => {
   }
 })
 
-describe('/api/orders', () => {
+describe('/api/invoices', () => {
   let agent: request.SuperAgentTest
   let createdCustomerId: string
   let createdProductId: string
@@ -41,11 +42,23 @@ describe('/api/orders', () => {
   })
 
   it('should create an order', async () => {
-    createdCustomerId = await CustomerFactory.createCustomer(agent, { name: 'J-Store' })
+    createdCustomerId = await CustomerFactory.createCustomer(agent, {
+      name: 'J-Store',
+      companyLegalName: null,
+      discount: null,
+      invoiceReference: null,
+      streetAddress: null,
+      postalCode: null,
+      city: null,
+      email: null,
+      phone: null,
+      businessId: null,
+    })
     expect(createdCustomerId).toBeTruthy()
 
     createdProductId = await ProductFactory.createProduct(agent, { name: 'Sieglinde, simple' })
     expect(createdProductId).toBeTruthy()
+
     const res = await OrderFactory.createOrder(agent, {
       customerId: createdCustomerId,
       deliveryDate: '2025-08-23',
@@ -55,10 +68,10 @@ describe('/api/orders', () => {
       noteHeader: '',
       items: [
         {
+          id: randomUUID(),
           productId: createdProductId,
           amount: '1',
           price: '10.00',
-          id: '1',
           packages: 1,
           packageSize: 1,
           packageType: 'Box',
@@ -68,14 +81,15 @@ describe('/api/orders', () => {
     })
     createdOrderId = res.id
     expect(createdOrderId).toBeTruthy()
+
     await OrderFactory.getOrder(agent, createdOrderId)
 
     const waybill = await WaybillFactory
       .createWaybill(agent, {
         startDate: '2025-08-23',
         endDate: '2025-08-23',
+        preview: false,
       })
-    console.log('waybill', waybill)
     expect(waybill.body).toBeTruthy()
 
     await agent.post('/api/tenants').send({

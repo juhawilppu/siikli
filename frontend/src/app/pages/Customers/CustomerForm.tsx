@@ -1,5 +1,5 @@
-import type { GetCustomerRequestDto, PostCreateCustomerRequestDto } from '@siikli/shared'
-import { formatNumber } from '@siikli/shared'
+import type { GetCustomerResponse } from '@siikli/shared'
+import { formatNumber, PostCreateCustomerRequest } from '@siikli/shared'
 import axios from 'axios'
 import { FileText, Phone, Save } from 'lucide-react'
 import { useState } from 'react'
@@ -11,10 +11,12 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
+import { typeParse } from '@/lib/validate'
+import { serializeNumber } from '@/utils/serialization'
 
 export function NewCustomer({ closeDialog, customerToEdit, onSave }: {
   closeDialog: () => void
-  customerToEdit?: GetCustomerRequestDto
+  customerToEdit?: GetCustomerResponse
   onSave: () => void
 }) {
   const [customer, setCustomer] = useState<
@@ -51,10 +53,11 @@ export function NewCustomer({ closeDialog, customerToEdit, onSave }: {
     if (!customer || !customer.id)
       return
 
-    const updateCustomer: PostCreateCustomerRequestDto = {
-      ...customer,
-      discount: Number.parseFloat(customer.discount),
-    } satisfies PostCreateCustomerRequestDto
+    const { id, ...customerWithoutId } = customer
+    const updateCustomer = PostCreateCustomerRequest.parse({
+      ...customerWithoutId,
+      discount: serializeNumber(customer.discount || '0'),
+    })
 
     axios
       .put(`/customers/${customer.id}`, updateCustomer)
@@ -77,10 +80,11 @@ export function NewCustomer({ closeDialog, customerToEdit, onSave }: {
   }
 
   const createCustomer = () => {
-    const newCustomer = {
-      ...customer,
-      discount: Number.parseFloat(customer.discount || '0'),
-    } satisfies PostCreateCustomerRequestDto
+    const { id, ...customerWithoutId } = customer
+    const newCustomer = typeParse(PostCreateCustomerRequest, {
+      ...customerWithoutId,
+      discount: serializeNumber(customer.discount || '0'),
+    })
 
     axios
       .post('/customers', newCustomer)
@@ -104,8 +108,6 @@ export function NewCustomer({ closeDialog, customerToEdit, onSave }: {
   }
 
   const save = () => {
-    console.log('onSave', customer)
-
     if (!customer.name) {
       toast({
         title: 'Virhe',

@@ -1,5 +1,5 @@
 import type { Filters } from '@/app/components/OrderListBase'
-import { dateToIso, OrderStatus } from '@siikli/shared'
+import { dateToIso, OrderStatus, PostCreateInvoiceRequest } from '@siikli/shared'
 import axios from 'axios'
 import { endOfWeek, startOfWeek } from 'date-fns'
 import { Check, Printer } from 'lucide-react'
@@ -25,8 +25,15 @@ export default function Invoices() {
     }
     try {
       setIsPrinting(preview ? 'preview' : 'print')
-      const response = await axios.get(
-        `/invoices?startDate=${dateToIso(filters.startDate)}&endDate=${dateToIso(filters.endDate)}&preview=${preview}&customerId=${filters.customer.id}`,
+      const body = PostCreateInvoiceRequest.parse({
+        customerId: filters.customer.id,
+        startDate: dateToIso(filters.startDate),
+        endDate: dateToIso(filters.endDate),
+        preview,
+      })
+      const response = await axios.post(
+        `/invoices`,
+        body,
         { responseType: 'blob' },
       )
 

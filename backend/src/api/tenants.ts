@@ -1,4 +1,5 @@
-import type { CreateTenantDto, GetCompanySettings, GetOnboardingResponseDto, GetPackageSettings, GetUsersResponseDto, PostCompanySettings, PostSubscriptionChangeRequest } from '@siikli/shared'
+import type { GetCompanySettingsResponse, GetOnboardingResponse, GetPackageSettingsResponse, GetUsersResponse, PostSubscriptionChangeResponse } from '@siikli/shared'
+import { IdParams, PostAddUserRequest, PostCompanySettingsRequest, PostCompleteSignupRequest, PostSubscriptionChangeRequest, PutChangeUserRoleRequest } from '@siikli/shared'
 import express from 'express'
 import { getSessionOrThrow, isAuthenticated, isOwner } from '../middlewares/permissions'
 import { DEFAULT_INVOICE_SUMMARY_ROW } from '../services/invoice-html'
@@ -17,7 +18,7 @@ companiesRoute.get(`/api/tenants/onboarding`, isAuthenticated, async (req, res) 
     invoiceCreated: result.invoiceCreated,
     waybillCreated: result.waybillCreated,
     bankInformationSet: result.bankInformationSet,
-  } satisfies GetOnboardingResponseDto)
+  } satisfies GetOnboardingResponse)
 })
 
 companiesRoute.get(`/api/tenants`, isAuthenticated, async (req, res) => {
@@ -41,7 +42,7 @@ companiesRoute.get(`/api/tenants`, isAuthenticated, async (req, res) => {
     subscriptionEndDate: result.subscriptionEndDate?.toISOString() ?? null,
     subscriptionStartDate: result.subscriptionStartDate?.toISOString() ?? null,
     trialEndDate: result.trialEndDate?.toISOString() ?? null,
-  } satisfies GetCompanySettings)
+  } satisfies GetCompanySettingsResponse)
 })
 
 companiesRoute.get(`/api/tenants/users`, isAuthenticated, async (req, res) => {
@@ -54,7 +55,7 @@ companiesRoute.get(`/api/tenants/users`, isAuthenticated, async (req, res) => {
       email: user.email,
       role: user.role,
       lastLoginAt: user.lastLoginAt?.toISOString() ?? null,
-    })) satisfies GetUsersResponseDto[],
+    })) satisfies GetUsersResponse[],
   )
 })
 
@@ -66,74 +67,78 @@ companiesRoute.get(`/api/tenants/package-settings`, isAuthenticated, async (req,
   res.json({
     packageTypes: packageTypes.map(row => row.name),
     packageSizes: packageSizes.map(row => row.size),
-  } satisfies GetPackageSettings)
+  } satisfies GetPackageSettingsResponse)
 })
 
 // TODO: should be PUT
 companiesRoute.post(`/api/tenants`, isAuthenticated, async (req, res) => {
   const { tenantId, userId } = getSessionOrThrow(req)
+  const body = PostCompanySettingsRequest.parse(req.body)
 
-  const body = req.body as PostCompanySettings
   await TenantService.updateTenant(tenantId, body, userId)
-  res.json({ message: 'OK' })
+  res.status(204).end()
 })
 
+// TODO This is a bit too simple / dangerous if there is a coding mistake or XSS.
 companiesRoute.delete(`/api/tenants`, isAuthenticated, isOwner, async (req, res) => {
   const { tenantId, userId } = getSessionOrThrow(req)
 
   await TenantService.deleteTenant(tenantId, userId)
-  res.status(200).end()
+  res.status(204).end()
 })
 
-companiesRoute.delete(`/api/tenants/users/:userId`, isAuthenticated, isOwner, async (req, res) => {
+companiesRoute.delete(`/api/tenants/users/:id`, isAuthenticated, isOwner, async (req, res) => {
   const { userId, tenantId } = getSessionOrThrow(req)
+  const { id: userIdToDelete } = IdParams.parse(req.params)
 
-  if (req.params.userId === userId) {
-    res.status(400).json({ message: 'You cannot delete yourself' })
-    return
+  if (userIdToDelete === userId) {
+    return res.status(400).json({ message: 'You cannot delete yourself' })
   }
-  await TenantService.deleteUser(tenantId, req.params.userId, userId)
-  res.status(200).end()
+
+  await TenantService.deleteUser(tenantId, userIdToDelete, userId)
+  res.status(204).end()
 })
 
 companiesRoute.post(`/api/tenants/users`, isAuthenticated, isOwner, async (req, res) => {
   const { userId, tenantId } = getSessionOrThrow(req)
+  const body = PostAddUserRequest.parse(req.body)
 
-  await TenantService.createUser(tenantId, req.body.email, req.body.role, userId)
-  res.status(200).json({ message: 'OK' })
+  await TenantService.createUser(tenantId, body.email, body.role, userId)
+  res.status(204).end()
 })
 
-companiesRoute.put(`/api/tenants/users/:userId`, isAuthenticated, isOwner, async (req, res) => {
+companiesRoute.put(`/api/tenants/users/:id`, isAuthenticated, isOwner, async (req, res) => {
   const { tenantId, userId } = getSessionOrThrow(req)
+  const { id: userIdToUpdate } = IdParams.parse(req.params)
+  const body = PutChangeUserRoleRequest.parse(req.body)
 
-  if (req.params.userId === userId) {
-    res.status(400).json({ message: 'You cannot edit yourself' })
-    return
+  if (userIdToUpdate === userId) {
+    return res.status(422).json({ message: 'You cannot edit yourself' })
   }
 
-  await TenantService.updateUser(tenantId, req.params.userId, req.body.role, userId)
-  res.status(200).json({ message: 'OK' })
+  await TenantService.updateUser(tenantId, userIdToUpdate, body.role, userId)
+  res.status(204).end()
 })
 
 companiesRoute.post(`/api/tenants/subscription`, isAuthenticated, async (req, res) => {
   const { tenantId, userId } = getSessionOrThrow(req)
+  const body = PostSubscriptionChangeRequest.parse(req.body)
 
-  const body = req.body as { subscription: 'FREE' | 'PREMIUM' }
   const result = await TenantService.updateSubscription(tenantId, body.subscription, userId)
   res.status(200).json({
     subscriptionType: result.subscriptionType,
     subscriptionEndDate: result.subscriptionEndDate?.toISOString() ?? null,
     subscriptionStartDate: result.subscriptionStartDate?.toISOString() ?? null,
     trialEndDate: result.trialEndDate?.toISOString() ?? null,
-  } satisfies PostSubscriptionChangeRequest)
+  } satisfies PostSubscriptionChangeResponse)
 })
 
-companiesRoute.post(`/api/tenants/create`, isAuthenticated, async (req, res) => {
+companiesRoute.post(`/api/tenants/complete-signup`, isAuthenticated, async (req, res) => {
   const { tenantId, userId } = getSessionOrThrow(req)
+  const body = PostCompleteSignupRequest.parse(req.body)
 
-  const body = req.body as CreateTenantDto
-  const result = await TenantService.completeOnboarding(tenantId, body, userId)
-  res.json(result)
+  await TenantService.completeSignup(tenantId, body, userId)
+  res.status(204).end()
 })
 
 export default companiesRoute

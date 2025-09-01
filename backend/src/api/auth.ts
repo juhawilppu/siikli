@@ -1,4 +1,4 @@
-import type { GetCurrentUserDto } from '@siikli/shared'
+import type { GetCurrentUserResponse } from '@siikli/shared'
 import type { UserSessionFromPassport } from '../passportConfig'
 import express from 'express'
 import passport from 'passport'
@@ -86,9 +86,9 @@ authRoute.get('/api/auth/current-user', (req, res) => {
           .split('@')[0]
           .slice(0, 2)
           .toUpperCase()
-    res.status(200).send({ authenticated: true, userId: user.userId, email: user.email, tenantId: user.tenantId, initials, signupCompleted: user.tenantSignupCompleted, role: user.role as 'USER' | 'OWNER' } satisfies GetCurrentUserDto)
+    res.status(200).send({ authenticated: true, userId: user.userId, email: user.email, tenantId: user.tenantId, initials, signupCompleted: user.tenantSignupCompleted, role: user.role as 'USER' | 'OWNER' } satisfies GetCurrentUserResponse)
   }
   else {
-    res.status(200).send({ authenticated: false } satisfies GetCurrentUserDto)
+    res.status(200).send({ authenticated: false } satisfies GetCurrentUserResponse)
   }
 })

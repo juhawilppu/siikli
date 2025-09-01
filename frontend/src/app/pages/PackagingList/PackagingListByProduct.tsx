@@ -1,8 +1,8 @@
-import type { PackagingListGroupedByProduct } from '@siikli/shared'
-import { formatNumber } from '@siikli/shared'
+import type { GetPackagingListGroupedByProductResponse } from '@siikli/shared'
+import { formatDate, formatNumber, parseIsoDate } from '@siikli/shared'
 
 export function PackagingListByProduct({ report }: {
-  report: PackagingListGroupedByProduct
+  report: GetPackagingListGroupedByProductResponse
 }) {
   return (
     <div className="pdf">
@@ -10,7 +10,7 @@ export function PackagingListByProduct({ report }: {
       <br />
       <b>Päivämäärä:</b>
       {' '}
-      <span>{new Date(report.deliveryDate).toLocaleDateString('fi-FI')}</span>
+      <span>{formatDate(parseIsoDate(report.deliveryDate))}</span>
       <br />
       <br />
 
@@ -30,9 +30,9 @@ export function PackagingListByProduct({ report }: {
                   </tr>
                 </thead>
                 <tbody>
-                  {report.rows.map((order, index) => {
+                  {report.rows.map((order) => {
                     return (
-                      <tr key={index}>
+                      <tr key={order.productId}>
                         <td className="align-left">{order.productName}</td>
                         <td className="align-right" style={{ width: '7.5%' }}>
                           {order.packageSize}

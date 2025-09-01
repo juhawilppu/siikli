@@ -1,4 +1,4 @@
-import type { GetCustomerRequestDto, GetCustomersResponseDto, GetOrderListDto, OrderStatus } from '@siikli/shared'
+import type { GetCustomerResponse, GetCustomersResponse, GetOrdersResponse, OrderStatus } from '@siikli/shared'
 import { dateToIso, formatDate, formatNumber, parseIsoDate } from '@siikli/shared'
 import axios from 'axios'
 
@@ -29,22 +29,22 @@ export interface Filters {
 
 export default function OrderListBase({ title, description, defaultStartDate, defaultEndDate, actionComponent, status: defaultStatus, emptyStateComponent }: { title: string, description: string, defaultStartDate: Date, defaultEndDate: Date, actionComponent?: (filters: Filters, orderCount: number, refresh: () => void) => React.ReactNode, status?: OrderStatus, emptyStateComponent?: React.ReactNode }) {
   const navigate = useNavigate()
-  const [customers, setCustomers] = useState<GetCustomerRequestDto[]>()
+  const [customers, setCustomers] = useState<GetCustomerResponse[]>()
   const [customerId, setCustomerId] = useState<string>()
   const [startDate, setStartDate] = useState<Date>(defaultStartDate)
   const [endDate, setEndDate] = useState<Date>(defaultEndDate)
   const [openStartDate, setOpenStartDate] = useState(false)
   const [status, setStatus] = useState<OrderStatus | 'ALL'>(defaultStatus ?? 'ALL')
   const [openEndDate, setOpenEndDate] = useState(false)
-  const [orders, setOrders] = useState<GetOrderListDto[]>([])
+  const [orders, setOrders] = useState<GetOrdersResponse[]>([])
 
   useEffect(() => {
-    axios.get<GetCustomersResponseDto>('/customers').then(res => setCustomers(res.data.customers))
+    axios.get<GetCustomersResponse>('/customers').then(res => setCustomers(res.data.customers))
   }, [])
 
   const refresh = () => {
     axios
-      .get<GetOrderListDto[]>('/orders', {
+      .get<GetOrdersResponse[]>('/orders', {
         params: {
           startDate: dateToIso(startDate),
           endDate: dateToIso(endDate),

@@ -1,11 +1,11 @@
-import type { GetOnboardingResponseDto } from '@siikli/shared'
+import type { GetOnboardingResponse } from '@siikli/shared'
 
 import { Check, ChevronRight, CreditCard, Receipt, ShoppingCart, Truck, Users } from 'lucide-react'
 
 import { useNavigate } from 'react-router-dom'
 import { Card, CardContent } from '@/components/ui/card'
 
-export function FunnelBar({ onboarding }: { onboarding: GetOnboardingResponseDto }) {
+export function FunnelBar({ onboarding }: { onboarding: GetOnboardingResponse }) {
   const navigate = useNavigate()
 
   const steps = [

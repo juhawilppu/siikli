@@ -13,7 +13,7 @@ import { PackagingListService } from '../services/packaging-list-service'
 import { ProductService } from '../services/product-service'
 import { SalesReportService } from '../services/sales-report-service'
 import { TenantService } from '../services/tenant-service'
-import { UserService } from '../services/user-service'
+import { serializeNumber } from '../utils/serialization'
 
 /**
  * End-to-end "happy path" test for the core business flow.
@@ -31,41 +31,21 @@ import { UserService } from '../services/user-service'
  */
 describe('full business flow e2e test', () => {
   it('should handle data changes', async () => {
-    const tenantName = crypto.randomUUID()
-    const tenantResponse = await TenantService.createTenant({
-      name: tenantName,
-      businessId: 'Y-1234567-8',
-      streetAddress: 'Test street 1',
-      postalCode: '12345',
-      city: 'Helsinki',
-      phone: '1234567890',
-      email: 'siikli@siikli.fi',
-      website: 'https://siikli.fi',
-      invoiceBankName: 'Test bank',
-      invoiceBankAccount: '1234567890',
-      invoiceSumRow: 'Test sum row',
-      signupCompleted: true,
-      subscriptionType: 'PREMIUM',
-      subscriptionEndDate: null,
-      subscriptionStartDate: null,
-    })
-    const tenant = await TenantService.getTenant(tenantResponse.id)
-    expect(tenant.name).toBe(tenantName)
-
     const email = `${crypto.randomUUID()}@example.com`
-    const juha = await UserService.createUser({
-      email,
-      tenantId: tenant.id,
-      role: Role.OWNER,
-    })
-    expect(juha).toBeDefined()
 
-    await TenantService.completeOnboarding(tenant.id, {
+    const tenantResponse = await TenantService.createUserAndTenant(email)
+    const tenant = await TenantService.getTenant(tenantResponse.tenant.id)
+    expect(tenant.name).toBe('')
+
+    const user = { id: tenantResponse.user.id }
+
+    const tenantName = `tenant-${crypto.randomUUID()}`
+    await TenantService.completeSignup(tenant.id, {
       name: tenantName,
       user: {
         marketingConsent: true,
       },
-    }, juha.id)
+    }, tenantResponse.user.id)
 
     await TenantService.updateTenant(tenant.id, {
       name: tenantName,
@@ -79,7 +59,7 @@ describe('full business flow e2e test', () => {
       invoiceBankName: 'Test bank',
       invoiceBankAccount: '1234567890',
       invoiceSumRow: 'Test sum row',
-    }, juha.id)
+    }, user.id)
 
     const users = await TenantService.getUsers(tenant.id)
     expect(users.length).toBe(1)
@@ -105,17 +85,17 @@ describe('full business flow e2e test', () => {
       invoiceReference: '1234567890',
       companyLegalName: 'Test company',
       businessId: '1234567890',
-    }, tenant.id, juha.id)
+    }, tenant.id, user.id)
     expect(sello).toBeDefined()
 
-    const customers = await CustomerService.getCustomers(tenant.id, juha.id)
+    const customers = await CustomerService.getCustomers(tenant.id, user.id)
     expect(customers.customers.length).toBe(1)
     expect(customers.customers[0].name).toBe('Alepa Sello')
 
     await CustomerService.updateCustomer(sello.id, {
       ...sello,
       name: 'Alepa Sello 2',
-    }, tenant.id, juha.id)
+    }, tenant.id, user.id)
 
     const updatedCustomer = await CustomerService.getCustomer(sello.id, tenant.id)
     expect(updatedCustomer?.name).toBe('Alepa Sello 2')
@@ -154,7 +134,7 @@ describe('full business flow e2e test', () => {
       price: new Decimal(1.40),
       packageSize: 10,
       packageType: 'Ltk',
-      userId: juha.id,
+      userId: user.id,
     })
     expect(siikli).toBeDefined()
 
@@ -164,24 +144,23 @@ describe('full business flow e2e test', () => {
       price: new Decimal(1.40),
       packageSize: 10,
       packageType: 'Ltk',
-      userId: juha.id,
+      userId: user.id,
     })
     expect(productToDelete).toBeDefined()
 
     await ProductService.updateProduct(productToDelete, tenant.id, {
-      id: productToDelete,
       name: 'Siikli To Delete',
-      price: new Decimal(1.40).toString(),
+      price: serializeNumber(new Decimal(1.40)),
       packageSize: 10,
       packageType: 'Ltk',
-    }, juha.id)
+    }, user.id)
 
     const products2 = await ProductService.getProducts(tenant.id)
     expect(products2.length).toBe(2)
     expect(products2.map(p => p.name)).toContain('Siikli')
     expect(products2.map(p => p.name)).toContain('Siikli To Delete')
 
-    await ProductService.deleteProduct(productToDelete, tenant.id, juha.id)
+    await ProductService.deleteProduct(productToDelete, tenant.id, user.id)
     const products3 = await ProductService.getProducts(tenant.id)
     expect(products3.length).toBe(1)
     expect(products3.map(p => p.name)).toContain('Siikli')
@@ -219,7 +198,8 @@ describe('full business flow e2e test', () => {
       noteBody: 'Toimitus ovelle H3. Nouto aamulla.',
       items: orderRows.map(item => ({
         ...item,
-        id: undefined,
+        price: serializeNumber(item.price.toString()),
+        amount: item.amount.toString(),
         packages: 1,
         freetext: 'Erikoistuote',
       })),
@@ -237,7 +217,7 @@ describe('full business flow e2e test', () => {
 
     await OrderService.updateOrder({
       tenantId: tenant.id,
-      userId: juha.id,
+      userId: user.id,
       customerId: sello.id,
       id: orderId.id,
       status: OrderStatus.WAITING_FOR_DELIVERY,
@@ -247,8 +227,8 @@ describe('full business flow e2e test', () => {
       noteBody: 'Toimitus ovelle H3. Nouto aamulla.',
       items: order.items.map(item => ({
         ...item,
-        price: new Decimal(item.price),
-        amount: new Decimal(item.amount),
+        price: serializeNumber(item.price),
+        amount: serializeNumber(item.amount),
       })),
     })
 
@@ -302,7 +282,7 @@ describe('full business flow e2e test', () => {
     const remaining = await OrderService.getRemainingOrders(tenant.id)
     expect(remaining).toBe(19)
 
-    const salesReport = await SalesReportService.getSalesReportData(tenant.id, juha.id)
+    const salesReport = await SalesReportService.getSalesReportData(tenant.id, user.id)
     expect(salesReport).toBeDefined()
     expect(salesReport.length).toBe(1)
     expect(salesReport[0].date).toBe(formatDate(deliveryDate, 'd.M.yyyy'))
@@ -326,7 +306,7 @@ describe('full business flow e2e test', () => {
     await OrderService.deleteOrder(order.id, tenant.id)
     await expect(OrderService.getOrder(order.id, tenant.id)).rejects.toThrow()
 
-    await CustomerService.deleteCustomer(sello.id, tenant.id, juha.id)
+    await CustomerService.deleteCustomer(sello.id, tenant.id, user.id)
 
     const deletedCustomer = await CustomerService.getCustomer(sello.id, tenant.id)
     expect(deletedCustomer).toBeNull()
@@ -334,32 +314,32 @@ describe('full business flow e2e test', () => {
     const deletedOrders = await OrderService.getOrders(tenant.id, subDays(new Date(), 1), addDays(new Date(), 1), OrderStatus.WAITING_FOR_DELIVERY, undefined)
     expect(deletedOrders.length).toBe(0)
 
-    await TenantService.deleteUser(tenant.id, juha.id, juha.id)
+    await TenantService.deleteUser(tenant.id, user.id, user.id)
     const users2 = await TenantService.getUsers(tenant.id)
     expect(users2.length).toBe(0)
 
     const email2 = `${crypto.randomUUID()}@example.com`
 
-    await TenantService.createUser(tenant.id, email2, 'USER', juha.id)
+    await TenantService.createUser(tenant.id, email2, 'USER', user.id)
     const users3 = await TenantService.getUsers(tenant.id)
     expect(users3.length).toBe(1)
     expect(users3[0].email).toBe(email2)
     expect(users3[0].role).toBe(Role.USER)
 
-    await TenantService.updateUser(tenant.id, users3[0].id, 'OWNER', juha.id)
+    await TenantService.updateUser(tenant.id, users3[0].id, 'OWNER', user.id)
     const users4 = await TenantService.getUsers(tenant.id)
     expect(users4.length).toBe(1)
     expect(users4[0].email).toBe(email2)
     expect(users4[0].role).toBe(Role.OWNER)
 
-    await TenantService.updateSubscription(tenant.id, 'FREE', juha.id)
+    await TenantService.updateSubscription(tenant.id, 'FREE', user.id)
     const tenant2 = await TenantService.getTenant(tenant.id)
     expect(tenant2.subscriptionType).toBe('FREE')
     expect(tenant2.subscriptionEndDate).toBeDefined()
     expect(tenant2.subscriptionStartDate).toBeNull()
     expect(tenant2.trialEndDate).toBeNull()
 
-    await TenantService.deleteTenant(tenant.id, juha.id)
+    await TenantService.deleteTenant(tenant.id, user.id)
 
     await expect(TenantService.getTenant(tenant.id)).rejects.toThrow()
   })

@@ -1,13 +1,20 @@
 import type {
-  GetOrderDto,
-  GetOrderListDto,
-  PostOrderRequestDto,
-  PostOrderResponseDto,
+  GetDownloadUrlResponse,
+  GetOrderLimit,
+  GetOrderResponse,
+  GetOrdersResponse,
+  IdAsBodyDto,
 } from '@siikli/shared'
 import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
-import { OrderStatus, parseIsoDate } from '@siikli/shared'
-import { Decimal } from 'decimal.js'
+import {
+  CreateWaybillsRequest,
+  GetOrdersQuery,
+  IdParams,
+  OrderStatus,
+  parseIsoDate,
+  PostCreateOrderRequest,
+} from '@siikli/shared'
 import express from 'express'
 import { getSessionOrThrow, isAuthenticated } from '../middlewares/permissions'
 import prisma from '../prisma'
@@ -16,50 +23,33 @@ import { OrderService } from '../services/order-service'
 export const ordersRoute = express.Router()
 const s3 = new S3Client({ region: process.env.AWS_REGION })
 
-export interface GetOrderLimitResponseDto {
-  remaining: number
-}
-
 ordersRoute.get(`/api/orders/limit`, isAuthenticated, async (req, res) => {
   const { tenantId } = getSessionOrThrow(req)
 
   const remaining = await OrderService.getRemainingOrders(tenantId)
-  return res.status(200).json({ remaining })
+  return res.status(200).json({ remaining } satisfies GetOrderLimit)
 })
 
 ordersRoute.get(`/api/orders`, isAuthenticated, async (req, res) => {
-  const { tenantId, userId } = getSessionOrThrow(req)
+  const { tenantId } = getSessionOrThrow(req)
+  const { startDate, endDate, status, customerId } = GetOrdersQuery.parse(req.query)
 
-  console.log('get orders')
-  console.log('userId', userId)
+  const orders = await OrderService.getOrders(tenantId, parseIsoDate(startDate), parseIsoDate(endDate), status, customerId)
 
-  if (!req.query.startDate || !req.query.endDate) {
-    return res.status(400)
-  }
-
-  const startDate = parseIsoDate(req.query.startDate as string)
-  const endDate = parseIsoDate(req.query.endDate as string)
-  const status = req.query.status as OrderStatus | undefined
-  const customerId = req.query.customerId as string | undefined
-
-  const orders = await OrderService.getOrders(tenantId, startDate, endDate, status, customerId)
-
-  res.json(orders satisfies GetOrderListDto[])
+  res.json(orders satisfies GetOrdersResponse[])
 })
 
-// TODO: should be POST
-ordersRoute.get(`/api/orders/waybills`, isAuthenticated, async (req, res) => {
+ordersRoute.post(`/api/orders/waybills`, isAuthenticated, async (req, res) => {
   const { tenantId } = getSessionOrThrow(req)
+  const { startDate, endDate, customerId, preview } = CreateWaybillsRequest.parse(req.body)
 
-  if (!req.query.startDate || !req.query.endDate) {
-    return res.status(400)
-  }
-
-  const preview = req.query.preview === 'true'
-
-  const pdfBuffer = await OrderService.getWaybillPdf(tenantId, req.query.startDate as string, req.query.endDate as string, req.query.customerId as string | null, preview)
-
-  console.log('pdfBuffer', pdfBuffer)
+  const pdfBuffer = await OrderService.getWaybillPdf(
+    tenantId,
+    startDate,
+    endDate,
+    customerId || null,
+    preview,
+  )
 
   // Set headers for proper PDF display
   res.setHeader('Content-Type', 'application/pdf')
@@ -72,10 +62,10 @@ ordersRoute.get(`/api/orders/waybills`, isAuthenticated, async (req, res) => {
 
 ordersRoute.get(`/api/orders/:id/waybill`, isAuthenticated, async (req, res) => {
   const { tenantId } = getSessionOrThrow(req)
+  const { id } = IdParams.parse(req.params)
 
-  const orderId = req.params.id
   // Look up invoice metadata in DB
-  const order = await prisma.order.findUnique({ where: { id: orderId, tenantId } })
+  const order = await prisma.order.findUnique({ where: { id, tenantId } })
   if (!order?.waybillS3Key)
     return res.status(404).send('Not found')
 
@@ -85,55 +75,48 @@ ordersRoute.get(`/api/orders/:id/waybill`, isAuthenticated, async (req, res) => 
   })
 
   const url = await getSignedUrl(s3, cmd, { expiresIn: 5 * 60 }) // 5 minutes
-  res.json({ url })
+  res.json({ url } satisfies GetDownloadUrlResponse)
 })
 
 ordersRoute.get(`/api/orders/:id`, isAuthenticated, async (req, res) => {
   const { tenantId } = getSessionOrThrow(req)
+  console.log('/api/orders/:id')
+  console.log(req.params)
 
-  const orderId = req.params.id
+  const { id } = IdParams.parse(req.params)
 
-  const order = await OrderService.getOrder(orderId, tenantId)
+  const order = await OrderService.getOrder(id, tenantId)
 
-  res.json(order satisfies GetOrderDto)
+  res.json(order satisfies GetOrderResponse)
 })
 
 ordersRoute.delete(`/api/orders/:id`, isAuthenticated, async (req, res) => {
   const { tenantId } = getSessionOrThrow(req)
+  const { id } = IdParams.parse(req.params)
 
-  const orderId = req.params.id
+  await OrderService.deleteOrder(id, tenantId)
 
-  await OrderService.deleteOrder(orderId, tenantId)
-
-  res.status(200).json({ message: 'Order deleted' })
+  res.status(204).end()
 })
 
 ordersRoute.post(`/api/orders`, isAuthenticated, async (req, res) => {
-  console.log('saving order')
-
-  const data = req.body as PostOrderRequestDto
   const { tenantId } = getSessionOrThrow(req)
+  const body = PostCreateOrderRequest.parse(req.body)
 
   const result = await OrderService.createOrder({
-    ...data,
+    ...body,
     tenantId,
     status: OrderStatus.WAITING_FOR_DELIVERY,
-    deliveryDate: data.deliveryDate,
-    items: data.items.map(item => ({
-      ...item,
-      price: new Decimal(item.price),
-      amount: new Decimal(item.amount),
-    })),
+    deliveryDate: body.deliveryDate,
   })
 
-  res.status(201).json({ id: result.id } satisfies PostOrderResponseDto)
+  res.status(201).json({ id: result.id } satisfies IdAsBodyDto)
 })
 
 // TODO: Should be PUT
 ordersRoute.post(`/api/orders/:id`, isAuthenticated, async (req, res) => {
   const { tenantId, userId } = getSessionOrThrow(req)
-
-  const data = req.body as PostOrderRequestDto
+  const data = PostCreateOrderRequest.parse(req.body)
 
   await OrderService.updateOrder({
     ...data,
@@ -142,12 +125,7 @@ ordersRoute.post(`/api/orders/:id`, isAuthenticated, async (req, res) => {
     userId,
     id: req.params.id,
     deliveryDate: data.deliveryDate,
-    items: data.items.map(item => ({
-      ...item,
-      price: new Decimal(item.price),
-      amount: new Decimal(item.amount),
-    })),
   })
 
-  res.status(200).json({ message: 'Saved' })
+  res.status(204).end()
 })

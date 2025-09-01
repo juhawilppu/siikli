@@ -1,17 +1,17 @@
-import type { GetCurrentUserDto } from '@siikli/shared'
+import type { GetCurrentUserResponse } from '@siikli/shared'
 import * as Sentry from '@sentry/react'
 import axios from 'axios'
 import React, { createContext, useContext, useEffect, useState } from 'react'
 
 interface AuthContextType {
-  user: GetCurrentUserDto | undefined
+  user: GetCurrentUserResponse | undefined
   logout: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<GetCurrentUserDto>()
+  const [user, setUser] = useState<GetCurrentUserResponse>()
 
   const logout = async () => {
     await axios.post('/auth/logout')
@@ -21,7 +21,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     axios
-      .get<GetCurrentUserDto>('/auth/current-user')
+      .get<GetCurrentUserResponse>('/auth/current-user')
       .then((response) => {
         const userData = response.data
         if (userData.authenticated) {

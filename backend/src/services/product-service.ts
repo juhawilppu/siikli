@@ -1,5 +1,6 @@
-import type { GetProductResponse, GetProductResponseDto } from '@siikli/shared'
+import type { GetProductResponse, PostCreateProductRequest } from '@siikli/shared'
 import type Decimal from 'decimal.js'
+import type { z } from 'zod'
 import prisma from '../prisma'
 import { TenantService } from './tenant-service'
 
@@ -81,7 +82,7 @@ export const ProductService = {
     ])
   },
 
-  async updateProduct(id: string, tenantId: string, body: GetProductResponseDto, userId: string): Promise<void> {
+  async updateProduct(id: string, tenantId: string, body: z.infer<typeof PostCreateProductRequest>, userId: string): Promise<void> {
     await TenantService.verifyPackageSizeAndType(body.packageType, body.packageSize, tenantId)
 
     await prisma.product.update({

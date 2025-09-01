@@ -1,9 +1,6 @@
-'use client'
-
-import type { GetCompanySettings, GetUsersResponseDto, PostCompanySettings, PostSubscriptionChangeRequest } from '@siikli/shared'
-
+import type { GetCompanySettingsResponse, GetUsersResponse, PostSubscriptionChangeResponse } from '@siikli/shared'
 import type React from 'react'
-import { formatDate } from '@siikli/shared'
+import { formatDate, PostCompanySettingsRequest, PostSubscriptionChangeRequest } from '@siikli/shared'
 
 import axios from 'axios'
 import { Pencil, Save, Trash2 } from 'lucide-react'
@@ -18,6 +15,7 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { typeParse } from '@/lib/validate'
 import ConfirmDialog from '../components/ConfirmDialog'
 import { Checkmark } from '../components/custom-icons'
 import { InfoTooltip } from '../components/info-tooltip'
@@ -25,13 +23,13 @@ import { useAuth } from '../context/AuthContext'
 
 export default function CompanySettings() {
   const { user } = useAuth()
-  const [companyData, setCompanyData] = useState<GetCompanySettings>()
-  const [users, setUsers] = useState<GetUsersResponseDto[]>()
+  const [companyData, setCompanyData] = useState<GetCompanySettingsResponse>()
+  const [users, setUsers] = useState<GetUsersResponse[]>()
   const [showDeleteCompanyModal, setShowDeleteCompanyModal] = useState(false)
   const [showSwitchSubscriptionModal, setShowSwitchSubscriptionModal] = useState<null | 'FREE' | 'PREMIUM'>(null)
   const [showDeleteUserModal, setShowDeleteUserModal] = useState<null | string>(null)
   const [showAddUserModal, setShowAddUserModal] = useState(false)
-  const [showEditUserModal, setShowEditUserModal] = useState<GetUsersResponseDto | null>(null)
+  const [showEditUserModal, setShowEditUserModal] = useState<GetUsersResponse | null>(null)
   const [email, setEmail] = useState('')
   const [role, setRole] = useState('USER')
   const [isSaving, setIsSaving] = useState(false)
@@ -83,7 +81,7 @@ export default function CompanySettings() {
     if (!companyData)
       return
 
-    const data: PostCompanySettings = {
+    const data = PostCompanySettingsRequest.parse({
       name: companyData.name,
       businessId: companyData.businessId,
       streetAddress: companyData.streetAddress,
@@ -95,7 +93,7 @@ export default function CompanySettings() {
       phone: companyData.phone,
       email: companyData.email,
       website: companyData.website,
-    }
+    })
     await axios.post('/tenants', data)
     toast({
       title: 'Tiedot tallennettiin',
@@ -111,12 +109,12 @@ export default function CompanySettings() {
   const switchSubscription = async (subscription: 'FREE' | 'PREMIUM') => {
     try {
       setShowSwitchSubscriptionModal(null)
-      const result = await axios.post<PostSubscriptionChangeRequest>('/tenants/subscription', {
+      const result = await axios.post<PostSubscriptionChangeResponse>('/tenants/subscription', typeParse(PostSubscriptionChangeRequest, {
         subscription,
-      })
+      }))
       toast({
         title: 'Tilausvaihto',
-        description: 'Tilausvaihto onnistui',
+        description: 'Tilauksen vaihtaminen onnistui',
         variant: 'success',
       })
       setCompanyData((prev) => {
@@ -135,7 +133,7 @@ export default function CompanySettings() {
       console.error(error)
       toast({
         title: 'Tilausvaihto epäonnistui',
-        description: 'Tilausvaihto epäonnistui.',
+        description: 'Tilauksen vaihto epäonnistui.',
         variant: 'destructive',
       })
     }
@@ -173,7 +171,7 @@ export default function CompanySettings() {
     try {
       setIsSaving(true)
       await axios.post('/tenants/users', { email, role })
-      const usersResponse = await axios.get<GetUsersResponseDto[]>(`/tenants/users`)
+      const usersResponse = await axios.get<GetUsersResponse[]>(`/tenants/users`)
       setUsers(usersResponse.data)
       setShowAddUserModal(false)
       setEmail('')
@@ -228,8 +226,8 @@ export default function CompanySettings() {
   useEffect(() => {
     const fetchData = async () => {
       const [companyResponse, usersResponse] = await Promise.all([
-        axios.get<GetCompanySettings>(`/tenants`),
-        axios.get<GetUsersResponseDto[]>(`/tenants/users`),
+        axios.get<GetCompanySettingsResponse>(`/tenants`),
+        axios.get<GetUsersResponse[]>(`/tenants/users`),
       ])
       setCompanyData(companyResponse.data)
       setUsers(usersResponse.data)

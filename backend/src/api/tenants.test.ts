@@ -1,10 +1,11 @@
-import type { CreateTenantDto, GetCompanySettings, PostCompanySettings } from '@siikli/shared'
+import type { GetCompanySettingsResponse } from '@siikli/shared'
+import { PostCompanySettingsRequest, PostCompleteSignupRequest } from '@siikli/shared'
 import request from 'supertest'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { createApp } from '../app'
 import redisClient from '../redis'
 
-const updateTenantBody = {
+const updateTenantBody = PostCompanySettingsRequest.parse({
   name: 'Test Tenant',
   businessId: '123456',
   streetAddress: 'Test Street',
@@ -16,7 +17,7 @@ const updateTenantBody = {
   phone: '123456',
   email: 'test-tenants@example.com',
   website: 'https://test-tenants.com',
-} satisfies PostCompanySettings
+})
 
 describe('/api/tenants', () => {
   let agent: request.SuperAgentTest
@@ -35,15 +36,14 @@ describe('/api/tenants', () => {
   })
 
   it('should create tenant', async () => {
-    const body = {
+    const body = PostCompleteSignupRequest.parse({
       name: 'Test Tenant',
       user: {
         marketingConsent: true,
       },
-    } satisfies CreateTenantDto
+    })
 
-    const res = await agent.post('/api/tenants/create').send(body).expect(200)
-    expect(res.body.id).toBeDefined()
+    await agent.post('/api/tenants/complete-signup').send(body).expect(204)
   })
 
   it('should update subscription', async () => {
@@ -59,11 +59,11 @@ describe('/api/tenants', () => {
   })
 
   it('should update tenant', async () => {
-    await agent.post('/api/tenants').send(updateTenantBody).expect(200)
+    await agent.post('/api/tenants').send(updateTenantBody).expect(204)
   })
 
   it('should get tenant', async () => {
-    const res = await agent.get('/api/tenants').expect(200) as { body: GetCompanySettings }
+    const res = await agent.get('/api/tenants').expect(200) as { body: GetCompanySettingsResponse }
     expect(res.body).toMatchObject(updateTenantBody)
   })
 })
