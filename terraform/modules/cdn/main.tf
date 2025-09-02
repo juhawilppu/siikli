@@ -48,7 +48,7 @@ resource "aws_cloudfront_response_headers_policy" "csp" {
     }
     
     content_security_policy {
-      content_security_policy = "default-src 'self'; script-src 'self' https://eu-assets.i.posthog.com; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self' https://eu-assets.i.posthog.com https://eu.i.posthog.com https://*.ingest.de.sentry.io;"
+      content_security_policy = "default-src 'self'; script-src 'self' https://eu-assets.i.posthog.com; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src 'self' https://eu-assets.i.posthog.com https://eu.i.posthog.com https://*.ingest.de.sentry.io;"
       override                = true
     }
     frame_options {

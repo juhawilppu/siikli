@@ -13,6 +13,7 @@ export default defineConfig({
   server: {
     port: 5173,
     middlewareMode: false,
+    // Note: This is CSP for dev mode (and requires unsafe-inline)! The production CSP in modules/cdn/main.tf.
     headers: {
       'Content-Security-Policy':
         'default-src \'self\'; frame-src \'self\' blob:; script-src \'self\' https://eu-assets.i.posthog.com \'unsafe-inline\'; style-src \'self\' \'unsafe-inline\'; font-src \'self\'; img-src \'self\' data:; connect-src \'self\' https://eu-assets.i.posthog.com https://eu.i.posthog.com https://*.ingest.de.sentry.io;',
