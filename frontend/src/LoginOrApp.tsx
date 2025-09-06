@@ -6,11 +6,9 @@ export default function LoginOrApp() {
   const { user } = useAuth()
 
   if (user && user.authenticated) {
-    console.log('user', user)
     return <MainApp />
   }
   else {
-    console.log('user not found')
     return <LoginPage />
   }
 }

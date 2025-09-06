@@ -37,9 +37,7 @@ describe('loginPage', () => {
 
   beforeEach(() => {
     mockedAxios.get.mockImplementation((url: string) => {
-      console.log('mockedAxios.get called with url', url)
       if (url === '/auth/current-user') {
-        console.log('current-user mocks called')
         return Promise.resolve({
           data: {
             authenticated: true,

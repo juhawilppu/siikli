@@ -111,18 +111,6 @@ function App() {
               <span className="text-lg font-semibold text-white">Siikli</span>
             </div>
             <div className="ml-auto flex items-center gap-4">
-              {false && (
-                <form className="hidden md:block">
-                  <div className="relative">
-                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-blue-200" />
-                    <Input
-                      type="search"
-                      placeholder="Etsi..."
-                      className="w-64 rounded-lg bg-blue-700 border-blue-500 text-white placeholder:text-blue-200 pl-8 md:w-80"
-                    />
-                  </div>
-                </form>
-              )}
               <LanguageSwitcher />
               <Button
                 variant="outline"
@@ -135,16 +123,6 @@ function App() {
                 <HelpCircle className="h-5 w-5" />
                 <span className="sr-only">Tuki</span>
               </Button>
-              {false && (
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="rounded-full bg-blue-700 border-blue-500 text-white hover:bg-blue-800 hover:text-white"
-                >
-                  <Bell className="h-5 w-5" />
-                  <span className="sr-only">Ilmoitukset</span>
-                </Button>
-              )}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
