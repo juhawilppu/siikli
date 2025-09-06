@@ -72,19 +72,7 @@ authRoute.get('/api/auth/current-user', (req, res) => {
   console.log('auth/current-user here')
   if (req.user) {
     const user = req.user as UserSessionFromPassport
-    const initials = user.email
-      .split('@')[0] // Take part before @
-      .includes('.')
-      ? user.email
-          .split('@')[0]
-          .split('.')
-          .map(part => part[0])
-          .join('')
-          .toUpperCase()
-      : user.email
-          .split('@')[0]
-          .slice(0, 2)
-          .toUpperCase()
+    const initials = AuthService.parseInitials(user.email)
     res.status(200).send({ authenticated: true, userId: user.userId, email: user.email, tenantId: user.tenantId, initials, signupCompleted: user.tenantSignupCompleted, role: user.role as 'USER' | 'OWNER' } satisfies GetCurrentUserResponse)
   }
   else {

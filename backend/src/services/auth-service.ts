@@ -4,6 +4,22 @@ import { sendEmail } from './email-service'
 
 export const AuthService = {
 
+  parseInitials(email: string) {
+    return email
+      .split('@')[0] // Take part before @
+      .includes('.')
+      ? email
+          .split('@')[0]
+          .split('.')
+          .map(part => part[0])
+          .join('')
+          .toUpperCase()
+      : email
+          .split('@')[0]
+          .slice(0, 2)
+          .toUpperCase()
+  },
+
   async createPin({ email, ip }: { email: string, ip: string }) {
     await prisma.log.create({
       data: {
