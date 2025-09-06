@@ -5,6 +5,7 @@ import GoogleStrategy from 'passport-google-oidc'
 
 import { Strategy as LocalStrategy } from 'passport-local'
 import prisma from './prisma'
+import { sendEventEmail } from './services/email-service'
 import { TenantService } from './services/tenant-service'
 
 export interface UserSessionFromPassport {
@@ -65,6 +66,8 @@ function init() {
               event: 'google-login-success',
             },
           })
+
+          sendEventEmail('Google login success', `Google login success for ${profile.emails[0].value}`)
 
           if (existingUser) {
             // We already have saved this customer to db
@@ -169,6 +172,9 @@ function init() {
               event: 'pin-check-success',
             },
           })
+
+          sendEventEmail('Pin check success', `Pin login success for ${email}`)
+
           await prisma.user.update({
             where: { id: user!.id },
             data: { lastLoginAt: new Date() },

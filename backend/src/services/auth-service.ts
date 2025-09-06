@@ -1,6 +1,6 @@
 import nodeCrypto from 'node:crypto'
 import prisma from '../prisma'
-import { sendEmail, sendEventEmail } from './email-service'
+import { sendEmail } from './email-service'
 
 export const AuthService = {
 
@@ -59,9 +59,6 @@ export const AuthService = {
         </div>
       `)
 
-    await sendEventEmail('New event: PIN code', `Pin ${pin} sent to ${email} via AWS SES`)
-
     console.log(`Pin ${pin} sent to ${email} via AWS SES`)
-    console.log(`Event notified`)
   },
 }

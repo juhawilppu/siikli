@@ -5,13 +5,7 @@ export async function sendEventEmail(event: string, content: string) {
 }
 
 export async function sendEmail(to: string, from: string, subject: string, body: string) {
-  if (to.endsWith('@example.com') || to.endsWith('@siikli.fi')) {
-    console.log('Skipping email to', to, 'from', from, 'subject', subject)
-    return
-  }
-  else {
-    console.log('Sending email to', to, 'from', from, 'subject', subject)
-  }
+  console.log('Sending email to', to, 'from', from, 'subject', subject)
 
   const client = new SESClient({ region: 'eu-north-1' })
 
