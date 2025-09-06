@@ -215,8 +215,8 @@ export default function OrderForm() {
       }
       if (!deliveryDate) {
         toast({
-          title: 'Toimituspäivä ei voi olla tyhjä',
-          description: 'Valitse toimituspäivä',
+          title: 'Valitse toimituspäivä',
+          description: 'Toimituspäivä ei voi olla tyhjä',
           variant: 'destructive',
         })
         setIsSubmitting(false)
@@ -260,7 +260,7 @@ export default function OrderForm() {
           setIsSubmitting(false)
           return
         }
-        if (item.amount === '0,00' || item.amount === '') {
+        if (item.amount === '0,00' || item.amount === '' || Number(item.amount) <= 0) {
           toast({
             title: 'Määrä ei voi olla tyhjä',
             description: `Valitse määrä tuotteelle ${products?.find(p => p.id === item.productId)?.name} tai poista rivi`,

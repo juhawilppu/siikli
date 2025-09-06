@@ -1,6 +1,7 @@
 import type { ReactElement } from 'react'
 import { render } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
+import { Toaster } from '@/components/ui/toaster'
 
 export function renderWithProviders(
   ui: ReactElement,
@@ -17,6 +18,7 @@ export function renderWithProviders(
       <Routes>
         <Route path={route} element={ui} />
       </Routes>
+      <Toaster />
     </MemoryRouter>,
   )
 }

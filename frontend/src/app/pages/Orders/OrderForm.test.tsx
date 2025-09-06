@@ -161,6 +161,8 @@ describe('orderForm (edit existing order)', () => {
   const ORDER_ITEM2_ID = uuidv4()
   const PRODUCT2_ID = uuidv4()
 
+  const PRODUCT3_ID = uuidv4()
+
   beforeAll(() => {
     Object.defineProperty(window, 'matchMedia', {
       writable: true,
@@ -227,7 +229,11 @@ describe('orderForm (edit existing order)', () => {
       }
       if (url === '/products') {
         return Promise.resolve({
-          data: [{ id: PRODUCT1_ID, name: 'Siikli, pesty', price: '1.20', packageSize: 1, packageType: 'kg' }, { id: PRODUCT2_ID, name: 'Rosamunda', price: '1.30', packageSize: 2, packageType: 'kg' }] satisfies GetProductsResponse[],
+          data: [
+            { id: PRODUCT1_ID, name: 'Siikli, pesty', price: '1.20', packageSize: 1, packageType: 'kg' },
+            { id: PRODUCT2_ID, name: 'Rosamunda', price: '1.30', packageSize: 2, packageType: 'kg' },
+            { id: PRODUCT3_ID, name: 'Siikli, ei hintaa', price: undefined, packageSize: null, packageType: null },
+          ] satisfies GetProductsResponse[],
         })
       }
       if (url === '/tenants/package-settings') {
@@ -300,5 +306,104 @@ describe('orderForm (edit existing order)', () => {
         },
       ],
     } satisfies z.infer<typeof PostCreateOrderRequest>)
+  })
+
+  it('handles validation errors', async () => {
+    const user = userEvent.setup()
+
+    await act(async () => {
+      renderWithProviders(<OrderForm />)
+    })
+
+    // Test missing customer
+    await act(async () => {
+      const form = screen.getByRole('form')
+      await fireEvent.submit(form)
+    })
+    expect(screen.getByText('Asiakas ei voi olla tyhjä')).toBeInTheDocument()
+
+    // Add customer
+    await setValueToSelect('Asiakas', 'J-Groceries')
+
+    // Test missing delivery date
+    await act(async () => {
+      const form = screen.getByRole('form')
+      await fireEvent.submit(form)
+    })
+    expect(screen.getByText('Toimituspäivä ei voi olla tyhjä')).toBeInTheDocument()
+
+    // Add delivery date
+    await setValueToDate(user, 'Toimituspäivä', '26')
+
+    // Test missing product
+    await act(async () => {
+      const form = screen.getByRole('form')
+      await fireEvent.submit(form)
+    })
+    expect(screen.getByText('Valitse tuote tai poista rivi')).toBeInTheDocument()
+
+    // Add product
+    await setValueToSelect('Tuote', 'Siikli, ei hintaa')
+
+    // Test missing amount
+    await act(async () => {
+      const form = screen.getByRole('form')
+      await fireEvent.submit(form)
+    })
+    expect(screen.getByText('Valitse määrä tuotteelle Siikli, ei hintaa tai poista rivi')).toBeInTheDocument()
+
+    // Set invalid amount
+    await setValueToInput('Määrä (kg)', '-1')
+
+    // Test invalid amount
+    await act(async () => {
+      const form = screen.getByRole('form')
+      await fireEvent.submit(form)
+    })
+    expect(screen.getByText('Valitse määrä tuotteelle Siikli, ei hintaa tai poista rivi')).toBeInTheDocument()
+
+    // Set valid amount
+    await setValueToInput('Määrä (kg)', '10')
+
+    // Test missing price
+    await act(async () => {
+      const form = screen.getByRole('form')
+      await fireEvent.submit(form)
+    })
+    expect(screen.getByText('Valitse hinta tai poista rivi')).toBeInTheDocument()
+
+    // Set price
+    await setValueToInput('Hinta (€/kg) ALV 0 %', '1,40')
+
+    // Test missing package size
+    await act(async () => {
+      const form = screen.getByRole('form')
+      await fireEvent.submit(form)
+    })
+    expect(screen.getByText('Valitse pakkauskoko tai poista rivi')).toBeInTheDocument()
+
+    // Set package size
+    await setValueToSelect('Pakkauskoko', '1')
+
+    // Test missing package type
+    await act(async () => {
+      const form = screen.getByRole('form')
+      await fireEvent.submit(form)
+    })
+    expect(screen.getByText('Valitse pakkaustyyppi tai poista rivi')).toBeInTheDocument()
+
+    // Verify no API calls have been made so far
+    expect(mockedAxios.post).not.toHaveBeenCalled()
+
+    // Set package type
+    await setValueToSelect('Pakkaustyyppi', 'kg')
+
+    await act(async () => {
+      const form = screen.getByRole('form')
+      await fireEvent.submit(form)
+    })
+
+    // Verify the API call
+    expect(mockedAxios.post).toHaveBeenCalled()
   })
 })
