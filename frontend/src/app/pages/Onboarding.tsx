@@ -40,7 +40,7 @@ export default function OnboardingPage() {
               <Button variant="outline" size="sm">
                 <a href="https://www.youtube.com/watch?v=ZCOCyZbOQn8">🎥 Katso 4 min esittelyvideo</a>
               </Button>
-              <Button variant="outline" size="sm" onClick={() => navigate('/app/support')}>
+              <Button variant="outline" size="sm" onClick={() => navigate('/support')}>
                 💬 Ota yhteyttä
               </Button>
             </div>

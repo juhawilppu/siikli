@@ -1,5 +1,5 @@
 import type { Filters } from '@/app/components/OrderListBase'
-import { dateToIso, OrderStatus } from '@siikli/shared'
+import { CreateWaybillsRequest, dateToIso, OrderStatus } from '@siikli/shared'
 import axios from 'axios'
 import { endOfWeek, startOfWeek } from 'date-fns'
 import { Check, Printer } from 'lucide-react'
@@ -7,6 +7,7 @@ import { useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import OrderListBase from '@/app/components/OrderListBase'
 import { Button } from '@/components/ui/button'
+import { typeParse } from '@/lib/validate'
 import { LoadingSpinner } from '../components/custom-icons'
 import { toast } from '../hooks/use-toast'
 
@@ -18,17 +19,15 @@ export default function Waybills() {
   const handlePrintWaybills = async (preview: boolean, filters: Filters, refresh: () => void) => {
     try {
       setIsPrinting(preview ? 'preview' : 'print')
-      const response = await axios.get(
+      const response = await axios.post(
         `/orders/waybills`,
-        {
-          params: {
-            startDate: dateToIso(filters.startDate),
-            endDate: dateToIso(filters.endDate),
-            customerId: filters.customer?.id,
-            preview,
-          },
-          responseType: 'blob',
-        },
+        typeParse(CreateWaybillsRequest, {
+          startDate: dateToIso(filters.startDate),
+          endDate: dateToIso(filters.endDate),
+          customerId: filters.customer?.id,
+          preview,
+        }),
+        { responseType: 'blob' },
       )
 
       // Create blob URL

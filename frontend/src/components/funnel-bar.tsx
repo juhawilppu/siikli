@@ -15,7 +15,7 @@ export function FunnelBar({ onboarding }: { onboarding: GetOnboardingResponse })
       description: 'Lisää ensimmäinen tuote',
       icon: ShoppingCart,
       completed: onboarding.productCreated,
-      url: '/app/products',
+      url: '/products',
       current: false,
     },
     {
@@ -24,7 +24,7 @@ export function FunnelBar({ onboarding }: { onboarding: GetOnboardingResponse })
       description: 'Lisää ensimmäinen asiakas',
       icon: Users,
       completed: onboarding.customerCreated,
-      url: '/app/customers',
+      url: '/customers',
     },
     {
       id: 'create-order',
@@ -32,7 +32,7 @@ export function FunnelBar({ onboarding }: { onboarding: GetOnboardingResponse })
       description: 'Käsittele ensimmäinen tilaus',
       icon: ShoppingCart,
       completed: onboarding.orderCreated,
-      url: '/app/orders',
+      url: '/orders',
     },
     {
       id: 'print-waybill',
@@ -40,7 +40,7 @@ export function FunnelBar({ onboarding }: { onboarding: GetOnboardingResponse })
       description: 'Luo kuormakirja tilaukselle',
       icon: Truck,
       completed: onboarding.waybillCreated,
-      url: '/app/waybills',
+      url: '/waybills',
     },
     {
       id: 'add-bank-account',
@@ -48,7 +48,7 @@ export function FunnelBar({ onboarding }: { onboarding: GetOnboardingResponse })
       description: 'Lisää IBAN ja pankin nimi',
       icon: CreditCard,
       completed: onboarding.bankInformationSet,
-      url: '/app/own-company',
+      url: '/own-company',
     },
     {
       id: 'print-invoice',
@@ -56,7 +56,7 @@ export function FunnelBar({ onboarding }: { onboarding: GetOnboardingResponse })
       description: 'Luo asiakkaalle lasku',
       icon: Receipt,
       completed: onboarding.invoiceCreated,
-      url: '/app/invoices',
+      url: '/invoices',
     },
   ]
 

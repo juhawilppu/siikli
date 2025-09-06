@@ -1,9 +1,13 @@
-resource "aws_s3_bucket" "site" {
+resource "aws_s3_bucket" "landing" {
   bucket = var.domain_name
 }
 
-resource "aws_s3_bucket_website_configuration" "site" {
-  bucket = aws_s3_bucket.site.bucket
+resource "aws_s3_bucket" "app" {
+  bucket = "app.${var.domain_name}"
+}
+
+resource "aws_s3_bucket_website_configuration" "landing" {
+  bucket = aws_s3_bucket.landing.bucket
 
   index_document {
     suffix = "index.html"
@@ -14,8 +18,20 @@ resource "aws_s3_bucket_website_configuration" "site" {
   }
 }
 
-resource "aws_s3_bucket_public_access_block" "site" {
-  bucket = aws_s3_bucket.site.id
+resource "aws_s3_bucket_website_configuration" "app" {
+  bucket = aws_s3_bucket.app.bucket
+
+  index_document {
+    suffix = "index.html"
+  }
+
+  error_document {
+    key = "error.html"
+  }
+}
+
+resource "aws_s3_bucket_public_access_block" "landing" {
+  bucket = aws_s3_bucket.landing.id
 
   block_public_acls       = false
   block_public_policy     = false
@@ -23,8 +39,17 @@ resource "aws_s3_bucket_public_access_block" "site" {
   restrict_public_buckets = false
 }
 
-resource "aws_s3_bucket_policy" "site" {
-  bucket = aws_s3_bucket.site.id
+resource "aws_s3_bucket_public_access_block" "app" {
+  bucket = aws_s3_bucket.app.id
+
+  block_public_acls       = false
+  block_public_policy     = false
+  ignore_public_acls      = false
+  restrict_public_buckets = false
+}
+
+resource "aws_s3_bucket_policy" "landing" {
+  bucket = aws_s3_bucket.landing.id
   policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
@@ -32,7 +57,22 @@ resource "aws_s3_bucket_policy" "site" {
         Effect    = "Allow",
         Principal = "*",
         Action    = "s3:GetObject",
-        Resource  = "${aws_s3_bucket.site.arn}/*"
+        Resource  = "${aws_s3_bucket.landing.arn}/*"
+      }
+    ]
+  })
+}
+
+resource "aws_s3_bucket_policy" "app" {
+  bucket = aws_s3_bucket.app.id
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect    = "Allow",
+        Principal = "*",
+        Action    = "s3:GetObject",
+        Resource  = "${aws_s3_bucket.app.arn}/*"
       }
     ]
   })
@@ -78,11 +118,11 @@ resource "aws_cloudfront_response_headers_policy" "csp" {
   }
 }
 
-# CloudFront distribution
-resource "aws_cloudfront_distribution" "cdn" {
+# CloudFront distribution for landing page
+resource "aws_cloudfront_distribution" "landing_cdn" {
   origin {
-    domain_name = aws_s3_bucket_website_configuration.site.website_endpoint
-    origin_id   = "s3-${aws_s3_bucket.site.id}"
+    domain_name = aws_s3_bucket_website_configuration.landing.website_endpoint
+    origin_id   = "s3-${aws_s3_bucket.landing.id}"
     custom_origin_config {
       http_port              = 80
       https_port             = 443
@@ -117,19 +157,18 @@ resource "aws_cloudfront_distribution" "cdn" {
 
   enabled             = true
   is_ipv6_enabled     = true
-  comment             = "CDN for ${var.domain_name}"
+  comment             = "CDN for ${var.domain_name} landing page"
   default_root_object = "index.html"
 
   aliases = [var.domain_name]
 
   default_cache_behavior {
-    target_origin_id       = "s3-${aws_s3_bucket.site.id}"
+    target_origin_id       = "s3-${aws_s3_bucket.landing.id}"
     viewer_protocol_policy = "redirect-to-https"
     response_headers_policy_id = aws_cloudfront_response_headers_policy.csp.id
 
     allowed_methods = ["GET", "HEAD"]
     cached_methods  = ["GET", "HEAD"]
-
 
     forwarded_values {
       query_string = false
@@ -145,7 +184,6 @@ resource "aws_cloudfront_distribution" "cdn" {
     viewer_protocol_policy = "redirect-to-https"
     response_headers_policy_id = aws_cloudfront_response_headers_policy.csp.id
 
-
     allowed_methods  = ["HEAD", "GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"]
     cached_methods   = ["GET", "HEAD"]
 
@@ -153,14 +191,14 @@ resource "aws_cloudfront_distribution" "cdn" {
     default_ttl                  = 0
     max_ttl                      = 0
 
-  forwarded_values {
-    query_string = true
-    headers      = ["*"]
-    cookies {
-      forward = "all"
+    forwarded_values {
+      query_string = true
+      headers      = ["*"]
+      cookies {
+        forward = "all"
+      }
     }
   }
-}
 
   viewer_certificate {
     acm_certificate_arn      = var.acm_certificate_arn
@@ -175,25 +213,136 @@ resource "aws_cloudfront_distribution" "cdn" {
   }
 
   tags = {
-    Name = "CDN for ${var.domain_name}"
+    Name = "CDN for ${var.domain_name} landing page"
   }
 }
 
-resource "aws_route53_record" "alias" {
+# CloudFront distribution for app
+resource "aws_cloudfront_distribution" "app_cdn" {
+  origin {
+    domain_name = aws_s3_bucket_website_configuration.app.website_endpoint
+    origin_id   = "s3-${aws_s3_bucket.app.id}"
+    custom_origin_config {
+      http_port              = 80
+      https_port             = 443
+      origin_protocol_policy = "http-only"
+      origin_ssl_protocols   = ["TLSv1.2"]
+    }
+  }
+
+  origin {
+    domain_name = "api.siikli.fi"
+    origin_id   = "alb-siikli-backend"
+
+    custom_origin_config {
+      origin_protocol_policy = "https-only"
+      http_port              = 80
+      https_port             = 443
+      origin_ssl_protocols   = ["TLSv1.2"]
+    }
+  }
+
+  custom_error_response {
+    error_code            = 404
+    response_code         = 200
+    response_page_path    = "/index.html"
+  }
+
+  custom_error_response {
+    error_code            = 403
+    response_code         = 200
+    response_page_path    = "/index.html"
+  }
+
+  enabled             = true
+  is_ipv6_enabled     = true
+  comment             = "CDN for app.${var.domain_name}"
+  default_root_object = "index.html"
+
+  aliases = ["app.${var.domain_name}"]
+
+  default_cache_behavior {
+    target_origin_id       = "s3-${aws_s3_bucket.app.id}"
+    viewer_protocol_policy = "redirect-to-https"
+    response_headers_policy_id = aws_cloudfront_response_headers_policy.csp.id
+
+    allowed_methods = ["GET", "HEAD"]
+    cached_methods  = ["GET", "HEAD"]
+
+    forwarded_values {
+      query_string = false
+      cookies {
+        forward = "none"
+      }
+    }
+  }
+
+  ordered_cache_behavior {
+    path_pattern     = "/api/*"
+    target_origin_id = "alb-siikli-backend"
+    viewer_protocol_policy = "redirect-to-https"
+    response_headers_policy_id = aws_cloudfront_response_headers_policy.csp.id
+
+    allowed_methods  = ["HEAD", "GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"]
+    cached_methods   = ["GET", "HEAD"]
+
+    min_ttl                      = 0
+    default_ttl                  = 0
+    max_ttl                      = 0
+
+    forwarded_values {
+      query_string = true
+      headers      = ["*"]
+      cookies {
+        forward = "all"
+      }
+    }
+  }
+
+  viewer_certificate {
+    acm_certificate_arn      = var.acm_certificate_arn
+    ssl_support_method       = "sni-only"
+    minimum_protocol_version = "TLSv1.2_2021"
+  }
+
+  restrictions {
+    geo_restriction {
+      restriction_type = "none"
+    }
+  }
+
+  tags = {
+    Name = "CDN for app.${var.domain_name}"
+  }
+}
+
+resource "aws_route53_record" "landing" {
   zone_id = var.route53_zone_id
-  name    = "siikli.fi"
+  name    = var.domain_name
   type    = "A"
 
   alias {
-    name                   = aws_cloudfront_distribution.cdn.domain_name
-    zone_id                = aws_cloudfront_distribution.cdn.hosted_zone_id
+    name                   = aws_cloudfront_distribution.landing_cdn.domain_name
+    zone_id                = aws_cloudfront_distribution.landing_cdn.hosted_zone_id
+    evaluate_target_health = false
+  }
+}
+
+resource "aws_route53_record" "app" {
+  zone_id = var.route53_zone_id
+  name    = "app.${var.domain_name}"
+  type    = "A"
+
+  alias {
+    name                   = aws_cloudfront_distribution.app_cdn.domain_name
+    zone_id                = aws_cloudfront_distribution.app_cdn.hosted_zone_id
     evaluate_target_health = false
   }
 }
 
 resource "aws_route53_record" "www" {
   zone_id = var.route53_zone_id
-  name    = "www.siikli.fi"
+  name    = "www.${var.domain_name}"
   type    = "A"
 
   alias {
@@ -203,16 +352,15 @@ resource "aws_route53_record" "www" {
   }
 }
 
-
 resource "aws_s3_bucket" "redirect_www" {
-  bucket = "www.siikli.fi"
+  bucket = "www.${var.domain_name}"
 
   website {
-    redirect_all_requests_to = "https://siikli.fi"
+    redirect_all_requests_to = "https://${var.domain_name}"
   }
 
   tags = {
-    Name = "www.siikli.fi redirect"
+    Name = "www.${var.domain_name} redirect"
   }
 }
 
@@ -251,7 +399,7 @@ resource "aws_cloudfront_distribution" "redirect_www" {
   }
 
   viewer_certificate {
-    acm_certificate_arn = var.acm_certificate_arn  # Must cover www.siikli.fi
+    acm_certificate_arn = var.acm_certificate_arn
     ssl_support_method  = "sni-only"
   }
 
@@ -261,5 +409,5 @@ resource "aws_cloudfront_distribution" "redirect_www" {
     }
   }
 
-  aliases = ["www.siikli.fi"]
+  aliases = ["www.${var.domain_name}"]
 }

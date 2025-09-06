@@ -19,8 +19,7 @@ authRoute.get(
   passport.authenticate('google', { failureRedirect: '/error' }),
   (req, res, next) => {
     try {
-      console.log('callback here')
-      res.redirect('/app')
+      res.redirect(process.env.PRIMARY_URL ?? 'https://app.siikli.fi')
     }
     catch (error) {
       console.log('login error', error)
@@ -53,7 +52,7 @@ authRoute.post('/api/auth/email/create-pin', rateLimit(5, 15), async (req, res, 
 authRoute.post('/api/auth/email/check-pin', rateLimit(10, 1), passport.authenticate('local'), (req, res, next) => {
   try {
     console.log('callback here')
-    res.redirect('/app')
+    res.redirect(process.env.PRIMARY_URL ?? 'https://app.siikli.fi')
   }
   catch (error) {
     console.log('login error', error)
@@ -65,7 +64,7 @@ authRoute.post('/api/auth/logout', (req, res) => {
   console.log('logout here')
   req.logout((err) => {
     console.log('err', err)
-    res.redirect('/')
+    res.status(204).end()
   })
 })
 

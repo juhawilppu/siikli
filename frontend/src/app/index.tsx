@@ -27,16 +27,16 @@ import Support from './pages/Support'
 import Waybills from './pages/Waybills'
 
 const navItems = [
-  { title: 'Käyttöönotto', href: '/app/onboarding', icon: Check },
-  { title: 'Tilaukset', href: '/app/orders', icon: ClipboardList },
-  { title: 'Pakkauslista', href: '/app/packaging-list', icon: FileText },
-  { title: 'Kuormakirjat', href: '/app/waybills', icon: Receipt },
-  { title: 'Laskut', href: '/app/invoices', icon: Receipt },
-  { title: 'Lähetetyt laskut', href: '/app/sent-invoices', icon: Receipt },
-  { title: 'Myyntiraportti', href: '/app/sales-report', icon: LineChart },
-  { title: 'Tuotteet', href: '/app/products', icon: ShoppingBasket },
-  { title: 'Asiakkaat', href: '/app/customers', icon: Users },
-  { title: 'Oma yritys', href: '/app/own-company', icon: Building2 },
+  { title: 'Käyttöönotto', href: '/onboarding', icon: Check },
+  { title: 'Tilaukset', href: '/orders', icon: ClipboardList },
+  { title: 'Pakkauslista', href: '/packaging-list', icon: FileText },
+  { title: 'Kuormakirjat', href: '/waybills', icon: Receipt },
+  { title: 'Laskut', href: '/invoices', icon: Receipt },
+  { title: 'Lähetetyt laskut', href: '/sent-invoices', icon: Receipt },
+  { title: 'Myyntiraportti', href: '/sales-report', icon: LineChart },
+  { title: 'Tuotteet', href: '/products', icon: ShoppingBasket },
+  { title: 'Asiakkaat', href: '/customers', icon: Users },
+  { title: 'Oma yritys', href: '/own-company', icon: Building2 },
 ]
 
 function App() {
@@ -123,12 +123,12 @@ function App() {
                   </div>
                 </form>
               )}
-              <LanguageSwitcher inApp />
+              <LanguageSwitcher />
               <Button
                 variant="outline"
                 size="icon"
                 onClick={() => {
-                  navigate('/app/support')
+                  navigate('/support')
                 }}
                 className="rounded-full bg-blue-700 border-blue-500 text-white hover:bg-blue-800 hover:text-white"
               >
@@ -160,7 +160,7 @@ function App() {
                   <DropdownMenuLabel>{user.email}</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={() => {
-                    navigate('/app/support')
+                    navigate('/support')
                   }}
                   >
                     Tuki
@@ -194,7 +194,7 @@ function App() {
               className={`flex-1 overflow-auto min-h-0 ${isMobile ? 'ml-0' : 'ml-64'}`}
             >
               <Routes>
-                <Route path="/" element={<Navigate to="/app/orders" replace />} />
+                <Route path="/" element={<Navigate to="/orders" replace />} />
                 <Route path="/onboarding" element={<Onboarding />} />
                 <Route path="/orders" element={<Orders />} />
                 <Route path="/orders/new" element={<Order key="new" />} />
@@ -208,7 +208,7 @@ function App() {
                 <Route path="/products" element={<Products />} />
                 <Route path="/support" element={<Support />} />
                 <Route path="/own-company" element={<CompanySettings />} />
-                <Route path="*" element={<Navigate to="/app/orders" replace />} />
+                <Route path="*" element={<Navigate to="/orders" replace />} />
               </Routes>
             </main>
           </div>

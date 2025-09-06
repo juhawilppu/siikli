@@ -61,7 +61,7 @@ describe('main app', () => {
             <MainApp />
           </AuthProvider>
         </AppProvider>,
-        { route: '/app/orders' },
+        { route: '/orders' },
       )
     })
 

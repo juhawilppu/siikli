@@ -6,6 +6,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react'
 interface AuthContextType {
   user: GetCurrentUserResponse | undefined
   logout: () => Promise<void>
+  refreshSession: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -19,7 +20,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     Sentry.setUser(null)
   }
 
-  useEffect(() => {
+  const refreshSession = async () => {
     axios
       .get<GetCurrentUserResponse>('/auth/current-user')
       .then((response) => {
@@ -37,10 +38,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setUser({ authenticated: false })
         }
       })
+  }
+
+  useEffect(() => {
+    refreshSession()
   }, [])
 
   return (
-    <AuthContext.Provider value={{ user, logout }}>
+    <AuthContext.Provider value={{ user, logout, refreshSession }}>
       {children}
     </AuthContext.Provider>
   )

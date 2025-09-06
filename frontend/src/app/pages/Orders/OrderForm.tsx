@@ -4,7 +4,7 @@ import type React from 'react'
 import { captureException } from '@sentry/react'
 import { dateToIso, formatNumber, OrderStatus, parseDecimal, parseIsoDate, parseToNumber, PostCreateOrderRequest } from '@siikli/shared'
 import axios from 'axios'
-import { format, parse } from 'date-fns'
+import { format } from 'date-fns'
 import { fi } from 'date-fns/locale'
 import {
   Calendar,

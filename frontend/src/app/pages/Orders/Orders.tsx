@@ -22,7 +22,7 @@ export default function Orders() {
             size="lg"
             className="px-8 py-4 text-lg font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-lg transition"
           >
-            <NavLink to="/app/orders/new">Luo uusi tilaus</NavLink>
+            <NavLink to="/orders/new">Luo uusi tilaus</NavLink>
           </Button>
         </div>
       )}

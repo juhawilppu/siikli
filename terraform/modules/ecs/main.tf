@@ -85,7 +85,7 @@ resource "aws_ecs_task_definition" "backend" {
         },
         {
             name = "PRIMARY_URL"
-            value = "https://siikli.fi"
+            value = "https://app.siikli.fi"
         }   
       ]
       secrets = [

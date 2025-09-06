@@ -5,22 +5,23 @@ import { ArrowRight, Loader2 } from 'lucide-react'
 
 import posthog from 'posthog-js'
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { GoogleIcon } from '@/app/components/custom-icons'
+import { useAuth } from '@/app/context/AuthContext'
 import { useToast } from '@/app/hooks/use-toast'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { useTranslation } from '../../lib/translations'
+import { useTranslation } from '@/lib/translations'
 
 export default function LoginForm() {
   const t = useTranslation()
+
+  const { refreshSession } = useAuth()
   const [email, setEmail] = useState('')
   const [pin, setPin] = useState(['', '', '', '', '', ''])
   const [isLoading, setIsLoading] = useState(false)
   const [pinSent, setPinSent] = useState(false)
   const { toast } = useToast()
-  const navigate = useNavigate()
 
   const handleGoogleLogin = () => {
     posthog.capture('google_login', {
@@ -51,10 +52,6 @@ export default function LoginForm() {
         variant: localStorage.getItem('variant'),
       })
       setPinSent(true)
-      toast({
-        title: 'PIN-koodi lähetetty',
-        description: `PIN-koodi on lähetetty osoitteeseen ${email}.`,
-      })
     }
     catch (error) {
       if ((error as any).response.status === 429) {
@@ -140,7 +137,7 @@ export default function LoginForm() {
         email,
         pinCode,
       })
-      navigate('/app')
+      await refreshSession()
     }
     catch (error) {
       console.log('error.status', (error as any).status)

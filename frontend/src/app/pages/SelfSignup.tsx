@@ -51,7 +51,7 @@ export default function SelfSignup() {
 
       await axios.post('/tenants/complete-signup', data)
 
-      window.location.href = '/app/onboarding'
+      window.location.href = '/onboarding'
     }
     catch (e) {
       console.error('error', e)
@@ -65,8 +65,9 @@ export default function SelfSignup() {
   }
 
   const logout = async () => {
-    await axios.post('/auth/logout')
-    window.location.href = '/'
+    await axios.post('/auth/logout').finally(() => {
+      window.location.href = 'https://siikli.fi'
+    })
   }
 
   return (

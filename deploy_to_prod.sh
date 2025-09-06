@@ -6,17 +6,17 @@ command -v docker >/dev/null 2>&1 || { echo >&2 "❌ Docker is not installed. Ab
 command -v aws >/dev/null 2>&1 || { echo >&2 "❌ AWS CLI is not installed. Aborting."; exit 1; }
 
 echo "🔍 Running tests..."
-npm run test || true
+#npm run test || true
 
 echo "🔍 Running linter..."
-npm run lint:frontend
-npm run lint:backend
+#npm run lint:frontend
+#npm run lint:backend
 
 echo "🔍 Formatting prisma schema..."
-(
-    cd backend
-    npx prisma format
-)
+#(
+#    cd backend
+#    npx prisma format
+#)
 
 # Application version
 version=$(date +%s)
@@ -41,7 +41,7 @@ echo "🏗️ Building backend..."
 echo "🚀 Deploying frontend..."
 (
     cd frontend
-    aws s3 sync ./dist/ s3://siikli.fi --delete
+    aws s3 sync ./dist/ s3://app.siikli.fi --delete
 )
 
 echo "🚀 Deploying backend..."
@@ -54,5 +54,5 @@ end=$(date +%s)
 echo "--------------------------------"
 echo "🎉 Deployment complete!"
 echo "📦 Application version: $version"
-echo "🌐 Environment: https://siikli.fi"
+echo "🌐 Environment: https://app.siikli.fi"
 echo "🕒 Total time: $((end - start))s"

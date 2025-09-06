@@ -1,11 +1,10 @@
-import { HelpCircle } from 'lucide-react'
+import { ArrowLeft, HelpCircle } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../../components/ui/accordion'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../../components/ui/card'
-import { useTranslation } from '../../lib/translations'
-import Footer from '../components/Footer'
-import TopBar from '../components/TopBar'
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { useTranslation } from '@/lib/translations'
 import LoginForm from './LoginForm'
 
 export default function LoginPage() {
@@ -13,20 +12,24 @@ export default function LoginPage() {
 
   return (
     <div className="flex min-h-screen flex-col">
-      {/* Navigation */}
-      <TopBar showBackButton hideLoginButton />
-
-      {/* Main content */}
+      <Button variant="ghost" asChild className="absolute top-4 left-4">
+        <Link to="https://siikli.fi" className="flex items-center gap-2">
+          <ArrowLeft className="h-4 w-4" />
+          Takaisin etusivulle
+        </Link>
+      </Button>
       <main className="flex-1">
         <section className="w-full py-6 md:py-24 lg:py-32 bg-gradient-to-b from-white to-gray-50">
           <div className="container px-4 md:px-6">
-            <div className="flex flex-col items-center text-center space-y-4 mb-6">
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight">
-                {t('login.title')}
-              </h1>
-              <p className="hidden md:block text-muted-foreground text-md max-w-[800px] leading-[1.1]">
-                {t('login.description').replace('&ndash;', '—')}
-              </p>
+            <div className="mb-6">
+              <div className="flex flex-col items-center text-center space-y-4">
+                <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight">
+                  {t('login.title')}
+                </h1>
+                <p className="hidden md:block text-muted-foreground text-md max-w-[800px] leading-[1.1]">
+                  {t('login.description').replace('&ndash;', '—')}
+                </p>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
@@ -150,8 +153,6 @@ export default function LoginPage() {
         </section>
 
       </main>
-
-      <Footer />
     </div>
   )
 }

@@ -69,7 +69,7 @@ export default function OrderListBase({ title, description, defaultStartDate, de
         title={title}
         description={description}
         mainAction={(
-          <Button onClick={() => navigate('/app/orders/new')}>
+          <Button onClick={() => navigate('/orders/new')}>
             <Plus className="mr-2 h-4 w-4" />
             Uusi tilaus
           </Button>
@@ -225,7 +225,7 @@ export default function OrderListBase({ title, description, defaultStartDate, de
                                 variant="ghost"
                                 className="text-blue-500 font-bold"
                                 size="default"
-                                onClick={() => navigate(`/app/orders/${order.id}`)}
+                                onClick={() => navigate(`/orders/${order.id}`)}
                               >
                                 {order.orderNumber}
                               </Button>
@@ -245,7 +245,7 @@ export default function OrderListBase({ title, description, defaultStartDate, de
                                 variant="ghost"
                                 className="text-blue-500 font-bold"
                                 size="default"
-                                onClick={() => navigate(`/app/orders/${order.id}`)}
+                                onClick={() => navigate(`/orders/${order.id}`)}
                               >
                                 Avaa
                               </Button>
