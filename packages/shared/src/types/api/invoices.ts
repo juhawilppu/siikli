@@ -19,7 +19,7 @@ export const GetInvoicesQuery = z.object({
   endDate: z.string().refine(isValidIsoDate, {
     message: 'Invalid date format for endDate',
   }),
-  customerId: z.uuid(),
+  customerId: z.uuid().optional(),
 }).strict()
 
 export interface GetInvoicesResponse {

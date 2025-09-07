@@ -3,12 +3,13 @@ import { Decimal } from '@prisma/client/runtime/library'
 import { IdParams, PostCreateProductRequest } from '@siikli/shared'
 import express from 'express'
 import { getSessionOrThrow, isAuthenticated } from '../middlewares/permissions'
+import { rateLimitByUserAccount } from '../middlewares/rate-limit'
 import { ProductService } from '../services/product-service'
 import { serializeNumber } from '../utils/serialization'
 
 const productsRoute = express.Router()
 
-productsRoute.get(`/api/products`, isAuthenticated, async (req, res) => {
+productsRoute.get(`/api/products`, isAuthenticated, rateLimitByUserAccount(20, 1), async (req, res) => {
   const { tenantId } = getSessionOrThrow(req)
 
   const products = await ProductService.getProducts(tenantId)
@@ -23,7 +24,7 @@ productsRoute.get(`/api/products`, isAuthenticated, async (req, res) => {
   }) satisfies GetProductsResponse[])
 })
 
-productsRoute.post(`/api/products`, isAuthenticated, async (req, res) => {
+productsRoute.post(`/api/products`, isAuthenticated, rateLimitByUserAccount(10, 1), async (req, res) => {
   const { tenantId, userId } = getSessionOrThrow(req)
   const body = PostCreateProductRequest.parse(req.body)
 
@@ -38,7 +39,7 @@ productsRoute.post(`/api/products`, isAuthenticated, async (req, res) => {
   res.status(201).json({ id: productId } satisfies IdAsBodyDto)
 })
 
-productsRoute.delete(`/api/products/:id`, isAuthenticated, async (req, res) => {
+productsRoute.delete(`/api/products/:id`, isAuthenticated, rateLimitByUserAccount(10, 1), async (req, res) => {
   const { tenantId, userId } = getSessionOrThrow(req)
   const { id } = IdParams.parse(req.params)
 
@@ -46,7 +47,7 @@ productsRoute.delete(`/api/products/:id`, isAuthenticated, async (req, res) => {
   res.status(204).end()
 })
 
-productsRoute.put(`/api/products/:id`, isAuthenticated, async (req, res) => {
+productsRoute.put(`/api/products/:id`, isAuthenticated, rateLimitByUserAccount(10, 1), async (req, res) => {
   const { tenantId, userId } = getSessionOrThrow(req)
   const { id } = IdParams.parse(req.params)
   const body = PostCreateProductRequest.parse(req.body)

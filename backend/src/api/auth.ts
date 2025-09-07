@@ -2,13 +2,14 @@ import type { GetCurrentUserResponse } from '@siikli/shared'
 import type { UserSessionFromPassport } from '../passportConfig'
 import express from 'express'
 import passport from 'passport'
-import { rateLimit } from '../middlewares/rate-limit'
+import { rateLimitByIp } from '../middlewares/rate-limit'
 import { AuthService } from '../services/auth-service'
 
 export const authRoute = express.Router()
 
 authRoute.get(
   '/api/auth/google',
+  rateLimitByIp(10, 30),
   passport.authenticate('google', {
     scope: ['email', 'profile'],
   }),
@@ -16,6 +17,7 @@ authRoute.get(
 
 authRoute.get(
   '/api/auth/google/callback',
+  rateLimitByIp(10, 30),
   passport.authenticate('google', { failureRedirect: '/error' }),
   (req, res, next) => {
     try {
@@ -28,7 +30,7 @@ authRoute.get(
   },
 )
 
-authRoute.post('/api/auth/email/create-pin', rateLimit(5, 15), async (req, res, next) => {
+authRoute.post('/api/auth/email/create-pin', rateLimitByIp(10, 30), async (req, res, next) => {
   try {
     const body = req.body
 
@@ -49,9 +51,8 @@ authRoute.post('/api/auth/email/create-pin', rateLimit(5, 15), async (req, res, 
   }
 })
 
-authRoute.post('/api/auth/email/check-pin', rateLimit(10, 1), passport.authenticate('local'), (req, res, next) => {
+authRoute.post('/api/auth/email/check-pin', rateLimitByIp(10, 30), passport.authenticate('local'), (req, res, next) => {
   try {
-    console.log('callback here')
     res.redirect(process.env.PRIMARY_URL ?? 'https://app.siikli.fi')
   }
   catch (error) {
@@ -60,16 +61,14 @@ authRoute.post('/api/auth/email/check-pin', rateLimit(10, 1), passport.authentic
   }
 })
 
-authRoute.post('/api/auth/logout', (req, res) => {
-  console.log('logout here')
+authRoute.post('/api/auth/logout', rateLimitByIp(20, 1), (req, res) => {
   req.logout((err) => {
     console.log('err', err)
     res.status(204).end()
   })
 })
 
-authRoute.get('/api/auth/current-user', (req, res) => {
-  console.log('auth/current-user here')
+authRoute.get('/api/auth/current-user', rateLimitByIp(30, 1), (req, res) => {
   if (req.user) {
     const user = req.user as UserSessionFromPassport
     const initials = AuthService.parseInitials(user.email)

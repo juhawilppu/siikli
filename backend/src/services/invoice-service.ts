@@ -202,10 +202,10 @@ export const InvoiceService = {
       })
     })
   },
-  async getInvoices(customerId: string, tenantId: string, startDate: Date, endDate: Date) {
+  async getInvoices(customerId: string | null, tenantId: string, startDate: Date, endDate: Date) {
     const invoices = await prisma.invoice.findMany({
       where: {
-        customerId,
+        customerId: customerId ?? undefined,
         tenantId,
         createdAt: {
           gte: startDate,

@@ -5,6 +5,7 @@ import { dateToIso, GetInvoicesQuery, IdParams, parseIsoDate, PostCreateInvoiceR
 import express from 'express'
 import puppeteer from 'puppeteer'
 import { getSessionOrThrow, isAuthenticated } from '../middlewares/permissions'
+import { rateLimitByUserAccount } from '../middlewares/rate-limit'
 import prisma from '../prisma'
 import { createInvoiceHtml } from '../services/invoice-html'
 import { InvoiceService } from '../services/invoice-service'
@@ -15,11 +16,11 @@ const invoiceRoute = express.Router()
 
 const s3 = new S3Client({ region: process.env.AWS_REGION })
 
-invoiceRoute.get(`/api/invoices/list`, isAuthenticated, async (req, res) => {
+invoiceRoute.get(`/api/invoices/list`, isAuthenticated, rateLimitByUserAccount(20, 1), async (req, res) => {
   const { tenantId } = getSessionOrThrow(req)
   const { customerId, startDate, endDate } = GetInvoicesQuery.parse(req.query)
 
-  const invoices = await InvoiceService.getInvoices(customerId, tenantId, parseIsoDate(startDate), parseIsoDate(endDate))
+  const invoices = await InvoiceService.getInvoices(customerId ?? null, tenantId, parseIsoDate(startDate), parseIsoDate(endDate))
   res.json(invoices.map(i => ({
     id: i.id,
     invoiceId: i.invoiceNumber,
@@ -31,7 +32,7 @@ invoiceRoute.get(`/api/invoices/list`, isAuthenticated, async (req, res) => {
   })) satisfies GetInvoices[])
 })
 
-invoiceRoute.get(`/api/invoices/:id/url`, isAuthenticated, async (req, res) => {
+invoiceRoute.get(`/api/invoices/:id/url`, isAuthenticated, rateLimitByUserAccount(20, 1), async (req, res) => {
   const { tenantId } = getSessionOrThrow(req)
   const { id } = IdParams.parse(req.params)
 
@@ -49,7 +50,7 @@ invoiceRoute.get(`/api/invoices/:id/url`, isAuthenticated, async (req, res) => {
   res.json({ url })
 })
 
-invoiceRoute.post(`/api/invoices/:id/mark-paid`, isAuthenticated, async (req, res) => {
+invoiceRoute.post(`/api/invoices/:id/mark-paid`, isAuthenticated, rateLimitByUserAccount(10, 1), async (req, res) => {
   const { tenantId } = getSessionOrThrow(req)
   const { id } = IdParams.parse(req.params)
 
@@ -57,7 +58,7 @@ invoiceRoute.post(`/api/invoices/:id/mark-paid`, isAuthenticated, async (req, re
   res.status(204).end()
 })
 
-invoiceRoute.post(`/api/invoices`, isAuthenticated, async (req, res) => {
+invoiceRoute.post(`/api/invoices`, isAuthenticated, rateLimitByUserAccount(10, 1), async (req, res) => {
   const { tenantId } = getSessionOrThrow(req)
   const { customerId, startDate, endDate, preview } = PostCreateInvoiceRequest.parse(req.body)
 

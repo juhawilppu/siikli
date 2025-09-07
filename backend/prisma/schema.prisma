@@ -334,29 +334,6 @@ model OrderHistory {
   @@map("order_history")
 }
 
-model RateLimit {
-  id        String   @id @default(uuid()) @map("id") @db.Uuid
-  ip        String   @map("ip") @db.VarChar(255)
-  key       String   @map("key") @db.VarChar(255)
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
-
-  @@map("rate_limit")
-}
-
-model RateLimitHistory {
-  revision  Int    @id @default(autoincrement()) @map("revision")
-  operation String @map("operation")
-
-  id        String   @map("id") @db.Uuid
-  ip        String   @map("ip") @db.VarChar(255)
-  key       String   @map("key") @db.VarChar(255)
-  createdAt DateTime @map("created_at")
-  updatedAt DateTime @map("updated_at")
-
-  @@map("rate_limit_history")
-}
-
 model Log {
   id String @id @default(uuid()) @map("id") @db.Uuid
 

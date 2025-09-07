@@ -1,5 +1,5 @@
 import type { GetCustomerResponse, GetCustomersResponse, GetInvoicesResponse } from '@siikli/shared'
-import { dateToIso, formatDate } from '@siikli/shared'
+import { dateToIso, formatDate, GetInvoicesQuery } from '@siikli/shared'
 import axios from 'axios'
 
 import { fi } from 'date-fns/locale'
@@ -14,6 +14,7 @@ import { Label } from '@/components/ui/label'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { cn, downloadUrl } from '@/lib/utils'
+import { typeParse } from '@/lib/validate'
 import { useIsMobile } from '../hooks/use-mobile'
 import { toast } from '../hooks/use-toast'
 
@@ -53,11 +54,14 @@ export function SentInvoices() {
 
     axios
       .get<GetInvoicesResponse[]>('/invoices/list', {
-        params: {
-          customerId,
-          startDate: dateToIso(startDate),
-          endDate: dateToIso(endDate),
-        },
+        params: typeParse(
+          GetInvoicesQuery,
+          {
+            customerId,
+            startDate: dateToIso(startDate),
+            endDate: dateToIso(endDate),
+          },
+        ),
       })
       .then(response => setInvoices(response.data))
       .finally(() => setLoading(false))

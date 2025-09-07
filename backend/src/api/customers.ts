@@ -3,12 +3,13 @@ import { IdParams, PostCreateCustomerRequest } from '@siikli/shared'
 import { Decimal } from 'decimal.js'
 import express from 'express'
 import { getSessionOrThrow, isAuthenticated } from '../middlewares/permissions'
+import { rateLimitByUserAccount } from '../middlewares/rate-limit'
 import { CustomerService } from '../services/customer-service'
 import { serializeNumber } from '../utils/serialization'
 
 export const customersRoute = express.Router()
 
-customersRoute.get(`/api/customers`, isAuthenticated, async (req, res) => {
+customersRoute.get(`/api/customers`, isAuthenticated, rateLimitByUserAccount(20, 1), async (req, res) => {
   const { userId, tenantId } = getSessionOrThrow(req)
 
   const result = await CustomerService.getCustomers(tenantId, userId)
@@ -21,7 +22,7 @@ customersRoute.get(`/api/customers`, isAuthenticated, async (req, res) => {
   } satisfies GetCustomersResponse)
 })
 
-customersRoute.post(`/api/customers`, isAuthenticated, async (req, res) => {
+customersRoute.post(`/api/customers`, isAuthenticated, rateLimitByUserAccount(10, 1), async (req, res) => {
   const { userId, tenantId } = getSessionOrThrow(req)
   const body = PostCreateCustomerRequest.parse(req.body)
 
@@ -37,7 +38,7 @@ customersRoute.post(`/api/customers`, isAuthenticated, async (req, res) => {
   return res.status(201).json({ id: result.id })
 })
 
-customersRoute.put(`/api/customers/:id`, isAuthenticated, async (req, res) => {
+customersRoute.put(`/api/customers/:id`, isAuthenticated, rateLimitByUserAccount(10, 1), async (req, res) => {
   const { userId, tenantId } = getSessionOrThrow(req)
   const { id } = IdParams.parse(req.params)
   const body = PostCreateCustomerRequest.parse(req.body)
@@ -52,7 +53,7 @@ customersRoute.put(`/api/customers/:id`, isAuthenticated, async (req, res) => {
   } satisfies PutUpdateCustomerResponseDto)
 })
 
-customersRoute.delete(`/api/customers/:id`, isAuthenticated, async (req, res) => {
+customersRoute.delete(`/api/customers/:id`, isAuthenticated, rateLimitByUserAccount(10, 1), async (req, res) => {
   const { userId, tenantId } = getSessionOrThrow(req)
   const { id } = IdParams.parse(req.params)
 
