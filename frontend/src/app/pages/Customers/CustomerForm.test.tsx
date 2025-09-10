@@ -97,7 +97,7 @@ describe('orderForm', () => {
     await setValueToInput('Yrityksen virallinen nimi', 'J-Groceries')
     await setValueToInput('Laskun viite', '1234567890')
 
-    // Submit form directly - for some clicking "Save" button just doesn't work
+    // Submit form directly - for some reason clicking "Save" button just doesn't work
     await act(async () => {
       const saveButton = await screen.findByRole('button', { name: 'Tallenna' })
       await fireEvent.click(saveButton)

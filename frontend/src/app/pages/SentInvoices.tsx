@@ -1,5 +1,5 @@
 import type { GetCustomerResponse, GetCustomersResponse, GetInvoicesResponse } from '@siikli/shared'
-import { dateToIso, formatDate, GetInvoicesQuery } from '@siikli/shared'
+import { dateToIso, formatDate, GetInvoicesQuery, parseIsoDate } from '@siikli/shared'
 import axios from 'axios'
 
 import { fi } from 'date-fns/locale'
@@ -33,7 +33,7 @@ export function SentInvoices() {
   const isMobile = useIsMobile()
 
   const [customers, setCustomers] = useState<GetCustomerResponse[]>()
-  const [invoices, setInvoices] = useState<any[]>([])
+  const [invoices, setInvoices] = useState<GetInvoicesResponse[]>([])
   const [loading, setLoading] = useState(true)
   const [startDate, setStartDate] = useState<Date>(
     new Date(new Date().getFullYear(), 0, 1), // January 1st of current year
@@ -47,13 +47,9 @@ export function SentInvoices() {
   const [openEndDate, setOpenEndDate] = useState(false)
 
   useEffect(() => {
-    axios
-      .get<GetCustomersResponse>('/customers')
-      .then(response => setCustomers(response.data.customers))
-      .finally(() => setLoading(false))
-
-    axios
-      .get<GetInvoicesResponse[]>('/invoices/list', {
+    Promise.all([
+      axios.get<GetCustomersResponse>('/customers'),
+      axios.get<GetInvoicesResponse[]>('/invoices/list', {
         params: typeParse(
           GetInvoicesQuery,
           {
@@ -62,8 +58,12 @@ export function SentInvoices() {
             endDate: dateToIso(endDate),
           },
         ),
+      }),
+    ])
+      .then(([customersResponse, invoicesResponse]) => {
+        setCustomers(customersResponse.data.customers)
+        setInvoices(invoicesResponse.data)
       })
-      .then(response => setInvoices(response.data))
       .finally(() => setLoading(false))
   }, [])
 
@@ -190,7 +190,7 @@ export function SentInvoices() {
                       {' '}
                       EUR
                     </td>
-                    <td className="p-4">{formatDate(invoice.createdAt)}</td>
+                    <td className="p-4">{formatDate(parseIsoDate(invoice.createdAt))}</td>
                     <td className="p-4 flex items-center gap-2">
                       <Button
                         variant="outline"

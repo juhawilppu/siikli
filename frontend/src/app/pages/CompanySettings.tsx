@@ -166,8 +166,7 @@ export default function CompanySettings() {
     }
   }
 
-  const addUser = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+  const addUser = async () => {
     try {
       setIsSaving(true)
       await axios.post('/tenants/users', { email, role })
@@ -670,40 +669,38 @@ export default function CompanySettings() {
             <DialogHeader>
               <DialogTitle>Lisää käyttäjä</DialogTitle>
               <DialogDescription>
-                <form onSubmit={addUser}>
-                  <div className="space-y-4 mt-4 mb-4">
-                    <div>
-                      <Label htmlFor="email">Sähköposti</Label>
-                      <Input
-                        type="email"
-                        placeholder="Käyttäjän sähköposti"
-                        name="email"
-                        value={email}
-                        onChange={e => setEmail(e.target.value)}
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="role">Rooli</Label>
-                      <Select
-                        name="role"
-                        value={role}
-                        onValueChange={value => setRole(value)}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Valitse rooli" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="USER">Käyttäjä</SelectItem>
-                          <SelectItem value="OWNER">Omistaja</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
+                <div className="space-y-4 mt-4 mb-4">
+                  <div>
+                    <Label htmlFor="create-user-email">Sähköposti</Label>
+                    <Input
+                      id="create-user-email"
+                      type="email"
+                      placeholder="Käyttäjän sähköposti"
+                      value={email}
+                      onChange={e => setEmail(e.target.value)}
+                    />
                   </div>
-                  <DialogFooter>
-                    <Button variant="outline" onClick={() => setShowAddUserModal(false)} className="hidden sm:block">Peruuta</Button>
-                    <Button type="submit" disabled={isSaving}>Lisää käyttäjä</Button>
-                  </DialogFooter>
-                </form>
+                  <div>
+                    <Label htmlFor="create-user-role">Rooli</Label>
+                    <Select
+                      name="create-user-role"
+                      value={role}
+                      onValueChange={value => setRole(value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Valitse rooli" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="USER">Käyttäjä</SelectItem>
+                        <SelectItem value="OWNER">Omistaja</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => setShowAddUserModal(false)} className="hidden sm:block">Peruuta</Button>
+                  <Button onClick={addUser} disabled={isSaving}>Tallenna käyttäjä</Button>
+                </DialogFooter>
               </DialogDescription>
             </DialogHeader>
           </DialogContent>

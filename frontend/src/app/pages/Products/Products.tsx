@@ -268,6 +268,7 @@ export default function Products() {
                                     <TooltipTrigger asChild>
                                       <Button
                                         variant="ghost"
+                                        data-testid={`delete-${product.id}-button`}
                                         size="icon"
                                         className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50"
                                         onClick={() => setProductIdToDelete(product.id)}

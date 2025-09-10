@@ -1,4 +1,4 @@
-import type { GetInvoices } from '@siikli/shared'
+import type { GetInvoicesResponse } from '@siikli/shared'
 import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 import { dateToIso, GetInvoicesQuery, IdParams, parseIsoDate, PostCreateInvoiceRequest } from '@siikli/shared'
@@ -29,7 +29,7 @@ invoiceRoute.get(`/api/invoices/list`, isAuthenticated, rateLimitByUserAccount(2
     createdAt: dateToIso(i.createdAt),
     total: serializeNumber(i.total),
     status: i.status,
-  })) satisfies GetInvoices[])
+  })) satisfies GetInvoicesResponse[])
 })
 
 invoiceRoute.get(`/api/invoices/:id/url`, isAuthenticated, rateLimitByUserAccount(20, 1), async (req, res) => {

@@ -1,17 +1,6 @@
 import { z } from 'zod'
 import { isValidIsoDate } from '../..'
 
-export interface GetInvoiceResponse {
-  total: string
-}
-
-export interface GetInvoices {
-  invoiceId: number
-  customerId: string
-  createdAt: string
-  total: string
-}
-
 export const GetInvoicesQuery = z.object({
   startDate: z.string().refine(isValidIsoDate, {
     message: 'Invalid date format for startDate',
@@ -23,10 +12,12 @@ export const GetInvoicesQuery = z.object({
 }).strict()
 
 export interface GetInvoicesResponse {
+  id: string
   invoiceId: number
   customerId: string
+  customerName: string
   createdAt: string
-  total: number
+  total: string
   status: 'PENDING' | 'PAID'
 }
 
