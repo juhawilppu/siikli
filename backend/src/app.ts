@@ -149,25 +149,5 @@ export async function createApp(): Promise<express.Application> {
     }
   })
 
-  app.use((err: Error, req: Request, res: Response, _next: NextFunction) => {
-    console.error('General error handler caught:', {
-      message: err.message,
-      name: err.name,
-      stack: err.stack,
-      path: req.path,
-      method: req.method,
-    })
-
-    Sentry.captureException(err)
-
-    // Ensure we always send a response
-    if (!res.headersSent) {
-      res.status(500).json({
-        error: 'Internal server error',
-        message: err.message,
-      })
-    }
-  })
-
   return app
 }
