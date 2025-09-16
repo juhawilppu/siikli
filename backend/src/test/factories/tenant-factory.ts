@@ -4,8 +4,8 @@ import { faker } from '@faker-js/faker'
 import { addMonths } from 'date-fns'
 import prisma from '../../prisma'
 
-export class TenantFactory {
-  static async createTenant(overrides: Partial<Tenant> = {}) {
+export const TenantFactory = {
+  async createTenant(overrides: Partial<Tenant> = {}) {
     const tenant = await prisma.tenant.create({
       data: {
         name: faker.company.name(),
@@ -23,16 +23,14 @@ export class TenantFactory {
         subscriptionType: 'PREMIUM',
         subscriptionEndDate: null,
         subscriptionStartDate: null,
-        trialEndDate: addMonths(new Date(), 1,
-        ),
+        trialEndDate: addMonths(new Date(), 1),
         ...overrides,
       },
-    },
-    )
+    })
     return tenant
-  }
+  },
 
-  static async createUser(tenantId: string, overrides: Partial<User> = {}) {
+  async createUser(tenantId: string, overrides: Partial<User> = {}) {
     const user = await prisma.user.create({
       data: {
         tenantId,
@@ -42,5 +40,5 @@ export class TenantFactory {
       },
     })
     return user
-  }
+  },
 }

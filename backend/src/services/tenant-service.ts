@@ -8,8 +8,8 @@ import { sendEmail, sendEventEmail } from './email-service'
 
 const TRIAL_DURATION_MONTHS = 1
 
-export class TenantService {
-  static async createUserAndTenant(email: string, googleExternalId?: string): Promise<{ tenant: Tenant, user: User }> {
+export const TenantService = {
+  async createUserAndTenant(email: string, googleExternalId?: string): Promise<{ tenant: Tenant, user: User }> {
     const { tenant, user } = await prisma.$transaction(async (tx) => {
       const tenant = await tx.tenant.create({
         data: {
@@ -77,9 +77,9 @@ export class TenantService {
     await sendEventEmail('New event: Welcome message', `A new welcome message was just sent to ${email}`)
 
     return { tenant, user }
-  }
+  },
 
-  static async completeSignup(tenantId: string, input: z.infer<typeof PostCompleteSignupRequest>, adminUserId: string): Promise<Tenant> {
+  async completeSignup(tenantId: string, input: z.infer<typeof PostCompleteSignupRequest>, adminUserId: string): Promise<Tenant> {
     const result = await prisma.$transaction(async (tx) => {
       const tenant = await tx.tenant.update({
         data: {
@@ -112,9 +112,9 @@ export class TenantService {
     })
     await sendEventEmail('Tenant completed onboarding', `Tenant: ${tenantId}\nUser: ${adminUserId}`)
     return result
-  }
+  },
 
-  static async updateTenant(tenantId: string, input: Partial<Tenant>, userId: string): Promise<Tenant> {
+  async updateTenant(tenantId: string, input: Partial<Tenant>, userId: string): Promise<Tenant> {
     const {
       name,
       businessId,
@@ -160,9 +160,9 @@ export class TenantService {
     })
 
     return result
-  }
+  },
 
-  static async createPackageSize(tenantId: string, size: number): Promise<PackageSize> {
+  async createPackageSize(tenantId: string, size: number): Promise<PackageSize> {
     const packageSize = await prisma.$transaction(async (tx) => {
       const newPackageSize = await tx.packageSize.create({
         data: {
@@ -185,9 +185,9 @@ export class TenantService {
     })
 
     return packageSize
-  }
+  },
 
-  static async createPackageType(tenantId: string, name: string): Promise<PackageType> {
+  async createPackageType(tenantId: string, name: string): Promise<PackageType> {
     const packageType = await prisma.$transaction(async (tx) => {
       const newPackageType = await tx.packageType.create({
         data: {
@@ -210,9 +210,9 @@ export class TenantService {
     })
 
     return packageType
-  }
+  },
 
-  static async verifyPackageSizeAndType(packageType: string | null | undefined, packageSize: number | null | undefined, tenantId: string): Promise<{ packageType: boolean, packageSize: boolean }> {
+  async verifyPackageSizeAndType(packageType: string | null | undefined, packageSize: number | null | undefined, tenantId: string): Promise<{ packageType: boolean, packageSize: boolean }> {
     const created = {
       packageType: false,
       packageSize: false,
@@ -255,23 +255,23 @@ export class TenantService {
     }
 
     return created
-  }
+  },
 
-  static async getPackageSizes(tenantId: string): Promise<PackageSize[]> {
+  async getPackageSizes(tenantId: string): Promise<PackageSize[]> {
     const packageSizes = await prisma.packageSize.findMany({
       where: { tenantId },
     })
     return packageSizes
-  }
+  },
 
-  static async getPackageTypes(tenantId: string): Promise<PackageType[]> {
+  async getPackageTypes(tenantId: string): Promise<PackageType[]> {
     const packageTypes = await prisma.packageType.findMany({
       where: { tenantId },
     })
     return packageTypes
-  }
+  },
 
-  static async getTenant(id: string): Promise<Tenant> {
+  async getTenant(id: string): Promise<Tenant> {
     const tenant = await prisma.tenant.findUnique({
       where: { id },
     })
@@ -279,17 +279,17 @@ export class TenantService {
       throw new Error(`Tenant with id ${id} not found`)
     }
     return tenant
-  }
+  },
 
-  static async getUsers(tenantId: string): Promise<User[]> {
+  async getUsers(tenantId: string): Promise<User[]> {
     return await prisma.user.findMany({
       where: {
         tenantId,
       },
     })
-  }
+  },
 
-  static async deleteTenant(tenantId: string, userId: string): Promise<void> {
+  async deleteTenant(tenantId: string, userId: string): Promise<void> {
     await prisma.$transaction(async (tx) => {
       await tx.tenant.delete({
         where: {
@@ -306,9 +306,9 @@ export class TenantService {
       })
     })
     await sendEventEmail('Tenant deleted', `Tenant: ${tenantId}\nUser: ${userId}`)
-  }
+  },
 
-  static async deleteUser(tenantId: string, userId: string, adminUserId: string): Promise<void> {
+  async deleteUser(tenantId: string, userId: string, adminUserId: string): Promise<void> {
     await prisma.$transaction(async (tx) => {
       const tenant = await tx.tenant.findFirstOrThrow({
         where: {
@@ -334,9 +334,9 @@ export class TenantService {
       })
     })
     await sendEventEmail('User deleted', `Tenant: ${tenantId}\nUser: ${userId}\nAdmin: ${adminUserId}`)
-  }
+  },
 
-  static async createUser(tenantId: string, email: string, role: 'USER' | 'OWNER', adminUserId: string): Promise<void> {
+  async createUser(tenantId: string, email: string, role: 'USER' | 'OWNER', adminUserId: string): Promise<void> {
     await prisma.$transaction(async (tx) => {
       const tenant = await tx.tenant.findFirstOrThrow({
         where: {
@@ -366,9 +366,9 @@ export class TenantService {
       })
     })
     await sendEventEmail('User invited', `Tenant: ${tenantId}\nUser: ${email}\nRole: ${role}`)
-  }
+  },
 
-  static async updateUser(tenantId: string, userId: string, role: 'USER' | 'OWNER', adminUserId: string): Promise<void> {
+  async updateUser(tenantId: string, userId: string, role: 'USER' | 'OWNER', adminUserId: string): Promise<void> {
     await prisma.$transaction(async (tx) => {
       const tenant = await tx.tenant.findFirstOrThrow({
         where: {
@@ -393,9 +393,9 @@ export class TenantService {
       })
     })
     await sendEventEmail('User role updated', `Tenant: ${tenantId}\nUser: ${userId}\nRole: ${role}\nAdmin: ${adminUserId}`)
-  }
+  },
 
-  static async updateSubscription(tenantId: string, subscription: 'FREE' | 'PREMIUM', adminUserId: string): Promise<Tenant> {
+  async updateSubscription(tenantId: string, subscription: 'FREE' | 'PREMIUM', adminUserId: string): Promise<Tenant> {
     const currentSubscription = await prisma.tenant.findFirst({
       where: {
         id: tenantId,
@@ -424,9 +424,9 @@ export class TenantService {
       return updatedTenant
     })
     return result
-  }
+  },
 
-  static async getOnboarding(tenantId: string) {
+  async getOnboarding(tenantId: string) {
     const productCreated = await prisma.product.findFirst({
       where: {
         tenantId,
@@ -469,5 +469,5 @@ export class TenantService {
       waybillCreated: !!waybillCreated,
       bankInformationSet: !!tenant?.invoiceBankName?.trim() && !!tenant?.invoiceBankAccount?.trim(),
     }
-  }
+  },
 }
