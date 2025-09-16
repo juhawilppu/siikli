@@ -4,10 +4,10 @@ import prisma from '../prisma'
 
 export const PackagingListService = {
   getPackagingListGroupedByCustomer: async (tenantId: string, deliveryDate: string) => {
-    const results = await prisma.$queryRawUnsafe<any>(`
+    const results = await prisma.$queryRaw<any>`
     SELECT
       customer_id,
-      c.name AS customer_name,
+      c.name AS customer_name, 
       product_id,
       p.name AS product_name,
       SUM(amount)::numeric AS amount,
@@ -18,7 +18,7 @@ export const PackagingListService = {
     LEFT JOIN customer c ON (c.id = o.customer_id)
     LEFT JOIN order_row op ON (op.order_id = o.id)
     LEFT JOIN product p ON (p.id = op.product_id)
-    WHERE DATE(delivery_date) = '${deliveryDate}' and o.tenant_id = '${tenantId}'
+    WHERE DATE(delivery_date) = ${deliveryDate}::date and o.tenant_id = ${tenantId}::uuid
     GROUP BY
       customer_id,
       c.name,
@@ -33,7 +33,7 @@ export const PackagingListService = {
       op.package_size ASC,
       amount ASC,
       product_name ASC
-  `)
+  `
 
     return {
       deliveryDate,
@@ -53,7 +53,7 @@ export const PackagingListService = {
     } satisfies GetPackagingListGroupedByCustomerResponse
   },
   getPackagingListGroupedByProduct: async (tenantId: string, deliveryDate: string) => {
-    const results = await prisma.$queryRawUnsafe<any>(`
+    const results = await prisma.$queryRaw<any>`
             SELECT
             product_id,
             p.name AS product_name,
@@ -63,7 +63,7 @@ export const PackagingListService = {
             FROM "order" o
             LEFT JOIN order_row op ON (op.order_id = o.id)
             LEFT JOIN product p ON (p.id = op.product_id)
-            WHERE delivery_date = '${deliveryDate}' and o.tenant_id = '${tenantId}'
+            WHERE DATE(delivery_date) = ${deliveryDate}::date and o.tenant_id = ${tenantId}::uuid
             GROUP BY
             product_id,
             name,
@@ -74,7 +74,7 @@ export const PackagingListService = {
             op.package_type ASC,
             op.package_size ASC,
             amount ASC;
-            `)
+            `
 
     return {
       deliveryDate,
