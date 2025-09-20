@@ -1,14 +1,15 @@
 import type { GetCompanySettingsResponse, GetOnboardingResponse, GetPackageSettingsResponse, GetUsersResponse, PostSubscriptionChangeResponse } from '@siikli/shared'
 import { IdParams, PostAddUserRequest, PostCompanySettingsRequest, PostCompleteSignupRequest, PostSubscriptionChangeRequest, PutChangeUserRoleRequest } from '@siikli/shared'
 import express from 'express'
-import { getSessionOrThrow, isAuthenticated, isOwner } from '../middlewares/permissions'
+import { BadRequestError, UnprocessableEntityError } from '../middlewares/error-handler'
+import { getSessionOrThrow, isOwner } from '../middlewares/permissions'
 import { rateLimitByUserAccount } from '../middlewares/rate-limit'
 import { DEFAULT_INVOICE_SUMMARY_ROW } from '../services/invoice-html'
 import { TenantService } from '../services/tenant-service'
 
 const companiesRoute = express.Router()
 
-companiesRoute.get(`/api/tenants/onboarding`, isAuthenticated, rateLimitByUserAccount(20, 1), async (req, res) => {
+companiesRoute.get(`/api/tenants/onboarding`, rateLimitByUserAccount(20, 1), async (req, res) => {
   const { tenantId } = getSessionOrThrow(req)
 
   const result = await TenantService.getOnboarding(tenantId)
@@ -22,7 +23,7 @@ companiesRoute.get(`/api/tenants/onboarding`, isAuthenticated, rateLimitByUserAc
   } satisfies GetOnboardingResponse)
 })
 
-companiesRoute.get(`/api/tenants`, isAuthenticated, rateLimitByUserAccount(20, 1), async (req, res) => {
+companiesRoute.get(`/api/tenants`, rateLimitByUserAccount(20, 1), async (req, res) => {
   const { tenantId } = getSessionOrThrow(req)
 
   const result = await TenantService.getTenant(tenantId)
@@ -46,7 +47,7 @@ companiesRoute.get(`/api/tenants`, isAuthenticated, rateLimitByUserAccount(20, 1
   } satisfies GetCompanySettingsResponse)
 })
 
-companiesRoute.get(`/api/tenants/users`, isAuthenticated, rateLimitByUserAccount(20, 1), async (req, res) => {
+companiesRoute.get(`/api/tenants/users`, rateLimitByUserAccount(20, 1), async (req, res) => {
   const { tenantId } = getSessionOrThrow(req)
 
   const users = await TenantService.getUsers(tenantId)
@@ -60,7 +61,7 @@ companiesRoute.get(`/api/tenants/users`, isAuthenticated, rateLimitByUserAccount
   )
 })
 
-companiesRoute.get(`/api/tenants/package-settings`, isAuthenticated, rateLimitByUserAccount(20, 1), async (req, res) => {
+companiesRoute.get(`/api/tenants/package-settings`, rateLimitByUserAccount(20, 1), async (req, res) => {
   const { tenantId } = getSessionOrThrow(req)
 
   const packageTypes = await TenantService.getPackageTypes(tenantId)
@@ -72,7 +73,7 @@ companiesRoute.get(`/api/tenants/package-settings`, isAuthenticated, rateLimitBy
 })
 
 // TODO: should be PUT
-companiesRoute.post(`/api/tenants`, isAuthenticated, rateLimitByUserAccount(10, 1), async (req, res) => {
+companiesRoute.post(`/api/tenants`, rateLimitByUserAccount(10, 1), async (req, res) => {
   const { tenantId, userId } = getSessionOrThrow(req)
   const body = PostCompanySettingsRequest.parse(req.body)
 
@@ -81,26 +82,26 @@ companiesRoute.post(`/api/tenants`, isAuthenticated, rateLimitByUserAccount(10, 
 })
 
 // TODO This is a bit too simple / dangerous if there is a coding mistake or XSS.
-companiesRoute.delete(`/api/tenants`, isAuthenticated, isOwner, rateLimitByUserAccount(10, 1), async (req, res) => {
+companiesRoute.delete(`/api/tenants`, isOwner, rateLimitByUserAccount(10, 1), async (req, res) => {
   const { tenantId, userId } = getSessionOrThrow(req)
 
   await TenantService.deleteTenant(tenantId, userId)
   res.status(204).end()
 })
 
-companiesRoute.delete(`/api/tenants/users/:id`, isAuthenticated, isOwner, rateLimitByUserAccount(10, 1), async (req, res) => {
+companiesRoute.delete(`/api/tenants/users/:id`, isOwner, rateLimitByUserAccount(10, 1), async (req, res) => {
   const { userId, tenantId } = getSessionOrThrow(req)
   const { id: userIdToDelete } = IdParams.parse(req.params)
 
   if (userIdToDelete === userId) {
-    return res.status(400).json({ message: 'You cannot delete yourself' })
+    throw new BadRequestError('You cannot delete yourself')
   }
 
   await TenantService.deleteUser(tenantId, userIdToDelete, userId)
   res.status(204).end()
 })
 
-companiesRoute.post(`/api/tenants/users`, isAuthenticated, isOwner, rateLimitByUserAccount(10, 1), async (req, res) => {
+companiesRoute.post(`/api/tenants/users`, isOwner, rateLimitByUserAccount(10, 1), async (req, res) => {
   const { userId, tenantId } = getSessionOrThrow(req)
   const body = PostAddUserRequest.parse(req.body)
 
@@ -108,20 +109,20 @@ companiesRoute.post(`/api/tenants/users`, isAuthenticated, isOwner, rateLimitByU
   res.status(204).end()
 })
 
-companiesRoute.put(`/api/tenants/users/:id`, isAuthenticated, isOwner, rateLimitByUserAccount(10, 1), async (req, res) => {
+companiesRoute.put(`/api/tenants/users/:id`, isOwner, rateLimitByUserAccount(10, 1), async (req, res) => {
   const { tenantId, userId } = getSessionOrThrow(req)
   const { id: userIdToUpdate } = IdParams.parse(req.params)
   const body = PutChangeUserRoleRequest.parse(req.body)
 
   if (userIdToUpdate === userId) {
-    return res.status(422).json({ message: 'You cannot edit yourself' })
+    throw new UnprocessableEntityError('You cannot edit yourself')
   }
 
   await TenantService.updateUser(tenantId, userIdToUpdate, body.role, userId)
   res.status(204).end()
 })
 
-companiesRoute.post(`/api/tenants/subscription`, isAuthenticated, rateLimitByUserAccount(10, 1), async (req, res) => {
+companiesRoute.post(`/api/tenants/subscription`, rateLimitByUserAccount(10, 1), async (req, res) => {
   const { tenantId, userId } = getSessionOrThrow(req)
   const body = PostSubscriptionChangeRequest.parse(req.body)
 
@@ -134,7 +135,7 @@ companiesRoute.post(`/api/tenants/subscription`, isAuthenticated, rateLimitByUse
   } satisfies PostSubscriptionChangeResponse)
 })
 
-companiesRoute.post(`/api/tenants/complete-signup`, isAuthenticated, rateLimitByUserAccount(10, 1), async (req, res) => {
+companiesRoute.post(`/api/tenants/complete-signup`, rateLimitByUserAccount(10, 1), async (req, res) => {
   const { tenantId, userId } = getSessionOrThrow(req)
   const body = PostCompleteSignupRequest.parse(req.body)
 

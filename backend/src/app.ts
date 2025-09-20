@@ -1,5 +1,4 @@
 import type { User } from '@prisma/client'
-import type { NextFunction, Request, Response } from 'express'
 import * as Sentry from '@sentry/node'
 import { RedisStore } from 'connect-redis'
 import cookieParser from 'cookie-parser'
@@ -10,6 +9,7 @@ import helmet from 'helmet'
 import passport from 'passport'
 import { authRoute } from './api/auth'
 import { customersRoute } from './api/customers'
+import { exceptionsRoute } from './api/exceptions'
 import { healthRoute } from './api/health'
 import invoiceRoute from './api/invoices'
 import { ordersRoute } from './api/orders'
@@ -17,9 +17,10 @@ import packagingListRoute from './api/packaging-list'
 import productsRoute from './api/products'
 import salesReportRoute from './api/sales_report'
 import tenantsRoute from './api/tenants'
-import { authErrorHandler } from './middlewares/auth-error'
+import { errorHandler } from './middlewares/error-handler'
 import passportConfig from './passportConfig'
 import redisClient from './redis'
+import { log } from './utils/app-log'
 import './instrument.js'
 
 export async function createApp(): Promise<express.Application> {
@@ -46,20 +47,20 @@ export async function createApp(): Promise<express.Application> {
 
   app.use(express.json({ limit: '200kb' }))
 
-  console.log('Siikli backend starting...')
+  log.info('Siikli backend starting...')
 
   app.use(cookieParser()) // For parsing cookies
   app.set('trust proxy', 1) // trust first proxy
 
   // Handle uncaught exceptions without crashing
   process.on('uncaughtException', (err) => {
-    console.error('Uncaught Exception:', err)
+    log.error('Uncaught Exception:', err)
     Sentry.captureException(err)
   })
 
   // Handle unhandled promise rejections without crashing
   process.on('unhandledRejection', (reason, _promise) => {
-    console.error('Unhandled Rejection:', reason)
+    log.error('Unhandled Rejection:', reason)
     Sentry.captureException(reason)
   })
 
@@ -111,6 +112,9 @@ export async function createApp(): Promise<express.Application> {
   app.use(invoiceRoute)
   app.use(packagingListRoute)
   app.use(healthRoute)
+  if (process.env.NODE_ENV === 'development') {
+    app.use(exceptionsRoute)
+  }
 
   app.use((req, res, next) => {
     if (req.user) {
@@ -123,31 +127,8 @@ export async function createApp(): Promise<express.Application> {
     next()
   })
 
-  // custom 404
-  app.use((req, res, _next) => {
-    res.status(404).send(`Sorry can't find that!`)
-  })
-
   // Error handlers must be after all routes
-  app.use(authErrorHandler) // Auth errors first
-  app.use((err: Error, req: Request, res: Response, _next: NextFunction) => {
-    console.error('General error handler caught:', {
-      message: err.message,
-      name: err.name,
-      stack: err.stack,
-      path: req.path,
-      method: req.method,
-    })
-
-    Sentry.captureException(err)
-
-    // Ensure we always send a response
-    if (!res.headersSent) {
-      res.status(500).json({
-        error: 'Internal server error',
-      })
-    }
-  })
+  app.use(errorHandler)
 
   return app
 }

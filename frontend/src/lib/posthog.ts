@@ -7,9 +7,6 @@ export function initPosthog() {
     capture_pageview: true,
     disable_session_recording: true,
     debug: import.meta.env.MODE === 'development',
-    loaded: () => {
-      console.log('PostHog loaded')
-    },
   })
   posthog.people.set({ variant: localStorage.getItem('variant') })
 }

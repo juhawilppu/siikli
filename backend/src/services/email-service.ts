@@ -1,11 +1,12 @@
 import { SendEmailCommand, SESClient } from '@aws-sdk/client-ses'
+import { log } from '../utils/app-log'
 
 export async function sendEventEmail(event: string, content: string) {
   await sendEmail('juha.wilppu@siikli.fi', 'Siikli <no-reply@siikli.fi>', `Event: ${event}`, content)
 }
 
 export async function sendEmail(to: string, from: string, subject: string, body: string) {
-  console.log('Sending email to', to, 'from', from, 'subject', subject)
+  log.info('Sending email to', { to, from, subject })
 
   const client = new SESClient({ region: 'eu-north-1' })
 

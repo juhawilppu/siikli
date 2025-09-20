@@ -4,7 +4,8 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 import { dateToIso, GetInvoicesQuery, IdParams, parseIsoDate, PostCreateInvoiceRequest } from '@siikli/shared'
 import express from 'express'
 import puppeteer from 'puppeteer'
-import { getSessionOrThrow, isAuthenticated } from '../middlewares/permissions'
+import { BadRequestError, NotFoundError } from '../middlewares/error-handler'
+import { getSessionOrThrow } from '../middlewares/permissions'
 import { rateLimitByUserAccount } from '../middlewares/rate-limit'
 import prisma from '../prisma'
 import { createInvoiceHtml } from '../services/invoice-html'
@@ -16,7 +17,7 @@ const invoiceRoute = express.Router()
 
 const s3 = new S3Client({ region: process.env.AWS_REGION })
 
-invoiceRoute.get(`/api/invoices/list`, isAuthenticated, rateLimitByUserAccount(20, 1), async (req, res) => {
+invoiceRoute.get(`/api/invoices/list`, rateLimitByUserAccount(20, 1), async (req, res) => {
   const { tenantId } = getSessionOrThrow(req)
   const { customerId, startDate, endDate } = GetInvoicesQuery.parse(req.query)
 
@@ -32,14 +33,15 @@ invoiceRoute.get(`/api/invoices/list`, isAuthenticated, rateLimitByUserAccount(2
   })) satisfies GetInvoicesResponse[])
 })
 
-invoiceRoute.get(`/api/invoices/:id/url`, isAuthenticated, rateLimitByUserAccount(20, 1), async (req, res) => {
+invoiceRoute.get(`/api/invoices/:id/url`, rateLimitByUserAccount(20, 1), async (req, res) => {
   const { tenantId } = getSessionOrThrow(req)
   const { id } = IdParams.parse(req.params)
 
   // Look up invoice metadata in DB
   const invoice = await prisma.invoice.findUnique({ where: { id, tenantId } })
-  if (!invoice?.filename)
-    return res.status(404).send('Not found')
+  if (!invoice?.filename) {
+    throw new NotFoundError('Invoice not found')
+  }
 
   const cmd = new GetObjectCommand({
     Bucket: 'siikli-prod-files',
@@ -50,7 +52,7 @@ invoiceRoute.get(`/api/invoices/:id/url`, isAuthenticated, rateLimitByUserAccoun
   res.json({ url })
 })
 
-invoiceRoute.post(`/api/invoices/:id/mark-paid`, isAuthenticated, rateLimitByUserAccount(10, 1), async (req, res) => {
+invoiceRoute.post(`/api/invoices/:id/mark-paid`, rateLimitByUserAccount(10, 1), async (req, res) => {
   const { tenantId } = getSessionOrThrow(req)
   const { id } = IdParams.parse(req.params)
 
@@ -58,7 +60,7 @@ invoiceRoute.post(`/api/invoices/:id/mark-paid`, isAuthenticated, rateLimitByUse
   res.status(204).end()
 })
 
-invoiceRoute.post(`/api/invoices`, isAuthenticated, rateLimitByUserAccount(10, 1), async (req, res) => {
+invoiceRoute.post(`/api/invoices`, rateLimitByUserAccount(10, 1), async (req, res) => {
   const { tenantId } = getSessionOrThrow(req)
   const { customerId, startDate, endDate, preview } = PostCreateInvoiceRequest.parse(req.body)
 
@@ -66,7 +68,7 @@ invoiceRoute.post(`/api/invoices`, isAuthenticated, rateLimitByUserAccount(10, 1
 
   // For a finalized invoice, we need to have the bank account and name set
   if (!preview && (!tenant.invoiceBankAccount?.trim() || !tenant.invoiceBankName?.trim())) {
-    return res.status(400).send({ error: 'required_settings_missing' }).end()
+    throw new BadRequestError('required_settings_missing')
   }
 
   const { invoice, orders } = await InvoiceService.getInvoice(customerId, tenantId, parseIsoDate(startDate), parseIsoDate(endDate))

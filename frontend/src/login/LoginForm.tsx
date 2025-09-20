@@ -140,7 +140,6 @@ export default function LoginForm() {
       await refreshSession()
     }
     catch (error) {
-      console.log('error.status', (error as any).status)
       if ((error as any).status === 429) {
         toast({
           title: t('login.form.email.invalid.error'),

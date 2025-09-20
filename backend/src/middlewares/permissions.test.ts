@@ -18,6 +18,6 @@ describe('permissions', () => {
     const mockReq = {
       user: null,
     } as any
-    expect(() => getSessionOrThrow(mockReq)).toThrow('No tenant ID found')
+    expect(() => getSessionOrThrow(mockReq)).toThrow('No session information found')
   })
 })

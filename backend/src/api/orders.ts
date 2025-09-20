@@ -16,7 +16,8 @@ import {
   PostCreateOrderRequest,
 } from '@siikli/shared'
 import express from 'express'
-import { getSessionOrThrow, isAuthenticated } from '../middlewares/permissions'
+import { NotFoundError } from '../middlewares/error-handler'
+import { getSessionOrThrow } from '../middlewares/permissions'
 import { rateLimitByUserAccount } from '../middlewares/rate-limit'
 import prisma from '../prisma'
 import { OrderService } from '../services/order-service'
@@ -24,14 +25,14 @@ import { OrderService } from '../services/order-service'
 export const ordersRoute = express.Router()
 const s3 = new S3Client({ region: process.env.AWS_REGION })
 
-ordersRoute.get(`/api/orders/limit`, isAuthenticated, rateLimitByUserAccount(20, 1), async (req, res) => {
+ordersRoute.get(`/api/orders/limit`, rateLimitByUserAccount(20, 1), async (req, res) => {
   const { tenantId } = getSessionOrThrow(req)
 
   const remaining = await OrderService.getRemainingOrders(tenantId)
   return res.status(200).json({ remaining } satisfies GetOrderLimit)
 })
 
-ordersRoute.get(`/api/orders`, isAuthenticated, rateLimitByUserAccount(20, 1), async (req, res) => {
+ordersRoute.get(`/api/orders`, rateLimitByUserAccount(20, 1), async (req, res) => {
   const { tenantId } = getSessionOrThrow(req)
   const { startDate, endDate, status, customerId } = GetOrdersQuery.parse(req.query)
 
@@ -40,7 +41,7 @@ ordersRoute.get(`/api/orders`, isAuthenticated, rateLimitByUserAccount(20, 1), a
   res.json(orders satisfies GetOrdersResponse[])
 })
 
-ordersRoute.post(`/api/orders/waybills`, isAuthenticated, rateLimitByUserAccount(10, 1), async (req, res) => {
+ordersRoute.post(`/api/orders/waybills`, rateLimitByUserAccount(10, 1), async (req, res) => {
   const { tenantId } = getSessionOrThrow(req)
   const { startDate, endDate, customerId, preview } = CreateWaybillsRequest.parse(req.body)
 
@@ -61,14 +62,15 @@ ordersRoute.post(`/api/orders/waybills`, isAuthenticated, rateLimitByUserAccount
   res.end(pdfBuffer, 'binary')
 })
 
-ordersRoute.get(`/api/orders/:id/waybill`, isAuthenticated, rateLimitByUserAccount(20, 1), async (req, res) => {
+ordersRoute.get(`/api/orders/:id/waybill`, rateLimitByUserAccount(20, 1), async (req, res) => {
   const { tenantId } = getSessionOrThrow(req)
   const { id } = IdParams.parse(req.params)
 
   // Look up invoice metadata in DB
   const order = await prisma.order.findUnique({ where: { id, tenantId } })
-  if (!order?.waybillS3Key)
-    return res.status(404).send('Not found')
+  if (!order?.waybillS3Key) {
+    throw new NotFoundError('Order not found')
+  }
 
   const cmd = new GetObjectCommand({
     Bucket: 'siikli-prod-files',
@@ -79,11 +81,8 @@ ordersRoute.get(`/api/orders/:id/waybill`, isAuthenticated, rateLimitByUserAccou
   res.json({ url } satisfies GetDownloadUrlResponse)
 })
 
-ordersRoute.get(`/api/orders/:id`, isAuthenticated, rateLimitByUserAccount(20, 1), async (req, res) => {
+ordersRoute.get(`/api/orders/:id`, rateLimitByUserAccount(20, 1), async (req, res) => {
   const { tenantId } = getSessionOrThrow(req)
-  console.log('/api/orders/:id')
-  console.log(req.params)
-
   const { id } = IdParams.parse(req.params)
 
   const order = await OrderService.getOrder(id, tenantId)
@@ -91,7 +90,7 @@ ordersRoute.get(`/api/orders/:id`, isAuthenticated, rateLimitByUserAccount(20, 1
   res.json(order satisfies GetOrderResponse)
 })
 
-ordersRoute.delete(`/api/orders/:id`, isAuthenticated, rateLimitByUserAccount(10, 1), async (req, res) => {
+ordersRoute.delete(`/api/orders/:id`, rateLimitByUserAccount(10, 1), async (req, res) => {
   const { tenantId } = getSessionOrThrow(req)
   const { id } = IdParams.parse(req.params)
 
@@ -100,7 +99,7 @@ ordersRoute.delete(`/api/orders/:id`, isAuthenticated, rateLimitByUserAccount(10
   res.status(204).end()
 })
 
-ordersRoute.post(`/api/orders`, isAuthenticated, rateLimitByUserAccount(10, 1), async (req, res) => {
+ordersRoute.post(`/api/orders`, rateLimitByUserAccount(10, 1), async (req, res) => {
   const { tenantId } = getSessionOrThrow(req)
   const body = PostCreateOrderRequest.parse(req.body)
 
@@ -115,7 +114,7 @@ ordersRoute.post(`/api/orders`, isAuthenticated, rateLimitByUserAccount(10, 1), 
 })
 
 // TODO: Should be PUT
-ordersRoute.post(`/api/orders/:id`, isAuthenticated, rateLimitByUserAccount(10, 1), async (req, res) => {
+ordersRoute.post(`/api/orders/:id`, rateLimitByUserAccount(10, 1), async (req, res) => {
   const { tenantId, userId } = getSessionOrThrow(req)
   const data = PostCreateOrderRequest.parse(req.body)
 

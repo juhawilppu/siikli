@@ -10,10 +10,11 @@ import { OrderService } from '../src/services/order-service'
 import { ProductService } from '../src/services/product-service'
 import { TenantService } from '../src/services/tenant-service'
 import { UserService } from '../src/services/user-service'
+import { log } from '../src/utils/app-log'
 import { getRandomAmount, getRandomCustomer, getRandomFreetext, getRandomFromList, getRandomNote } from './seed-utils'
 
 async function main() {
-  console.log('Running seed 🌱')
+  log.info('Running seed 🌱')
 
   // Create tenant 1
   const tenant = await TenantService.createTenant({

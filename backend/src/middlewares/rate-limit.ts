@@ -1,5 +1,6 @@
 import type { NextFunction, Request, Response } from 'express'
 import redisClient from '../redis'
+import { BadRequestError } from './error-handler'
 import { getSessionOrThrow } from './permissions'
 
 /***
@@ -15,7 +16,7 @@ import { getSessionOrThrow } from './permissions'
 export function rateLimitByIp(limit: number, durationInMinutes: number) {
   return async (req: Request, res: Response, next: NextFunction) => {
     if (!req.ip) {
-      return res.status(400).send({ error: 'ip_not_found' })
+      throw new BadRequestError('Request had no IP address')
     }
 
     const key = `rate-limit:${req.url}:${req.method}:${req.ip}`
@@ -33,7 +34,7 @@ export function rateLimitByIp(limit: number, durationInMinutes: number) {
     res.setHeader('X-RateLimit-Remaining', remaining)
 
     if (attempts > limit) {
-      return res.status(429).send({ error: 'rate_limit_reached' })
+      return res.status(429).send({ error: 'RateLimitReached' })
     }
 
     next()
@@ -69,7 +70,7 @@ export function rateLimitByUserAccount(limit: number, durationInMinutes: number)
     res.setHeader('X-RateLimit-Remaining', remaining)
 
     if (attempts > limit) {
-      return res.status(429).send({ error: 'rate_limit_reached' })
+      return res.status(429).send({ error: 'RateLimitReached' })
     }
 
     next()

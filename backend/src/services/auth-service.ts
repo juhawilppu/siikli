@@ -1,5 +1,6 @@
 import nodeCrypto from 'node:crypto'
 import prisma from '../prisma'
+import { log } from '../utils/app-log'
 import { sendEmail } from './email-service'
 
 export const AuthService = {
@@ -75,6 +76,6 @@ export const AuthService = {
         </div>
       `)
 
-    console.log(`Pin ${pin} sent to ${email} via AWS SES`)
+    log.info(`Pin ${pin} sent to ${email} via AWS SES`)
   },
 }

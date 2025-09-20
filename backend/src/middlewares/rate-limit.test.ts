@@ -73,18 +73,14 @@ describe('rate-limit middleware', () => {
       const attempts = await redisClient.get(key)
       expect(attempts).toBe('3')
       expect(mockRes.status).toHaveBeenCalledWith(429)
-      expect(mockRes.send).toHaveBeenCalledWith({ error: 'rate_limit_reached' })
+      expect(mockRes.send).toHaveBeenCalledWith({ error: 'RateLimitReached' })
       expect(nextFunction).toHaveBeenCalledTimes(2)
     })
-
     it('should return error if IP not found', async () => {
       const middleware = rateLimitByIp(2, 5)
       mockReq = { ...mockReq, ip: undefined }
 
-      await middleware(mockReq as Request, mockRes as Response, nextFunction)
-
-      expect(mockRes.status).toHaveBeenCalledWith(400)
-      expect(mockRes.send).toHaveBeenCalledWith({ error: 'ip_not_found' })
+      await expect(middleware(mockReq as Request, mockRes as Response, nextFunction)).rejects.toThrow('Request had no IP address')
     })
   })
 
@@ -127,7 +123,7 @@ describe('rate-limit middleware', () => {
       const attempts = await redisClient.get(key)
       expect(attempts).toBe('3')
       expect(mockRes.status).toHaveBeenCalledWith(429)
-      expect(mockRes.send).toHaveBeenCalledWith({ error: 'rate_limit_reached' })
+      expect(mockRes.send).toHaveBeenCalledWith({ error: 'RateLimitReached' })
       expect(nextFunction).toHaveBeenCalledTimes(2)
     })
   })

@@ -128,7 +128,6 @@ export const OrderService = {
     const toUpdate = data.items.filter(r => r.id)
     if (toUpdate.length > 0) {
       const promises = toUpdate.map((r) => {
-        console.log(r)
         return prisma.orderRow.update({
           data: {
             orderId: result.id,

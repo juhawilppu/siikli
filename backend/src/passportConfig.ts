@@ -159,7 +159,6 @@ function init() {
           })
 
           let user = await prisma.user.findUnique({ where: { email }, include: { tenant: true } })
-          // console.log('user', user)
 
           if (!user) {
             const { user: newUser } = await TenantService.createUserAndTenant(email)

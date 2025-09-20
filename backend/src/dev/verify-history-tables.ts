@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client'
+import { log } from '../utils/app-log'
 
 const prisma = new PrismaClient()
 
@@ -215,8 +216,8 @@ FOR EACH ROW EXECUTE FUNCTION ${tableName}_history_trigger_func();`
 async function verifyHistoryTable(tableName: string) {
   const historyTableName = `${tableName}_history`
 
-  console.log('\n=== History Table Verification ===')
-  console.log(`Analyzing: ${tableName} -> ${historyTableName}`)
+  log.info('\n=== History Table Verification ===')
+  log.info(`Analyzing: ${tableName} -> ${historyTableName}`)
 
   const tableSchema = await getTableSchema(tableName)
   const tableColumns = tableSchema.map(s => s.column_name)
@@ -241,7 +242,7 @@ async function verifyHistoryTable(tableName: string) {
   }
 
   if (schemaDifferences.length === 0) {
-    console.log('✅ Schema validation passed')
+    log.info('✅ Schema validation passed')
 
     const triggerExists = await checkTriggerExists(`${historyTableName}_trigger`)
     const triggerStatus = await getTriggerStatus(
@@ -250,7 +251,7 @@ async function verifyHistoryTable(tableName: string) {
     )
 
     if (!triggerExists || triggerStatus !== 'VALID') {
-      console.log('❌ History trigger not found')
+      log.info('❌ History trigger not found')
       return false
     }
 
@@ -269,19 +270,19 @@ async function verifyHistoryTable(tableName: string) {
         historyTableName,
         columnsForTrigger,
       )
-      console.log('❌ History trigger needs update')
-      console.log('\n--- Required Trigger SQL ---')
-      console.log(triggerSQL)
+      log.info('❌ History trigger needs update')
+      log.info('\n--- Required Trigger SQL ---')
+      log.info(triggerSQL)
       return false
     }
     else {
-      console.log('✅ History trigger is up to date')
+      log.info('✅ History trigger is up to date')
       return true
     }
   }
   else {
-    console.log('❌ Schema validation failed:')
-    schemaDifferences.forEach(diff => console.log(`  - ${diff}`))
+    log.info('❌ Schema validation failed:')
+    schemaDifferences.forEach(diff => log.info(`  - ${diff}`))
     return false
   }
 }

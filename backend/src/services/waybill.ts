@@ -221,7 +221,5 @@ export default async function createWaybill(
         </div>
     `
 
-  console.log(html)
-
   return html
 }

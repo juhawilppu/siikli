@@ -112,11 +112,10 @@ describe('companySettings - company tab', () => {
   })
 
   it('renders users list and allows adding new user', async () => {
-    const view = renderWithProviders(<AuthProvider><CompanySettings /></AuthProvider>)
+    renderWithProviders(<AuthProvider><CompanySettings /></AuthProvider>)
 
     // Switch to Users tab
     const usersTab = await screen.findByRole('tab', { name: 'Käyttäjät' })
-    console.log('Before clicking Users tab, DOM:', view.container.innerHTML)
     await act(async () => {
       await userEvent.click(usersTab)
     })
