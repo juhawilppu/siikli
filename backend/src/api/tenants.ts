@@ -7,9 +7,9 @@ import { rateLimitByUserAccount } from '../middlewares/rate-limit'
 import { DEFAULT_INVOICE_SUMMARY_ROW } from '../services/invoice-html'
 import { TenantService } from '../services/tenant-service'
 
-const companiesRoute = express.Router()
+export const tenantsRoute = express.Router()
 
-companiesRoute.get(`/api/tenants/onboarding`, rateLimitByUserAccount(20, 1), async (req, res) => {
+tenantsRoute.get(`/api/tenants/onboarding`, rateLimitByUserAccount(20, 1), async (req, res) => {
   const { tenantId } = getSessionOrThrow(req)
 
   const result = await TenantService.getOnboarding(tenantId)
@@ -23,7 +23,7 @@ companiesRoute.get(`/api/tenants/onboarding`, rateLimitByUserAccount(20, 1), asy
   } satisfies GetOnboardingResponse)
 })
 
-companiesRoute.get(`/api/tenants`, rateLimitByUserAccount(20, 1), async (req, res) => {
+tenantsRoute.get(`/api/tenants`, rateLimitByUserAccount(20, 1), async (req, res) => {
   const { tenantId } = getSessionOrThrow(req)
 
   const result = await TenantService.getTenant(tenantId)
@@ -47,7 +47,7 @@ companiesRoute.get(`/api/tenants`, rateLimitByUserAccount(20, 1), async (req, re
   } satisfies GetCompanySettingsResponse)
 })
 
-companiesRoute.get(`/api/tenants/users`, rateLimitByUserAccount(20, 1), async (req, res) => {
+tenantsRoute.get(`/api/tenants/users`, rateLimitByUserAccount(20, 1), async (req, res) => {
   const { tenantId } = getSessionOrThrow(req)
 
   const users = await TenantService.getUsers(tenantId)
@@ -61,7 +61,7 @@ companiesRoute.get(`/api/tenants/users`, rateLimitByUserAccount(20, 1), async (r
   )
 })
 
-companiesRoute.get(`/api/tenants/package-settings`, rateLimitByUserAccount(20, 1), async (req, res) => {
+tenantsRoute.get(`/api/tenants/package-settings`, rateLimitByUserAccount(20, 1), async (req, res) => {
   const { tenantId } = getSessionOrThrow(req)
 
   const packageTypes = await TenantService.getPackageTypes(tenantId)
@@ -73,7 +73,7 @@ companiesRoute.get(`/api/tenants/package-settings`, rateLimitByUserAccount(20, 1
 })
 
 // TODO: should be PUT
-companiesRoute.post(`/api/tenants`, rateLimitByUserAccount(10, 1), async (req, res) => {
+tenantsRoute.post(`/api/tenants`, rateLimitByUserAccount(10, 1), async (req, res) => {
   const { tenantId, userId } = getSessionOrThrow(req)
   const body = PostCompanySettingsRequest.parse(req.body)
 
@@ -82,14 +82,14 @@ companiesRoute.post(`/api/tenants`, rateLimitByUserAccount(10, 1), async (req, r
 })
 
 // TODO This is a bit too simple / dangerous if there is a coding mistake or XSS.
-companiesRoute.delete(`/api/tenants`, isOwner, rateLimitByUserAccount(10, 1), async (req, res) => {
+tenantsRoute.delete(`/api/tenants`, isOwner, rateLimitByUserAccount(10, 1), async (req, res) => {
   const { tenantId, userId } = getSessionOrThrow(req)
 
   await TenantService.deleteTenant(tenantId, userId)
   res.status(204).end()
 })
 
-companiesRoute.delete(`/api/tenants/users/:id`, isOwner, rateLimitByUserAccount(10, 1), async (req, res) => {
+tenantsRoute.delete(`/api/tenants/users/:id`, isOwner, rateLimitByUserAccount(10, 1), async (req, res) => {
   const { userId, tenantId } = getSessionOrThrow(req)
   const { id: userIdToDelete } = IdParams.parse(req.params)
 
@@ -101,7 +101,7 @@ companiesRoute.delete(`/api/tenants/users/:id`, isOwner, rateLimitByUserAccount(
   res.status(204).end()
 })
 
-companiesRoute.post(`/api/tenants/users`, isOwner, rateLimitByUserAccount(10, 1), async (req, res) => {
+tenantsRoute.post(`/api/tenants/users`, isOwner, rateLimitByUserAccount(10, 1), async (req, res) => {
   const { userId, tenantId } = getSessionOrThrow(req)
   const body = PostAddUserRequest.parse(req.body)
 
@@ -109,7 +109,7 @@ companiesRoute.post(`/api/tenants/users`, isOwner, rateLimitByUserAccount(10, 1)
   res.status(204).end()
 })
 
-companiesRoute.put(`/api/tenants/users/:id`, isOwner, rateLimitByUserAccount(10, 1), async (req, res) => {
+tenantsRoute.put(`/api/tenants/users/:id`, isOwner, rateLimitByUserAccount(10, 1), async (req, res) => {
   const { tenantId, userId } = getSessionOrThrow(req)
   const { id: userIdToUpdate } = IdParams.parse(req.params)
   const body = PutChangeUserRoleRequest.parse(req.body)
@@ -122,7 +122,7 @@ companiesRoute.put(`/api/tenants/users/:id`, isOwner, rateLimitByUserAccount(10,
   res.status(204).end()
 })
 
-companiesRoute.post(`/api/tenants/subscription`, rateLimitByUserAccount(10, 1), async (req, res) => {
+tenantsRoute.post(`/api/tenants/subscription`, rateLimitByUserAccount(10, 1), async (req, res) => {
   const { tenantId, userId } = getSessionOrThrow(req)
   const body = PostSubscriptionChangeRequest.parse(req.body)
 
@@ -135,12 +135,10 @@ companiesRoute.post(`/api/tenants/subscription`, rateLimitByUserAccount(10, 1), 
   } satisfies PostSubscriptionChangeResponse)
 })
 
-companiesRoute.post(`/api/tenants/complete-signup`, rateLimitByUserAccount(10, 1), async (req, res) => {
+tenantsRoute.post(`/api/tenants/complete-signup`, rateLimitByUserAccount(10, 1), async (req, res) => {
   const { tenantId, userId } = getSessionOrThrow(req)
   const body = PostCompleteSignupRequest.parse(req.body)
 
   await TenantService.completeSignup(tenantId, body, userId)
   res.status(204).end()
 })
-
-export default companiesRoute

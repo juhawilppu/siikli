@@ -7,7 +7,7 @@ import { rateLimitByUserAccount } from '../middlewares/rate-limit'
 import { ProductService } from '../services/product-service'
 import { serializeNumber } from '../utils/serialization'
 
-const productsRoute = express.Router()
+export const productsRoute = express.Router()
 
 productsRoute.get(`/api/products`, rateLimitByUserAccount(20, 1), async (req, res) => {
   const { tenantId } = getSessionOrThrow(req)
@@ -55,5 +55,3 @@ productsRoute.put(`/api/products/:id`, rateLimitByUserAccount(10, 1), async (req
   await ProductService.updateProduct(id, tenantId, body, userId)
   res.status(204).end()
 })
-
-export default productsRoute

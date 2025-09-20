@@ -3,9 +3,9 @@ import { getSessionOrThrow } from '../middlewares/permissions'
 import { rateLimitByUserAccount } from '../middlewares/rate-limit'
 import { SalesReportService } from '../services/sales-report-service'
 
-const router = express.Router()
+export const salesReportRoute = express.Router()
 
-router.get('/api/sales-report', rateLimitByUserAccount(10, 1), async (req, res) => {
+salesReportRoute.get('/api/sales-report', rateLimitByUserAccount(10, 1), async (req, res) => {
   const { tenantId, userId } = getSessionOrThrow(req)
 
   const data = await SalesReportService.getSalesReportData(tenantId, userId)
@@ -26,5 +26,3 @@ router.get('/api/sales-report', rateLimitByUserAccount(10, 1), async (req, res) 
 
   res.end()
 })
-
-export default router

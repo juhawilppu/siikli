@@ -5,9 +5,9 @@ import { getSessionOrThrow } from '../middlewares/permissions'
 import { rateLimitByUserAccount } from '../middlewares/rate-limit'
 import { PackagingListService } from '../services/packaging-list-service'
 
-const router = express.Router()
+export const packagingListRoute = express.Router()
 
-router.get('/api/packaging-list/grouped-by/customer', rateLimitByUserAccount(20, 1), async (req, res) => {
+packagingListRoute.get('/api/packaging-list/grouped-by/customer', rateLimitByUserAccount(20, 1), async (req, res) => {
   const { tenantId } = getSessionOrThrow(req)
   const { deliveryDate } = GetPackagingListQuery.parse(req.query)
 
@@ -15,12 +15,10 @@ router.get('/api/packaging-list/grouped-by/customer', rateLimitByUserAccount(20,
   res.json(results satisfies GetPackagingListGroupedByCustomerResponse)
 })
 
-router.get('/api/packaging-list/grouped-by/product', rateLimitByUserAccount(20, 1), async (req, res) => {
+packagingListRoute.get('/api/packaging-list/grouped-by/product', rateLimitByUserAccount(20, 1), async (req, res) => {
   const { tenantId } = getSessionOrThrow(req)
   const { deliveryDate } = GetPackagingListQuery.parse(req.query)
 
   const results = await PackagingListService.getPackagingListGroupedByProduct(tenantId, deliveryDate)
   res.json(results satisfies GetPackagingListGroupedByProductResponse)
 })
-
-export default router

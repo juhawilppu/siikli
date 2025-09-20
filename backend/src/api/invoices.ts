@@ -13,7 +13,7 @@ import { InvoiceService } from '../services/invoice-service'
 import { TenantService } from '../services/tenant-service'
 import { serializeNumber } from '../utils/serialization'
 
-const invoiceRoute = express.Router()
+export const invoiceRoute = express.Router()
 
 const s3 = new S3Client({ region: process.env.AWS_REGION })
 
@@ -117,5 +117,3 @@ invoiceRoute.post(`/api/invoices`, rateLimitByUserAccount(10, 1), async (req, re
   res.status(200)
   res.end(pdfBuffer, 'binary')
 })
-
-export default invoiceRoute
