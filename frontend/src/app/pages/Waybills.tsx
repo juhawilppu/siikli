@@ -7,11 +7,13 @@ import { useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import OrderListBase from '@/app/components/OrderListBase'
 import { Button } from '@/components/ui/button'
+import { useTranslation } from '@/lib/translations'
 import { typeParse } from '@/lib/validate'
 import { LoadingSpinner } from '../components/custom-icons'
 import { toast } from '../hooks/use-toast'
 
 export default function Waybills() {
+  const t = useTranslation()
   const now = new Date()
 
   const [isPrinting, setIsPrinting] = useState<'preview' | 'print' | null>(null)
@@ -37,7 +39,7 @@ export default function Waybills() {
       // Create temporary link and trigger download
       const link = document.createElement('a')
       link.href = url
-      link.setAttribute('download', `kuormakirja-${dateToIso(filters.startDate)}-${dateToIso(filters.endDate)}.pdf`)
+      link.setAttribute('download', `${t('waybills.fileName')}-${dateToIso(filters.startDate)}-${dateToIso(filters.endDate)}.pdf`)
       document.body.appendChild(link)
       link.click()
 
@@ -48,8 +50,8 @@ export default function Waybills() {
     catch (error) {
       console.error('Error downloading PDF:', error)
       toast({
-        title: 'Tapahtui virhe kuormakirjojen tulostamisessa',
-        description: 'Yritä uudelleen myöhemmin.',
+        title: t('waybills.error.printing.title'),
+        description: t('waybills.error.printing.description'),
         variant: 'destructive',
       })
     }
@@ -61,22 +63,22 @@ export default function Waybills() {
 
   return (
     <OrderListBase
-      title="Kuormakirjat"
-      description="Selaa, luo ja hallitse kuormakirjoja. Voit tulostaa kuormakirjoja sekä seurata kuormakirjojen tilaa."
+      title={t('waybills.title')}
+      description={t('waybills.description')}
       defaultStartDate={startOfWeek(now, { weekStartsOn: 1 })}
       defaultEndDate={endOfWeek(now, { weekStartsOn: 1 })}
       status={OrderStatus.WAITING_FOR_DELIVERY}
       emptyStateComponent={(
         <div className="flex flex-col items-center justify-center gap-4">
           <span className="text-center">
-            Sinulla ei ole tilauksia, joille voisi tulostaa kuormakirjan. Kuormakirjan voi tulostaa vain uusille tilauksille.
+            { t('waybills.emptyState.description') }
           </span>
           <Button
             asChild
             size="lg"
             className="px-8 py-4 text-lg font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-lg transition"
           >
-            <NavLink to="/app/orders/new">Luo uusi tilaus</NavLink>
+            <NavLink to="/app/orders/new">{t('waybills.emptyState.newOrder')}</NavLink>
           </Button>
         </div>
       )}
@@ -94,13 +96,13 @@ export default function Waybills() {
                   ? (
                       <>
                         <LoadingSpinner />
-                        Vahvista & tulosta
+                        {t('waybills.confirmAndPrint')}
                       </>
                     )
                   : (
                       <>
                         <Check className="mr-2 h-4 w-4" />
-                        Vahvista & tulosta
+                        {t('waybills.confirmAndPrint')}
                       </>
                     )}
               </Button>
@@ -114,13 +116,13 @@ export default function Waybills() {
                   ? (
                       <>
                         <LoadingSpinner />
-                        Esikatselu
+                        {t('waybills.preview')}
                       </>
                     )
                   : (
                       <>
                         <Printer className="mr-2 h-4 w-4" />
-                        Esikatselu
+                        {t('waybills.preview')}
                       </>
                     )}
               </Button>

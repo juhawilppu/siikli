@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
+import { useTranslation } from '@/lib/translations'
 import { typeParse } from '@/lib/validate'
 import { serializeNumber } from '@/utils/serialization'
 
@@ -19,6 +20,7 @@ export function NewCustomer({ closeDialog, customerToEdit, onSave }: {
   customerToEdit?: GetCustomerResponse
   onSave: () => void
 }) {
+  const t = useTranslation()
   const [customer, setCustomer] = useState<
     {
       id: string | null
@@ -64,16 +66,16 @@ export function NewCustomer({ closeDialog, customerToEdit, onSave }: {
       .then(() => {
         onSave()
         toast({
-          title: 'Asiakkaan päivitys onnistui',
-          description: `Asiakas ${customer.name} on päivitetty onnistuneesti.`,
+          title: t('customerForm.update.success.title'),
+          description: t('customerForm.update.success.description'),
           variant: 'success',
         })
       })
       .catch((error) => {
         console.error(error)
         toast({
-          title: 'Virhe',
-          description: 'Asiakkaan päivitys epäonnistui.',
+          title: t('customerForm.update.error.title'),
+          description: t('customerForm.update.error.description'),
           variant: 'destructive',
         })
       })
@@ -92,16 +94,16 @@ export function NewCustomer({ closeDialog, customerToEdit, onSave }: {
         onSave()
         closeDialog()
         toast({
-          title: 'Asiakas lisätty',
-          description: `Asiakas ${newCustomer.name} on lisätty onnistuneesti.`,
+          title: t('customerForm.create.success.title'),
+          description: t('customerForm.create.success.description'),
           variant: 'success',
         })
       })
       .catch((error) => {
         console.error(error)
         toast({
-          title: 'Virhe',
-          description: 'Asiakkaan lisäys epäonnistui.',
+          title: t('customerForm.create.error.title'),
+          description: t('customerForm.create.error.description'),
           variant: 'destructive',
         })
       })
@@ -110,8 +112,8 @@ export function NewCustomer({ closeDialog, customerToEdit, onSave }: {
   const save = () => {
     if (!customer.name) {
       toast({
-        title: 'Virhe',
-        description: 'Nimi on pakollinen tieto.',
+        title: t('customerForm.save.error.name.title'),
+        description: t('customerForm.save.error.name.description'),
         variant: 'destructive',
       })
       return
@@ -122,8 +124,8 @@ export function NewCustomer({ closeDialog, customerToEdit, onSave }: {
       const isValidEmail = emailRegex.test(customer.email)
       if (!isValidEmail) {
         toast({
-          title: 'Virhe',
-          description: 'Virheellinen sähköpostiosoite.',
+          title: t('customerForm.save.error.email.title'),
+          description: t('customerForm.save.error.email.description'),
           variant: 'destructive',
         })
         return
@@ -135,8 +137,8 @@ export function NewCustomer({ closeDialog, customerToEdit, onSave }: {
       const isValidPhone = phoneRegex.test(customer.phone.replace(/\s/g, ''))
       if (!isValidPhone) {
         toast({
-          title: 'Virhe',
-          description: 'Virheellinen puhelinnumero.',
+          title: t('customerForm.save.error.phone.title'),
+          description: t('customerForm.save.error.phone.description'),
           variant: 'destructive',
         })
         return
@@ -145,8 +147,8 @@ export function NewCustomer({ closeDialog, customerToEdit, onSave }: {
 
     if (customer.discount && Number.parseFloat(customer.discount) > 100) {
       toast({
-        title: 'Virhe',
-        description: 'Alennus ei voi olla suurempi kuin 100%.',
+        title: t('customerForm.save.error.discount.title'),
+        description: t('customerForm.save.error.discount.description'),
         variant: 'destructive',
       })
     }
@@ -164,12 +166,12 @@ export function NewCustomer({ closeDialog, customerToEdit, onSave }: {
       <DialogContent className="sm:max-w-[500px] w-full h-full sm:h-auto overflow-y-auto">
         <form className="flex flex-col h-full">
           <DialogHeader>
-            <DialogTitle className="text-lg font-bold">{customerToEdit ? 'Muokkaa asiakasta' : 'Uusi asiakas'}</DialogTitle>
+            <DialogTitle className="text-lg font-bold">{customerToEdit ? t('customerForm.title.edit') : t('customerForm.title.create')}</DialogTitle>
           </DialogHeader>
           <div className="py-4 space-y-4">
             <div className="space-y-2">
               <Label htmlFor="edit-name" className="font-medium">
-                Nimi
+                {t('customerForm.name.label')}
                 {' '}
                 <span className="text-red-500">*</span>
               </Label>
@@ -189,13 +191,13 @@ export function NewCustomer({ closeDialog, customerToEdit, onSave }: {
               <AccordionTrigger className="py-4 text-base font-semibold">
                 <span className="flex items-center">
                   <Phone className="w-5 h-5 mr-2" />
-                  Yhteystiedot
+                  {t('customerForm.contactDetails')}
                 </span>
               </AccordionTrigger>
               <AccordionContent className="space-y-4 overflow-x-visible">
                 <div className="space-y-2">
                   <Label htmlFor="edit-address" className="font-medium">
-                    Katuosoite
+                    {t('customerForm.streetAddress.label')}
                   </Label>
                   <Input
                     id="edit-address"
@@ -209,7 +211,7 @@ export function NewCustomer({ closeDialog, customerToEdit, onSave }: {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="edit-postal_code" className="font-medium">
-                      Postinumero
+                      {t('customerForm.postalCode.label')}
                     </Label>
                     <Input
                       id="edit-postal_code"
@@ -221,7 +223,7 @@ export function NewCustomer({ closeDialog, customerToEdit, onSave }: {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="edit-city" className="font-medium">
-                      Kaupunki
+                      {t('customerForm.city.label')}
                     </Label>
                     <Input
                       id="edit-city"
@@ -236,7 +238,7 @@ export function NewCustomer({ closeDialog, customerToEdit, onSave }: {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="edit-email" className="font-medium">
-                      Sähköposti
+                      {t('customerForm.email.label')}
                     </Label>
                     <Input
                       id="edit-email"
@@ -249,7 +251,7 @@ export function NewCustomer({ closeDialog, customerToEdit, onSave }: {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="edit-phone" className="font-medium">
-                      Puhelin
+                      {t('customerForm.phone.label')}
                     </Label>
                     <Input
                       id="edit-phone"
@@ -267,13 +269,13 @@ export function NewCustomer({ closeDialog, customerToEdit, onSave }: {
               <AccordionTrigger className="py-4 text-base font-semibold">
                 <span className="flex items-center">
                   <FileText className="w-5 h-5 mr-2" />
-                  Laskutustiedot
+                  {t('customerForm.invoiceDetails')}
                 </span>
               </AccordionTrigger>
               <AccordionContent className="space-y-4 overflow-x-visible">
                 <div className="space-y-2">
                   <Label htmlFor="edit-business_id" className="font-medium">
-                    Y-tunnus
+                    {t('customerForm.businessId.label')}
                   </Label>
                   <Input
                     id="edit-business_id"
@@ -287,9 +289,9 @@ export function NewCustomer({ closeDialog, customerToEdit, onSave }: {
                 <div className="space-y-2">
                   <span className="flex">
                     <Label htmlFor="edit-company_legal_name" className="font-medium">
-                      Yrityksen virallinen nimi
+                      {t('customerForm.companyLegalName.label')}
                     </Label>
-                    <InfoTooltip>Yrityksen virallinen kaupparekisterissä oleva nimi, jota käytetään laskuissa. Jos tämä on tyhjä, käytetään nimeä.</InfoTooltip>
+                    <InfoTooltip>{t('customerForm.companyLegalName.tooltip')}</InfoTooltip>
                   </span>
                   <Input
                     id="edit-company_legal_name"
@@ -303,9 +305,9 @@ export function NewCustomer({ closeDialog, customerToEdit, onSave }: {
                 <div className="space-y-2">
                   <div className="flex">
                     <Label htmlFor="edit-discount" className="font-medium">
-                      Alennus (%)
+                      {t('customerForm.discount.label')}
                     </Label>
-                    <InfoTooltip>Tämä asettaa yritykselle yleisen alennuksen, joka vaikuttaa kaikkiin laskuihin. Voit antaa esimerkiksi 5 % alennuksen, joka lasketaan laskun kokonaishinnasta.</InfoTooltip>
+                    <InfoTooltip>{t('customerForm.discount.tooltip')}</InfoTooltip>
                   </div>
                   <Input
                     id="edit-discount"
@@ -328,9 +330,9 @@ export function NewCustomer({ closeDialog, customerToEdit, onSave }: {
                 <div className="space-y-2">
                   <span className="flex">
                     <Label htmlFor="edit-reference" className="font-medium">
-                      Laskun viite
+                      {t('customerForm.invoiceReference.label')}
                     </Label>
-                    <InfoTooltip>Määrittää laskun viitekoodin. Tämä on asiakaskohtainen.</InfoTooltip>
+                    <InfoTooltip>{t('customerForm.invoiceReference.tooltip')}</InfoTooltip>
                   </span>
                   <Input
                     id="edit-reference"
@@ -346,11 +348,11 @@ export function NewCustomer({ closeDialog, customerToEdit, onSave }: {
 
           <DialogFooter className="sticky bottom-0 bg-background z-10 pt-4 gap-2 sm:gap-0">
             <Button variant="outline" onClick={closeDialog} className="hidden sm:inline-flex">
-              Peruuta
+              {t('customerForm.cancel')}
             </Button>
             <Button type="button" onClick={save}>
               <Save className="h-4 w-4 mr-2" />
-              Tallenna
+              {t('customerForm.save')}
             </Button>
           </DialogFooter>
         </form>

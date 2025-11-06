@@ -2,7 +2,7 @@ import type { GetCustomerResponse, GetCustomersResponse, GetOrdersResponse, Orde
 import { dateToIso, formatDate, formatNumber, parseIsoDate } from '@siikli/shared'
 import axios from 'axios'
 
-import { fi } from 'date-fns/locale'
+import { enUS, fi } from 'date-fns/locale'
 import {
   Calendar,
   Plus,
@@ -19,6 +19,8 @@ import { Label } from '@/components/ui/label'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { useApp } from '@/context/AppContext'
+import { useTranslation } from '@/lib/translations'
 
 export interface Filters {
   startDate: Date
@@ -29,6 +31,8 @@ export interface Filters {
 
 export default function OrderListBase({ title, description, defaultStartDate, defaultEndDate, actionComponent, status: defaultStatus, emptyStateComponent }: { title: string, description: string, defaultStartDate: Date, defaultEndDate: Date, actionComponent?: (filters: Filters, orderCount: number, refresh: () => void) => React.ReactNode, status?: OrderStatus, emptyStateComponent?: React.ReactNode }) {
   const navigate = useNavigate()
+  const { language } = useApp()
+  const t = useTranslation()
   const [customers, setCustomers] = useState<GetCustomerResponse[]>()
   const [customerId, setCustomerId] = useState<string>()
   const [startDate, setStartDate] = useState<Date>(defaultStartDate)
@@ -71,20 +75,20 @@ export default function OrderListBase({ title, description, defaultStartDate, de
         mainAction={(
           <Button onClick={() => navigate('/orders/new')}>
             <Plus className="mr-2 h-4 w-4" />
-            Uusi tilaus
+            { t('ordersListBase.newOrder')}
           </Button>
         )}
       >
         <div className="space-y-5">
           <Card>
             <CardHeader>
-              <CardTitle>Hakuehdot</CardTitle>
-              <CardDescription className="text-gray-700">Suodata tilauksia päivämäärän mukaan</CardDescription>
+              <CardTitle>{t('ordersListBase.filters.title')}</CardTitle>
+              <CardDescription className="text-gray-700">{t('ordersListBase.filters.description')}</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="flex flex-col gap-4 w-full md:flex-row">
                 <div className="space-y-2 w-full md:w-1/4">
-                  <Label htmlFor="customer">Asiakas</Label>
+                  <Label htmlFor="customer">{t('ordersListBase.customer.title')}</Label>
                   <Select
                     value={customerId !== undefined ? customerId : 'none'}
                     onValueChange={(value) => {
@@ -96,7 +100,7 @@ export default function OrderListBase({ title, description, defaultStartDate, de
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="none">
-                        <span className="text-gray-500">Valitse asiakas</span>
+                        <span className="text-gray-500">{t('ordersListBase.customer.select')}</span>
                       </SelectItem>
                       {customers?.map(customer => (
                         <SelectItem key={customer.id} value={customer.id}>
@@ -108,12 +112,12 @@ export default function OrderListBase({ title, description, defaultStartDate, de
                 </div>
 
                 <div className="space-y-2 w-full md:w-1/4">
-                  <label className="text-sm font-medium">Alkupäivä</label>
+                  <label className="text-sm font-medium">{t('ordersListBase.startDate.title')}</label>
                   <Popover open={openStartDate} onOpenChange={setOpenStartDate}>
                     <PopoverTrigger asChild>
                       <Button variant="outline" className="w-full justify-start text-left font-normal">
                         <Calendar className="mr-2 h-4 w-4" />
-                        {startDate ? formatDate(startDate) : <span>Select date</span>}
+                        {startDate ? formatDate(startDate) : <span>{t('ordersListBase.startDate.select')}</span>}
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0">
@@ -126,7 +130,7 @@ export default function OrderListBase({ title, description, defaultStartDate, de
                           setOpenStartDate(false)
                         }}
                         required
-                        locale={fi}
+                        locale={language === 'fi' ? fi : enUS}
                         toDate={endDate} // TODO
                       />
                     </PopoverContent>
@@ -134,12 +138,12 @@ export default function OrderListBase({ title, description, defaultStartDate, de
                 </div>
 
                 <div className="space-y-2 w-full md:w-1/4">
-                  <label className="text-sm font-medium">Loppupäivä</label>
+                  <label className="text-sm font-medium">{t('ordersListBase.endDate.title')}</label>
                   <Popover open={openEndDate} onOpenChange={setOpenEndDate}>
                     <PopoverTrigger asChild>
                       <Button variant="outline" className="w-full justify-start text-left font-normal">
                         <Calendar className="mr-2 h-4 w-4" />
-                        {endDate ? formatDate(endDate) : <span>Select date</span>}
+                        {endDate ? formatDate(endDate) : <span>{t('ordersListBase.endDate.select')}</span>}
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0">
@@ -152,14 +156,14 @@ export default function OrderListBase({ title, description, defaultStartDate, de
                           setOpenEndDate(false)
                         }}
                         required
-                        locale={fi}
+                        locale={language === 'fi' ? fi : enUS}
                         fromDate={startDate}
                       />
                     </PopoverContent>
                   </Popover>
                 </div>
                 <div className="space-y-2 w-full md:w-1/4">
-                  <label className="text-sm font-medium">Toimituksen tila</label>
+                  <label className="text-sm font-medium">{t('ordersListBase.status.title')}</label>
                   <Select
                     value={status}
                     disabled={defaultStatus !== undefined}
@@ -171,10 +175,10 @@ export default function OrderListBase({ title, description, defaultStartDate, de
                       <SelectValue placeholder="Valitse tila" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="ALL">Kaikki</SelectItem>
-                      <SelectItem value="WAITING_FOR_DELIVERY">Odottaa toimitusta</SelectItem>
-                      <SelectItem value="DELIVERED">Toimitettu</SelectItem>
-                      <SelectItem value="INVOICED">Laskutettu</SelectItem>
+                      <SelectItem value="ALL">{t('orderStatus.ALL')}</SelectItem>
+                      <SelectItem value="WAITING_FOR_DELIVERY">{t('orderStatus.WAITING_FOR_DELIVERY')}</SelectItem>
+                      <SelectItem value="DELIVERED">{t('orderStatus.DELIVERED')}</SelectItem>
+                      <SelectItem value="INVOICED">{t('orderStatus.INVOICED')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -187,7 +191,7 @@ export default function OrderListBase({ title, description, defaultStartDate, de
                 <div className="flex justify-center py-12">
                   <Card className="max-w-lg w-full shadow-lg border border-dashed border-gray-300 bg-muted/50">
                     <CardHeader>
-                      <CardTitle className="text-lg text-center text-muted-foreground">Ei tietoja näytettäväksi</CardTitle>
+                      <CardTitle className="text-lg text-center text-muted-foreground">{t('ordersListBase.emptyState.title')}</CardTitle>
                     </CardHeader>
                     <CardContent>
                       <div className="flex flex-col items-center gap-4">
@@ -209,11 +213,11 @@ export default function OrderListBase({ title, description, defaultStartDate, de
                     <Table>
                       <TableHeader>
                         <TableRow>
-                          <TableHead>Tilausnumero</TableHead>
-                          <TableHead>Päivämäärä</TableHead>
-                          <TableHead>Tila</TableHead>
-                          <TableHead>Asiakas</TableHead>
-                          <TableHead className="text-right">Summa ALV 0 %</TableHead>
+                          <TableHead>{t('ordersListBase.orderNumber.title')}</TableHead>
+                          <TableHead>{t('ordersListBase.date.title')}</TableHead>
+                          <TableHead>{t('ordersListBase.status.title')}</TableHead>
+                          <TableHead>{t('ordersListBase.customer.title')}</TableHead>
+                          <TableHead className="text-right">{t('ordersListBase.total.title')}</TableHead>
                           <TableHead className="text-right"></TableHead>
                         </TableRow>
                       </TableHeader>
@@ -247,7 +251,7 @@ export default function OrderListBase({ title, description, defaultStartDate, de
                                 size="default"
                                 onClick={() => navigate(`/orders/${order.id}`)}
                               >
-                                Avaa
+                                {t('ordersListBase.viewDetails')}
                               </Button>
                             </TableCell>
                           </TableRow>
@@ -259,7 +263,7 @@ export default function OrderListBase({ title, description, defaultStartDate, de
                     <div className="text-sm text-muted-foreground">
                       <strong>{orders.length}</strong>
                       {' '}
-                      {orders.length === 1 ? 'tilaus' : 'tilausta'}
+                      {t(orders.length === 1 ? 'ordersListBase.footer.order' : 'ordersListBase.footer.orders')}
                     </div>
                   </CardFooter>
                 </Card>

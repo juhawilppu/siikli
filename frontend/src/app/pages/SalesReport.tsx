@@ -1,6 +1,6 @@
 import { formatDate } from '@siikli/shared'
 import { endOfWeek, startOfWeek } from 'date-fns'
-import { fi } from 'date-fns/locale'
+import { enUS, fi } from 'date-fns/locale'
 import { Calendar, Download } from 'lucide-react'
 import { useState } from 'react'
 import SiikliPage from '@/app/components/SiikliPage'
@@ -8,10 +8,14 @@ import { Button } from '@/components/ui/button'
 import { Calendar as CalendarComponent } from '@/components/ui/calendar'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { useApp } from '@/context/AppContext'
+import { useTranslation } from '@/lib/translations'
 
 const now = new Date()
 
 export function SalesReport() {
+  const { language } = useApp()
+  const t = useTranslation()
   const [loading, setLoading] = useState(false)
   const [startDate, setStartDate] = useState<Date | undefined>(
     startOfWeek(now, { weekStartsOn: 1 }),
@@ -30,7 +34,7 @@ export function SalesReport() {
       const url = window.URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
-      a.download = 'myyntiraportti.xlsx'
+      a.download = `${t('salesReport.fileName')}.xlsx`
       a.click()
       window.URL.revokeObjectURL(url)
     }
@@ -40,21 +44,21 @@ export function SalesReport() {
   }
 
   return (
-    <SiikliPage title="Myyntiraportti" description="Tällä sivulla voit tulostaa koko myyntikannan Exceliin">
+    <SiikliPage title={t('salesReport.title')} description={t('salesReport.description')}>
       <Card>
         <CardHeader>
-          <CardTitle>Hakuehdot</CardTitle>
-          <CardDescription className="text-gray-700">Suodata tilauksia päivämäärän mukaan</CardDescription>
+          <CardTitle>{t('salesReport.filters.title')}</CardTitle>
+          <CardDescription className="text-gray-700">{t('salesReport.filters.description')}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col gap-4 w-full md:flex-row">
             <div className="space-y-2 flex-1">
-              <label className="text-sm font-medium">Alkupäivä</label>
+              <label className="text-sm font-medium">{t('salesReport.filters.startDate.title')}</label>
               <Popover open={openStartDate} onOpenChange={setOpenStartDate}>
                 <PopoverTrigger asChild>
                   <Button variant="outline" className="w-full justify-start text-left font-normal">
                     <Calendar className="mr-2 h-4 w-4" />
-                    {startDate ? formatDate(startDate) : <span>Select date</span>}
+                    {startDate ? formatDate(startDate) : <span>{t('salesReport.filters.startDate.select')}</span>}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0">
@@ -68,19 +72,19 @@ export function SalesReport() {
                     }}
                     required
                     initialFocus
-                    locale={fi}
+                    locale={language === 'fi' ? fi : enUS}
                   />
                 </PopoverContent>
               </Popover>
             </div>
 
             <div className="space-y-2 flex-1">
-              <label className="text-sm font-medium">Loppupäivä</label>
+              <label className="text-sm font-medium">{t('salesReport.filters.endDate.title')}</label>
               <Popover open={openEndDate} onOpenChange={setOpenEndDate}>
                 <PopoverTrigger asChild>
                   <Button variant="outline" className="w-full justify-start text-left font-normal">
                     <Calendar className="mr-2 h-4 w-4" />
-                    {endDate ? formatDate(endDate) : <span>Select date</span>}
+                    {endDate ? formatDate(endDate) : <span>{t('salesReport.filters.endDate.select')}</span>}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0">
@@ -93,7 +97,7 @@ export function SalesReport() {
                       setOpenEndDate(false)
                     }}
                     required
-                    locale={fi}
+                    locale={language === 'fi' ? fi : enUS}
                   />
                 </PopoverContent>
               </Popover>
@@ -102,7 +106,7 @@ export function SalesReport() {
               <Button onClick={getReport} disabled={loading}>
                 <Download className="w-4 h-4 mr-2" />
                 {' '}
-                Lataa
+                {t('salesReport.download')}
               </Button>
             </div>
           </div>

@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
 
-const DEFAULT_LANGUAGE = 'fi'
+const DEFAULT_LANGUAGE = 'en'
 type Language = 'fi' | 'en'
 
 interface AppContextType {

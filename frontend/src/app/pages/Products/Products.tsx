@@ -1,5 +1,3 @@
-'use client'
-
 import type { GetPackageSettingsResponse, GetProductsResponse } from '@siikli/shared'
 import * as Sentry from '@sentry/react'
 
@@ -24,9 +22,11 @@ import {
 import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { useTranslation } from '@/lib/translations'
 import NewProduct from './ProductForm'
 
 export default function Products() {
+  const t = useTranslation()
   const [searchQuery, setSearchQuery] = useState('')
   const [loading, setLoading] = useState(true)
   const [products, setProducts] = useState<GetProductsResponse[]>([])
@@ -84,8 +84,8 @@ export default function Products() {
       setProducts([...products, product])
       setShowNewProductDialog(false)
       toast({
-        title: 'Tuote luotu',
-        description: `Tuote "${product.name}" on tallennettu onnistuneesti.`,
+        title: t('products.create.success.title'),
+        description: t('products.create.success.description'),
         variant: 'success',
       })
     }
@@ -94,8 +94,8 @@ export default function Products() {
       setProducts(newProducts)
       setEditProductId(undefined)
       toast({
-        title: 'Muutokset tallennettu',
-        description: `Tuote "${product.name}" on tallennettu onnistuneesti.`,
+        title: t('products.update.success.title'),
+        description: t('products.update.success.description'),
         variant: 'success',
       })
     }
@@ -122,15 +122,15 @@ export default function Products() {
       setProducts(newProductList)
 
       toast({
-        title: 'Tuote poistettu',
-        description: `Tuote "${product.name}" on poistettu onnistuneesti.`,
+        title: t('products.delete.success.title'),
+        description: t('products.delete.success.description'),
       })
     }
     catch (e: any) {
       Sentry.captureException(e)
       toast({
-        title: 'Poistaminen epäonnistui',
-        description: `Tuotetta "${product.name}" ei voitu poistaa, koska se on jo lisätty tilaukseen.`,
+        title: t('products.delete.error.title'),
+        description: t('products.delete.error.description'),
         variant: 'destructive',
       })
     }
@@ -148,17 +148,17 @@ export default function Products() {
   }
 
   if (loading || !packageTypes || !packageSizes)
-    return <SiikliPage title="Tuotteet" description="Hallitse tuotteita ja hintoja" />
+    return <SiikliPage title={t('products.title')} description={t('products.description')} />
 
   return (
     <>
       <SiikliPage
-        title="Tuotteet"
-        description="Hallitse tuotteita ja hintoja"
+        title={t('products.title')}
+        description={t('products.description')}
         mainAction={(
           <Button onClick={() => setShowNewProductDialog(true)}>
             <Plus className="h-4 w-4 mr-2" />
-            Lisää tuote
+            {t('products.createProduct')}
           </Button>
         )}
       >
@@ -168,7 +168,7 @@ export default function Products() {
             <div className="flex flex-1 items-center gap-2">
               <Input
                 className="h-8 w-full md:w-[300px] bg-white"
-                placeholder="Hae tuotetta"
+                placeholder={t('products.search.placeholder')}
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
               />
@@ -182,7 +182,7 @@ export default function Products() {
 
           <Card className="shadow-md">
             <CardHeader className="border-b bg-gray-50 py-4 pl-2">
-              <CardTitle>Tuoteluettelo</CardTitle>
+              <CardTitle>{t('products.list.title')}</CardTitle>
             </CardHeader>
             <CardContent className="p-0">
               <Table>
@@ -190,7 +190,7 @@ export default function Products() {
                   <TableRow>
                     <TableHead className="cursor-pointer" onClick={() => changeSorting('name')}>
                       <div className="flex items-center">
-                        Nimi
+                        {t('products.list.name')}
                         {orderByField === 'name'
                           && (orderDirection === 'asc'
                             ? (
@@ -203,7 +203,7 @@ export default function Products() {
                     </TableHead>
                     <TableHead className="cursor-pointer" onClick={() => changeSorting('price')}>
                       <div className="flex items-center">
-                        Hinta ALV 0 % (€)
+                        {t('products.list.price0')}
                         {orderByField === 'price'
                           && (orderDirection === 'asc'
                             ? (
@@ -214,8 +214,8 @@ export default function Products() {
                               ))}
                       </div>
                     </TableHead>
-                    <TableHead>Pakkaustiedot</TableHead>
-                    <TableHead className="text-right">Toiminnot</TableHead>
+                    <TableHead>{ t('products.list.packaging')}</TableHead>
+                    <TableHead className="text-right">{ t('products.list.actions')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -223,7 +223,7 @@ export default function Products() {
                     ? (
                         <TableRow>
                           <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
-                            Ei tuotteita hakuehdoilla
+                            {t('products.list.noProductsFound')}
                           </TableCell>
                         </TableRow>
                       )
@@ -259,7 +259,7 @@ export default function Products() {
                                       </Button>
                                     </TooltipTrigger>
                                     <TooltipContent>
-                                      <p>Muokkaa</p>
+                                      <p>{t('products.list.edit')}</p>
                                     </TooltipContent>
                                   </Tooltip>
                                 </TooltipProvider>
@@ -277,7 +277,7 @@ export default function Products() {
                                       </Button>
                                     </TooltipTrigger>
                                     <TooltipContent>
-                                      <p>Poista</p>
+                                      <p>{t('products.list.delete')}</p>
                                     </TooltipContent>
                                   </Tooltip>
                                 </TooltipProvider>
@@ -300,16 +300,16 @@ export default function Products() {
         <AlertDialog open onOpenChange={() => setProductIdToDelete(undefined)}>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Poistetaanko tuote?</AlertDialogTitle>
+              <AlertDialogTitle>{t('products.deleteModal.title')}</AlertDialogTitle>
               <AlertDialogDescription>
-                <p>⚠️ Tietoja ei voi palauttaa enää jälkikäteen.</p>
-                <p className="pt-2">Tuotteen tiedot poistetaan pysyvästi järjestelmästä. Jos tuotetta on käytetty tilauksissa, ne poistetaan myös. Varmista, että olet laskuttanut kaikki tuotteen tilaukset.</p>
+                <p>{t('products.deleteModal.description')}</p>
+                <p className="pt-2">{t('products.deleteModal.description2')}</p>
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>Peruuta</AlertDialogCancel>
+              <AlertDialogCancel>{t('products.deleteModal.cancel')}</AlertDialogCancel>
               <AlertDialogAction onClick={() => deleteProduct(productIdToDelete)} className="bg-red-500 hover:bg-red-600">
-                Poista
+                {t('products.deleteModal.delete')}
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>

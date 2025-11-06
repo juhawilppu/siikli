@@ -23,6 +23,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { useTranslation } from '@/lib/translations'
 import { NewCustomer } from './CustomerForm'
 
 function SortableTableRow({ customer, onEdit, onDelete }: {
@@ -30,6 +31,7 @@ function SortableTableRow({ customer, onEdit, onDelete }: {
   onEdit: (customer: GetCustomerResponse) => void
   onDelete: (id: string) => void
 }) {
+  const t = useTranslation()
   return (
     <TableRow>
       <TableCell className="font-medium">
@@ -47,14 +49,20 @@ function SortableTableRow({ customer, onEdit, onDelete }: {
         <div className="text-sm">
           {customer.email && (
             <div>
-              <span className="text-gray-500">Sähköposti:</span>
+              <span className="text-gray-500">
+                {t('customerForm.email')}
+                :
+              </span>
               {' '}
               {customer.email}
             </div>
           )}
           {customer.phone && (
             <div>
-              <span className="text-gray-500">Puh:</span>
+              <span className="text-gray-500">
+                {t('customerForm.phone')}
+                :
+              </span>
               {' '}
               {customer.phone}
             </div>
@@ -76,7 +84,7 @@ function SortableTableRow({ customer, onEdit, onDelete }: {
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
-                <p>Muokkaa</p>
+                <p>{t('customerForm.edit')}</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
@@ -93,7 +101,7 @@ function SortableTableRow({ customer, onEdit, onDelete }: {
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
-                <p>Poista</p>
+                <p>{t('customerForm.delete')}</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
@@ -104,9 +112,10 @@ function SortableTableRow({ customer, onEdit, onDelete }: {
 }
 
 export function Customers() {
-  const [customers, setCustomers] = useState<GetCustomerResponse[]>([])
+  const t = useTranslation()
 
   const [loading, setLoading] = useState(true)
+  const [customers, setCustomers] = useState<GetCustomerResponse[]>([])
   const [searchQuery, setSearchQuery] = useState('')
   const [customerToEdit, setCustomerToEdit] = useState<GetCustomerResponse>()
   const [showCreateDialog, setShowCreateDialog] = useState(false)
@@ -133,7 +142,6 @@ export function Customers() {
   // Filter and sort customers
   const filteredCustomers = customers
     .filter((customer) => {
-      // Searchs
       const matchesSearch
         = customer.name.toLowerCase().includes(searchQuery.toLowerCase())
           || customer.companyLegalName?.toLowerCase().includes(searchQuery.toLowerCase())
@@ -170,35 +178,35 @@ export function Customers() {
         setCustomers(customers.filter(a => a.id !== customerIdToDelete))
         setCustomerIdToDelete(null)
         toast({
-          title: 'Asiakas poistettu',
-          description: `Asiakas "${customerToDelete.name}" on poistettu onnistuneesti.`,
+          title: t('customerForm.delete.success.title'),
+          description: t('customerForm.delete.success.description'),
         })
       })
       .catch((error) => {
         console.error(error)
         toast({
-          title: 'Virhe',
-          description: 'Asiakkaan poisto epäonnistui.',
+          title: t('customerForm.delete.error.title'),
+          description: t('customerForm.delete.error.description'),
           variant: 'destructive',
         })
       })
   }
 
   if (loading)
-    return <SiikliPage title="Asiakkaat" description="Hallitse asiakastietoja" />
+    return <SiikliPage title={t('customers.title')} description={t('customers.description')} />
   if (!customers)
-    return <div>Ei asiakkaita</div>
+    return <div>{t('customers.emptyState.description')}</div>
 
   return (
     <>
       <SiikliPage
-        title="Asiakkaat"
-        description="Hallitse asiakastietoja"
+        title={t('customers.title')}
+        description={t('customers.description')}
         mainAction={(
           <Button onClick={() => setShowCreateDialog(true)}>
             <Plus className="h-4 w-4 mr-2" />
             {' '}
-            Lisää asiakas
+            {t('customers.createButton')}
           </Button>
         )}
       >
@@ -206,7 +214,7 @@ export function Customers() {
           <div className="flex flex-wrap gap-2">
             <Input
               type="text"
-              placeholder="Hae asiakasta"
+              placeholder={t('customers.search.placeholder')}
               value={searchQuery}
               onChange={handleSearch}
               className="h-8 w-full md:w-[300px] bg-white"
@@ -217,7 +225,7 @@ export function Customers() {
         {/* Customer table */}
         <Card className="shadow-md">
           <CardHeader className="border-b bg-gray-50 py-4 pl-2">
-            <CardTitle>Asiakasluettelo</CardTitle>
+            <CardTitle>{t('customers.list.title')}</CardTitle>
           </CardHeader>
           <CardContent className="p-0">
             <div className="relative">
@@ -225,11 +233,11 @@ export function Customers() {
                 <TableHeader className="bg-gray-50 sticky top-0 z-10">
                   <TableRow>
                     <TableHead>
-                      Nimi
+                      {t('customers.list.name')}
                     </TableHead>
-                    <TableHead>Kaupunki</TableHead>
-                    <TableHead>Yhteystiedot</TableHead>
-                    <TableHead className="text-right">Toiminnot</TableHead>
+                    <TableHead>{t('customers.list.city')}</TableHead>
+                    <TableHead>{t('customers.list.contact')}</TableHead>
+                    <TableHead className="text-right">{t('customers.list.actions')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -237,7 +245,7 @@ export function Customers() {
                     ? (
                         <TableRow>
                           <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
-                            Ei asiakkaita
+                            {t('customers.emptyState.description')}
                           </TableCell>
                         </TableRow>
                       )
@@ -279,16 +287,18 @@ export function Customers() {
       <AlertDialog open={!!customerIdToDelete} onOpenChange={open => !open && setCustomerIdToDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Poistetaanko asiakas?</AlertDialogTitle>
+            <AlertDialogTitle>{t('customers.deleteDialog.title')}</AlertDialogTitle>
             <AlertDialogDescription>
-              <p>⚠️ Tietoja ei voi palauttaa enää jälkikäteen.</p>
-              <p className="pt-2">Asiakkaan tiedot poistetaan pysyvästi järjestelmästä. Jos asiakkaalla on tilauksia, ne poistetaan myös. Varmista, että olet laskuttanut kaikki asiakkaan tilaukset.</p>
+              <p>
+                {t('customers.deleteDialog.description.warning')}
+              </p>
+              <p className="pt-2">{t('customers.deleteDialog.description.details')}</p>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Peruuta</AlertDialogCancel>
+            <AlertDialogCancel>{t('customers.deleteDialog.cancel')}</AlertDialogCancel>
             <AlertDialogAction onClick={confirmCustomerDeletion} className="bg-red-500 hover:bg-red-600">
-              Poista
+              {t('customers.deleteDialog.confirm')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

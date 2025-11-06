@@ -1,5 +1,3 @@
-'use client'
-
 import type { GetProductsResponse } from '@siikli/shared'
 
 import { Popover } from '@radix-ui/react-popover'
@@ -29,10 +27,12 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Separator } from '@/components/ui/separator'
+import { useTranslation } from '@/lib/translations'
 import { cn } from '@/lib/utils'
 import { serializeNumber } from '@/utils/serialization'
 
 export default function NewProduct({ productToEdit, hide, onSave, refPackageTypes, refPackageSizes }: { productToEdit?: GetProductsResponse, hide: () => void, onSave: (product: GetProductsResponse) => void, refPackageTypes: string[], refPackageSizes: number[] }) {
+  const t = useTranslation()
   const mode = productToEdit ? 'edit' : 'create'
   const isMobile = useIsMobile()
   const [product, setProduct] = useState<Partial<{
@@ -73,8 +73,8 @@ export default function NewProduct({ productToEdit, hide, onSave, refPackageType
     e.preventDefault()
     if (!product.name) {
       toast({
-        title: 'Virhe',
-        description: 'Nimi on pakollinen tieto.',
+        title: t('productForm.submit.error.name.title'),
+        description: t('productForm.submit.error.name.description'),
         variant: 'destructive',
       })
       return
@@ -102,12 +102,12 @@ export default function NewProduct({ productToEdit, hide, onSave, refPackageType
     <DialogContent className="sm:max-w-[500px] w-full h-full sm:h-auto overflow-y-auto">
       <form onSubmit={handleSubmit}>
         <DialogHeader>
-          <DialogTitle className="text-lg font-bold">{mode === 'create' ? 'Uusi tuote' : 'Muokkaa tuotetta'}</DialogTitle>
+          <DialogTitle className="text-lg font-bold">{mode === 'create' ? t('productForm.newProduct') : t('productForm.editProduct')}</DialogTitle>
         </DialogHeader>
         <div className="py-4 space-y-4">
           <div className="space-y-2">
             <Label htmlFor="name" className="text-base font-medium">
-              Nimi
+              {t('productForm.name.label')}
               {' '}
               <span className="text-red-500">*</span>
             </Label>
@@ -116,7 +116,7 @@ export default function NewProduct({ productToEdit, hide, onSave, refPackageType
               className="w-full"
               value={product?.name || ''}
               onChange={e => setProduct({ ...product, name: e.target.value })}
-              placeholder="Syötä tuotteen nimi"
+              placeholder={t('productForm.name.placeholder')}
               required
             />
           </div>
@@ -128,16 +128,16 @@ export default function NewProduct({ productToEdit, hide, onSave, refPackageType
                   <Euro
                     className="w-5 h-5 mr-2"
                   />
-                  Hinnat
+                  {t('productForm.pricing.label')}
                 </span>
               </AccordionTrigger>
               <AccordionContent className="space-y-4">
                 <p className="text-sm text-muted-foreground">
-                  Voit määrittää tuotteelle oletushinnan, jota käytetään tilauksessa. Voit kuitenkin muuttaa hinnan tilauksen yhteydessä.
+                  {t('productForm.pricing.description')}
                 </p>
                 <div className="space-y-2">
                   <Label htmlFor="price" className="text-base font-medium">
-                    Hinta ALV 0 % (€)
+                    {t('productForm.pricing.price.label')}
                   </Label>
                   <Input
                     id="price"
@@ -154,7 +154,7 @@ export default function NewProduct({ productToEdit, hide, onSave, refPackageType
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="tax" className="text-base font-medium">
-                    Verokanta
+                    {t('productForm.pricing.tax.label')}
                   </Label>
                   <Input
                     id="tax"
@@ -171,17 +171,17 @@ export default function NewProduct({ productToEdit, hide, onSave, refPackageType
               <AccordionTrigger className="py-4 text-base font-semibold">
                 <span className="flex items-center">
                   <Package className="w-5 h-5 mr-2" />
-                  Pakkaustiedot
+                  {t('productForm.packaging.label')}
                 </span>
               </AccordionTrigger>
               <AccordionContent className="space-y-4">
                 <p className="text-sm text-muted-foreground">
-                  Voit määrittää tuotteelle oletuspakkaustiedot, eli uusille tilausriveille tulee suoraan tämä pakkauskoko ja pakkaustyyppi. Voit kuitenkin muuttaa nämä tilausta tehdessä.
+                  {t('productForm.packaging.description')}
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="packageSize" className="text-base font-medium">
-                      Pakkauskoko (kg)
+                      {t('productForm.packaging.packageSize.label')}
                     </Label>
                     <Popover open={openPackageSize} onOpenChange={setOpenPackageSize}>
                       <PopoverTrigger asChild>
@@ -191,14 +191,14 @@ export default function NewProduct({ productToEdit, hide, onSave, refPackageType
                           aria-expanded={openPackageSize}
                           className={`w-full justify-between ${product.packageSize ? '' : 'placeholder'}`}
                         >
-                          {product.packageSize || 'Valitse pakkauskoko'}
+                          {product.packageSize || t('productForm.packaging.packageSize.select')}
                           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent className="w-full p-0">
                         <Command>
                           <CommandInput
-                            placeholder="Syötä pakkauskoko..."
+                            placeholder={t('productForm.packaging.packageSize.enter')}
                             onValueChange={value => setInputValuePackageSize(value)}
                           />
                           <CommandGroup>
@@ -237,8 +237,8 @@ export default function NewProduct({ productToEdit, hide, onSave, refPackageType
                                     }
                                     else {
                                       toast({
-                                        title: 'Virhe',
-                                        description: 'Syötä pakkauskoko numerona.',
+                                        title: t('productForm.packaging.packageSize.error.title'),
+                                        description: t('productForm.packaging.packageSize.error.description'),
                                         variant: 'destructive',
                                       })
                                     }
@@ -247,7 +247,8 @@ export default function NewProduct({ productToEdit, hide, onSave, refPackageType
                                 >
                                   <Plus className="w-4 h-4" />
                                   <span>
-                                    Luo:
+                                    {t('productForm.create')}
+                                    :
                                     {' '}
                                     {inputValuePackageSize}
                                     {' '}
@@ -268,8 +269,8 @@ export default function NewProduct({ productToEdit, hide, onSave, refPackageType
                                 }
                                 else {
                                   toast({
-                                    title: 'Virhe',
-                                    description: 'Syötä pakkauskoko numerona.',
+                                    title: t('productForm.packaging.packageSize.error.title'),
+                                    description: t('productForm.packaging.packageSize.error.description'),
                                     variant: 'destructive',
                                   })
                                 }
@@ -278,7 +279,8 @@ export default function NewProduct({ productToEdit, hide, onSave, refPackageType
                             >
                               <Plus className="w-4 h-4" />
                               <span>
-                                Luo:
+                                {t('productForm.create')}
+                                :
                                 {' '}
                                 {inputValuePackageSize}
                                 {' '}
@@ -292,7 +294,7 @@ export default function NewProduct({ productToEdit, hide, onSave, refPackageType
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="packageType" className="text-base font-medium">
-                      Pakkaustyyppi
+                      {t('productForm.packaging.packageType.label')}
                     </Label>
                     <Popover open={openPackageType} onOpenChange={setOpenPackageType}>
                       <PopoverTrigger asChild>
@@ -302,14 +304,14 @@ export default function NewProduct({ productToEdit, hide, onSave, refPackageType
                           aria-expanded={openPackageType}
                           className={`w-full justify-between ${product.packageType ? '' : 'placeholder'}`}
                         >
-                          {product.packageType || 'Valitse pakkaustyyppi'}
+                          {product.packageType || t('productForm.packaging.packageType.select')}
                           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent className="w-full p-0">
                         <Command>
                           <CommandInput
-                            placeholder="Syötä pakkaustyyppi..."
+                            placeholder={t('productForm.packaging.packageType.enter')}
                             maxLength={16}
                             onValueChange={setInputValuePackageType}
                           />
@@ -350,7 +352,7 @@ export default function NewProduct({ productToEdit, hide, onSave, refPackageType
                                 >
                                   <Plus className="w-4 h-4" />
                                   <span>
-                                    Luo:
+                                    {t('productForm.create')}
                                     {' '}
                                     {inputValuePackageType}
                                   </span>
@@ -372,7 +374,8 @@ export default function NewProduct({ productToEdit, hide, onSave, refPackageType
                             >
                               <Plus className="w-4 h-4" />
                               <span>
-                                Luo:
+                                {t('productForm.create')}
+                                :
                                 {' '}
                                 {inputValuePackageType}
                               </span>
@@ -389,11 +392,11 @@ export default function NewProduct({ productToEdit, hide, onSave, refPackageType
         </div>
         <DialogFooter className="gap-2 sm:gap-0">
           <Button variant="outline" onClick={hide} className="hidden sm:inline-flex">
-            Peruuta
+            {t('productForm.cancel')}
           </Button>
           <Button type="submit">
             <Save className="h-4 w-4 mr-2" />
-            Tallenna
+            {t('productForm.save')}
           </Button>
         </DialogFooter>
       </form>
