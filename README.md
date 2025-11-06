@@ -7,7 +7,9 @@ Siikli is a modern ERP built for the realities of Finnish agriculture. In daily 
 
 Rebuilt in 2025 with a modern architecture, Siikli streamlines the core operations of agricultural businesses — from inventory tracking to invoicing and customer management.
 
-![Siikli order view screenshot](docs/screenshots/order-view.png)
+![Siikli onboarding view screenshot](docs/screenshots/onboarding.png)
+
+![Siikli order view screenshot](docs/screenshots/new_order.png)
 
 ## 🚀 Features
 
