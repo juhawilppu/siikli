@@ -3,9 +3,9 @@
 [![CI](https://github.com/juhawilppu/siikli/actions/workflows/ci.yml/badge.svg)](https://github.com/juhawilppu/siikli/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/juhawilppu/siikli/graph/badge.svg?token=TVNPVFN5W6)](https://codecov.io/gh/juhawilppu/siikli)
 
-Siikli is a modern ERP built for the realities of Finnish agriculture. In daily production use since 2017, it has processed more than €10M in invoices — simply, reliably, and without unnecessary complexity.
+Siikli is a simple ERP built for the realities of Finnish agriculture. In daily production use since 2017, it has processed more than €10M in invoices — simply, reliably, and without unnecessary complexity.
 
-Rebuilt in 2025 with a modern architecture, Siikli streamlines the core operations of agricultural businesses — from inventory tracking to invoicing and customer management.
+Rebuilt in 2025 with a modern tech.
 
 ![Siikli onboarding view screenshot](docs/screenshots/onboarding.png)
 
@@ -38,9 +38,9 @@ The frontend and backend run concurrently via `npm run dev`.
 - **Frontend:** `React`, `Vite`, `TypeScript`
 - **Backend:** `Node.js`, `Express`
 - **ORM:** `Prisma`
-- **Database:** `PostgreSQL (Aurora RDS)`
+- **Database:** `PostgreSQL`
 - **Infrastructure as Code:** `Terraform`
-- **Cloud:** `AWS (ECS Fargate, S3, RDS)`
+- **Cloud:** `AWS (ECS Fargate, S3, RDS, SES)`
 
 ## Project structure
 
@@ -74,7 +74,7 @@ flowchart TD
 
         ALB[Application Load Balancer]
         ECS[ECS Fargate<br/>Node.js/Express]
-        RDS[(Aurora PostgreSQL)]
+        RDS[(RDS PostgreSQL)]
     end
 
     CF -->|"/"| S3_LP
@@ -100,9 +100,9 @@ flowchart TD
 
 Follows a **Service–Controller–Model** pattern for clarity, testability, and separation of concerns:
 
-- **Controller** -- Handles HTTP, request validation, and permissions.
-- **Services** -- Business logic.
-- **Model** -- Database access via Prisma.
+- **Controller** - Handles HTTP, request validation, and permissions.
+- **Services** - Business logic.
+- **Model** - Database access via Prisma.
 
 ### Type safety
 
@@ -162,19 +162,6 @@ Security-first approach:
 - ✅ Tenant isolation via Prisma middleware
 - ✅ UUID-based identifiers
 - ✅ Rate-limiting
-- ✅ Passwordless login (email-based OTP code)
+- ✅ Passwordless login (email-based OTP code or Google Auth)
 - ✅ Secure cookies (HttpOnly)
 - ✅ IDOR prevention
-
-## Testing
-
-- Unit tests for core business logic (e.g. waybill content, invoice sum calculations).
-- End-to-end integration tests running against real services and database.
-- ~700 lines of test code in total, ensuring correctness and long-term maintainability.
-
-## Philosophy
-
-- No unnecessary abstractions.
-- Readable > clever.
-- “Boring” tech that works.
-- AI-assisted, human-led — AI used for prototyping, brainstorming, and autocomplete.
