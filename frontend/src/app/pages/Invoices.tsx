@@ -7,10 +7,12 @@ import { useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import OrderListBase from '@/app/components/OrderListBase'
 import { Button } from '@/components/ui/button'
+import { useTranslation } from '@/lib/translations'
 import { LoadingSpinner } from '../components/custom-icons'
 import { toast } from '../hooks/use-toast'
 
 export default function Invoices() {
+  const t = useTranslation()
   const now = new Date()
 
   const [isPrinting, setIsPrinting] = useState<'preview' | 'print' | null>(null)
@@ -18,8 +20,8 @@ export default function Invoices() {
   const handlePrintInvoices = async (preview = false, filters: Filters, refresh: () => void) => {
     if (!filters.customer) {
       toast({
-        title: 'Valitse asiakas',
-        description: 'Voit tulostaa laskun vain yhdelle asiakkaalle kerrallaan.',
+        title: t('invoices.error.noCustomerSelected.title'),
+        description: t('invoices.error.noCustomerSelected.description'),
       })
       return
     }
@@ -44,7 +46,7 @@ export default function Invoices() {
       // Create temporary link and trigger download
       const link = document.createElement('a')
       link.href = url
-      link.setAttribute('download', `lasku-${filters.customer.name.toLowerCase().replace(/ /g, '-')}-${dateToIso(filters.startDate)}-${dateToIso(filters.endDate)}.pdf`)
+      link.setAttribute('download', `${t('invoices.fileName')}-${filters.customer.name.toLowerCase().replace(/ /g, '-')}-${dateToIso(filters.startDate)}-${dateToIso(filters.endDate)}.pdf`)
       document.body.appendChild(link)
       link.click()
 
@@ -55,15 +57,15 @@ export default function Invoices() {
     catch (error: any) {
       if (error.response.status === 400) {
         toast({
-          title: 'Laskun tulostaminen ei onnistu',
-          description: 'Saajan tilinumero puuttuu. Voit lisätä nämä tiedot sivulla "Oma yritys".',
+          title: t('invoices.error.missingBankAccount.title'),
+          description: t('invoices.error.missingBankAccount.description'),
           variant: 'destructive',
         })
       }
       else {
         toast({
-          title: 'Tapahtui virhe laskun tulostamisessa',
-          description: 'Yritä uudelleen myöhemmin.',
+          title: t('waybills.error.printing.title'),
+          description: t('waybills.error.printing.description'),
           variant: 'destructive',
         })
       }
@@ -76,22 +78,22 @@ export default function Invoices() {
 
   return (
     <OrderListBase
-      title="Laskut"
-      description="Tällä sivulla voit luoda ja hallita laskuja."
+      title={t('invoices.title')}
+      description={t('invoices.description')}
       defaultStartDate={startOfWeek(now, { weekStartsOn: 1 })}
       defaultEndDate={endOfWeek(now, { weekStartsOn: 1 })}
       status={OrderStatus.DELIVERED}
       emptyStateComponent={(
         <div className="flex flex-col items-center justify-center gap-4">
           <span className="text-center">
-            Sinulla ei ole tilauksia, joille voisi tulostaa laskun. Laskun voi tulostaa vain tilauksille, joille on tehty kuormakirja.
+            {t('invoices.emptyState.description')}
           </span>
           <Button
             asChild
             size="lg"
             className="px-8 py-4 text-lg font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-lg transition"
           >
-            <NavLink to="/app/waybills">Tulosta kuormakirjoja</NavLink>
+            <NavLink to="/app/waybills">{t('invoices.printWaybills')}</NavLink>
           </Button>
         </div>
       )}
@@ -108,13 +110,13 @@ export default function Invoices() {
                 ? (
                     <>
                       <LoadingSpinner />
-                      Vahvista & tulosta
+                      {t('waybills.confirmAndPrint')}
                     </>
                   )
                 : (
                     <>
                       <Check className="mr-2 h-4 w-4" />
-                      Vahvista & tulosta
+                      {t('waybills.confirmAndPrint')}
                     </>
                   )}
             </Button>
@@ -128,13 +130,13 @@ export default function Invoices() {
                 ? (
                     <>
                       <LoadingSpinner />
-                      Esikatselu
+                      {t('waybills.preview')}
                     </>
                   )
                 : (
                     <>
                       <Printer className="mr-2 h-4 w-4" />
-                      Esikatselu
+                      {t('waybills.preview')}
                     </>
                   )}
             </Button>

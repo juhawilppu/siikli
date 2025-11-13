@@ -35,6 +35,6 @@ afterEach(() => {
 
 it('renders Sales Report page', async () => {
   renderWithProviders(<SalesReport />)
-  expect(await screen.findByRole('heading', { name: 'Myyntiraportti', level: 1 })).toBeInTheDocument()
-  expect(await screen.findByText('Hakuehdot')).toBeInTheDocument()
+  expect(await screen.findByRole('heading', { name: 'Sales report', level: 1 })).toBeInTheDocument()
+  expect(await screen.findByText('Search criteria')).toBeInTheDocument()
 })

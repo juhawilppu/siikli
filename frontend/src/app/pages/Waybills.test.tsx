@@ -47,6 +47,6 @@ afterEach(() => {
 
 it('renders Waybills page', async () => {
   renderWithProviders(<Waybills />)
-  expect(await screen.findByRole('heading', { name: 'Kuormakirjat', level: 1 })).toBeInTheDocument()
-  expect(await screen.findByText('Hakuehdot')).toBeInTheDocument()
+  expect(await screen.findByRole('heading', { name: 'Waybills', level: 1 })).toBeInTheDocument()
+  expect(await screen.findByText('Filters')).toBeInTheDocument()
 })

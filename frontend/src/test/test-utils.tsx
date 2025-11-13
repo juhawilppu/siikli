@@ -2,6 +2,7 @@ import type { ReactElement } from 'react'
 import { render } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { Toaster } from '@/components/ui/toaster'
+import { AppProvider } from '@/context/AppContext'
 
 export function renderWithProviders(
   ui: ReactElement,
@@ -15,10 +16,12 @@ export function renderWithProviders(
 
   return render(
     <MemoryRouter initialEntries={[path]}>
-      <Routes>
-        <Route path={route} element={ui} />
-      </Routes>
-      <Toaster />
+      <AppProvider>
+        <Routes>
+          <Route path={route} element={ui} />
+        </Routes>
+        <Toaster />
+      </AppProvider>
     </MemoryRouter>,
   )
 }

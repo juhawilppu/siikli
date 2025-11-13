@@ -76,24 +76,24 @@ describe('productForm', () => {
     })
 
     // Assert the heading is present
-    expect(await screen.findByRole('heading', { name: 'Uusi tuote' })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: 'New product' })).toBeInTheDocument()
 
-    await setValueToInput('Nimi *', 'Siikli, pesty')
+    await setValueToInput('Name *', 'Siikli, pesty')
 
     await act(async () => {
-      const trigger = screen.getByRole('button', { name: 'Hinnat' })
+      const trigger = screen.getByRole('button', { name: 'Pricing' })
       await fireEvent.click(trigger)
     })
 
-    await setValueToInput('Hinta ALV 0 % (€)', '1,40')
+    await setValueToInput('Price excl. VAT (€)', '1,40')
     await act(async () => {
-      const input = screen.getByLabelText('Hinta ALV 0 % (€)')
+      const input = screen.getByLabelText('Price excl. VAT (€)')
       await fireEvent.blur(input)
     })
 
     // Submit form directly - for some clicking "Save" button just doesn't work
     await act(async () => {
-      const saveButton = await screen.findByRole('button', { name: 'Tallenna' })
+      const saveButton = await screen.findByRole('button', { name: 'Save' })
       await fireEvent.click(saveButton)
     })
 

@@ -2,7 +2,7 @@ import type { GetCustomerResponse, GetCustomersResponse, GetInvoicesResponse } f
 import { dateToIso, formatDate, GetInvoicesQuery, parseIsoDate } from '@siikli/shared'
 import axios from 'axios'
 
-import { fi } from 'date-fns/locale'
+import { enUS, fi } from 'date-fns/locale'
 import { Calendar, Check, Eye } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import SiikliPage from '@/app/components/SiikliPage'
@@ -13,6 +13,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Label } from '@/components/ui/label'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { useApp } from '@/context/AppContext'
+import { useTranslation } from '@/lib/translations'
 import { cn, downloadUrl } from '@/lib/utils'
 import { typeParse } from '@/lib/validate'
 import { useIsMobile } from '../hooks/use-mobile'
@@ -25,11 +27,13 @@ export interface FlatOrderItem {
   productName: string
 }
 
-function renderInvoiceStatus(status: 'PENDING' | 'PAID') {
-  return <Badge className={cn(status === 'PAID' ? 'bg-green-500' : 'bg-gray-500')}>{status === 'PAID' ? 'Maksettu' : 'Odottaa maksua'}</Badge>
+function renderInvoiceStatus(status: 'PENDING' | 'PAID', t: (key: string) => string) {
+  return <Badge className={cn(status === 'PAID' ? 'bg-green-500' : 'bg-gray-500')}>{status === 'PAID' ? t('invoiceStatus.PAID') : t('invoiceStatus.PENDING')}</Badge>
 }
 
 export function SentInvoices() {
+  const { language } = useApp()
+  const t = useTranslation()
   const isMobile = useIsMobile()
 
   const [customers, setCustomers] = useState<GetCustomerResponse[]>()
@@ -68,22 +72,22 @@ export function SentInvoices() {
   }, [])
 
   if (loading)
-    return <SiikliPage title="Lähetetyt laskut" description="Tällä sivulla voit tarkastella lähetettyjä laskuja" />
+    return <SiikliPage title={t('sentInvoices.title')} description={t('sentInvoices.description')} />
 
   if (!customers)
-    return <div>Ei Asiakkaita</div>
+    return <div>{t('sentInvoices.error.noCustomers')}</div>
 
   return (
-    <SiikliPage title="Lähetetyt laskut" description="Tällä sivulla voit tarkastella lähetettyjä laskuja">
+    <SiikliPage title={t('sentInvoices.title')} description={t('sentInvoices.description')}>
       <Card>
         <CardHeader>
-          <CardTitle>Hakuehdot</CardTitle>
-          <CardDescription className="text-gray-700">Suodata tilauksia päivämäärän mukaan</CardDescription>
+          <CardTitle>{t('sentInvoices.filters.title')}</CardTitle>
+          <CardDescription className="text-gray-700">{t('sentInvoices.filters.description')}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col gap-4 w-full md:flex-row">
             <div className="space-y-2 flex-1">
-              <Label htmlFor="customer">Asiakas</Label>
+              <Label htmlFor="customer">{t('sentInvoices.filters.customer.title') }</Label>
               <Select
                 value={customerId}
                 onValueChange={(value) => {
@@ -91,7 +95,7 @@ export function SentInvoices() {
                 }}
               >
                 <SelectTrigger id="customer" className="w-full truncate">
-                  <SelectValue placeholder="Valitse asiakas" />
+                  <SelectValue placeholder={t('sentInvoices.filters.customer.select')} />
                 </SelectTrigger>
                 <SelectContent>
                   {customers.map(customer => (
@@ -103,12 +107,12 @@ export function SentInvoices() {
               </Select>
             </div>
             <div className="space-y-2 flex-1">
-              <label className="text-sm font-medium">Alkupäivä</label>
+              <label className="text-sm font-medium">{t('sentInvoices.filters.startDate.title')}</label>
               <Popover open={openStartDate} onOpenChange={setOpenStartDate}>
                 <PopoverTrigger asChild>
                   <Button variant="outline" className="w-full justify-start text-left font-normal">
                     <Calendar className="mr-2 h-4 w-4" />
-                    {startDate ? formatDate(startDate) : <span>Valitse päivä</span>}
+                    {startDate ? formatDate(startDate) : <span>{t('sentInvoices.filters.startDate.select')}</span>}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0">
@@ -122,19 +126,19 @@ export function SentInvoices() {
                     }}
                     required
                     initialFocus
-                    locale={fi}
+                    locale={language === 'fi' ? fi : enUS}
                   />
                 </PopoverContent>
               </Popover>
             </div>
 
             <div className="space-y-2 flex-1">
-              <label className="text-sm font-medium">Loppupäivä</label>
+              <label className="text-sm font-medium">{t('sentInvoices.filters.endDate.title')}</label>
               <Popover open={openEndDate} onOpenChange={setOpenEndDate}>
                 <PopoverTrigger asChild>
                   <Button variant="outline" className="w-full justify-start text-left font-normal">
                     <Calendar className="mr-2 h-4 w-4" />
-                    {endDate ? formatDate(endDate) : <span>Select date</span>}
+                    {endDate ? formatDate(endDate) : <span>{t('sentInvoices.filters.endDate.select')}</span>}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0">
@@ -147,7 +151,7 @@ export function SentInvoices() {
                       setOpenEndDate(false)
                     }}
                     required
-                    locale={fi}
+                    locale={language === 'fi' ? fi : enUS}
                   />
                 </PopoverContent>
               </Popover>
@@ -157,26 +161,26 @@ export function SentInvoices() {
       </Card>
       <Card>
         <CardHeader>
-          <CardTitle>Laskut</CardTitle>
+          <CardTitle>{t('sentInvoices.table.title')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="relative w-full overflow-auto">
             <table className="w-full caption-bottom text-sm">
               <thead>
                 <tr className="border-b">
-                  <th className="h-12 px-4 text-left align-middle">Laskun numero</th>
-                  <th className="h-12 px-4 text-left align-middle">Asiakas</th>
-                  <th className="h-12 px-4 text-left align-middle">Tila</th>
-                  <th className="h-12 px-4 text-left align-middle">Summa</th>
-                  <th className="h-12 px-4 text-left align-middle">Päivämäärä</th>
-                  <th className="h-12 px-4 text-left align-middle">Toiminnot</th>
+                  <th className="h-12 px-4 text-left align-middle">{t('sentInvoices.table.invoiceNumber')}</th>
+                  <th className="h-12 px-4 text-left align-middle">{t('sentInvoices.table.customer')}</th>
+                  <th className="h-12 px-4 text-left align-middle">{t('sentInvoices.table.status')}</th>
+                  <th className="h-12 px-4 text-left align-middle">{t('sentInvoices.table.total')}</th>
+                  <th className="h-12 px-4 text-left align-middle">{t('sentInvoices.table.date')}</th>
+                  <th className="h-12 px-4 text-left align-middle">{t('sentInvoices.table.actions')}</th>
                 </tr>
               </thead>
               <tbody>
                 {invoices.length === 0 && (
                   <tr>
                     <td colSpan={5} className="p-4 text-center">
-                      Ei laskuja
+                      {t('sentInvoices.table.noInvoices')}
                     </td>
                   </tr>
                 )}
@@ -184,7 +188,7 @@ export function SentInvoices() {
                   <tr key={invoice.invoiceId} className="border-b">
                     <td className="p-4">{invoice.invoiceId}</td>
                     <td className="p-4">{invoice.customerName}</td>
-                    <td className="p-4">{renderInvoiceStatus(invoice.status)}</td>
+                    <td className="p-4">{renderInvoiceStatus(invoice.status, t as any)}</td>
                     <td className="p-4">
                       {invoice.total}
                       {' '}
@@ -210,14 +214,14 @@ export function SentInvoices() {
                           axios.post(`/invoices/${invoice.id}/mark-paid`)
                           setInvoices(invoices.map(i => i.id === invoice.id ? { ...i, status: 'PAID' } : i))
                           toast({
-                            title: 'Lasku merkitty maksetuksi',
-                            description: 'Lasku merkitty maksetuksi',
+                            title: t('sentInvoices.table.markPaid.toast.title'),
+                            description: t('sentInvoices.table.markPaid.toast.description'),
                             variant: 'success',
                           })
                         }}
                       >
                         <Check className="w-4 h-4 mr-2" />
-                        Merkitse maksetuksi
+                        {t('sentInvoices.table.markPaid.button')}
                       </Button>
                     </td>
                   </tr>

@@ -70,8 +70,8 @@ afterEach(() => {
 
 it('renders Packaging List page by customer', async () => {
   renderWithProviders(<PackagingList />)
-  expect(await screen.findByRole('heading', { name: 'Pakkauslista', level: 1 })).toBeInTheDocument()
-  const createListButton = screen.getByRole('button', { name: 'Luo lista' })
+  expect(await screen.findByRole('heading', { name: 'Packaging list', level: 1 })).toBeInTheDocument()
+  const createListButton = screen.getByRole('button', { name: 'Create list' })
   await userEvent.click(createListButton)
   expect(await screen.findByText('Test Customer')).toBeInTheDocument()
   expect(await screen.findByText('Test Product')).toBeInTheDocument()
@@ -79,12 +79,12 @@ it('renders Packaging List page by customer', async () => {
 
 it('renders Packaging List page', async () => {
   renderWithProviders(<PackagingList />)
-  expect(await screen.findByRole('heading', { name: 'Pakkauslista', level: 1 })).toBeInTheDocument()
+  expect(await screen.findByRole('heading', { name: 'Packaging list', level: 1 })).toBeInTheDocument()
 
-  const productRadio = screen.getByLabelText('Tuotteen mukaan')
+  const productRadio = screen.getByLabelText('By product')
   await userEvent.click(productRadio)
 
-  const createListButton = screen.getByRole('button', { name: 'Luo lista' })
+  const createListButton = screen.getByRole('button', { name: 'Create list' })
   await userEvent.click(createListButton)
   expect(await screen.findByText('Test Product')).toBeInTheDocument()
 })

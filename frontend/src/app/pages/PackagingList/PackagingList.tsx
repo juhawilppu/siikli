@@ -1,7 +1,7 @@
 import type { GetPackagingListGroupedByCustomerResponse, GetPackagingListGroupedByProductResponse } from '@siikli/shared'
 import { dateToIso, formatDate, GetPackagingListQuery } from '@siikli/shared'
 import axios from 'axios'
-import { fi } from 'date-fns/locale'
+import { enUS, fi } from 'date-fns/locale'
 import Decimal from 'decimal.js'
 import { Calendar, RefreshCw } from 'lucide-react'
 import { useState } from 'react'
@@ -13,6 +13,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Label } from '@/components/ui/label'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { useApp } from '@/context/AppContext.js'
+import { useTranslation } from '@/lib/translations.js'
 import PackagingListByCustomer from './PackagingListByCustomer.js'
 import PackagingListByProduct from './PackagingListByProduct.js'
 
@@ -20,6 +22,9 @@ type CustomerReport = GetPackagingListGroupedByCustomerResponse
 type ProductReport = GetPackagingListGroupedByProductResponse
 
 export function PackagingList() {
+  const { language } = useApp()
+  const t = useTranslation()
+
   const [deliveryDate, setDeliveryDate] = useState<Date | undefined>(new Date())
   const [groupBy, setGroupBy] = useState<'customer' | 'product'>('customer')
   const [isLoading, setIsLoading] = useState(false)
@@ -67,17 +72,17 @@ export function PackagingList() {
 
   return (
     <>
-      <SiikliPage title="Pakkauslista" description="Voit tulostaa pakkauslistan täältä. Pakkauslista helpottaa tilausten keräilyä lähettämistä varten.">
+      <SiikliPage title={t('packagingList.title')} description={t('packagingList.description')}>
         <Card>
           <CardHeader className="border-b bg-gray-50">
-            <CardTitle>Luo pakkauslista</CardTitle>
-            <CardDescription className="text-gray-700">Valitse toimituspäivä ja tyyppi</CardDescription>
+            <CardTitle>{t('packagingList.create.title')}</CardTitle>
+            <CardDescription className="text-gray-700">{t('packagingList.create.description')}</CardDescription>
           </CardHeader>
           <CardContent className="pt-6">
             <div className="grid gap-6 md:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="delivery-date" className="font-medium">
-                  Toimituspäivä
+                  {t('packagingList.deliveryDate.title')}
                 </Label>
                 <Popover open={openDeliveryDate} onOpenChange={setOpenDeliveryDate}>
                   <PopoverTrigger asChild>
@@ -87,7 +92,7 @@ export function PackagingList() {
                       id="delivery-date"
                     >
                       <Calendar className="mr-2 h-4 w-4" />
-                      {deliveryDate ? formatDate(deliveryDate) : <span>Valitse päivämäärä</span>}
+                      {deliveryDate ? formatDate(deliveryDate) : <span>{t('packagingList.deliveryDate.select')}</span>}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0">
@@ -102,14 +107,14 @@ export function PackagingList() {
                         setOpenDeliveryDate(false)
                       }}
                       initialFocus
-                      locale={fi}
+                      locale={language === 'fi' ? fi : enUS}
                     />
                   </PopoverContent>
                 </Popover>
               </div>
 
               <div className="space-y-2">
-                <Label className="font-medium">Ryhmittely</Label>
+                <Label className="font-medium">{t('packagingList.groupBy.title')}</Label>
                 <RadioGroup
                   value={groupBy}
                   onValueChange={(value: 'customer' | 'product') => {
@@ -121,11 +126,11 @@ export function PackagingList() {
                 >
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="customer" id="group-customer" />
-                    <Label htmlFor="group-customer">Asiakkaan mukaan</Label>
+                    <Label htmlFor="group-customer">{t('packagingList.groupBy.customer')}</Label>
                   </div>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="product" id="group-product" />
-                    <Label htmlFor="group-product">Tuotteen mukaan</Label>
+                    <Label htmlFor="group-product">{t('packagingList.groupBy.product')}</Label>
                   </div>
                 </RadioGroup>
               </div>
@@ -137,13 +142,13 @@ export function PackagingList() {
                 ? (
                     <>
                       <LoadingSpinner />
-                      Luo lista
+                      {t('packagingList.create.button')}
                     </>
                   )
                 : (
                     <>
                       <RefreshCw className="mr-2 h-4 w-4" />
-                      Luo lista
+                      {t('packagingList.create.button')}
                     </>
                   )}
             </Button>
@@ -154,23 +159,23 @@ export function PackagingList() {
             <div className="min-w-[320px]">
               {(!customerReport?.rows.length && !productReport?.rows.length) && (
                 <div className="flex justify-center items-center h-full">
-                  <p className="text-sm text-muted-foreground">Ei tilauksia kyseisellä päivällä</p>
+                  <p className="text-sm text-muted-foreground">{t('packagingList.emptyState.description')}</p>
                 </div>
               )}
-              {customerReport?.rows.length && (
+              {!!customerReport?.rows.length && (
                 <>
                   <div className="flex justify-end">
-                    <Button variant="outline" onClick={() => window.print()}>Tulosta</Button>
+                    <Button variant="outline" onClick={() => window.print()}>{t('packagingList.print')}</Button>
                   </div>
                   <PackagingListByCustomer
                     report={customerReport}
                   />
                 </>
               )}
-              {productReport?.rows.length && (
+              {!!productReport?.rows.length && (
                 <>
                   <div className="flex justify-end">
-                    <Button variant="outline" onClick={() => window.print()}>Tulosta</Button>
+                    <Button variant="outline" onClick={() => window.print()}>{t('packagingList.print')}</Button>
                   </div>
                   <PackagingListByProduct
                     report={productReport}

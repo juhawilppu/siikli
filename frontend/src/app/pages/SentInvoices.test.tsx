@@ -58,6 +58,6 @@ afterEach(() => {
 
 it('renders Sent Invoices page', async () => {
   renderWithProviders(<SentInvoices />)
-  expect(await screen.findByRole('heading', { name: 'Lähetetyt laskut', level: 1 })).toBeInTheDocument()
+  expect(await screen.findByRole('heading', { name: 'Sent invoices', level: 1 })).toBeInTheDocument()
   expect(await screen.findByText('Test Customer')).toBeInTheDocument()
 })

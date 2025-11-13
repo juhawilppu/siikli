@@ -33,13 +33,13 @@ afterEach(() => {
 
 it('renders Onboarding page', async () => {
   renderWithProviders(<OnboardingPage />)
-  expect(await screen.findByRole('heading', { name: 'Aloitetaan Siiklin käyttöönotto!', level: 1 })).toBeInTheDocument()
+  expect(await screen.findByText('Let’s get started with Siikli!')).toBeInTheDocument()
 
-  expect(await screen.findByText('4/6 suoritettu')).toBeInTheDocument()
-  expect(await screen.findByText('1. Luo tuote')).toBeInTheDocument()
-  expect(await screen.findByText('2. Luo asiakas')).toBeInTheDocument()
-  expect(await screen.findByText('3. Luo tilaus')).toBeInTheDocument()
-  expect(await screen.findByText('4. Tulosta kuormakirja')).toBeInTheDocument()
-  expect(await screen.findByText('5. Lisää laskutustiedot')).toBeInTheDocument()
-  expect(await screen.findByText('6. Tulosta lasku')).toBeInTheDocument()
+  expect(await screen.findByText('4/6 completed')).toBeInTheDocument()
+  expect(await screen.findByText('1. Create product')).toBeInTheDocument()
+  expect(await screen.findByText('2. Create customer')).toBeInTheDocument()
+  expect(await screen.findByText('3. Create order')).toBeInTheDocument()
+  expect(await screen.findByText('4. Print waybill')).toBeInTheDocument()
+  expect(await screen.findByText('5. Add billing information')).toBeInTheDocument()
+  expect(await screen.findByText('6. Print invoice')).toBeInTheDocument()
 })

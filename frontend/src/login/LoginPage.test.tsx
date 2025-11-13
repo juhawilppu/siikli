@@ -73,10 +73,10 @@ describe('loginPage', () => {
     })
 
     // Check initial render
-    expect(screen.getByRole('heading', { name: 'Kirjaudu Siikliin' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Login to Siikli' })).toBeInTheDocument()
 
     // Click Google login button
-    const googleButton = screen.getByRole('button', { name: 'Kirjaudu Google-tilillä' })
+    const googleButton = screen.getByRole('button', { name: 'Login with Google' })
     await user.click(googleButton)
 
     // Even though the button is clicked above, for some reason (bug in testing-library?),
@@ -103,9 +103,9 @@ describe('loginPage', () => {
     })
 
     // Check initial render
-    expect(screen.getByRole('heading', { name: 'Kirjaudu Siikliin' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Login to Siikli' })).toBeInTheDocument()
     // Click email login tab
-    const emailLoginTab = screen.getByRole('tab', { name: 'Kirjaudu sähköpostilla' })
+    const emailLoginTab = screen.getByRole('tab', { name: 'Login with email' })
     await user.click(emailLoginTab)
 
     // Enter email
@@ -114,7 +114,7 @@ describe('loginPage', () => {
 
     // Submit email form
     await act(async () => {
-      const sendButton = screen.getByRole('button', { name: 'Lähetä PIN-koodi' })
+      const sendButton = screen.getByRole('button', { name: 'Send PIN code' })
       await user.click(sendButton)
 
       // Even though the button is clicked above, for some reason (bug in testing-library?),

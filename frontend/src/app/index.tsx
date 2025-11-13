@@ -1,4 +1,4 @@
-import { Building2, Check, ClipboardList, FileText, HelpCircle, LineChart, Receipt, Search, ShoppingBasket, Users } from 'lucide-react'
+import { Building2, Check, ClipboardList, FileText, HelpCircle, LineChart, Receipt, ShoppingBasket, Users } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Navigate, NavLink, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { useIsMobile } from '@/app/hooks/use-mobile'
@@ -15,11 +15,11 @@ import LanguageSwitcher from '@/components/LanguageSwitcher'
 import SiikliCookieConsent from '@/components/SiikliCookieConsent'
 import { Button } from '@/components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import { Input } from '@/components/ui/input'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { Toaster } from '@/components/ui/toaster'
 import { initPosthog } from '@/lib/posthog'
-import { Bell, Menu } from './components/custom-icons'
+import { useTranslation } from '@/lib/translations'
+import { Menu } from './components/custom-icons'
 import { useAuth } from './context/AuthContext'
 import Invoices from './pages/Invoices'
 import Onboarding from './pages/Onboarding'
@@ -27,16 +27,16 @@ import Support from './pages/Support'
 import Waybills from './pages/Waybills'
 
 const navItems = [
-  { title: 'Käyttöönotto', href: '/onboarding', icon: Check },
-  { title: 'Tilaukset', href: '/orders', icon: ClipboardList },
-  { title: 'Pakkauslista', href: '/packaging-list', icon: FileText },
-  { title: 'Kuormakirjat', href: '/waybills', icon: Receipt },
-  { title: 'Laskut', href: '/invoices', icon: Receipt },
-  { title: 'Lähetetyt laskut', href: '/sent-invoices', icon: Receipt },
-  { title: 'Myyntiraportti', href: '/sales-report', icon: LineChart },
-  { title: 'Tuotteet', href: '/products', icon: ShoppingBasket },
-  { title: 'Asiakkaat', href: '/customers', icon: Users },
-  { title: 'Oma yritys', href: '/own-company', icon: Building2 },
+  { title: 'navBar.onboarding', href: '/onboarding', icon: Check },
+  { title: 'navBar.orders', href: '/orders', icon: ClipboardList },
+  { title: 'navBar.packagingList', href: '/packaging-list', icon: FileText },
+  { title: 'navBar.waybills', href: '/waybills', icon: Receipt },
+  { title: 'navBar.invoices', href: '/invoices', icon: Receipt },
+  { title: 'navBar.sentInvoices', href: '/sent-invoices', icon: Receipt },
+  { title: 'navBar.salesReport', href: '/sales-report', icon: LineChart },
+  { title: 'navBar.products', href: '/products', icon: ShoppingBasket },
+  { title: 'navBar.customers', href: '/customers', icon: Users },
+  { title: 'navBar.ownCompany', href: '/own-company', icon: Building2 },
 ]
 
 function App() {
@@ -201,6 +201,7 @@ function App() {
 export default App
 
 function MobileSidebar({ setIsMobileNavOpen }: { setIsMobileNavOpen: (isOpen: boolean) => void }) {
+  const t = useTranslation()
   return (
     <div className="flex h-full flex-col gap-2 overflow-auto">
       <div className="flex h-14 items-center border-b px-4">
@@ -219,7 +220,7 @@ function MobileSidebar({ setIsMobileNavOpen }: { setIsMobileNavOpen: (isOpen: bo
               }}
             >
               <item.icon className="h-4 w-4" />
-              {item.title}
+              {t(item.title as any)}
             </NavLink>
           ))}
         </nav>
@@ -230,6 +231,7 @@ function MobileSidebar({ setIsMobileNavOpen }: { setIsMobileNavOpen: (isOpen: bo
 
 // Desktop Sidebar Component
 function DesktopSidebar({ currentPath }: { currentPath: string }) {
+  const t = useTranslation()
   return (
     <div className="flex h-full flex-col gap-2">
       <div className="flex-1 overflow-auto py-2">
@@ -245,7 +247,7 @@ function DesktopSidebar({ currentPath }: { currentPath: string }) {
               }`}
             >
               <item.icon className="h-4 w-4" />
-              {item.title}
+              {t(item.title as any)}
             </NavLink>
           ))}
         </nav>

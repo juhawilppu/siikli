@@ -28,6 +28,6 @@ afterEach(() => {
 
 it('renders Customers page', async () => {
   renderWithProviders(<Customers />)
-  expect(await screen.findByRole('heading', { name: 'Asiakkaat', level: 1 })).toBeInTheDocument()
+  expect(await screen.findByRole('heading', { name: 'Customers', level: 1 })).toBeInTheDocument()
   expect(await screen.findByText('J-Kauppa')).toBeInTheDocument()
 })

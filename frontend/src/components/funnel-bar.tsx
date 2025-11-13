@@ -4,15 +4,16 @@ import { Check, ChevronRight, CreditCard, Receipt, ShoppingCart, Truck, Users } 
 
 import { useNavigate } from 'react-router-dom'
 import { Card, CardContent } from '@/components/ui/card'
+import { useTranslation } from '@/lib/translations'
 
 export function FunnelBar({ onboarding }: { onboarding: GetOnboardingResponse }) {
   const navigate = useNavigate()
+  const t = useTranslation()
 
   const steps = [
     {
       id: 'create-product',
-      title: 'Luo tuote',
-      description: 'Lisää ensimmäinen tuote',
+      title: 'createProduct',
       icon: ShoppingCart,
       completed: onboarding.productCreated,
       url: '/products',
@@ -20,40 +21,35 @@ export function FunnelBar({ onboarding }: { onboarding: GetOnboardingResponse })
     },
     {
       id: 'create-customer',
-      title: 'Luo asiakas',
-      description: 'Lisää ensimmäinen asiakas',
+      title: 'createCustomer',
       icon: Users,
       completed: onboarding.customerCreated,
       url: '/customers',
     },
     {
       id: 'create-order',
-      title: 'Luo tilaus',
-      description: 'Käsittele ensimmäinen tilaus',
+      title: 'createOrder',
       icon: ShoppingCart,
       completed: onboarding.orderCreated,
       url: '/orders',
     },
     {
       id: 'print-waybill',
-      title: 'Tulosta kuormakirja',
-      description: 'Luo kuormakirja tilaukselle',
+      title: 'printWaybill',
       icon: Truck,
       completed: onboarding.waybillCreated,
       url: '/waybills',
     },
     {
       id: 'add-bank-account',
-      title: 'Lisää laskutustiedot',
-      description: 'Lisää IBAN ja pankin nimi',
+      title: 'addBankAccount',
       icon: CreditCard,
       completed: onboarding.bankInformationSet,
       url: '/own-company',
     },
     {
       id: 'print-invoice',
-      title: 'Tulosta lasku',
-      description: 'Luo asiakkaalle lasku',
+      title: 'printInvoice',
       icon: Receipt,
       completed: onboarding.invoiceCreated,
       url: '/invoices',
@@ -74,13 +70,13 @@ export function FunnelBar({ onboarding }: { onboarding: GetOnboardingResponse })
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-2">
               <div className="h-2 w-2 rounded-full bg-blue-500 animate-pulse" />
-              <h3 className="font-semibold text-blue-900">Vaiheet</h3>
+              <h3 className="font-semibold text-blue-900">{t('onboarding.steps.title')}</h3>
               <span className="text-sm text-blue-600 bg-blue-100 px-2 py-1 rounded-full">
                 {completedSteps}
                 /
                 {totalSteps}
                 {' '}
-                suoritettu
+                { t('onboarding.steps.completed') }
               </span>
             </div>
           </div>
@@ -133,7 +129,7 @@ export function FunnelBar({ onboarding }: { onboarding: GetOnboardingResponse })
                       {index + 1}
                       .
                       {' '}
-                      {step.title}
+                      {t(`onboarding.steps.${step.title}.title` as any)}
                     </h4>
                     <p
                       className={`
@@ -141,7 +137,7 @@ export function FunnelBar({ onboarding }: { onboarding: GetOnboardingResponse })
                       ${step.completed ? 'text-green-600' : step.current ? 'text-blue-600' : 'text-gray-500'}
                     `}
                     >
-                      {step.description}
+                      {t(`onboarding.steps.${step.title}.description` as any)}
                     </p>
                   </div>
                 </div>

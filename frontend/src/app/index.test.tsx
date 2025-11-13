@@ -60,13 +60,13 @@ async function renderMainApp() {
 }
 
 function assertNavigationLinks() {
-  const ordersLink = screen.getByText('Tilaukset')
+  const ordersLink = screen.getByText('Orders')
   expect(ordersLink).toBeInTheDocument()
 
-  const companySettingsLink = screen.getByText('Oma yritys')
+  const companySettingsLink = screen.getByText('My company')
   expect(companySettingsLink).toBeInTheDocument()
 
-  const customersLink = screen.getByText('Asiakkaat')
+  const customersLink = screen.getByText('Customers')
   expect(customersLink).toBeInTheDocument()
 
   const logoutLink = screen.getByText('JD')

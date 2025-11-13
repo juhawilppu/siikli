@@ -32,5 +32,5 @@ afterEach(() => {
 
 it('renders Orders page', async () => {
   renderWithProviders(<Orders />)
-  expect(await screen.findByRole('heading', { name: 'Tilaukset', level: 1 })).toBeInTheDocument()
+  expect(await screen.findByRole('heading', { name: 'Orders', level: 1 })).toBeInTheDocument()
 })

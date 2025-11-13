@@ -41,7 +41,7 @@ afterEach(() => {
 
 it('renders Products page', async () => {
   renderWithProviders(<Products />)
-  expect(await screen.findByRole('heading', { name: 'Tuotteet', level: 1 })).toBeInTheDocument()
+  expect(await screen.findByRole('heading', { name: 'Products', level: 1 })).toBeInTheDocument()
   expect(await screen.findByText('Test Product')).toBeInTheDocument()
 })
 
@@ -72,22 +72,22 @@ it('should save product', async () => {
   await screen.findByText('Test Product')
 
   // Click new product button
-  await user.click(screen.getByRole('button', { name: /lisää tuote/i }))
+  await user.click(screen.getByRole('button', { name: /add product/i }))
 
   // Fill in product details
-  await user.type(screen.getByLabelText(/nimi/i), 'New Test Product')
+  await user.type(screen.getByLabelText(/name/i), 'New Test Product')
 
-  await openAccordion('Hinnat')
-  await user.type(screen.getByLabelText(/hinta/i), '19,99')
+  await openAccordion('Pricing')
+  await user.type(screen.getByLabelText(/price/i), '19,99')
 
-  await openAccordion('Pakkaustiedot')
+  await openAccordion('Packaging')
 
   // Click save
-  await user.click(screen.getByRole('button', { name: /tallenna/i }))
+  await user.click(screen.getByRole('button', { name: /save/i }))
 
   // Submit form directly - for some reason clicking "Save" button just doesn't work
   await act(async () => {
-    const saveButton = await screen.findByRole('button', { name: 'Tallenna' })
+    const saveButton = await screen.findByRole('button', { name: 'Save' })
     await fireEvent.click(saveButton)
   })
 
@@ -100,7 +100,7 @@ it('should save product', async () => {
   })
 
   // Verify success toast is shown
-  expect(await screen.findByText(/tuote luotu/i)).toBeInTheDocument()
+  expect(await screen.findByText(/product created/i)).toBeInTheDocument()
 })
 
 it('allows deleting a product', async () => {
@@ -132,11 +132,11 @@ it('allows deleting a product', async () => {
   await user.click(screen.getByTestId('delete-123-button'))
 
   // Confirm deletion in dialog
-  await user.click(screen.getByRole('button', { name: /poista/i }))
+  await user.click(screen.getByRole('button', { name: /delete/i }))
 
   // Verify DELETE request was made
   expect(mockedAxios.delete).toHaveBeenCalledWith('/products/123')
 
   // Verify success toast is shown
-  expect(await screen.findByText(/tuote poistettu/i)).toBeInTheDocument()
+  expect(await screen.findByText(/product deleted/i)).toBeInTheDocument()
 })

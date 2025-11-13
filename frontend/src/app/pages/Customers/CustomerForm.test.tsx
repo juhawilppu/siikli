@@ -78,28 +78,28 @@ describe('orderForm', () => {
     })
 
     // Assert the heading is present
-    expect(await screen.findByRole('heading', { name: 'Uusi asiakas' })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: 'New customer' })).toBeInTheDocument()
 
-    await setValueToInput('Nimi *', 'J-Groceries')
+    await setValueToInput('Name *', 'J-Groceries')
 
     // Open the accordion
-    await openAccordion('Yhteystiedot')
+    await openAccordion('Contact details')
 
-    await setValueToInput('Katuosoite', '123 Main St')
-    await setValueToInput('Postinumero', '12345')
-    await setValueToInput('Kaupunki', 'Anytown')
-    await setValueToInput('Puhelin', '1234567890')
-    await setValueToInput('Sähköposti', 'john.doe@example.com')
+    await setValueToInput('Street address', '123 Main St')
+    await setValueToInput('Postal code', '12345')
+    await setValueToInput('City', 'Anytown')
+    await setValueToInput('Phone', '1234567890')
+    await setValueToInput('Email', 'john.doe@example.com')
 
-    await openAccordion('Laskutustiedot')
+    await openAccordion('Invoice details')
 
-    await setValueToInput('Y-tunnus', '1234567890')
-    await setValueToInput('Yrityksen virallinen nimi', 'J-Groceries')
-    await setValueToInput('Laskun viite', '1234567890')
+    await setValueToInput('Business ID', '1234567890')
+    await setValueToInput('Company legal name', 'J-Groceries')
+    await setValueToInput('Invoice reference', '1234567890')
 
     // Submit form directly - for some reason clicking "Save" button just doesn't work
     await act(async () => {
-      const saveButton = await screen.findByRole('button', { name: 'Tallenna' })
+      const saveButton = await screen.findByRole('button', { name: 'Save' })
       await fireEvent.click(saveButton)
     })
 

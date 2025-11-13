@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
 
-const DEFAULT_LANGUAGE = 'fi'
+const DEFAULT_LANGUAGE = process.env.NODE_ENV === 'test' ? 'en' : 'fi'
 type Language = 'fi' | 'en'
 
 interface AppContextType {
