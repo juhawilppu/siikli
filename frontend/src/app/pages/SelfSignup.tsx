@@ -21,8 +21,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { useTranslation } from '@/lib/translations'
 
 export default function SelfSignup() {
+  const t = useTranslation()
   const [companyNamy, setCompanyName] = useState('')
   const [marketingConsent, setMarketingConsent] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -32,8 +34,8 @@ export default function SelfSignup() {
   const handleSave = async () => {
     if (!companyNamy.trim()) {
       toast({
-        title: 'Yrityksen nimi puuttuu',
-        description: 'Syötä yrityksesi nimi jatkaaksesi.',
+        title: t('selfSignup.companyNameMissing'),
+        description: t('selfSignup.enterCompanyNameToContinue'),
         variant: 'destructive',
       })
       return
@@ -57,8 +59,8 @@ export default function SelfSignup() {
       console.error('error', e)
       setIsLoading(false)
       toast({
-        title: 'Virhe käyttöönottossa',
-        description: 'Yritä uudelleen myöhemmin.',
+        title: t('selfSignup.errorDuringSignup'),
+        description: t('selfSignup.tryAgainLater'),
         variant: 'destructive',
       })
     }
@@ -81,20 +83,20 @@ export default function SelfSignup() {
             <AlertDialog>
               <AlertDialogTrigger asChild>
                 <Button variant="outline" size="sm">
-                  Peruuta
+                  {t('login.backToHomepage')}
                 </Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Haluatko varmasti peruuttaa?</AlertDialogTitle>
+                  <AlertDialogTitle>{t('selfSignup.confirmCancel')}</AlertDialogTitle>
                   <AlertDialogDescription>
-                    Sinut kirjataan ulos järjestelmästä.
+                    {t('selfSignup.willBeLoggedOut')}
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel>Jatka</AlertDialogCancel>
+                  <AlertDialogCancel>{t('selfSignup.continue')}</AlertDialogCancel>
                   <AlertDialogAction onClick={() => logout()}>
-                    Kirjaudu ulos
+                    {t('selfSignup.logout')}
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
@@ -107,9 +109,9 @@ export default function SelfSignup() {
         <div className="container px-4 md:px-6">
           <div className="max-w-3xl mx-auto">
             <div className="mb-8 text-center">
-              <h1 className="text-3xl font-bold tracking-tight mb-2">Tervetuloa Siikliin!</h1>
+              <h1 className="text-3xl font-bold tracking-tight mb-2">{t('selfSignup.welcome')}</h1>
               <p className="text-muted-foreground">
-                Lisätään yrityksesi tiedot.
+                {t('selfSignup.addCompanyInfo')}
               </p>
             </div>
 
@@ -117,14 +119,14 @@ export default function SelfSignup() {
               <CardContent>
                 <div className="space-y-4 mt-4">
                   <div className="space-y-2">
-                    <Label htmlFor="yrityksen-nimi" className="font-medium">
-                      Yrityksen nimi
+                    <Label htmlFor="company-name" className="font-medium">
+                      {t('selfSignup.companyName.label')}
                       {' '}
                       <span className="text-red-500">*</span>
                     </Label>
                     <Input
-                      id="yrityksen-nimi"
-                      placeholder="Esim. Siikli Solutions Oy"
+                      id="company-name"
+                      placeholder={t('selfSignup.companyName.placeholder')}
                       value={companyNamy}
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCompanyName(e.target.value)}
                       required
@@ -133,12 +135,12 @@ export default function SelfSignup() {
 
                   <div className="flex items-center space-x-2 pt-4">
                     <Checkbox
-                      id="markkinointilupa"
+                      id="marketing-consent"
                       checked={marketingConsent}
                       onCheckedChange={checked => setMarketingConsent(checked as boolean)}
                     />
-                    <Label htmlFor="markkinointilupa" className="text-sm">
-                      Haluan vastaanottaa tietoa Siiklin uusista ominaisuuksista ja päivityksistä
+                    <Label htmlFor="marketing-consent" className="text-sm">
+                      {t('selfSignup.marketingConsent')}
                     </Label>
                   </div>
                 </div>
@@ -148,14 +150,14 @@ export default function SelfSignup() {
                       ? (
                           <>
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Ladataan...
+                            {t('selfSignup.loading')}
                             {' '}
                           </>
                         )
                       : (
                           <>
                             <Rocket className="mr-2 h-4 w-4" />
-                            Jatka
+                            {t('selfSignup.continue')}
                           </>
                         )}
                   </Button>
@@ -169,21 +171,20 @@ export default function SelfSignup() {
                 <CardHeader className="pb-3">
                   <div className="flex items-center gap-2">
                     <Building2 className="h-5 w-5 text-primary" />
-                    <CardTitle className="text-lg">Siiklin hyödyt</CardTitle>
+                    <CardTitle className="text-lg">{t('selfSignup.benefits.title')}</CardTitle>
                   </div>
                 </CardHeader>
                 <CardContent>
                   <ul className="space-y-2">
                     {[
-                      'Hallitse tilauksia, asiakkaita ja tuotteita yhdessä paikassa',
-                      'Automatisoi laskutus ja seuraa maksuja',
-                      'Optimoi kuljetukset ja toimitukset',
-                      'Seuraa liiketoimintasi kehitystä reaaliajassa',
-                      'Säästä aikaa ja vähennä virheitä',
-                    ].map((hyoty, index) => (
-                      <li key={index} className="flex items-start gap-2">
+                      'selfSignup.benefits.point1',
+                      'selfSignup.benefits.point2',
+                      'selfSignup.benefits.point3',
+                      'selfSignup.benefits.point4',
+                    ].map(benefit => (
+                      <li key={benefit} className="flex items-start gap-2">
                         <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                        <span className="text-sm">{hyoty}</span>
+                        <span className="text-sm">{t(benefit as any)}</span>
                       </li>
                     ))}
                   </ul>
@@ -194,20 +195,20 @@ export default function SelfSignup() {
                 <CardHeader className="pb-3">
                   <div className="flex items-center gap-2">
                     <Users className="h-5 w-5 text-primary" />
-                    <CardTitle className="text-lg">Vinkkejä alkuun pääsemiseksi</CardTitle>
+                    <CardTitle className="text-lg">{t('selfSignup.tips.title')}</CardTitle>
                   </div>
                 </CardHeader>
                 <CardContent>
                   <ol className="space-y-3 list-decimal pl-5">
                     {[
-                      'Lisää yrityksesi perustiedot ja logo asetuksissa',
-                      'Kutsu tiimisi jäsenet käyttämään järjestelmää',
-                      'Lisää tuotteet ja palvelut tuotehallinnassa',
-                      'Tuo asiakastiedot tai lisää ensimmäiset asiakkaat',
-                      'Tutustu raportteihin ja analytiikkaan',
-                    ].map((vinkki, index) => (
-                      <li key={index} className="text-sm pl-1">
-                        {vinkki}
+                      'selfSignup.tips.point1',
+                      'selfSignup.tips.point2',
+                      'selfSignup.tips.point3',
+                      'selfSignup.tips.point4',
+                      'selfSignup.tips.point5',
+                    ].map(tip => (
+                      <li key={tip} className="text-sm pl-1">
+                        {t(tip as any)}
                       </li>
                     ))}
                   </ol>
@@ -223,17 +224,20 @@ export default function SelfSignup() {
         <div className="container px-4 md:px-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="text-sm text-muted-foreground">
-              <p>© 2025 Siikli. Kaikki oikeudet pidätetään.</p>
+              <p>
+                {t('footer.copyright')}
+                .
+              </p>
             </div>
             <div className="flex gap-6">
               <NavLink to="#tuki" className="text-sm text-muted-foreground hover:text-foreground">
-                Tuki
+                {t('footer.support')}
               </NavLink>
               <NavLink to="#tietosuoja" className="text-sm text-muted-foreground hover:text-foreground">
-                Tietosuoja
+                {t('footer.privacy')}
               </NavLink>
               <NavLink to="#kayttoehdot" className="text-sm text-muted-foreground hover:text-foreground">
-                Käyttöehdot
+                {t('footer.conditions')}
               </NavLink>
             </div>
           </div>

@@ -35,8 +35,8 @@ afterEach(() => {
 
 it('renders self signup page', async () => {
   renderWithProviders(<SelfSignup />)
-  expect(await screen.findByRole('heading', { name: 'Tervetuloa Siikliin!', level: 1 })).toBeInTheDocument()
-  expect(screen.getByText('Lisätään yrityksesi tiedot.')).toBeInTheDocument()
+  expect(await screen.findByRole('heading', { name: 'Welcome to Siikli!', level: 1 })).toBeInTheDocument()
+  expect(screen.getByText('Let’s add your company information.')).toBeInTheDocument()
 })
 
 it('allows entering company details and submitting', async () => {
@@ -44,15 +44,15 @@ it('allows entering company details and submitting', async () => {
   renderWithProviders(<SelfSignup />)
 
   // Fill in company name
-  const companyNameInput = screen.getByLabelText(/Yrityksen nimi/i)
+  const companyNameInput = screen.getByLabelText(/Company name/i)
   await user.type(companyNameInput, 'Test Company Oy')
 
   // Toggle marketing consent
-  const marketingCheckbox = screen.getByLabelText(/Haluan vastaanottaa tietoa Siiklin uusista ominaisuuksista ja päivityksistä/i)
+  const marketingCheckbox = screen.getByLabelText(/I want to receive information about Siikli's new features and updates/i)
   await user.click(marketingCheckbox)
 
   // Submit form
-  const submitButton = screen.getByRole('button', { name: /Jatka/i })
+  const submitButton = screen.getByRole('button', { name: /Continue/i })
   await user.click(submitButton)
 
   expect(mockedAxios.post).toHaveBeenCalledWith('/tenants/complete-signup', {
@@ -66,7 +66,7 @@ it('allows entering company details and submitting', async () => {
 it('disables submit button when company name is empty', async () => {
   renderWithProviders(<SelfSignup />)
 
-  const submitButton = screen.getByRole('button', { name: /Jatka/i })
+  const submitButton = screen.getByRole('button', { name: /Continue/i })
   expect(submitButton).toBeDisabled()
 })
 
@@ -76,11 +76,11 @@ it('shows loading state while submitting', async () => {
 
   renderWithProviders(<SelfSignup />)
 
-  const companyNameInput = screen.getByLabelText(/Yrityksen nimi/i)
+  const companyNameInput = screen.getByLabelText(/Company name/i)
   await user.type(companyNameInput, 'Test Company Oy')
 
-  const submitButton = screen.getByRole('button', { name: /Jatka/i })
+  const submitButton = screen.getByRole('button', { name: /Continue/i })
   await user.click(submitButton)
 
-  expect(screen.getByText('Ladataan...')).toBeInTheDocument()
+  expect(screen.getByText('Loading...')).toBeInTheDocument()
 })
