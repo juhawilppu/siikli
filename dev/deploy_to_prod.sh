@@ -1,4 +1,7 @@
 #!/bin/bash
+# Script to deploy the application manually to production environment.
+# GitHub pipeline is the preferred way to deploy, this script is for special situations only.
+
 set -e
 start=$(date +%s)
 
@@ -6,17 +9,17 @@ command -v docker >/dev/null 2>&1 || { echo >&2 "❌ Docker is not installed. Ab
 command -v aws >/dev/null 2>&1 || { echo >&2 "❌ AWS CLI is not installed. Aborting."; exit 1; }
 
 echo "🔍 Running tests..."
-#npm run test || true
+npm run test || true
 
 echo "🔍 Running linter..."
-#npm run lint:frontend
-#npm run lint:backend
+npm run lint:frontend
+npm run lint:backend
 
 echo "🔍 Formatting prisma schema..."
-#(
-#    cd backend
-#    npx prisma format
-#)
+(
+    cd backend
+    npx prisma format
+)
 
 # Application version
 version=$(date +%s)

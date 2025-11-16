@@ -19,10 +19,8 @@ RUN npm run -w @siikli/shared build
 
 # copy backend sources and generate prisma client in backend workspace
 COPY backend ./backend
+RUN npm install -D dotenv-cli
 RUN npm run -w backend prisma:generate
-
-# (optional) only if you truly need Chrome in the image
-# RUN npx puppeteer browsers install chrome
 
 # entrypoint & start
 COPY backend/docker-entrypoint.sh /docker-entrypoint.sh

@@ -12,7 +12,6 @@ async function verifyHistoryTables() {
     'order_row',
     'product',
     'order',
-    'rate_limit',
     'package_type',
     'package_size',
     'invoice',

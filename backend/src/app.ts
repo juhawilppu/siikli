@@ -1,8 +1,10 @@
 import type { User } from '@prisma/client'
+import path from 'node:path'
 import * as Sentry from '@sentry/node'
 import { RedisStore } from 'connect-redis'
 import cookieParser from 'cookie-parser'
 import cors from 'cors'
+import dotenv from 'dotenv'
 import express from 'express'
 import session from 'express-session'
 import helmet from 'helmet'
@@ -20,8 +22,14 @@ import { tenantsRoute } from './api/tenants'
 import { errorHandler } from './middlewares/error-handler'
 import passportConfig from './passportConfig'
 import redisClient from './redis'
+
 import { log } from './utils/app-log'
 import './instrument.js'
+
+// Always load root-level .env
+dotenv.config({
+  path: path.join(process.cwd(), '../.env'),
+})
 
 export async function createApp(): Promise<express.Application> {
   const app = express()

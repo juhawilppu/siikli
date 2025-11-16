@@ -17,22 +17,24 @@ async function main() {
   log.info('Running seed 🌱')
 
   // Create tenant 1
-  const tenant = await TenantService.createTenant({
-    name: 'Siikli Solutions Oy',
-    businessId: 'Y-1234567-8',
-    streetAddress: 'Test street 1',
-    postalCode: '12345',
-    city: 'Helsinki',
-    phone: '1234567890',
-    email: 'siikli@siikli.fi',
-    website: 'https://siikli.fi',
-    invoiceBankName: 'Test bank',
-    invoiceBankAccount: '1234567890',
-    invoiceSumRow: 'Test sum row',
-    signupCompleted: true,
-    subscriptionType: 'PREMIUM',
-    subscriptionEndDate: null,
-    subscriptionStartDate: null,
+  const tenant = await prisma.tenant.create({
+    data: {
+      name: 'Siikli Solutions Oy',
+      businessId: 'Y-1234567-8',
+      streetAddress: 'Test street 1',
+      postalCode: '12345',
+      city: 'Helsinki',
+      phone: '1234567890',
+      email: 'siikli@siikli.fi',
+      website: 'https://siikli.fi',
+      invoiceBankName: 'Test bank',
+      invoiceBankAccount: '1234567890',
+      invoiceSumRow: 'Test sum row',
+      signupCompleted: true,
+      subscriptionType: 'PREMIUM',
+      subscriptionEndDate: null,
+      subscriptionStartDate: null,
+    },
   })
 
   const juha = await UserService.createUser({
@@ -154,16 +156,16 @@ async function main() {
         status: OrderStatus.WAITING_FOR_DELIVERY,
         deliveryDate: dateToIso(subDays(new Date(), (orderCount - orderIndex) * 7)), // one order every 7 days
         hasNote: note !== null,
-        noteHeader: note?.header || null,
-        noteBody: note?.body || null,
+        noteHeader: note?.header,
+        noteBody: note?.body,
         items: orderRows.map(row => ({
           id: row.productId,
-          price: row.price,
+          price: row.price.toString(),
           packageSize: row.packageSize,
           packageType: row.packageType,
           freetext: row.freetext || '',
           productId: row.productId,
-          amount: row.amount,
+          amount: row.amount.toString(),
           packages: row.amount.div(row.packageSize).toNumber(),
         })),
       })
@@ -172,22 +174,24 @@ async function main() {
 
   // Create tenant 2
 
-  const tenant2 = await TenantService.createTenant({
-    name: 'New company',
-    businessId: 'Y-11111111-1',
-    streetAddress: 'Testikatu 1',
-    postalCode: '11111',
-    city: 'Espoo',
-    phone: '0500000000',
-    email: 'rajajarvi@gmail.com',
-    website: 'https://juhawilppu.fi',
-    invoiceBankName: 'Danske Bank',
-    invoiceBankAccount: '1111111111',
-    invoiceSumRow: 'Test sum row',
-    signupCompleted: true,
-    subscriptionType: 'PREMIUM',
-    subscriptionEndDate: null,
-    subscriptionStartDate: null,
+  const tenant2 = await prisma.tenant.create({
+    data: {
+      name: 'New company',
+      businessId: 'Y-11111111-1',
+      streetAddress: 'Testikatu 1',
+      postalCode: '11111',
+      city: 'Espoo',
+      phone: '0500000000',
+      email: 'rajajarvi@gmail.com',
+      website: 'https://juhawilppu.fi',
+      invoiceBankName: 'Danske Bank',
+      invoiceBankAccount: '1111111111',
+      invoiceSumRow: 'Test sum row',
+      signupCompleted: true,
+      subscriptionType: 'PREMIUM',
+      subscriptionEndDate: null,
+      subscriptionStartDate: null,
+    },
   })
 
   await UserService.createUser({

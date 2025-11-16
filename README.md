@@ -20,7 +20,7 @@ Rebuilt in 2025 with a modern stack.
 - **Automated backups** → [backups.tf](terraform/modules/backups/main.tf)
 - **Deployment pipeline using role-based trust authentication** → [ci.yml](.github/workflows/ci.yml)
 - **Tested invoice generation (VAT, totals, HTML)** → [invoice-service.test.ts](backend/src/services/invoice-service.test.ts) and [invoice-html.test.ts](backend/src/services/invoice-html.test.ts)
-- **End-to-end monorepo with shared types**
+- **End-to-end monorepo with shared types** → [packages/shared/](packages/shared/)
 - **Built for production: €10M+ invoiced since 2017**
 
 ## Features
@@ -79,11 +79,30 @@ flowchart TB
 
 ## Getting started
 
-```
+1. Create local environment file
+```bash
 cp .env.example .env
-npm install
+```
+
+2. Start local infrastructure
+```bash
+docker compose -f dev/docker-compose.yml up -d
+```
+
+3. Initialize the dev environment
+```bash
+./dev/setup.sh
+```
+
+4. Start the application
+```bash
+nvm use
 npm run dev
 ```
+
+5. Open the application
+
+http://localhost:5173/
 
 ## Project structure
 

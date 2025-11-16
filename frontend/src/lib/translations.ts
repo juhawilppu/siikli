@@ -3,6 +3,7 @@ import { useApp } from '../context/AppContext'
 export const translations = {
   fi: {
     'login.title': 'Kirjaudu Siikliin',
+    'login.backToHomepage': 'Takaisin etusivulle',
     'login.description': 'Aloita ilmainen 1 kk käyttöjakso — ilman sitoumuksia tai luottokorttia.',
     'login.form.title': 'Kirjaudu sisään',
     'login.form.description': 'Valitse kirjautumistapa ja pääset heti käyttämään järjestelmää',
@@ -283,6 +284,7 @@ export const translations = {
   },
   en: {
     'login.title': 'Login to Siikli',
+    'login.backToHomepage': 'Back to homepage',
     'login.description': 'Start a 1-month free trial — no commitment or credit card required.',
     'login.form.title': 'Login',
     'login.form.description': 'Select login method and get started',

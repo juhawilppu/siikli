@@ -13,6 +13,4 @@ frontend/coverage/*
 packages/shared/coverage/*
 
 packages/shared/dist
-
-debug_*.sh
-pipeline_*.sh
+frontend/dist

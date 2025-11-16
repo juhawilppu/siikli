@@ -1,6 +1,12 @@
+import path from 'node:path'
+import dotenv from 'dotenv'
 import { createClient } from 'redis'
 import { log } from './utils/app-log'
-import 'dotenv/config'
+
+// Always load root-level .env
+dotenv.config({
+  path: path.join(process.cwd(), '../.env'),
+})
 
 const redisClient = createClient({
   url: process.env.REDIS_URL,

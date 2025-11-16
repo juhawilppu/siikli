@@ -15,7 +15,7 @@ export default function LoginPage() {
       <Button variant="ghost" asChild className="absolute top-4 left-4">
         <Link to="https://siikli.fi" className="flex items-center gap-2">
           <ArrowLeft className="h-4 w-4" />
-          Takaisin etusivulle
+          {t('login.backToHomepage')}
         </Link>
       </Button>
       <main className="flex-1">
