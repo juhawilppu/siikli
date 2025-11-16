@@ -5,33 +5,68 @@
 
 Siikli is a simple ERP built for the realities of Finnish agriculture. In daily production use since 2017, it has processed more than €10M in invoices — simply, reliably, and without unnecessary complexity.
 
-Rebuilt in 2025 with a modern tech.
+Rebuilt in 2025 with a modern stack.
 
 ![Siikli onboarding view screenshot](docs/screenshots/onboarding.png)
+<small>Onboarding workflow to get users started.</small>
 
 ![Siikli order view screenshot](docs/screenshots/new_order.png)
+<small>Create order with product + package size/type selection.</small>
 
-## 🚀 Features
+## Highlights
 
-- 📦 Orders & invoicing — from quote to paid invoice
-- 👥 Customer & supplier management
-- 📋 Product & price list management
-- 📊 Exportable reports for bookkeeping
-- 🔍 Full change history and audit trail
+- **Tenant-isolated, multi-tenant backend** → [prisma.ts](backend/src/prisma.ts)
+- **Reusable order list component used by multiple pages** → [OrderListBase.tsx](frontend/src/app/components/OrderListBase.tsx)
+- **Automated backups** → [backups.tf](terraform/modules/backups/main.tf)
+- **Deployment pipeline using role-based trust authentication** → [ci.yml](.github/workflows/ci.yml)
+- **Tested invoice generation (VAT, totals, HTML)** → [invoice-service.test.ts](backend/src/services/invoice-service.test.ts) and [invoice-html.test.ts](backend/src/services/invoice-html.test.ts)
+- **End-to-end monorepo with shared types**
+- **Built for production: €10M+ invoiced since 2017**
 
-## 🛠️ Getting started
+## Features
 
+- Orders & invoicing (each order includes product + package size/type selection)
+- Packaging workflow for daily deliveries + waybill generation for truck drivers
+- Customer management with support for discounts
+- Product & price list management
+- Full change history and audit trail
+- Excel export for sales reporting and bookkeeping
+
+## Architecture
+
+```mermaid
+---
+config:
+  theme: neo
+  themeCSS: >-
+    .mermaid rect { fill: #ffffff !important; } .mermaid { background-color:
+    #ffffff !important; }
+  look: classic
+---
+flowchart TB
+    subgraph Client["Client"]
+        Browser[Browser]
+    end
+    subgraph CDN["CloudFront Edge"]
+        CF[CloudFront Distribution]
+    end
+    subgraph Backend["AWS Application"]
+        ALB[Application Load Balancer]
+        ECS[ECS Fargate<br/>Node.js/Express]
+        RDS[(RDS PostgreSQL)]
+        S3_PDF[S3 Bucket<br/>Invoice PDFs]
+    end
+    subgraph StaticHosting["Static Hosting"]
+        S3_LP[S3 Bucket<br/>Landing + Static Assets]
+    end
+    Browser -->|"HTTPS"| CF
+    CF -->|"/"| S3_LP
+    CF -->|"/api/"| ALB
+    ALB --> ECS
+    ECS --> RDS
+    ECS -->|"Store PDFs"| S3_PDF
+    Browser -->|"Download (pre-signed URL)"| S3_PDF
 ```
-# 1. Configure environment variables
-cp .env.example .env
-
-# 2. Install dependencies & start
-cd siikli
-npm install
-npm run dev
-```
-
-The frontend and backend run concurrently via `npm run dev`.
 
 ## Tech stack
 
@@ -42,126 +77,28 @@ The frontend and backend run concurrently via `npm run dev`.
 - **Infrastructure as Code:** `Terraform`
 - **Cloud:** `AWS (ECS Fargate, S3, RDS, SES)`
 
+## Getting started
+
+```
+cp .env.example .env
+npm install
+npm run dev
+```
+
 ## Project structure
 
 ```bash
 siikli/
-├── frontend/      # React frontend
-├── backend/       # Backend source code
-├── packages/      # Code shared between frontend and backend (REST types, utils)
-├── terraform/     # Terraform files for AWS infra and deployment
-├── .env           # Environment variables
+├── frontend/
+├── backend/
+├── packages/      # Code shared between frontend and backend (shared types, utils)
+├── terraform/
+├── .env
 └── ...
 ```
 
-## Architecture
+## Docs
 
-```mermaid
-%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#ffffff', 'edgeLabelBackground':'#ffffff', 'tertiaryColor': '#ffffff'}}}%%
-
-flowchart TD
-    Browser -->|HTTPS| CF
-
-    subgraph Client["👩‍💻 Client"]
-        Browser[Browser]
-    end
-
-    subgraph AWS["☁️ AWS Infrastructure"]
-        CF[CloudFront]
-
-        S3_LP[S3: Landing page]
-        S3_PDF[S3: PDF storage]
-
-        ALB[Application Load Balancer]
-        ECS[ECS Fargate<br/>Node.js/Express]
-        RDS[(RDS PostgreSQL)]
-    end
-
-    CF -->|"/"| S3_LP
-    CF -->|"/api"| ALB
-
-    ALB --> ECS
-    ECS --> RDS
-
-    ECS -->|Store PDFs| S3_PDF
-    Browser -->|Download via pre-signed URL| S3_PDF
-
-    %% Styling
-    classDef client fill:#FFFFFF,stroke:#9E9E9E,color:#424242,stroke-width:2px,rx:8,ry:8;
-    classDef aws fill:#FFFFFF,stroke:#2F6FDB,color:#1B3C87,stroke-width:2px,rx:8,ry:8;
-    classDef db fill:#FFFFFF,stroke:#2E7D32,color:#1B5E20,stroke-width:2px,rx:8,ry:8;
-
-    class Browser client
-    class CF,S3_LP,S3_PDF,ALB,ECS aws
-    class RDS db
-```
-
-### Layered structure
-
-Follows a **Service–Controller–Model** pattern for clarity, testability, and separation of concerns:
-
-- **Controller** - Handles HTTP, request validation, and permissions.
-- **Services** - Business logic.
-- **Model** - Database access via Prisma.
-
-### Type safety
-
-- No complex TypeScript generics (Omit, Partial, etc.).
-- Each endpoint has dedicated request/response DTOs for explicit, predictable types.
-
-### ORM-first
-
-- Prisma is the default for DB access.
-- Raw SQL used for performance-critical special cases.
-- Database: `snake_case`; TypeScript: `camelCase`.
-
-### Tenant isolation
-
-- Every tenant has isolated data (`company_id` in all relevant tables).
-- Prisma middleware enforces tenant scoping in queries.
-- RBAC is tenant-aware.
-- Tenant ID in JWT payload.
-
-### History tables
-
-- Every table has a `_history` table updated via triggers on `INSERT`, `UPDATE`, `DELETE`.
-- Enables debugging, partial restores, and full change tracking.
-
-To ensure schema consistency, run:
-
-```bash
-npx tsx ./src/dev/verify-history-tables.ts
-```
-
-Validates that history tables are in sync with schema.
-
-### Handling monetary values
-
-Finnish currency uses a comma and two decimals (`2,50`), but users may type `2.5` or `2,5`.
-
-Solution: Keep monetary values as **strings** in the UI until calculations are needed.
-- **Database:** `@db.Decimal(10, 2)` for exact precision.
-- **API:** Uses strings (`"10.00"`) for serialization.
-- **UI:** Accepts multiple formats (`"10"`, `"10,0"`, `"10.0"`, etc.), formats to `"10,00"` on blur.
-- **Mobile:** Numeric keyboard for better UX.
-- **Calculations:** Uses `decimal.js` for precision.
-
-## Deployment
-
-- ECS + Fargate for containers (running in `eu-north-1`, Sweden).
-- RDS for database.
-- Terraform for provisioning.
-
-## Security
-
-Security-first approach:
-
-- ✅ Security headers & CSP
-- ✅ SQL injection & XSS prevention via framework
-- ✅ Role-based access control
-- ✅ Tenant isolation via Prisma middleware
-- ✅ UUID-based identifiers
-- ✅ Rate-limiting
-- ✅ Passwordless login (email-based OTP code or Google Auth)
-- ✅ Secure cookies (HttpOnly)
-- ✅ IDOR prevention
+- [Architecture](docs/architecture.md)
+- [Deployment](docs/deployment.md)
+- [Security](docs/security.md)
