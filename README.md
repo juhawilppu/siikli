@@ -5,7 +5,7 @@
 
 Siikli is a simple ERP built for the realities of Finnish agriculture. In daily production use since 2017, it has processed more than €10M in invoices — simply, reliably, and without unnecessary complexity.
 
-Rebuilt in 2025 with a modern stack.
+Rebuilt in 2025 with a modern stack. The rewrite reached a production-ready state, but I discontinued it after failing to acquire new customers. The original 2017 version remains in active use and has processed over €13M in invoices to date. This repository now serves as a technical showcase of how I would build Siikli today: clear architecture, tests, modern tooling, and maintainable cloud infrastructure.
 
 ![Siikli onboarding view screenshot](docs/screenshots/onboarding.png)
 <small>Onboarding workflow to get users started.</small>

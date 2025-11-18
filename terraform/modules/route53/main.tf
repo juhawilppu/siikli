@@ -109,14 +109,6 @@ resource "aws_route53_record" "spf" {
   records = ["v=spf1 include:amazonses.com -all"]
 }
 
-resource "aws_route53_record" "aromaentila" {
-  zone_id = aws_route53_zone.siikli.id
-  name    = "aromaentila.${var.domain_name}"
-  type    = "A"
-  ttl     = 300
-  records = ["95.85.27.23"]
-}
-
 resource "aws_route53_record" "caa" {
   zone_id = aws_route53_zone.siikli.id
   name    = var.domain_name
